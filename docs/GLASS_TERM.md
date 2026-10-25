@@ -240,11 +240,39 @@ It ships with the reference above and a demo program
 (`cargo run --example glass_demo`) that draws a short showcase, a
 scene, a chart and a few video frames, and cleans up after itself.
 
-A sampler (`cargo run --example glass_sampler`) walks the dialects in
-order: text, DCS sixel, APC graphics, Unicode placeholders, OSC 1337
-inline images, animation, and glass's own dialect (a glow, particles,
-lit shapes, a turning cube, an orbit, a chart, and a short video),
-then a short finale. It sizes each picture from the window — columns
+A sampler (`cargo run --example glass_sampler`, source in
+`crates/term/examples/glass_sampler/`) walks the dialects in order:
+text with a shimmering truecolour band, a synthwave sunset in DCS
+sixel (252 registers, ordered dither), APC graphics, Unicode
+placeholders, a ray-traced still through OSC 1337, animation, and then
+glass's own dialect, which is most of the show (about 70 of its 105
+seconds):
+
+- Seven lit solids orbit a paragraph. Each is a `k=prim` with an
+  additive glow under it, and the far half of the orbit passes under
+  the text.
+- A cloud of 720 additive lights, one `group` a frame, morphs through
+  a sphere, a torus, a trefoil, a double helix and a galaxy.
+- A tesseract turns through the fourth dimension.
+- Glass tubing with a neon filament stands over text that shows
+  through it.
+- An equaliser city of 144 columns rises through a sheet of tinted
+  glass.
+- An orrery sits under the text, its planets lit from their sun and
+  its orbits drawn as comet tails.
+- A chart, then a tunnel played as video.
+- A finale stacks the orrery, the knot, the solids, glows and dust.
+
+The 3D scenes are inline meshes shaded on the CPU (`motion.rs`): a
+key, a fill, a specular and a fresnel rim baked into the vertex
+colours. An opaque node writes depth, and the translucent node's
+triangles are sorted far to near. Each scene is rendered at twice the
+pixels it covers, capped at 2048 a side, so the linear filter that
+draws it smaller smooths every edge. The scenes are sent at 60 frames
+a second, paced against the clock.
+
+`--scene a,b` plays only the named scenes (`--list` names them), and
+`--loop` repeats the show until `q`. It sizes each picture from the window — columns
 from `stty size` or XTWINOPS 18, one cell's pixels from XTWINOPS 16,
 falling back to 10×20 — so the main picture fills about half the width
 and never passes the screen. One thread owns stdin and forwards every
@@ -259,8 +287,8 @@ frame 1 (`a=T` with cell columns and rows), then adds the rest with
 in-cell picture (sixel, OSC 1337) is not written over: the caption
 sits below its cell rectangle, and the cursor moves with CUP only.
 `--check` sends `r=` on every glass op and drops `q=2` from APC
-graphics ops, then prints ops sent, OK, and each error code to
-stderr. Each scene is written before its hold, and the
+graphics ops, then prints ops sent, OK, each error code, and the
+frame rate each animated scene kept, to stderr. Each scene is written before its hold, and the
 screen is not cleared during a hold. It uses the alternate screen, so
 the main screen's scrollback is left alone, and it removes every
 picture, layer and showcase it made. Underline colour (SGR 58) and

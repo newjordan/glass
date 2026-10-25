@@ -7,14 +7,26 @@
 //! the probe reads replies from that channel and never blocks past its
 //! deadline.
 //!
+//! The glass dialect's part is the long one: lit solids orbiting the text,
+//! a cloud of 720 lights that becomes five shapes, a tesseract, a glass
+//! knot, an equaliser city and an orrery, each a 3D scene rendered by the
+//! window at twice its size and shaded on the CPU (see `motion.rs`), then
+//! all of it stacked at once.
+//!
 //! ```text
 //! cargo run --example glass_sampler
 //! cargo run --example glass_sampler -- --check
+//! cargo run --example glass_sampler -- --scene knot,orrery --loop
 //! ```
 //!
 //! `--check` asks glass to answer every op (an `r=` token on each
-//! `glass;` op, and no `q=2` on APC graphics) and prints one line to
-//! stderr: ops sent, OK, and each error with its code.
+//! `glass;` op, and no `q=2` on APC graphics) and prints to stderr: ops
+//! sent, OK, each error with its code, and the frame rate each animated
+//! scene kept. `--scene a,b` plays only those scenes (`--list` names
+//! them), and `--loop` plays the show until `q`.
+
+mod motion;
+mod stills;
 
 use std::io::{self, Read, Write};
 use std::process::{Command, Stdio};
@@ -24,31 +36,43 @@ use std::sync::Mutex;
 use std::thread;
 use std::time::{Duration, Instant};
 
+use motion::{hex, mix, neon, WHITE};
+
 const HELLO: &[u8] = b"\x1b_hello\x1b\\";
 const HOLD_TEXT: u64 = 2200;
 const HOLD_CURSOR: u64 = 400;
-const HOLD_SIXEL: u64 = 2600;
+const HOLD_SIXEL: u64 = 3000;
 const HOLD_APC_UNDER: u64 = 1200;
 const HOLD_APC_OVER: u64 = 1100;
 const HOLD_APC_CROP: u64 = 1300;
 const HOLD_PLACE: u64 = 1000;
 const HOLD_SCROLL: u64 = 80;
 const HOLD_SCROLL_REST: u64 = 500;
-const HOLD_OSC: u64 = 2200;
+const HOLD_OSC: u64 = 3000;
 const HOLD_ANIM: u64 = 4000;
-const HOLD_GLOW: u64 = 800;
-const HOLD_PARTICLES: u64 = 900;
-const HOLD_PRIM: u64 = 700;
-const HOLD_CUBE: u64 = 2000;
-const HOLD_GROUP: u64 = 1300;
+const HOLD_PRIMS: u64 = 8000;
+const HOLD_CLOUD: u64 = 12_500;
+const HOLD_TESSERACT: u64 = 9000;
+const HOLD_KNOT: u64 = 9000;
+const HOLD_CITY: u64 = 9000;
+const HOLD_ORRERY: u64 = 10_000;
 const HOLD_CHART: u64 = 2000;
-const HOLD_FRAME: u64 = 67;
+const HOLD_FRAME: u64 = 33;
 const HOLD_CLOSE: u64 = 900;
-const HOLD_FINALE: u64 = 4000;
+const HOLD_FINALE: u64 = 12_000;
 const SCROLL_LINES: u64 = 24;
-const VIDEO_FRAMES: u64 = 20;
+const VIDEO_FRAMES: u64 = 90;
 const ANIM_FRAMES: usize = 12;
 const ANIM_GAP_MS: u32 = 80;
+/// Frames a second the 3D scenes are sent at.
+const SCENE_FPS: u32 = 60;
+/// How many lights the cloud is made of.
+const CLOUD_POINTS: usize = 720;
+/// A scene is rendered at this many times the pixels it covers, so the
+/// linear filter that draws it smaller smooths every edge.
+const SUPERSAMPLE: f32 = 2.0;
+/// The most pixels a scene side may be (`glass_scene`'s cap).
+const SCENE_SIDE: u32 = 2048;
 const FALLBACK_CELL_W: u32 = 10;
 const FALLBACK_CELL_H: u32 = 20;
 /// How long the probe waits for glass to answer. Checked on the channel,
@@ -71,6 +95,8 @@ static CHECK: AtomicBool = AtomicBool::new(false);
 static SHOWCASE_OPEN: AtomicBool = AtomicBool::new(false);
 static NEXT_REPLY: AtomicU32 = AtomicU32::new(1);
 static TALLY: Mutex<Tally> = Mutex::new(Tally::new());
+/// Each animated scene's frames and seconds, for `--check`.
+static PACE: Mutex<Vec<(&'static str, u32, f32)>> = Mutex::new(Vec::new());
 
 struct Tally {
     sent: u32,
@@ -219,6 +245,15 @@ fn finish_check(rx: &Receiver<Vec<u8>>) {
         .map(|tally| tally.summary())
         .unwrap_or_else(|_| "glass_sampler --check: ops sent 0, OK 0, errors tally poisoned".into());
     eprintln!("{line}");
+    if let Ok(pace) = PACE.lock()
+        && !pace.is_empty()
+    {
+        let rates: Vec<String> = pace
+            .iter()
+            .map(|(name, frames, secs)| format!("{name} {:.1}", *frames as f32 / secs.max(0.001)))
+            .collect();
+        eprintln!("glass_sampler --check: frames a second {}", rates.join(", "));
+    }
 }
 /// Picture the chart panel shows. Uploaded with `picture`, opened with `chart;p=`.
 const CHART_PICTURE: u32 = 11;
@@ -277,6 +312,60 @@ impl Fit {
         r = r.clamp(1, rows);
         (c, r)
     }
+
+    /// A window-pinned scene box at `x, y` (cells from the top left, 0
+    /// based), `c` by `r` cells, and the pixels it is rendered at.
+    fn stage(self, x: f32, y: f32, c: f32, r: f32) -> Stage3 {
+        let pw = (c * self.cell_w as f32).max(1.0);
+        let ph = (r * self.cell_h as f32).max(1.0);
+        let k = (SCENE_SIDE as f32 / pw.max(ph)).min(SUPERSAMPLE);
+        Stage3 {
+            x,
+            y,
+            c,
+            r,
+            s: ((pw * k).round() as u32).clamp(1, SCENE_SIDE),
+            v: ((ph * k).round() as u32).clamp(1, SCENE_SIDE),
+        }
+    }
+
+    /// The biggest scene box of `aspect` (width over height, in pixels)
+    /// within `rows` rows from `top` and `cols` columns, centred on column
+    /// `cx`.
+    fn stage_fit(self, cx: f32, top: f32, rows: f32, cols: f32, aspect: f32) -> Stage3 {
+        let (cw, ch) = (self.cell_w.max(1) as f32, self.cell_h.max(1) as f32);
+        let mut r = rows.max(1.0);
+        let mut c = r * ch * aspect / cw;
+        if c > cols {
+            c = cols.max(1.0);
+            r = c * cw / aspect / ch;
+        }
+        self.stage(cx - c / 2.0, top + (rows - r) / 2.0, c, r)
+    }
+
+    fn cols_f(self) -> f32 {
+        f32::from(self.cols)
+    }
+
+    fn rows_f(self) -> f32 {
+        f32::from(self.rows)
+    }
+
+    /// Cells as tall as `w` cells are wide, so a light or a solid is round.
+    fn square(self, w: f32) -> f32 {
+        w * self.cell_w.max(1) as f32 / self.cell_h.max(1) as f32
+    }
+}
+
+/// Where a scene is placed and how big it is rendered.
+#[derive(Clone, Copy, Debug)]
+struct Stage3 {
+    x: f32,
+    y: f32,
+    c: f32,
+    r: f32,
+    s: u32,
+    v: u32,
 }
 
 struct Tty {
@@ -334,10 +423,21 @@ fn clean_up() {
 }
 
 fn main() {
-    CHECK.store(
-        std::env::args().any(|arg| arg == "--check"),
-        Ordering::Relaxed,
-    );
+    let args: Vec<String> = std::env::args().skip(1).collect();
+    CHECK.store(args.iter().any(|arg| arg == "--check"), Ordering::Relaxed);
+    if args.iter().any(|arg| arg == "--list") {
+        let names: Vec<&str> = SCENES.iter().map(|(name, _)| *name).collect();
+        println!("{}", names.join(" "));
+        return;
+    }
+    let picked = match picked_scenes(&args) {
+        Ok(picked) => picked,
+        Err(unknown) => {
+            eprintln!("glass_sampler: no scene {unknown}; --list names them");
+            std::process::exit(2);
+        }
+    };
+    let looping = args.iter().any(|arg| arg == "--loop");
     let tty = Tty::raw();
     // Size the fallback before the reader owns stdin. After this, nothing
     // else reads stdin: the probe and the scenes take bytes from the channel.
@@ -346,14 +446,48 @@ fn main() {
     thread::spawn(move || read_stdin(tx));
     emit(b"\x1b[?1049h\x1b[?25l");
     if let Some(fit) = probe(&rx, rows, cols) {
-        if !show(&rx, fit) {
-            hold(&rx, 400);
+        loop {
+            if show(&rx, fit, &picked) {
+                break;
+            }
+            if !looping {
+                hold(&rx, 400);
+                break;
+            }
         }
     } else {
         out(b"glass_sampler: not running inside glass; nothing drawn.\r\n");
     }
     drop(tty);
     finish_check(&rx);
+}
+
+/// The scenes `--scene a,b` names, in the show's order; every scene when
+/// it is not given. `Err` carries a name no scene has.
+fn picked_scenes(args: &[String]) -> Result<Vec<&'static str>, String> {
+    let mut wanted: Vec<String> = Vec::new();
+    let mut i = 0;
+    while i < args.len() {
+        let arg = &args[i];
+        if let Some(list) = arg.strip_prefix("--scene=") {
+            wanted.extend(list.split(',').map(str::to_string));
+        } else if arg == "--scene"
+            && let Some(list) = args.get(i + 1)
+        {
+            wanted.extend(list.split(',').map(str::to_string));
+            i += 1;
+        }
+        i += 1;
+    }
+    wanted.retain(|name| !name.is_empty());
+    if let Some(unknown) = wanted.iter().find(|name| !SCENES.iter().any(|(n, _)| n == name)) {
+        return Err(unknown.clone());
+    }
+    Ok(SCENES
+        .iter()
+        .map(|(name, _)| *name)
+        .filter(|name| wanted.is_empty() || wanted.iter().any(|w| w == name))
+        .collect())
 }
 
 /// The only reader of stdin. Every byte is forwarded. A second read would
@@ -558,24 +692,79 @@ fn quit(rx: &Receiver<Vec<u8>>) -> bool {
 }
 
 fn hold(rx: &Receiver<Vec<u8>>, ms: u64) -> bool {
-    let end = Instant::now() + Duration::from_millis(ms);
-    while Instant::now() < end {
+    hold_until(rx, Instant::now() + Duration::from_millis(ms))
+}
+
+fn hold_until(rx: &Receiver<Vec<u8>>, end: Instant) -> bool {
+    loop {
         if quit(rx) {
             return true;
         }
-        thread::sleep(Duration::from_millis(20));
+        let now = Instant::now();
+        if now >= end {
+            return false;
+        }
+        thread::sleep((end - now).min(Duration::from_millis(5)));
     }
-    quit(rx)
 }
 
-fn show(rx: &Receiver<Vec<u8>>, fit: Fit) -> bool {
-    scene_text(rx, fit)
-        || scene_sixel(rx, fit)
-        || scene_apc(rx, fit)
-        || scene_placeholders(rx, fit)
-        || scene_osc1337(rx, fit)
-        || scene_animation(rx, fit)
-        || scene_glass(rx, fit)
+/// Runs `draw` with the scene's clock in seconds, `fps` times a second for
+/// `ms`. Frames are paced against the clock, so a slow frame is not
+/// followed by a full wait, and motion keeps time however fast glass
+/// takes the bytes. True on a quit.
+fn animate(rx: &Receiver<Vec<u8>>, name: &'static str, ms: u64, fps: u32, mut draw: impl FnMut(f32)) -> bool {
+    let start = Instant::now();
+    let length = Duration::from_millis(ms);
+    let step = Duration::from_secs_f32(1.0 / fps.max(1) as f32);
+    let mut next = start;
+    let mut frames = 0u32;
+    let mut stopped = false;
+    while start.elapsed() < length {
+        draw(start.elapsed().as_secs_f32());
+        frames += 1;
+        next += step;
+        let now = Instant::now();
+        if next < now {
+            next = now;
+        }
+        if hold_until(rx, next.min(start + length)) {
+            stopped = true;
+            break;
+        }
+    }
+    if let Ok(mut pace) = PACE.lock() {
+        pace.push((name, frames, start.elapsed().as_secs_f32()));
+    }
+    stopped
+}
+
+type SceneFn = fn(&Receiver<Vec<u8>>, Fit) -> bool;
+
+/// The show, in order. `--scene` picks from these names.
+const SCENES: &[(&str, SceneFn)] = &[
+    ("text", scene_text),
+    ("sixel", scene_sixel),
+    ("apc", scene_apc),
+    ("placeholders", scene_placeholders),
+    ("osc", scene_osc1337),
+    ("animation", scene_animation),
+    ("prims", scene_prims),
+    ("cloud", scene_cloud),
+    ("tesseract", scene_tesseract),
+    ("knot", scene_knot),
+    ("city", scene_city),
+    ("orrery", scene_orrery),
+    ("chart", scene_chart),
+    ("video", scene_video),
+    ("close", scene_close),
+    ("finale", scene_finale),
+];
+
+fn show(rx: &Receiver<Vec<u8>>, fit: Fit, picked: &[&str]) -> bool {
+    SCENES
+        .iter()
+        .filter(|(name, _)| picked.contains(name))
+        .any(|(_, scene)| scene(rx, fit))
 }
 
 fn retire() {
@@ -590,7 +779,7 @@ fn retire() {
 
 fn scene_text(rx: &Receiver<Vec<u8>>, fit: Fit) -> bool {
     retire();
-    gradient_title(fit, "glass");
+    gradient_title(fit, "glass", 0.0);
     cup(4, 2);
     styled(b"\x1b[2m");
     out(b"every dialect a program speaks, expanded into layers");
@@ -622,7 +811,9 @@ fn scene_text(rx: &Receiver<Vec<u8>>, fit: Fit) -> bool {
         styled(b"\x1b[0m");
     }
     caption(fit, "curly is SGR 4:3; the coloured underline is SGR 58");
-    if hold(rx, HOLD_TEXT) {
+    // The band is repainted with its light sliding across: truecolour
+    // backgrounds, cell by cell, twenty times a second.
+    if animate(rx, "text", HOLD_TEXT, 20, |t| gradient_title(fit, "glass", t)) {
         return true;
     }
     for (i, shape) in [2u8, 4, 6].into_iter().enumerate() {
@@ -641,26 +832,32 @@ fn scene_text(rx: &Receiver<Vec<u8>>, fit: Fit) -> bool {
     false
 }
 
-fn gradient_title(fit: Fit, title: &str) {
+/// A three-row band in the neon ramp with the title spaced out in its
+/// middle. `phase` (seconds) slides a highlight across it.
+fn gradient_title(fit: Fit, title: &str, phase: f32) {
     let cols = fit.cols.max(1);
-    let start = cols.saturating_sub(title.len() as u16) / 2;
+    let spaced: Vec<u8> = title.bytes().flat_map(|b| [b, b' ']).take(title.len() * 2 - 1).collect();
+    let start = cols.saturating_sub(spaced.len() as u16) / 2;
+    let mut line = String::with_capacity(usize::from(cols) * 24);
     for band in 1..=3u16 {
-        cup(band, 1);
+        line.clear();
+        line.push_str(&format!("\x1b[{band};1H"));
         for col in 1..=cols {
             let t = f32::from(col - 1) / f32::from(cols);
-            let r = (28.0 + 200.0 * t) as u8;
-            let g = (24.0 + 90.0 * (1.0 - (t - 0.5).abs() * 2.0)) as u8;
-            let b = (150.0 - 110.0 * t) as u8;
-            out(format!("\x1b[48;2;{r};{g};{b}m").as_bytes());
-            if band == 2 && col > start && (col - start) as usize <= title.len() {
-                let ch = title.as_bytes()[(col - start - 1) as usize];
-                out(b"\x1b[1;38;2;255;248;236m");
-                out(&[ch]);
+            let sweep = (-((t - (phase * 0.45).fract() * 1.6 + 0.3) * 6.0).powi(2)).exp();
+            let edge = if band == 2 { 1.0 } else { 0.62 };
+            let c = mix(motion::scale(neon(0.05 + t * 0.55 + phase * 0.05), 0.55 * edge), WHITE, sweep * 0.35);
+            let [r, g, b] = c.map(|v| (v.clamp(0.0, 1.0) * 255.0) as u8);
+            line.push_str(&format!("\x1b[48;2;{r};{g};{b}m"));
+            if band == 2 && col > start && usize::from(col - start) <= spaced.len() {
+                line.push_str("\x1b[1;38;2;255;248;236m");
+                line.push(spaced[usize::from(col - start - 1)] as char);
             } else {
-                out(b" ");
+                line.push(' ');
             }
         }
-        out(b"\x1b[0m");
+        line.push_str("\x1b[0m");
+        out(line.as_bytes());
     }
 }
 
@@ -669,10 +866,10 @@ fn scene_sixel(rx: &Receiver<Vec<u8>>, fit: Fit) -> bool {
     // while the plasma is drawn and is not cleared early.
     let (w, h) = fit.picture(0.50, 0.50, 480, 240);
     let (w, h, _) = clamp_in_cell_pixels(fit, 5, w, h);
-    let rgba = plasma(w, h);
+    let rgba = stills::synthwave(w, h);
     let sixel = encode_sixel(w, h, &rgba);
     retire();
-    title("DCS sixel", "a full-colour plasma, 64 colours, ordered dither");
+    title("DCS sixel", "a synthwave sunset in 252 colour registers, ordered dither");
     cup(5, 2);
     out(&sixel);
     // The sixel is in-cell: a later write on its rows hides those cells.
@@ -801,17 +998,17 @@ fn scene_placeholders(rx: &Receiver<Vec<u8>>, fit: Fit) -> bool {
 fn scene_osc1337(rx: &Receiver<Vec<u8>>, fit: Fit) -> bool {
     let (c, r) = fit.cell_box(0.50, 0.62);
     let (c, r, _) = in_cell_span(fit, 5, c, r);
-    let w = (c * fit.cell_w).clamp(1, 720);
-    let h = (r * fit.cell_h).clamp(1, 480);
-    let rgba = sphere(w, h);
+    let w = (c * fit.cell_w).clamp(1, 960);
+    let h = (r * fit.cell_h).clamp(1, 640);
+    let rgba = stills::raytrace(w, h);
     let bmp = write_bmp(w, h, &rgba);
-    let name = b64(b"sphere.bmp");
+    let name = b64(b"raytrace.bmp");
     let record = format!(
         "\x1b]1337;File=name={name};inline=1;width={c};height={r};preserveAspectRatio=1:{}\x07",
         b64(&bmp)
     );
     retire();
-    title("OSC 1337", "a lit sphere, specular highlight, gradient sky");
+    title("OSC 1337", "ray traced: a mirror ball, gloss, soft shadows, a reflecting floor at sunset");
     cup(5, 2);
     out(record.as_bytes());
     // Inline images are in-cell. The caption goes below the cell
@@ -821,7 +1018,7 @@ fn scene_osc1337(rx: &Receiver<Vec<u8>>, fit: Fit) -> bool {
         5,
         r,
         fit.rows.saturating_sub(1).max(1),
-        "inline BMP, sized from the window",
+        "inline 24-bit BMP, four rays a pixel, sized from the window",
     );
     hold(rx, HOLD_OSC)
 }
@@ -857,124 +1054,280 @@ fn scene_animation(rx: &Receiver<Vec<u8>>, fit: Fit) -> bool {
     hold(rx, HOLD_ANIM)
 }
 
-fn scene_glass(rx: &Receiver<Vec<u8>>, fit: Fit) -> bool {
-    if scene_glow(rx, fit) || scene_particles(rx, fit) || scene_prim(rx, fit) {
-        return true;
+/// One line of a `group` payload.
+fn push_record(records: &mut String, record: &str) {
+    if !records.is_empty() {
+        records.push('\n');
     }
-    if turn_cube(rx, fit) || animate_group(rx, fit) || scene_chart(rx, fit) {
-        return true;
+    records.push_str(record);
+}
+
+/// A window-pinned layer box in cells, standing flat on the screen: a
+/// layer left on the floor is laid on the stage's tilted floor instead.
+fn cells(x: f32, y: f32, w: f32, h: f32) -> String {
+    format!("stand=screen;anchor=window;at={x:.2},{y:.2},{w:.2},{h:.2}")
+}
+
+/// The seven solids round the ring at `t`, and a light under each, as
+/// group records. A solid on the near half rides over the text (z > 0);
+/// on the far half it passes under it.
+fn ring_records(fit: Fit, t: f32, cx: f32, cy: f32, spread: f32, size: f32) -> String {
+    let mut records = String::new();
+    for i in 0..7usize {
+        let (ax, ay, near) = motion::ring(i, t);
+        let color = hex(neon(i as f32 / 7.0));
+        let w = size * (1.0 + 0.38 * near);
+        let h = fit.square(w);
+        let x = cx + ax * spread - w / 2.0;
+        let y = cy + ay * fit.square(spread) - h / 2.0;
+        let z = if near > 0.0 { 3 } else { -3 };
+        let o = 0.62 + 0.38 * (near + 1.0) / 2.0;
+        push_record(
+            &mut records,
+            &format!(
+                "layer;id={};k=prim;shape={i};c={color};speed=0.8;phase={:.2};o={o:.2};z={z};{}",
+                40 + i,
+                i as f32 * 0.9,
+                cells(x, y, w, h)
+            ),
+        );
+        let g = 2.3;
+        push_record(
+            &mut records,
+            &format!(
+                "layer;id={};k=glow;c={color};add=1;o={:.2};z={};{}",
+                50 + i,
+                0.22 + 0.30 * (near + 1.0) / 2.0,
+                z - 1,
+                cells(x - w * (g - 1.0) / 2.0, y - h * (g - 1.0) / 2.0, w * g, h * g)
+            ),
+        );
     }
-    if scene_video(rx, fit) {
-        return true;
+    records
+}
+
+fn scene_prims(rx: &Receiver<Vec<u8>>, fit: Fit) -> bool {
+    retire();
+    title(
+        "glass dialect: lit solids",
+        "seven ray-marched solids orbit the text; the far half of the orbit passes under it",
+    );
+    let (cols, rows) = (fit.cols_f(), fit.rows_f());
+    let lines = [
+        "This paragraph is ordinary terminal text.",
+        "The solids are k=prim layers, lit and turning on the GPU;",
+        "each frame one group op moves all fourteen layers at once.",
+        "Near the eye a solid's z is above the text, far from it below.",
+    ];
+    let mid = (rows * 0.52) as u16;
+    for (i, line) in lines.iter().enumerate() {
+        let col = (fit.cols.saturating_sub(line.len() as u16) / 2).max(1);
+        cup(mid.saturating_sub(2) + i as u16, col);
+        styled(b"\x1b[38;2;236;232;220m");
+        out(line.as_bytes());
+        styled(b"\x1b[0m");
     }
-    scene_close(rx, fit)
+    glass(&format!(
+        "layer;id=60;k=glow;c=5a30d0;o=0.55;add=1;z=-6;{}",
+        cells(cols * 0.15, rows * 0.18, cols * 0.70, rows * 0.70)
+    ));
+    glass(&format!(
+        "layer;id=61;k=particles;c=ffb060;n=260;size=3;life=4;rise=28;sway=16;seed=3;z=-5;{}",
+        cells(0.0, rows * 0.55, cols, rows * 0.45)
+    ));
+    glass(&format!(
+        "layer;id=62;k=particles;c=a080ff;n=160;size=2;life=5;rise=14;sway=24;seed=9;z=-5;{}",
+        cells(0.0, rows * 0.10, cols, rows * 0.80)
+    ));
+    caption(fit, "k=prim  k=glow add=1  k=particles   z<0 under the text, z>0 over it");
+    let size = (cols * 0.085).max(6.0);
+    animate(rx, "prims", HOLD_PRIMS, SCENE_FPS, |t| {
+        let records = ring_records(fit, t, cols * 0.5, rows * 0.52, cols * 0.37, size);
+        glass(&group_op(2, 14, &b64(records.as_bytes())));
+    })
 }
 
-fn scene_glow(rx: &Receiver<Vec<u8>>, fit: Fit) -> bool {
+fn scene_cloud(rx: &Receiver<Vec<u8>>, fit: Fit) -> bool {
     retire();
-    title("glass dialect", "a soft glow");
-    let (c, r) = fit.cell_box(0.40, 0.55);
-    let x = (u32::from(fit.cols).saturating_sub(c) / 2).max(1);
-    glass(&layer_glow(1, "ffb040", "0.85", &format!("{x},5,{c},{r}")));
-    caption(fit, "k=glow");
-    hold(rx, HOLD_GLOW)
-}
-
-fn scene_particles(rx: &Receiver<Vec<u8>>, fit: Fit) -> bool {
-    retire();
-    title("glass dialect", "bright particles");
-    let (c, r) = fit.cell_box(0.55, 0.40);
-    let x = (u32::from(fit.cols).saturating_sub(c) / 2).max(1);
-    glass(&layer_particles(2, "ffb040", 280, 8, "2.6", 42, 22, &format!("{x},6,{c},{r}")));
-    glass(&layer_particles(3, "ff6030", 180, 10, "2.2", 28, 16, &format!("{x},8,{c},{r}")));
-    glass(&layer_particles(4, "fff2c0", 140, 6, "1.8", 50, 30, &format!("{x},7,{c},{r}")));
-    caption(fit, "warm, larger, and more of them");
-    hold(rx, HOLD_PARTICLES)
-}
-
-fn scene_prim(rx: &Receiver<Vec<u8>>, fit: Fit) -> bool {
-    retire();
-    title("glass dialect", "lit shapes");
-    let w = (u32::from(fit.cols) as f32 * 0.16).round() as u32;
-    let w = w.clamp(8, u32::from(fit.cols) / 3);
-    let h = (w as f32 * 0.6).round() as u32;
-    let h = h.clamp(4, u32::from(fit.rows).saturating_sub(8));
-    glass(&layer_prim(5, 0, "ff8050", &format!("8,6,{w},{h}")));
-    glass(&layer_prim(6, 1, "70c8ff", &format!("12,8,{w},{h}")));
-    caption(fit, "rect and circle");
-    hold(rx, HOLD_PRIM)
-}
-
-fn turn_cube(rx: &Receiver<Vec<u8>>, fit: Fit) -> bool {
-    retire();
-    title("glass dialect", "a lit cube, turning the whole time");
-    let (c, r) = fit.cell_box(0.46, 0.75);
-    let r = r.min(u32::from(fit.rows).saturating_sub(6)).max(6);
-    let x = (u32::from(fit.cols).saturating_sub(c) / 2).max(1);
-    let s = (c * fit.cell_w).clamp(160, 1024);
-    let v = (r * fit.cell_h).clamp(120, 1024);
-    let start = Instant::now();
-    let mut frame = 0u32;
-    while start.elapsed() < Duration::from_millis(HOLD_CUBE) {
-        if quit(rx) {
-            return true;
+    title(
+        "glass dialect: a group of 720 lights",
+        "one group op a frame replaces every layer whole: a cloud that becomes five shapes",
+    );
+    let (cols, rows) = (fit.cols_f(), fit.rows_f());
+    let (cw, ch) = (fit.cell_w.max(1) as f32, fit.cell_h.max(1) as f32);
+    let unit = (fit.screen_w() as f32 * 0.24).min(fit.screen_h() as f32 * 0.30);
+    let (cx, cy) = (cols * cw * 0.5, rows * ch * 0.54);
+    glass(&format!(
+        "layer;id=60;k=glow;c=2a1460;o=0.7;add=1;z=-6;{}",
+        cells(cols * 0.2, rows * 0.15, cols * 0.6, rows * 0.8)
+    ));
+    caption(fit, "k=glow add=1, sized and faded by depth; the shape eases and swirls into the next");
+    let mut shown = usize::MAX;
+    animate(rx, "cloud", HOLD_CLOUD, SCENE_FPS, |t| {
+        let mut records = String::with_capacity(CLOUD_POINTS * 100);
+        let mut held = 0;
+        for i in 0..CLOUD_POINTS {
+            let (p, hue, shape) = motion::cloud(i, CLOUD_POINTS, t);
+            held = shape;
+            let k = 4.4 / (4.4 - p.z);
+            let near = ((p.z + 1.6) / 3.2).clamp(0.0, 1.0);
+            let x = cx + p.x * k * unit;
+            let y = cy - p.y * k * unit;
+            let size = (14.0 + 30.0 * near * near) * k;
+            let c = mix(neon(hue + t * 0.04), WHITE, 0.10 + 0.40 * near * near);
+            let o = 0.18 + 0.62 * near;
+            push_record(
+                &mut records,
+                &format!(
+                    "layer;id={};k=glow;c={};o={o:.2};add=1;z=-1;{}",
+                    100 + i,
+                    hex(c),
+                    cells((x - size / 2.0) / cw, (y - size / 2.0) / ch, size / cw, size / ch)
+                ),
+            );
         }
-        let half = frame as f32 * 0.12;
-        glass(&scene_op(8, s, v, &format!("{x},5,{c},{r}"), &b64(&scene_bytes(half))));
-        frame += 1;
-        if hold(rx, 33) {
-            return true;
+        glass(&group_op(3, CLOUD_POINTS as u32, &b64(records.as_bytes())));
+        if held != shown {
+            shown = held;
+            let name = motion::CLOUD_NAMES[held];
+            cup(4, 3);
+            out(b"\x1b[2K");
+            styled(b"\x1b[1;38;2;255;244;220m");
+            out(name.as_bytes());
+            styled(b"\x1b[0m\x1b[38;2;150;140;190m");
+            out(format!("   {} of {}", held + 1, motion::CLOUD_NAMES.len()).as_bytes());
+            styled(b"\x1b[0m");
         }
-    }
-    false
+    })
 }
 
-fn scene_bytes(half: f32) -> Vec<u8> {
-    let (sy, sw) = half.sin_cos();
+fn scene_place(id: u32, st: Stage3, z: i32, o: f32, payload: &str) -> String {
     format!(
-        r#"{{"v":1,"scene":{{"camera":{{"eye":[2.2,1.6,2.6]}},"nodes":[{{"id":1,"mesh":"cube","color":[0.95,0.55,0.22,1],"lit":true,"rot":[0,{sy:.4},0,{sw:.4}]}}]}}}}"#
+        "scene;id={id};s={};v={};at={:.2},{:.2},{:.2},{:.2};anchor=window;z={z};o={o:.2};{payload}",
+        st.s, st.v, st.x, st.y, st.c, st.r
     )
-    .into_bytes()
 }
 
-fn animate_group(rx: &Receiver<Vec<u8>>, fit: Fit) -> bool {
+fn scene_tesseract(rx: &Receiver<Vec<u8>>, fit: Fit) -> bool {
     retire();
-    title("glass dialect", "coloured layers orbiting the caption");
-    let colors = ["ff5a4a", "ffb020", "ffe070", "7dffb0", "60c8ff", "c080ff", "ff70c0"];
-    let cx = f32::from(fit.cols) * 0.50;
-    let cy = f32::from(fit.rows) * 0.46;
-    let radius = (f32::from(fit.cols) * 0.18).max(8.0);
-    cup(cy as u16, (cx as u16).saturating_sub(4));
-    styled(b"\x1b[1;38;2;255;244;220m");
-    out(b"orbit");
+    title(
+        "glass dialect: scene",
+        "a tesseract turning through the fourth dimension: neon lines, soft lights, faint glass",
+    );
+    let (cols, rows) = (fit.cols_f(), fit.rows_f());
+    let st = fit.stage_fit(cols * 0.5, 3.0, rows - 5.0, cols * 0.96, 1.7);
+    glass(&format!(
+        "layer;id=60;k=glow;c=6020c0;o=0.6;add=1;z=-6;{}",
+        cells(cols * 0.22, rows * 0.12, cols * 0.56, rows * 0.82)
+    ));
+    glass(&format!(
+        "layer;id=61;k=particles;c=80c8ff;n=180;size=2;life=6;rise=-10;sway=30;seed=5;z=-5;{}",
+        cells(0.0, 3.0, cols, rows - 4.0)
+    ));
+    let readout = |t: f32| {
+        let [xw, yz, zw] = motion::tesseract_angles(t);
+        for (i, (plane, angle)) in [("xw", xw), ("yz", yz), ("zw", zw)].into_iter().enumerate() {
+            cup(5 + i as u16, 3);
+            styled(b"\x1b[38;2;120;200;255m");
+            out(plane.as_bytes());
+            styled(b"\x1b[38;2;236;232;220m");
+            out(format!(" {angle:5.2} rad ").as_bytes());
+            let bar = ((angle / std::f32::consts::TAU) * 12.0) as usize;
+            styled(b"\x1b[38;2;255;80;180m");
+            out("━".repeat(bar).as_bytes());
+            styled(b"\x1b[38;2;70;60;110m");
+            out("━".repeat(12 - bar.min(12)).as_bytes());
+            styled(b"\x1b[0m");
+        }
+    };
+    cup(9, 3);
+    styled(b"\x1b[2m");
+    out(b"16 corners  32 edges  24 faces");
     styled(b"\x1b[0m");
-    let start = Instant::now();
+    caption(fit, "scene: one inline mesh a frame, sorted far to near, rendered at twice its size");
     let mut frame = 0u32;
-    while start.elapsed() < Duration::from_millis(HOLD_GROUP) {
-        if quit(rx) {
-            return true;
+    animate(rx, "tesseract", HOLD_TESSERACT, SCENE_FPS, |t| {
+        glass(&scene_place(8, st, 1, 1.0, &b64(&motion::tesseract(t))));
+        if frame.is_multiple_of(3) {
+            readout(t);
         }
-        let mut records = String::new();
-        for (i, color) in colors.iter().enumerate() {
-            let ang = frame as f32 * 0.22 + i as f32 * std::f32::consts::TAU / colors.len() as f32;
-            let x = (cx + ang.cos() * radius - 3.0).max(1.0);
-            let y = (cy + ang.sin() * radius * 0.40 - 1.0).max(4.0);
-            if i > 0 {
-                records.push('\n');
-            }
-            records.push_str(&layer_solid(
-                20 + i as u32,
-                color,
-                &format!("{x:.1},{y:.1},6,2"),
-            ));
-        }
-        glass(&group_op(1, colors.len() as u32, &b64(records.as_bytes())));
         frame += 1;
-        if hold(rx, 40) {
-            return true;
-        }
+    })
+}
+
+fn scene_knot(rx: &Receiver<Vec<u8>>, fit: Fit) -> bool {
+    retire();
+    title(
+        "glass dialect: scene",
+        "glass tubing with a neon filament; the text behind it shows through the glass",
+    );
+    // The page behind the knot is the op that draws it, written as text.
+    let words = "glass;scene;id=9;anchor=window;z=2  ·  ";
+    let width = usize::from(fit.cols.saturating_sub(2));
+    for row in 4..fit.rows.saturating_sub(1) {
+        cup(row, 2);
+        let shift = (usize::from(row) * 7) % words.len();
+        let text: String = words.chars().cycle().skip(shift).take(width).collect();
+        let tone = 70 + (u32::from(row) * 9 % 50);
+        styled(format!("\x1b[38;2;{};{};{}m", tone, tone - 10, tone + 60).as_bytes());
+        out(text.as_bytes());
     }
-    false
+    styled(b"\x1b[0m");
+    let (cols, rows) = (fit.cols_f(), fit.rows_f());
+    let st = fit.stage_fit(cols * 0.5, 3.0, rows - 5.0, cols * 0.96, 1.55);
+    caption(fit, "an opaque filament writes depth; the glass blends over it, fresnel-bright at the edges");
+    animate(rx, "knot", HOLD_KNOT, SCENE_FPS, |t| {
+        glass(&scene_place(9, st, 2, 1.0, &b64(&motion::knot(t))));
+    })
+}
+
+fn scene_city(rx: &Receiver<Vec<u8>>, fit: Fit) -> bool {
+    retire();
+    title(
+        "glass dialect: scene",
+        "an equaliser city: 144 columns on a wave, risen through a sheet of tinted glass",
+    );
+    let (cols, rows) = (fit.cols_f(), fit.rows_f());
+    let st = fit.stage_fit(cols * 0.5, 3.0, rows - 5.0, cols * 0.96, 1.75);
+    glass(&format!(
+        "layer;id=60;k=glow;c=ff3c90;o=0.40;add=1;z=-6;{}",
+        cells(cols * 0.1, rows * 0.30, cols * 0.8, rows * 0.55)
+    ));
+    glass(&format!(
+        "layer;id=61;k=glow;c=3060ff;o=0.35;add=1;z=-6;{}",
+        cells(cols * 0.25, rows * 0.05, cols * 0.5, rows * 0.5)
+    ));
+    caption(fit, "opaque columns write depth, so the glass sheet cuts through each one pixel by pixel");
+    animate(rx, "city", HOLD_CITY, SCENE_FPS, |t| {
+        glass(&scene_place(10, st, 1, 1.0, &b64(&motion::city(t))));
+    })
+}
+
+fn scene_orrery(rx: &Receiver<Vec<u8>>, fit: Fit) -> bool {
+    retire();
+    title(
+        "glass dialect: scene, under the text",
+        "an orrery behind the terminal: planets lit from their sun, orbits drawn as comet tails",
+    );
+    let (cols, rows) = (fit.cols_f(), fit.rows_f());
+    let st = fit.stage_fit(cols * 0.5, 2.5, rows - 3.5, cols, 2.1);
+    let lines = [
+        ("this text is the terminal's own", "\x1b[1;38;2;255;244;220m"),
+        ("the scene sits at z=-2, under it", "\x1b[38;2;236;232;220m"),
+        ("six planets, a moon, a ringed giant", "\x1b[38;2;236;232;220m"),
+        ("day side, night side, a rim of air", "\x1b[38;2;236;232;220m"),
+        ("the ring is translucent; so are the orbits", "\x1b[38;2;236;232;220m"),
+    ];
+    for (i, (line, sgr)) in lines.iter().enumerate() {
+        cup(5 + i as u16 * 2, 3);
+        styled(sgr.as_bytes());
+        out(line.as_bytes());
+        styled(b"\x1b[0m");
+    }
+    caption(fit, "lit on the CPU from the sun's place, so the terminator turns as each planet goes round");
+    animate(rx, "orrery", HOLD_ORRERY, SCENE_FPS, |t| {
+        glass(&scene_place(11, st, -2, 1.0, &b64(&motion::orrery(t + 6.0))));
+    })
 }
 
 fn scene_chart(rx: &Receiver<Vec<u8>>, fit: Fit) -> bool {
@@ -996,7 +1349,7 @@ fn scene_video(rx: &Receiver<Vec<u8>>, fit: Fit) -> bool {
     // and the panel is not opened onto a cleared screen.
     let first = video_frame(0, VIDEO_FRAMES, panel_w, panel_h);
     retire();
-    title("glass dialect", "a video showcase, plasma across the frame");
+    title("glass dialect", "a video showcase: a neon tunnel, ninety frames");
     // No id: with id, showcase shows a picture. A video panel is size only.
     // frame takes no id here — id would name an uploaded picture.
     open_showcase(&showcase_video(panel_w, panel_h));
@@ -1028,72 +1381,52 @@ fn scene_close(rx: &Receiver<Vec<u8>>, fit: Fit) -> bool {
     clear_screen();
     title("Sampler", CLOSING);
     caption(fit, "showcase closed");
-    if hold(rx, HOLD_CLOSE) {
-        return true;
-    }
-    scene_finale(rx, fit)
+    hold(rx, HOLD_CLOSE)
 }
 
+/// Everything at once, stacked: an orrery filling the window under the
+/// text, the glass knot over it, the solids orbiting the knot, lights and
+/// dust behind, the title band shimmering, the closing line typed out.
 fn scene_finale(rx: &Receiver<Vec<u8>>, fit: Fit) -> bool {
-    let (c, r) = fit.cell_box(0.58, 0.55);
-    let r = r.min(u32::from(fit.rows).saturating_sub(2)).max(4);
-    let w = (c * fit.cell_w).clamp(1, 640);
-    let h = (r * fit.cell_h).clamp(1, 360);
-    let pic = plasma(w, h);
-    clear_screen();
-    cup(3, 2);
-    apc(
-        &format!("a=T,i=9,z=-1,f=32,q=2,s={w},v={h},c={c},r={r},C=1"),
-        &pic,
-    );
-    let line = "glass";
-    let x = fit.cols.saturating_sub(line.len() as u16) / 2;
-    cup(4, x.max(1));
-    styled(b"\x1b[1;38;2;255;248;236m");
-    for ch in line.chars() {
-        out(format!("{ch} ").as_bytes());
-    }
-    styled(b"\x1b[0m");
-    let cube_c = (u32::from(fit.cols) as f32 * 0.28) as u32;
-    let cube_c = cube_c.clamp(10, u32::from(fit.cols) / 2);
-    let cube_r = (cube_c as f32 * 0.55) as u32;
-    let cube_r = cube_r.clamp(6, u32::from(fit.rows).saturating_sub(6));
-    let cube_x = u32::from(fit.cols).saturating_sub(cube_c).saturating_sub(2).max(1);
-    let s = (cube_c * fit.cell_w).clamp(160, 800);
-    let v = (cube_r * fit.cell_h).clamp(120, 640);
-    glass(&layer_glow(
-        30,
-        "ffb050",
-        "0.7",
-        &format!(
-            "4,3,{},{}",
-            (u32::from(fit.cols) / 3).max(8),
-            (u32::from(fit.rows) / 4).max(4)
-        ),
+    retire();
+    let (cols, rows) = (fit.cols_f(), fit.rows_f());
+    let back = fit.stage(0.0, 3.0, cols, rows - 3.0);
+    let front = fit.stage_fit(cols * 0.5, 4.0, rows - 7.0, cols * 0.62, 1.45);
+    glass(&format!(
+        "layer;id=60;k=glow;c=7030e0;o=0.5;add=1;z=-7;{}",
+        cells(cols * 0.05, rows * 0.2, cols * 0.5, rows * 0.7)
     ));
-    let (pc, pr) = fit.cell_box(0.50, 0.30);
-    glass(&layer_particles(31, "ffc060", 240, 7, "2.4", 36, 20, &format!("2,8,{pc},{pr}")));
-    glass(&layer_particles(32, "fff0c8", 120, 5, "1.6", 48, 26, &format!("4,10,{pc},{pr}")));
-    let start = Instant::now();
-    let mut frame = 0u32;
-    while start.elapsed() < Duration::from_millis(HOLD_FINALE) {
-        if quit(rx) {
-            return true;
+    glass(&format!(
+        "layer;id=61;k=glow;c=ff3c90;o=0.4;add=1;z=-7;{}",
+        cells(cols * 0.45, rows * 0.25, cols * 0.5, rows * 0.7)
+    ));
+    glass(&format!(
+        "layer;id=62;k=particles;c=ffc070;n=300;size=3;life=5;rise=22;sway=20;seed=11;z=-6;{}",
+        cells(0.0, rows * 0.4, cols, rows * 0.6)
+    ));
+    glass(&format!(
+        "layer;id=63;k=particles;c=a0d8ff;n=200;size=2;life=6;rise=-8;sway=30;seed=12;z=-6;{}",
+        cells(0.0, 3.0, cols, rows - 3.0)
+    ));
+    let size = (cols * 0.06).max(5.0);
+    let typed_row = fit.rows.saturating_sub(1).max(1);
+    let typed_col = (fit.cols.saturating_sub(CLOSING.len() as u16) / 2).max(1);
+    let mut typed = 0usize;
+    animate(rx, "finale", HOLD_FINALE, SCENE_FPS, |t| {
+        glass(&scene_place(11, back, -2, 0.85, &b64(&motion::orrery(t + 20.0))));
+        glass(&scene_place(9, front, 2, 1.0, &b64(&motion::knot(t + 3.0))));
+        let records = ring_records(fit, t, cols * 0.5, rows * 0.55, cols * 0.33, size);
+        glass(&group_op(2, 14, &b64(records.as_bytes())));
+        gradient_title(fit, "glass", t);
+        let due = (((t - 1.5) * 18.0).max(0.0) as usize).min(CLOSING.len());
+        if due > typed {
+            cup(typed_row, typed_col + typed as u16);
+            styled(b"\x1b[1;38;2;255;244;220m");
+            out(&CLOSING.as_bytes()[typed..due]);
+            styled(b"\x1b[0m");
+            typed = due;
         }
-        let half = frame as f32 * 0.10;
-        glass(&scene_op(
-            8,
-            s,
-            v,
-            &format!("{cube_x},6,{cube_c},{cube_r}"),
-            &b64(&scene_bytes(half)),
-        ));
-        frame += 1;
-        if hold(rx, 33) {
-            return true;
-        }
-    }
-    false
+    })
 }
 
 fn title(head: &str, sub: &str) {
@@ -1154,32 +1487,6 @@ fn picture_op(id: u32, format: u32, s: u32, v: u32, payload: &str) -> String {
     format!("picture;id={id};f={format};s={s};v={v};{payload}")
 }
 
-fn layer_glow(id: u32, color: &str, alpha: &str, at: &str) -> String {
-    format!("layer;id={id};k=glow;c={color};a={alpha};at={at}")
-}
-
-#[allow(clippy::too_many_arguments)]
-fn layer_particles(
-    id: u32,
-    color: &str,
-    n: u32,
-    size: u32,
-    life: &str,
-    rise: u32,
-    sway: u32,
-    at: &str,
-) -> String {
-    format!("layer;id={id};k=particles;c={color};n={n};size={size};life={life};rise={rise};sway={sway};at={at}")
-}
-
-fn layer_prim(id: u32, shape: u32, color: &str, at: &str) -> String {
-    format!("layer;id={id};k=prim;shape={shape};c={color};at={at}")
-}
-
-fn layer_solid(id: u32, color: &str, at: &str) -> String {
-    format!("layer;id={id};k=solid;c={color};at={at}")
-}
-
 fn group_op(g: u32, n: u32, payload: &str) -> String {
     format!("group;g={g};n={n};{payload}")
 }
@@ -1195,10 +1502,6 @@ fn showcase_video(s: u32, v: u32) -> String {
 
 fn showcase_close_op() -> String {
     "showcase;close=1".to_string()
-}
-
-fn scene_op(id: u32, s: u32, v: u32, at: &str, payload: &str) -> String {
-    format!("scene;id={id};s={s};v={v};at={at};{payload}")
 }
 
 fn frame_op(format: u32, s: u32, v: u32, payload: &str) -> String {
@@ -1421,61 +1724,6 @@ fn apc(keys: &str, payload: &[u8]) {
 }
 
 
-// Ordered dither to 4 levels a channel: 64 colours. The threshold is a
-// 4×4 Bayer matrix, scaled to the 64-wide quantisation step.
-const BAYER4: [i32; 16] = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
-
-fn quant_channel(value: u8, x: u32, y: u32) -> u8 {
-    let t = BAYER4[((y & 3) * 4 + (x & 3)) as usize];
-    let adjusted = i32::from(value) + t * 4 - 30;
-    let level = (adjusted.clamp(0, 255) as u8) / 64;
-    level * 85
-}
-
-fn dither64(rgba: &[u8], w: u32, h: u32) -> Vec<u8> {
-    let w = w.max(1);
-    let mut out = Vec::with_capacity(rgba.len());
-    for y in 0..h {
-        for x in 0..w {
-            let i = ((y * w + x) * 4) as usize;
-            if i + 3 >= rgba.len() {
-                break;
-            }
-            out.extend_from_slice(&[
-                quant_channel(rgba[i], x, y),
-                quant_channel(rgba[i + 1], x, y),
-                quant_channel(rgba[i + 2], x, y),
-                rgba[i + 3],
-            ]);
-        }
-    }
-    out
-}
-
-/// A rich plasma, then ordered-dithered to 64 colours so a sixel keeps
-/// the dither instead of banding. Colour is mixed in `f32`: a `u8`
-/// multiply would saturate before the divide and collapse the picture.
-fn plasma(w: u32, h: u32) -> Vec<u8> {
-    let w = w.max(1);
-    let h = h.max(1);
-    let mut rgba = Vec::with_capacity((w as usize).saturating_mul(h as usize).saturating_mul(4));
-    for y in 0..h {
-        for x in 0..w {
-            let nx = x as f32 / w as f32;
-            let ny = y as f32 / h as f32;
-            let v = (nx * 8.0).sin()
-                + (ny * 6.5).sin()
-                + ((nx + ny) * 5.0).sin() * 0.7
-                + (nx * 12.0 - ny * 4.0).sin() * 0.5;
-            let r = (128.0 + 120.0 * (v * 0.7).sin() + 40.0 * nx).clamp(0.0, 255.0);
-            let g = (110.0 + 100.0 * (v * 0.5 + ny * 4.0).sin() + 30.0 * ny).clamp(0.0, 255.0);
-            let b = (140.0 + 110.0 * (nx * 7.0 + v).cos() - 20.0 * ny).clamp(0.0, 255.0);
-            rgba.extend_from_slice(&[r as u8, g as u8, b as u8, 255]);
-        }
-    }
-    dither64(&rgba, w, h)
-}
-
 /// A radial glow. Alpha is 228 at the centre and 0 at the corner.
 fn glow(w: u32, h: u32) -> Vec<u8> {
     let w = w.max(1);
@@ -1491,56 +1739,6 @@ fn glow(w: u32, h: u32) -> Vec<u8> {
             let alpha = (fall.powf(1.7) * 228.0).round() as u8;
             let g = (160.0 + 50.0 * fall).clamp(0.0, 255.0) as u8;
             rgba.extend_from_slice(&[255, g, 64, alpha]);
-        }
-    }
-    rgba
-}
-
-/// A lit sphere with a specular highlight over a gradient sky. Lighting
-/// is in `f32`, not a saturating `u8` multiply.
-fn sphere(w: u32, h: u32) -> Vec<u8> {
-    let w = w.max(1);
-    let h = h.max(1);
-    let cx = w as f32 * 0.50;
-    let cy = h as f32 * 0.52;
-    let rad = (w.min(h) as f32) * 0.34;
-    let (lx, ly, lz) = {
-        let (x, y, z) = (-0.45f32, -0.55, 0.70);
-        let len = (x * x + y * y + z * z).sqrt().max(0.001);
-        (x / len, y / len, z / len)
-    };
-    let mut rgba = Vec::with_capacity((w as usize).saturating_mul(h as usize).saturating_mul(4));
-    for y in 0..h {
-        for x in 0..w {
-            let t = y as f32 / h as f32;
-            let sky = [
-                (36.0 + 50.0 * (1.0 - t)) as u8,
-                (48.0 + 80.0 * (1.0 - t)) as u8,
-                (110.0 + 90.0 * (1.0 - t)) as u8,
-                255,
-            ];
-            let dx = x as f32 - cx;
-            let dy = y as f32 - cy;
-            let d2 = dx * dx + dy * dy;
-            if rad < 1.0 || d2 > rad * rad {
-                rgba.extend_from_slice(&sky);
-                continue;
-            }
-            let dz = (rad * rad - d2).sqrt();
-            let nx = dx / rad;
-            let ny = dy / rad;
-            let nz = dz / rad;
-            let ndotl = (nx * lx + ny * ly + nz * lz).max(0.0);
-            let rx = 2.0 * ndotl * nx - lx;
-            let ry = 2.0 * ndotl * ny - ly;
-            let rz = 2.0 * ndotl * nz - lz;
-            let spec = rz.max(0.0).powf(28.0);
-            let shade = 0.16 + 0.74 * ndotl;
-            let r = (220.0 * shade + 255.0 * spec).min(255.0) as u8;
-            let g = (140.0 * shade + 230.0 * spec).min(255.0) as u8;
-            let b = (70.0 * shade + 200.0 * spec).min(255.0) as u8;
-            let _ = (rx, ry);
-            rgba.extend_from_slice(&[r, g, b, 255]);
         }
     }
     rgba
@@ -1610,27 +1808,9 @@ fn hue(frame: usize, frames: usize) -> (u8, u8, u8) {
     (r, g, b)
 }
 
-/// Rotating colour bars across the whole frame, so a video showcase is
-/// not an empty panel with one stripe.
+/// One frame of the video showcase: the neon tunnel, flying.
 fn video_frame(i: u64, frames: u64, w: u32, h: u32) -> Vec<u8> {
-    let w = w.max(1);
-    let h = h.max(1);
-    let frames = frames.max(1);
-    let shift = i as f32 / frames as f32;
-    let mut rgba = Vec::with_capacity((w as usize).saturating_mul(h as usize).saturating_mul(4));
-    for y in 0..h {
-        for x in 0..w {
-            let nx = x as f32 / w as f32;
-            let ny = y as f32 / h as f32;
-            let bars = ((nx * 8.0 + shift * std::f32::consts::TAU).sin() * 0.5 + 0.5).clamp(0.0, 1.0);
-            let wash = (ny * 3.0 + shift * 4.0).sin() * 0.5 + 0.5;
-            let r = (40.0 + 200.0 * bars + 15.0 * wash).clamp(0.0, 255.0) as u8;
-            let g = (30.0 + 80.0 * wash + 40.0 * (1.0 - bars)).clamp(0.0, 255.0) as u8;
-            let b = (80.0 + 140.0 * (1.0 - bars) * wash).clamp(0.0, 255.0) as u8;
-            rgba.extend_from_slice(&[r, g, b, 255]);
-        }
-    }
-    rgba
+    stills::tunnel(i, frames, w, h)
 }
 
 fn bar_chart(w: u32, h: u32) -> (Vec<u8>, String) {
@@ -1700,6 +1880,17 @@ fn checker(w: u32, h: u32) -> Vec<u8> {
     rgba
 }
 
+/// Levels a channel the sixel palette quantises to: 6 × 7 × 6 = 252
+/// registers, inside the 256 a sixel picture commonly gets.
+const SIXEL_LEVELS: [u32; 3] = [6, 7, 6];
+
+/// An 8×8 Bayer matrix: the ordered dither's thresholds, 0..64.
+const BAYER8: [u8; 64] = [
+    0, 32, 8, 40, 2, 34, 10, 42, 48, 16, 56, 24, 50, 18, 58, 26, 12, 44, 4, 36, 14, 46, 6, 38, 60, 28,
+    52, 20, 62, 30, 54, 22, 3, 35, 11, 43, 1, 33, 9, 41, 51, 19, 59, 27, 49, 17, 57, 25, 15, 47, 7, 39,
+    13, 45, 5, 37, 63, 31, 55, 23, 61, 29, 53, 21,
+];
+
 fn encode_sixel(w: u32, h: u32, rgba: &[u8]) -> Vec<u8> {
     let pixels = (w as usize).saturating_mul(h as usize);
     let (palette, index) = indexed(rgba, w, pixels);
@@ -1714,24 +1905,35 @@ fn encode_sixel(w: u32, h: u32, rgba: &[u8]) -> Vec<u8> {
         );
         out.extend_from_slice(format!("#{i};2;{pr};{pg};{pb}").as_bytes());
     }
+    // One pass a band builds every register's six-pixel columns at once,
+    // then each register that appears in the band is written as a row.
+    let w_us = w as usize;
+    let mut sixes = vec![0u8; palette.len() * w_us];
+    let mut used = vec![false; palette.len()];
     let mut y = 0u32;
     while y < h {
         let band = (h - y).min(6);
-        for (slot, _) in palette.iter().enumerate() {
-            if !band_has(&index, w, y, band, slot) {
+        sixes.fill(0);
+        used.fill(false);
+        for dy in 0..band {
+            let row = ((y + dy) as usize) * w_us;
+            for x in 0..w_us {
+                if let Some(slot) = index.get(row + x).copied().flatten() {
+                    let slot = usize::from(slot);
+                    sixes[slot * w_us + x] |= 1 << dy;
+                    used[slot] = true;
+                }
+            }
+        }
+        for slot in 0..palette.len() {
+            if !used[slot] {
                 continue;
             }
             out.extend_from_slice(format!("#{slot}").as_bytes());
+            let line = &sixes[slot * w_us..(slot + 1) * w_us];
             let mut run = 0u32;
             let mut prev = 0u8;
-            for x in 0..w {
-                let mut six = 0u8;
-                for dy in 0..band {
-                    let at = ((y + dy) * w + x) as usize;
-                    if index.get(at).copied().flatten() == Some(slot as u8) {
-                        six |= 1 << dy;
-                    }
-                }
+            for (x, six) in line.iter().copied().enumerate() {
                 if x > 0 && six == prev {
                     run += 1;
                 } else {
@@ -1752,6 +1954,8 @@ fn encode_sixel(w: u32, h: u32, rgba: &[u8]) -> Vec<u8> {
     out
 }
 
+/// Exact registers when the picture has 256 colours or fewer, otherwise
+/// the 252-register cube with an ordered dither.
 fn indexed(rgba: &[u8], width: u32, pixels: usize) -> (Vec<[u8; 3]>, Vec<Option<u8>>) {
     let mut colors: Vec<[u8; 3]> = Vec::new();
     let mut index = vec![None; pixels];
@@ -1763,7 +1967,7 @@ fn indexed(rgba: &[u8], width: u32, pixels: usize) -> (Vec<[u8; 3]>, Vec<Option<
         let rgb = [px[0], px[1], px[2]];
         if let Some(slot) = colors.iter().position(|c| *c == rgb) {
             index[i] = Some(slot as u8);
-        } else if colors.len() < 64 {
+        } else if colors.len() < 256 {
             index[i] = Some(colors.len() as u8);
             colors.push(rgb);
         } else {
@@ -1776,10 +1980,22 @@ fn indexed(rgba: &[u8], width: u32, pixels: usize) -> (Vec<[u8; 3]>, Vec<Option<
     (colors, index)
 }
 
+/// One channel to a level of `levels`, dithered by the threshold at
+/// `x, y`.
+fn dither_level(value: u8, levels: u32, x: u32, y: u32) -> u32 {
+    let step = 255.0 / (levels - 1) as f32;
+    let threshold = (f32::from(BAYER8[((y & 7) * 8 + (x & 7)) as usize]) + 0.5) / 64.0 - 0.5;
+    ((f32::from(value) / step + threshold).round() as i32).clamp(0, levels as i32 - 1) as u32
+}
+
 fn quantize(rgba: &[u8], width: u32, pixels: usize) -> (Vec<[u8; 3]>, Vec<Option<u8>>) {
     let width = width.max(1);
-    let mut palette: Vec<Option<[u8; 3]>> = vec![None; 64];
+    let [lr, lg, lb] = SIXEL_LEVELS;
+    let cube = (lr * lg * lb) as usize;
+    let mut slot_of = vec![None; cube];
+    let mut colors = Vec::new();
     let mut index = vec![None; pixels];
+    let value = |level: u32, levels: u32| ((level * 255) as f32 / (levels - 1) as f32).round() as u8;
     for i in 0..pixels {
         let px = &rgba[i * 4..i * 4 + 4];
         if px[3] < 16 {
@@ -1787,45 +2003,18 @@ fn quantize(rgba: &[u8], width: u32, pixels: usize) -> (Vec<[u8; 3]>, Vec<Option
         }
         let x = (i as u32) % width;
         let y = (i as u32) / width;
-        let key = usize::from(quant_channel(px[0], x, y) / 85) * 16
-            + usize::from(quant_channel(px[1], x, y) / 85) * 4
-            + usize::from(quant_channel(px[2], x, y) / 85);
-        let key = key.min(63);
-        if palette[key].is_none() {
-            let level = |ch: u8| quant_channel(ch, x, y);
-            palette[key] = Some([level(px[0]), level(px[1]), level(px[2])]);
-        }
-        index[i] = Some(key as u8);
-    }
-    let mut colors = Vec::new();
-    let mut remap = [None; 64];
-    for (key, color) in palette.into_iter().enumerate() {
-        if let Some(color) = color {
-            remap[key] = Some(colors.len() as u8);
-            colors.push(color);
-        }
+        let (r, g, b) = (dither_level(px[0], lr, x, y), dither_level(px[1], lg, x, y), dither_level(px[2], lb, x, y));
+        let key = ((r * lg + g) * lb + b) as usize;
+        let slot = *slot_of[key].get_or_insert_with(|| {
+            colors.push([value(r, lr), value(g, lg), value(b, lb)]);
+            (colors.len() - 1) as u8
+        });
+        index[i] = Some(slot);
     }
     if colors.is_empty() {
         colors.push([0, 0, 0]);
     }
-    for slot in &mut index {
-        if let Some(key) = slot {
-            *slot = remap[usize::from(*key)];
-        }
-    }
     (colors, index)
-}
-
-fn band_has(index: &[Option<u8>], w: u32, y: u32, band: u32, slot: usize) -> bool {
-    for dy in 0..band {
-        for x in 0..w {
-            let at = ((y + dy) * w + x) as usize;
-            if index.get(at).copied().flatten() == Some(slot as u8) {
-                return true;
-            }
-        }
-    }
-    false
 }
 
 fn push_sixel(out: &mut Vec<u8>, six: u8, run: u32) {
@@ -1956,7 +2145,8 @@ mod tests {
     }
 
     #[test]
-    fn the_show_lasts_about_half_a_minute() {
+    fn the_show_runs_under_two_minutes_and_most_of_it_is_3d() {
+        let motion = HOLD_PRIMS + HOLD_CLOUD + HOLD_TESSERACT + HOLD_KNOT + HOLD_CITY + HOLD_ORRERY + HOLD_FINALE;
         let ms = HOLD_TEXT
             + HOLD_CURSOR * 3
             + HOLD_SIXEL
@@ -1968,19 +2158,52 @@ mod tests {
             + HOLD_SCROLL_REST
             + HOLD_OSC
             + HOLD_ANIM
-            + HOLD_GLOW
-            + HOLD_PARTICLES
-            + HOLD_PRIM
-            + HOLD_CUBE
-            + HOLD_GROUP
+            + motion
             + HOLD_CHART
             + HOLD_FRAME * VIDEO_FRAMES
-            + HOLD_CLOSE
-            + HOLD_FINALE;
+            + HOLD_CLOSE;
         assert!(
-            (25_000..35_000).contains(&ms),
-            "the show is {ms} ms, not about half a minute"
+            (90_000..120_000).contains(&ms),
+            "the show is {ms} ms, not a minute and a half to two"
         );
+        assert!(motion * 3 >= ms * 2, "the 3D and motion scenes are {motion} of {ms} ms");
+        let names: Vec<&str> = SCENES.iter().map(|(name, _)| *name).collect();
+        let mut unique = names.clone();
+        unique.sort();
+        unique.dedup();
+        assert_eq!(unique.len(), names.len(), "scene names are unique");
+    }
+
+    #[test]
+    fn scene_picks_keep_the_show_order_and_refuse_a_wrong_name() {
+        let args = |list: &[&str]| list.iter().map(|s| s.to_string()).collect::<Vec<_>>();
+        assert_eq!(picked_scenes(&args(&[])).unwrap().len(), SCENES.len());
+        assert_eq!(
+            picked_scenes(&args(&["--scene", "orrery,knot"])).unwrap(),
+            vec!["knot", "orrery"]
+        );
+        assert_eq!(picked_scenes(&args(&["--scene=finale", "--loop"])).unwrap(), vec!["finale"]);
+        assert_eq!(picked_scenes(&args(&["--scene", "nope"])), Err("nope".to_string()));
+    }
+
+    #[test]
+    fn a_scene_renders_at_twice_its_pixels_inside_the_side_cap() {
+        let fit = Fit {
+            rows: 53,
+            cols: 189,
+            cell_w: 10,
+            cell_h: 20,
+        };
+        let small = fit.stage(0.0, 0.0, 40.0, 20.0);
+        assert_eq!((small.s, small.v), (800, 800));
+        let big = fit.stage(0.0, 0.0, 189.0, 50.0);
+        assert!(big.s <= SCENE_SIDE && big.v <= SCENE_SIDE, "{big:?}");
+        assert!(big.s as f32 > 189.0 * 10.0, "still more pixels than it covers: {big:?}");
+        let fitted = fit.stage_fit(94.5, 3.0, 48.0, 180.0, 1.7);
+        let aspect = (fitted.c * 10.0) / (fitted.r * 20.0);
+        assert!((aspect - 1.7).abs() < 0.01, "{aspect}");
+        assert!(fitted.c <= 180.0 + 1e-3 && fitted.r <= 48.0 + 1e-3);
+        assert!(fitted.x >= 0.0 && fitted.y >= 3.0);
     }
 
     #[test]
@@ -2087,15 +2310,39 @@ mod tests {
     }
 
     #[test]
-    fn sixel_quantises_past_64_colours() {
+    fn sixel_quantises_past_256_colours() {
         let mut rgba = Vec::new();
-        for i in 0..80u8 {
-            rgba.extend_from_slice(&[i.saturating_mul(3), 255 - i, i, 255]);
+        for i in 0..600u32 {
+            rgba.extend_from_slice(&[(i % 256) as u8, (i / 2 % 256) as u8, (i * 13 % 256) as u8, 255]);
         }
-        let sixel = String::from_utf8(encode_sixel(80, 1, &rgba)).unwrap();
-        let colours = sixel.matches(";2;").count();
-        assert!(colours <= 64, "{colours} palette entries");
-        assert!(colours > 1, "quantising should keep more than one colour");
+        let sixel = String::from_utf8(encode_sixel(600, 1, &rgba)).unwrap();
+        // Palette entries are `#i;2;r;g;b`; a band's `#i` carries no `;`.
+        let colours = sixel
+            .split('#')
+            .filter(|entry| entry.split(';').count() == 5 && entry.split(';').nth(1) == Some("2"))
+            .count();
+        assert!(colours <= 252, "{colours} palette entries");
+        assert!(colours > 64, "the cube keeps more than the old 64: {colours}");
+    }
+
+    #[test]
+    fn sixel_bands_paint_each_pixel_once_in_its_register() {
+        // 3 x 7: two bands; each pixel's register sets exactly its bit.
+        let (w, h) = (3u32, 7u32);
+        let mut rgba = Vec::new();
+        for y in 0..h {
+            for x in 0..w {
+                rgba.extend_from_slice(if (x + y) % 2 == 0 { &[255, 0, 0, 255] } else { &[0, 0, 255, 255] });
+            }
+        }
+        let text = String::from_utf8(encode_sixel(w, h, &rgba)).unwrap();
+        let body = text.split("#1;2;0;0;100").nth(1).unwrap();
+        let bands: Vec<&str> = body.trim_end_matches("\u{1b}\\").split('-').filter(|b| !b.is_empty()).collect();
+        assert_eq!(bands.len(), 2, "{text}");
+        // Band one, register 0 (red): column 0 is rows 0, 2, 4 -> bits 0b010101.
+        assert!(bands[0].starts_with(&format!("#0{}", (0b010101u8 + 63) as char)), "{}", bands[0]);
+        // Band two is row 6 alone: red at columns 0 and 2.
+        assert!(bands[1].contains(&format!("#0{}{}{}", (1u8 + 63) as char, 63u8 as char, (1u8 + 63) as char)), "{}", bands[1]);
     }
 
     #[test]
@@ -2172,47 +2419,6 @@ mod tests {
     }
 
     #[test]
-    fn plasma_is_dithered_to_64_colours_at_the_requested_size() {
-        let picture = plasma(48, 24);
-        assert_eq!(picture.len(), 48 * 24 * 4);
-        let mut colors = std::collections::BTreeSet::new();
-        for px in picture.chunks(4) {
-            colors.insert([px[0], px[1], px[2]]);
-        }
-        assert!(colors.len() > 8, "a plasma should be more than a handful of colours");
-        assert!(colors.len() <= 64, "{} colours", colors.len());
-        let large = plasma(480, 240);
-        assert_eq!(large.len(), 480 * 240 * 4);
-    }
-
-    #[test]
-    fn sphere_has_a_highlight_brighter_than_its_shadow() {
-        let picture = sphere(80, 48);
-        assert_eq!(picture.len(), 80 * 48 * 4);
-        assert_ne!(px(&picture, 80, 2, 1), px(&picture, 80, 2, 46), "the sky should be a gradient");
-        let mut brightest = 0u32;
-        let mut darkest = u32::MAX;
-        let mut warm = 0u32;
-        for y in 0..48u32 {
-            for x in 0..80u32 {
-                let p = px(&picture, 80, x, y);
-                if p[0] <= p[2] {
-                    continue;
-                }
-                warm += 1;
-                let lum = u32::from(p[0]) + u32::from(p[1]) + u32::from(p[2]);
-                brightest = brightest.max(lum);
-                darkest = darkest.min(lum);
-            }
-        }
-        assert!(warm > 40, "the sphere should cover more than a few pixels, got {warm}");
-        assert!(
-            brightest > darkest + 40,
-            "highlight {brightest} vs shadow {darkest}"
-        );
-    }
-
-    #[test]
     fn a_bouncing_ball_squashes_on_the_ground_and_frames_move() {
         let ground = sprite(0, 12, 64);
         let air = sprite(6, 12, 64);
@@ -2269,22 +2475,32 @@ mod tests {
 
     #[test]
     fn glass_builders_use_only_allowed_keys_and_never_carry_q() {
-        let samples = [
+        let fit = Fit {
+            rows: 53,
+            cols: 189,
+            cell_w: 10,
+            cell_h: 20,
+        };
+        let st = fit.stage(2.0, 3.0, 80.0, 30.0);
+        let mut samples = vec![
             picture_op(11, 32, 64, 40, "Zg=="),
-            layer_glow(1, "ffb040", "0.85", "4,5,20,10"),
-            layer_particles(2, "ffb040", 280, 8, "2.6", 42, 22, "4,6,20,10"),
-            layer_prim(5, 0, "ff8050", "8,6,12,8"),
-            layer_solid(20, "ff5a4a", "10.0,8.0,6,2"),
             group_op(1, 7, "Zg=="),
             remove_all_op(),
             showcase_video(320, 180),
             showcase_close_op(),
-            scene_op(8, 160, 120, "10,5,40,20", "Zg=="),
+            scene_place(8, st, -2, 0.85, "Zg=="),
             frame_op(32, 320, 180, "Zg=="),
             chart_op(11, 6, "Zg=="),
             progress_op(0.5),
             glass_checked("scene;id=1;s=2;v=2;at=1,1,2,2", 7),
         ];
+        // The records the motion scenes put in their groups, each a layer.
+        samples.extend(ring_records(fit, 1.3, 94.0, 27.0, 70.0, 16.0).lines().map(str::to_string));
+        let rings = ring_records(fit, 1.3, 94.0, 27.0, 70.0, 16.0);
+        assert_eq!(rings.lines().count(), 14);
+        assert!(rings.lines().all(|r| r.contains("anchor=window")), "{rings}");
+        assert!(rings.contains("k=prim;shape=0;") && rings.contains("k=prim;shape=6;"), "{rings}");
+        assert!(rings.contains("z=3") && rings.contains("z=-3"), "some solids over the text, some under");
         for record in samples {
             assert!(!record.contains("q="), "{record}");
             let (op, keys) = glass_key_pairs(&record);
@@ -2297,7 +2513,7 @@ mod tests {
                 );
             }
         }
-        let checked = glass_checked(&scene_op(8, 4, 4, "1,1,2,2", "Zg=="), 3);
+        let checked = glass_checked(&scene_place(8, st, 1, 1.0, "Zg=="), 3);
         let (op, keys) = glass_key_pairs(&checked);
         assert_eq!(op, "scene");
         assert_eq!(
@@ -2411,10 +2627,6 @@ mod tests {
             "chart payload is {} bytes",
             picture.len()
         );
-        let prim = layer_prim(5, 0, "ff8050", "8,6,12,8");
-        assert!(prim.contains("shape=0") && !prim.contains("rect"), "{prim}");
-        let circle = layer_prim(6, 1, "70c8ff", "12,8,12,8");
-        assert!(circle.contains("shape=1") && !circle.contains("circle"), "{circle}");
     }
 
     #[test]

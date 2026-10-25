@@ -54,9 +54,13 @@ Inside a glass window:
 cargo run --release -p angel-glass-term --example glass_sampler
 ```
 
-The sampler walks through each dialect in about half a minute: styled text,
-sixel, APC graphics with alpha, Unicode placeholders, an inline image, an
-animation, and glass's own layers, a lit 3D scene, a chart and video frames.
+The sampler walks through each dialect in under two minutes: styled text,
+a sixel sunset, APC graphics with alpha, Unicode placeholders, a ray-traced
+inline image and an animation. Then comes glass's own dialect: lit solids
+orbiting the text, a 720-light cloud that changes shape, a tesseract, a glass
+knot, an equaliser city, an orrery under the text, a chart, a video, and a
+finale that stacks them. `--scene knot,orrery` plays only those scenes,
+`--list` names them, and `--loop` repeats the show.
 `--example glass_demo` is a shorter tour of glass's own dialect.
 
 ## Layout

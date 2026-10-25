@@ -354,12 +354,10 @@ impl Expansion {
             let row = if w.text { w.line as f32 - top as f32 } else { 0.0 };
             let h = rect_h(&w.placement);
             if !w.text || (w.alternate == alternate && row < f32::from(rows) && row + h > 0.0) {
-                let mut layer = angel_glass::Layer::new(
-                    u64::from(w.id),
-                    w.z,
-                    place_at(&w.placement, row),
-                    w.kind.clone(),
-                );
+                // Only a text-anchored layer takes its row from the view; a
+                // window-pinned one keeps the row it was placed at.
+                let placement = if w.text { place_at(&w.placement, row) } else { w.placement.clone() };
+                let mut layer = angel_glass::Layer::new(u64::from(w.id), w.z, placement, w.kind.clone());
                 layer.opacity = w.opacity;
                 layer.angle = w.angle;
                 layer.height = w.height;

@@ -212,6 +212,24 @@ fn px_pins_to_the_window_and_at_scrolls_with_the_text() {
     assert_eq!(find(&top5, 2).placement, angel_glass::Placement::Pixels([10.0, 20.0, 30.0, 40.0]));
 }
 
+#[test]
+fn anchor_window_keeps_its_own_row_wherever_the_view_is() {
+    let (mut intake, mut engine, _) = glass(&[]);
+    feed(&mut intake, &mut engine, "layer;id=1;k=solid;c=ff0000;anchor=window;at=3,7.5,2,8");
+    let record = "layer;id=2;k=glow;c=00ff00;anchor=window;at=4,12.25,6,3";
+    feed(&mut intake, &mut engine, &format!("group;g=1;n=1;{}", b64(record.as_bytes())));
+    feed(&mut intake, &mut engine, &format!("scene;id=3;at=1,9,10,8;s=64;v=48;anchor=window;{}", cube_scene()));
+    let find = |layers: &Vec<angel_glass::Layer>, id: u32| {
+        layers.iter().find(|l| l.id == u64::from(glass_dialect::ID_BASE + id)).cloned().unwrap()
+    };
+    for top in [0, 5, 40] {
+        let layers = intake.expansion.frame(top, 24, false);
+        assert_eq!(find(&layers, 1).placement, angel_glass::Placement::Cells([3.0, 7.5, 2.0, 8.0]), "top {top}");
+        assert_eq!(find(&layers, 2).placement, angel_glass::Placement::Cells([4.0, 12.25, 6.0, 3.0]), "top {top}");
+        assert_eq!(find(&layers, 3).placement, angel_glass::Placement::Cells([1.0, 9.0, 10.0, 8.0]), "top {top}");
+    }
+}
+
 // ---------------------------------------------------------------- picture
 
 #[test]
