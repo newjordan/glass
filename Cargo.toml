@@ -1,0 +1,13 @@
+[workspace]
+resolver = "3"
+members = ["crates/stage", "crates/gpu", "crates/glass", "crates/term"]
+
+[workspace.package]
+edition = "2024"
+rust-version = "1.95"
+license = "MIT"
+publish = false
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
