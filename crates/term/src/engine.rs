@@ -110,6 +110,9 @@ pub struct Cell {
     pub fg_id: Option<u32>,
     /// Underline colour as a placement id, the same way.
     pub underline_id: Option<u32>,
+    /// Underline colour as the program wrote it. `Default` means the bar
+    /// follows the foreground.
+    pub underline: Color,
 }
 
 /// A colour as the program wrote it.
@@ -443,13 +446,18 @@ impl Engine {
                 ..
             } = self;
             let alternate = term.mode().contains(TermMode::ALT_SCREEN);
-            let base = if alternate { 0 } else { *scrolled_off_top as u64 };
+            // Covers and pictures share one absolute line. On the
+            // alternate screen that line is its own scrolled count plus
+            // the grid row, not the grid row alone.
+            let scrolled = *scrolled_off_top as u64;
+            let base = if alternate { *alt_scrolled } else { scrolled };
+            let count = if alternate { 0 } else { scrolled };
             let mut watch = Watch {
                 term,
                 events: Vec::new(),
                 in_cell: in_cell.clone(),
                 base,
-                count: base,
+                count,
                 alternate,
                 alt_scrolled: *alt_scrolled,
                 region_top: *region_top,
@@ -602,13 +610,18 @@ impl Engine {
                 ..
             } = self;
             let alternate = term.mode().contains(TermMode::ALT_SCREEN);
-            let base = if alternate { 0 } else { *scrolled_off_top as u64 };
+            // Covers and pictures share one absolute line. On the
+            // alternate screen that line is its own scrolled count plus
+            // the grid row, not the grid row alone.
+            let scrolled = *scrolled_off_top as u64;
+            let base = if alternate { *alt_scrolled } else { scrolled };
+            let count = if alternate { 0 } else { scrolled };
             let mut watch = Watch {
                 term,
                 events: Vec::new(),
                 in_cell: in_cell.clone(),
                 base,
-                count: base,
+                count,
                 alternate,
                 alt_scrolled: *alt_scrolled,
                 region_top: *region_top,
@@ -1030,7 +1043,8 @@ impl Engine {
                     link: cell.hyperlink().map(|link| link.uri().to_owned()),
                     marks,
                     fg_id: color_id(fg),
-                    underline_id: cell.underline_color().map(color_of).and_then(color_id),
+                    underline_id: color_id(cell.underline_color().map(color_of).unwrap_or(Color::Default)),
+                    underline: cell.underline_color().map(color_of).unwrap_or(Color::Default),
                 });
             }
         }
@@ -1178,19 +1192,21 @@ impl Watch<'_> {
     /// Wrap the engine's `Term` for one chunk of bytes, with the
     /// coverage rectangles and the screen state as they stand before the
     /// chunk runs. In-cell rectangles live on absolute lines, so `base`
-    /// (the absolute line of the screen's top row) is the primary
-    /// screen's scrolled count; the alternate screen's lines are its
-    /// own, from 0 each time it is entered.
+    /// (the absolute line of the screen's top row) is that screen's
+    /// scrolled count: the primary screen's lines that left its top, or
+    /// the alternate screen's own scrolled count.
     #[allow(dead_code)] // the parity test builds its own watch
     fn over<'a>(engine: &'a mut Engine, _chunk: &[u8]) -> Watch<'a> {
         let alternate = engine.term.mode().contains(TermMode::ALT_SCREEN);
-        let base = if alternate { 0 } else { engine.scrolled_off_top as u64 };
+        let scrolled = engine.scrolled_off_top as u64;
+        let base = if alternate { engine.alt_scrolled } else { scrolled };
+        let count = if alternate { 0 } else { scrolled };
         Watch {
             term: &mut engine.term,
             events: Vec::new(),
             in_cell: engine.in_cell.clone(),
             base,
-            count: base,
+            count,
             alternate,
             alt_scrolled: engine.alt_scrolled,
             region_top: engine.region_top,
@@ -1365,10 +1381,14 @@ impl Watch<'_> {
         if self.alternate && count_delta > 0 {
             self.alt_scrolled = self.alt_scrolled.saturating_add(count_delta);
         }
-        if !self.scroll_moves_pictures(origin, clears, true) {
-            if !self.alternate && count_delta > 0 {
-                self.base = self.base.saturating_add(count_delta);
-            }
+        // `base` moves after the band is measured. A full-screen scroll
+        // that moves no picture still carries the top line, on either
+        // screen, so later text in this chunk shares the pictures' lines.
+        let moves = self.scroll_moves_pictures(origin, clears, true);
+        if count_delta > 0 && (self.alternate || !moves) {
+            self.base = self.base.saturating_add(count_delta);
+        }
+        if !moves {
             return false;
         }
         self.events.push(Event::RegionScroll {

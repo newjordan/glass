@@ -51,11 +51,13 @@ desktop's default terminal through a `.desktop` entry with
 Inside a glass window:
 
 ```sh
-cargo run --release -p angel-glass-term --example glass_demo
+cargo run --release -p angel-glass-term --example glass_sampler
 ```
 
-The demo is a short tour of glass's own dialect: a glow, a picture, particles,
-lit primitives, a lit 3D scene, video frames and a chart.
+The sampler walks through each dialect in about half a minute: styled text,
+sixel, APC graphics with alpha, Unicode placeholders, an inline image, an
+animation, and glass's own layers, a lit 3D scene, a chart and video frames.
+`--example glass_demo` is a shorter tour of glass's own dialect.
 
 ## Layout
 

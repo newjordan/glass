@@ -240,6 +240,33 @@ It ships with the reference above and a demo program
 (`cargo run --example glass_demo`) that draws a short showcase, a
 scene, a chart and a few video frames, and cleans up after itself.
 
+A sampler (`cargo run --example glass_sampler`) walks the dialects in
+order: text, DCS sixel, APC graphics, Unicode placeholders, OSC 1337
+inline images, animation, and glass's own dialect (a glow, particles,
+lit shapes, a turning cube, an orbit, a chart, and a short video),
+then a short finale. It sizes each picture from the window — columns
+from `stty size` or XTWINOPS 18, one cell's pixels from XTWINOPS 16,
+falling back to 10×20 — so the main picture fills about half the width
+and never passes the screen. One thread owns stdin and forwards every
+byte. The probe takes DA1 and XTWINOPS 18 and 16 from that channel,
+with a deadline, and draws nothing if glass does not answer. `q` or
+Ctrl+C leaves; a late reply or a focus report does not. The chart is
+a picture uploaded with `picture` and opened with `chart;p=`, and it
+stays up for at least two seconds. A showcase closes only when one is
+open, and only when that scene ends. Animation transmit-and-places
+frame 1 (`a=T` with cell columns and rows), then adds the rest with
+`a=f`; `a=a`'s `c` and `r` are frame numbers, not a placement. An
+in-cell picture (sixel, OSC 1337) is not written over: the caption
+sits below its cell rectangle, and the cursor moves with CUP only.
+`--check` sends `r=` on every glass op and drops `q=2` from APC
+graphics ops, then prints ops sent, OK, and each error code to
+stderr. Each scene is written before its hold, and the
+screen is not cleared during a hold. It uses the alternate screen, so
+the main screen's scrollback is left alone, and it removes every
+picture, layer and showcase it made. Underline colour (SGR 58) and
+every underline style, including curly (SGR 4:3), reach the cells;
+the window draws each style as an underline bar in that colour.
+
 ## 3. Terminal fidelity
 
 Built, and measured by tests that feed real byte sequences to the
@@ -340,7 +367,10 @@ engine and real key events to the encoder.
   screen's scrollback when the alternate screen is up. Text or an erase
   over part of an in-cell picture hides only those cells; the rest still
   shows. An erase below or above the cursor covers the same cells the
-  text loses.
+  text loses. A cover is recorded on the picture's absolute line, the
+  same line the picture is anchored to, including the lines that have
+  left the alternate screen's top. Text that does not overlap the
+  picture's cells does not hide it.
   Glass's own text-anchored layers follow the same moves and the same
   reflow. Cover rules apply only to in-cell pictures.
 - Comments and docs speak of dialects and intake. No dialect is named as

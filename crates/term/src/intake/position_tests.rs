@@ -446,3 +446,119 @@ fn reflow_on_both_screens_wider_narrower_and_back() {
     assert!(on_symbol(&engine, &intake, 8, 'c'), "alt resize: the picture left the c");
 }
 
+const SAMPLER_FULL: &str = "/work/frosty40/glass-term-agents/ref/fixtures/sampler-replay-full.bin";
+const SAMPLER_OSC: &str = "/work/frosty40/glass-term-agents/ref/fixtures/sampler-replay-osc-only.bin";
+
+/// The reader thread's read, then the sizes the cover bug was chased at.
+fn replay_fixture(path: &str, read: usize) -> (Engine, Intake) {
+    let bytes = std::fs::read(path).unwrap_or_else(|e| panic!("fixture {path}: {e}"));
+    let mut engine = Engine::new(
+        39,
+        154,
+        HostInfo { colors: [[0xd0; 3], [0, 0, 0], [0xff; 3]], cell_px: (12, 25) },
+    );
+    engine.set_cell_px((12, 25));
+    let mut intake = Intake::new(64);
+    intake.set_cell((12, 25));
+    let mut splitter = Splitter::default();
+    let step = read.max(1);
+    for piece in bytes.chunks(step) {
+        let mut pieces = Vec::new();
+        splitter.split(piece, &mut pieces);
+        if !pieces.is_empty() {
+            pump(&mut engine, &mut intake, &pieces);
+        }
+    }
+    (engine, intake)
+}
+
+fn osc_picture_is_one_uncovered_rectangle(engine: &Engine, intake: &mut Intake, read: usize) {
+    let (width, height) = {
+        let osc: Vec<_> = intake.placements.iter().filter(|p| p.space == crate::intake::Space::Osc).collect();
+        assert_eq!(osc.len(), 1, "read {read}: expected the one OSC 1337 picture, saw {}", intake.placements.len());
+        let put = osc[0];
+        assert!(put.covered.is_empty(), "read {read}: OSC picture covered {:?}", put.covered);
+        (put.width, put.height)
+    };
+    let shown = intake.describe(View {
+        top: engine.top_line(),
+        rows: 39,
+        alternate: engine.alternate_screen(),
+    });
+    assert_eq!(shown.placements.len(), 1, "read {read}: describe split the picture into {} rectangles", shown.placements.len());
+    let rect = &shown.placements[0];
+    assert!((rect.width - width).abs() < 0.05, "width {} vs {}", rect.width, width);
+    assert!((rect.height - height).abs() < 0.05, "height {} vs {}", rect.height, height);
+}
+
+#[test]
+fn sampler_replay_full_osc_picture_is_uncovered_at_reader_reads() {
+    let (engine, mut intake) = replay_fixture(SAMPLER_FULL, 64 * 1024);
+    osc_picture_is_one_uncovered_rectangle(&engine, &mut intake, 64 * 1024);
+}
+
+#[test]
+fn sampler_replay_full_osc_picture_is_uncovered_at_other_reads() {
+    for read in [1usize, 7, 4096, usize::MAX] {
+        let (engine, mut intake) = replay_fixture(SAMPLER_FULL, read);
+        osc_picture_is_one_uncovered_rectangle(&engine, &mut intake, read);
+    }
+}
+
+#[test]
+fn sampler_replay_osc_only_picture_is_uncovered() {
+    let (engine, mut intake) = replay_fixture(SAMPLER_OSC, 64 * 1024);
+    osc_picture_is_one_uncovered_rectangle(&engine, &mut intake, 64 * 1024);
+}
+
+/// A caption below an in-cell picture must not hide it just because the
+/// alternate screen has scrolled. The cover is recorded on the picture's
+/// absolute line, which includes the lines that left the top.
+#[test]
+fn alt_scroll_does_not_apply_text_below_a_picture_as_a_cover() {
+    let mut engine = engine(12, 40);
+    let mut intake = Intake::new(8);
+    intake.set_cell((10, 20));
+    feed(&mut engine, &mut intake, b"\x1b[?1049h");
+    // 20 linefeeds: 11 reach the last row, 9 leave the top.
+    let down = vec![b'\n'; 20];
+    feed(&mut engine, &mut intake, &down);
+    assert_eq!(engine.alt_scrolled(), 9, "the alternate screen did not scroll as the fixture's screen does");
+    // An in-cell picture on row 2. A later caption on the last row does
+    // not overlap it. Before the fix that caption was recorded at the
+    // grid row, which collided with the picture's absolute line.
+    feed(&mut engine, &mut intake, b"\x1b[2;1H\x1bPq#0!40~\x1b\\");
+    let before = engine.alt_scrolled();
+    feed(&mut engine, &mut intake, b"\x1b[12;1Hbelow");
+    let pic = intake.placements.iter().find(|p| p.in_cell).expect("in-cell picture");
+    assert!(pic.covered.is_empty(), "text below the picture covered line {} {:?}", pic.line, pic.covered);
+    assert_eq!(engine.alt_scrolled(), before, "the caption scrolled the screen");
+    // The same cells, written on the picture, do hide it.
+    feed(&mut engine, &mut intake, b"\x1b[2;1HXX");
+    let pic = intake.placements.iter().find(|p| p.in_cell).expect("in-cell picture");
+    assert!(!pic.covered.is_empty(), "text on the picture left it uncovered");
+}
+
+/// A scroll and the text after it can share one chunk. The cover's line
+/// must follow the scroll, or text at the picture's old row hides it.
+#[test]
+fn alt_scroll_in_the_same_chunk_does_not_leave_covers_on_the_old_row() {
+    let mut engine = engine(12, 40);
+    let mut intake = Intake::new(8);
+    intake.set_cell((10, 20));
+    feed(&mut engine, &mut intake, b"\x1b[?1049h");
+    let down = vec![b'\n'; 20];
+    feed(&mut engine, &mut intake, &down);
+    feed(&mut engine, &mut intake, b"\x1b[5;1H\x1bPq#0!40~\x1b\\");
+    let line = intake.placements.iter().find(|p| p.in_cell).expect("picture").line;
+    // Two linefeeds from the last row scroll the picture up by two. The
+    // text is then written at the picture's old screen row.
+    feed(&mut engine, &mut intake, b"\x1b[12;1H\n\n\x1b[5;1Hnope");
+    let pic = intake.placements.iter().find(|p| p.in_cell).expect("picture");
+    assert_eq!(pic.line, line, "the picture's absolute line moved");
+    assert!(pic.covered.is_empty(), "text at the old row covered {:?}", pic.covered);
+    // Text on the picture's new screen row still hides those cells.
+    feed(&mut engine, &mut intake, b"\x1b[3;1HYY");
+    let pic = intake.placements.iter().find(|p| p.in_cell).expect("picture");
+    assert!(!pic.covered.is_empty(), "text on the picture after the scroll left it uncovered");
+}

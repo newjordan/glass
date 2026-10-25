@@ -101,13 +101,22 @@ pub fn paint(
             modifier.set(Modifier::BOLD, source.flags.contains(F::BOLD));
             modifier.set(Modifier::DIM, source.flags.contains(F::DIM));
             modifier.set(Modifier::ITALIC, source.flags.contains(F::ITALIC));
-            modifier.set(Modifier::UNDERLINED, source.flags.contains(F::UNDERLINE));
+            // Every underline style, including curly (SGR 4:3), is an underline.
+            // SGR 58's colour rides the cell so the bar is not stuck on the fg.
+            modifier.set(Modifier::UNDERLINED, source.flags.intersects(F::ALL_UNDERLINES));
+            modifier.set(Modifier::CROSSED_OUT, source.flags.contains(F::STRIKEOUT));
             let selected = selection.is_some_and(|s| s.contains(row, col));
             modifier.set(Modifier::REVERSED, source.flags.contains(F::INVERSE) != selected);
             if hover.is_some_and(|h| h.contains(row, col)) && !selected {
                 modifier.insert(Modifier::UNDERLINED);
             }
             cell.modifier = modifier;
+            if let Some(underline) = match source.underline {
+                crate::engine::Color::Default => None,
+                other => Some(color(other)),
+            } {
+                cell.underline_color = underline;
+            }
         }
     }
 }
@@ -297,5 +306,19 @@ mod tests {
         assert!(a.modifier.contains(Modifier::BOLD));
         // Reversed by the program and selected: shown plain.
         assert!(!buf[(1, 0)].modifier.contains(Modifier::REVERSED));
+    }
+
+    #[test]
+    fn curly_and_coloured_underlines_reach_the_cells() {
+        let mut parser = engine(b"\x1b[4:3m\x1b[58;2;255;80;40mX");
+        let area = Rect::new(0, 0, 4, 1);
+        let mut buf = Buffer::empty(area);
+        paint(&mut buf, area, &mut parser, None, None);
+        let cell = &buf[(0, 0)];
+        assert!(
+            cell.modifier.contains(Modifier::UNDERLINED),
+            "SGR 4:3 is an underline"
+        );
+        assert_eq!(cell.underline_color, Color::Rgb(255, 80, 40));
     }
 }
