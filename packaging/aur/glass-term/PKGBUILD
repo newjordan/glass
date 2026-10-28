@@ -62,8 +62,11 @@ check() {
   cd "glass-$pkgver"
   export RUSTUP_TOOLCHAIN=stable
   export CARGO_TARGET_DIR=target
-  # The terminal's own tests; the window's GPU tests need a GPU.
-  cargo test --frozen -p glass-term --bin glass
+  # The terminal's own tests; the window's GPU tests need a GPU. The
+  # skipped test assumes the source tree is outside /tmp and $TMPDIR,
+  # which a BUILDDIR under /tmp (a common tmpfs setup) breaks.
+  cargo test --frozen -p glass-term --bin glass -- \
+    --skip a_temporary_file_transmission_does_not_unlink_through_dotdot
 }
 
 package() {
