@@ -21,7 +21,10 @@
 //! ```
 //!
 //! `--from s` starts the show `s` seconds in, `--until s` ends it there. `--surreal` turns it on its
-//! head (`surreal.rs`). `q` or Ctrl+C ends it.
+//! head (`surreal.rs`). `q` or Ctrl+C ends it. `MINDSEYE_BENCH` names a
+//! scoreboard to graph (`board.rs`) and `MINDSEYE_ASSETS` the folder of
+//! `.glb` figures the surreal cast is read from; without them, the show
+//! plays without the board and the cast.
 
 mod board;
 mod surreal;
@@ -1196,10 +1199,10 @@ fn main() {
     });
 
     // The bench's numbers, and their words drawn, while the prompt types.
-    let bench = std::env::var("MINDSEYE_BENCH")
-        .unwrap_or_else(|_| "/work/frosty40/glass-term-agents/bench/scoreboard-20261027b.json".into());
+    // No scoreboard named, no board: the film plays without it.
+    let bench = std::env::var("MINDSEYE_BENCH").ok().filter(|path| !path.is_empty());
     let preparing_board = std::thread::spawn(move || {
-        board::Board::load(&bench).map(|mut b| {
+        board::Board::load(&bench?).map(|mut b| {
             let mut bytes = Vec::new();
             b.setup(&mut bytes);
             (b, bytes)

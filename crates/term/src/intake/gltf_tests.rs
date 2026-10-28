@@ -803,9 +803,11 @@ fn an_asset_from_a_path_follows_the_file_medium_rules() {
 
 // ------------------------------------------------------------- skins
 
-/// Where the Mixamo characters are kept on the machine that has them; they
-/// are not in the repository.
-const MIXAMO: &str = "/work/frosty40/glass-assets/mixamo";
+/// Where the Mixamo characters are kept on a machine that has them
+/// (`GLASS_MIXAMO`); they are not in the repository.
+fn mixamo() -> Option<std::path::PathBuf> {
+    std::env::var_os("GLASS_MIXAMO").filter(|dir| !dir.is_empty()).map(Into::into)
+}
 
 /// The skinned vertices of every skinned node of scene `id`: each node's
 /// mesh's positions through its joints (glass_stage's own maths, which the
@@ -840,14 +842,18 @@ fn bounds(points: &[[f32; 3]]) -> ([f32; 3], [f32; 3]) {
 }
 
 #[test]
-#[ignore = "reads the Mixamo characters from /work/frosty40/glass-assets/mixamo; skips any that is not there"]
+#[ignore = "reads the Mixamo characters from the folder GLASS_MIXAMO names; skips any that is not there"]
 fn the_mixamo_characters_load_bend_at_rest_and_play() {
+    let Some(mixamo) = mixamo() else {
+        eprintln!("skipped: GLASS_MIXAMO does not name the folder of Mixamo characters");
+        return;
+    };
     // (file, skins, clips, base colour pictures decoded: a PNG, a JPEG
     // both materials share, none, none)
     let files = [("Michelle.glb", 1, 2, 1usize), ("Soldier.glb", 2, 4, 1), ("Xbot.glb", 1, 7, 0), ("man.glb", 1, 10, 0)];
     let mut seen = 0;
     for (k, (file, skins, clips, textures)) in files.into_iter().enumerate() {
-        let path = std::path::Path::new(MIXAMO).join(file);
+        let path = mixamo.join(file);
         let Ok(bytes) = std::fs::read(&path) else {
             eprintln!("skipped: {} is not there", path.display());
             continue;
@@ -921,7 +927,7 @@ fn the_mixamo_characters_load_bend_at_rest_and_play() {
     // again whole every display frame. What the intake spends on each.
     let mut rig = Rig::new();
     for (k, file) in ["Xbot.glb", "Michelle.glb", "Soldier.glb"].iter().enumerate() {
-        let path = std::path::Path::new(MIXAMO).join(file);
+        let path = mixamo.join(file);
         rig.send(&format!("asset;id={};t=f;{}", k + 1, glb::base64(path.to_string_lossy().as_bytes())));
     }
     let frame = |t: f32| {

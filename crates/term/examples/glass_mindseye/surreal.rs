@@ -582,10 +582,13 @@ impl Surreal {
         upload(out, PIZZA, 256, 256, &pizza_texture());
         upload(out, EYEBALL, 256, 128, &eyeball_texture());
         upload(out, BALLOON_FACE, 256, 128, &balloon_face());
-        // glass reads the characters itself (`asset` with `t=f`).
-        let dir = std::env::var("MINDSEYE_ASSETS").unwrap_or_else(|_| "/work/frosty40/glass-assets/mixamo".into());
+        // glass reads the characters itself (`asset` with `t=f`), from
+        // the folder `MINDSEYE_ASSETS` names; without one, no cast.
+        let dir = std::env::var_os("MINDSEYE_ASSETS").filter(|dir| !dir.is_empty());
         for (id, file) in CAST {
-            let path = std::path::Path::new(&dir).join(file);
+            let Some(path) = dir.as_ref().map(|dir| std::path::Path::new(dir).join(file)) else {
+                break;
+            };
             if path.is_file() {
                 let _ = write!(ByteWriter(out), "\x1b_glass;asset;id={id};t=f;{}\x1b\\", b64(path.to_string_lossy().as_bytes()));
                 self.cast.push(id);

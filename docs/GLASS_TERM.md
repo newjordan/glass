@@ -606,4 +606,11 @@ its corner are measured.
 - `cargo test -p glass-term` and `cargo clippy -p glass-term`
   stay clean. Every adapter has tests that feed real sequences and check
   what reaches glass.
+- Files that are not in the repository come from the environment only:
+  the Mixamo figures (`GLASS_MIXAMO`, for the glTF test and
+  `glass_chrome`), the sampler recordings (`GLASS_FIXTURES`), the
+  row/column diacritic table (`GLASS_DIACRITICS`), and the mind's eye's
+  scoreboard and cast (`MINDSEYE_BENCH`, `MINDSEYE_ASSETS`). Without
+  them a test says it skipped and passes, and an example plays without
+  them.
 - Builds stay in this worktree's `crates/target` (on /work).

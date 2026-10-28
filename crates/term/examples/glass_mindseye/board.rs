@@ -2,8 +2,8 @@
 //! run's own, graphed as it goes, as faint light among the other layers
 //! rather than panels over them.
 //!
-//! The bench is read from a scoreboard file (`MINDSEYE_BENCH`, by default
-//! the one the bench harness wrote): medians of its rounds (`rounds`,
+//! The bench is read from a scoreboard file (`MINDSEYE_BENCH`, one the
+//! bench harness wrote; without it there is no board): medians of its rounds (`rounds`,
 //! three if it does not say) of each workload, timed until the terminal
 //! answers DA1. Each measure is a spoke of one web that drifts behind the
 //! geometry (see [`Board::web`]). This run is three traces across the foot

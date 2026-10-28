@@ -446,12 +446,22 @@ fn reflow_on_both_screens_wider_narrower_and_back() {
     assert!(on_symbol(&engine, &intake, 8, 'c'), "alt resize: the picture left the c");
 }
 
-const SAMPLER_FULL: &str = "/work/frosty40/glass-term-agents/ref/fixtures/sampler-replay-full.bin";
-const SAMPLER_OSC: &str = "/work/frosty40/glass-term-agents/ref/fixtures/sampler-replay-osc-only.bin";
+/// Recordings of the sampler's output, in the folder `GLASS_FIXTURES`
+/// names on a machine that has them; they are not in the repository.
+const SAMPLER_FULL: &str = "sampler-replay-full.bin";
+const SAMPLER_OSC: &str = "sampler-replay-osc-only.bin";
 
 /// The reader thread's read, then the sizes the cover bug was chased at.
-fn replay_fixture(path: &str, read: usize) -> (Engine, Intake) {
-    let bytes = std::fs::read(path).unwrap_or_else(|e| panic!("fixture {path}: {e}"));
+/// `None`, said on stderr, when the recording is not there.
+fn replay_fixture(name: &str, read: usize) -> Option<(Engine, Intake)> {
+    let Some(path) = std::env::var_os("GLASS_FIXTURES").filter(|dir| !dir.is_empty()).map(|dir| std::path::Path::new(&dir).join(name)) else {
+        eprintln!("skipped: GLASS_FIXTURES does not name the folder of {name}");
+        return None;
+    };
+    let Ok(bytes) = std::fs::read(&path) else {
+        eprintln!("skipped: {} is not there", path.display());
+        return None;
+    };
     let mut engine = Engine::new(
         39,
         154,
@@ -469,7 +479,7 @@ fn replay_fixture(path: &str, read: usize) -> (Engine, Intake) {
             pump(&mut engine, &mut intake, &pieces);
         }
     }
-    (engine, intake)
+    Some((engine, intake))
 }
 
 fn osc_picture_is_one_uncovered_rectangle(engine: &Engine, intake: &mut Intake, read: usize) {
@@ -493,21 +503,21 @@ fn osc_picture_is_one_uncovered_rectangle(engine: &Engine, intake: &mut Intake, 
 
 #[test]
 fn sampler_replay_full_osc_picture_is_uncovered_at_reader_reads() {
-    let (engine, mut intake) = replay_fixture(SAMPLER_FULL, 64 * 1024);
+    let Some((engine, mut intake)) = replay_fixture(SAMPLER_FULL, 64 * 1024) else { return };
     osc_picture_is_one_uncovered_rectangle(&engine, &mut intake, 64 * 1024);
 }
 
 #[test]
 fn sampler_replay_full_osc_picture_is_uncovered_at_other_reads() {
     for read in [1usize, 7, 4096, usize::MAX] {
-        let (engine, mut intake) = replay_fixture(SAMPLER_FULL, read);
+        let Some((engine, mut intake)) = replay_fixture(SAMPLER_FULL, read) else { return };
         osc_picture_is_one_uncovered_rectangle(&engine, &mut intake, read);
     }
 }
 
 #[test]
 fn sampler_replay_osc_only_picture_is_uncovered() {
-    let (engine, mut intake) = replay_fixture(SAMPLER_OSC, 64 * 1024);
+    let Some((engine, mut intake)) = replay_fixture(SAMPLER_OSC, 64 * 1024) else { return };
     osc_picture_is_one_uncovered_rectangle(&engine, &mut intake, 64 * 1024);
 }
 

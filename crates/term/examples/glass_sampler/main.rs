@@ -2522,10 +2522,13 @@ mod tests {
 
     #[test]
     fn placeholder_marks_match_the_dialect_table() {
-        let reference: Vec<u32> = std::fs::read_to_string(
-            "/work/frosty40/glass-term-agents/ref/rowcolumn-diacritics.txt",
-        )
-        .expect("the row/column diacritic table")
+        // The row/column diacritic table (`rowcolumn-diacritics.txt`), where
+        // `GLASS_DIACRITICS` names it.
+        let Some(table) = std::env::var_os("GLASS_DIACRITICS").and_then(|path| std::fs::read_to_string(path).ok()) else {
+            eprintln!("skipped: GLASS_DIACRITICS does not name the row/column diacritic table");
+            return;
+        };
+        let reference: Vec<u32> = table
         .lines()
         .filter_map(|line| {
             let line = line.split('#').next()?.trim();

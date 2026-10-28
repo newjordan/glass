@@ -11,7 +11,8 @@
 //!
 //! It looks there for `Michelle.glb`, `Soldier.glb`, `Xbot.glb` and
 //! `man.glb` and plays a clip on each it finds (a figure that is missing
-//! is left out). Options:
+//! is left out). The directory is `--dir`, else `GLASS_MIXAMO`; with
+//! neither, the shapes play without figures. Options:
 //!
 //! - `--seconds S` how long to run (20);
 //! - `--size WxH` the scene's pixels and its place in the window
@@ -95,7 +96,7 @@ struct Options {
     near: bool,
     solo: Option<String>,
     clip: u32,
-    dir: std::path::PathBuf,
+    dir: Option<std::path::PathBuf>,
     log: Option<std::path::PathBuf>,
 }
 
@@ -111,7 +112,7 @@ fn options() -> Options {
         near: false,
         solo: None,
         clip: 0,
-        dir: std::env::var_os("GLASS_MIXAMO").map_or_else(|| "/work/frosty40/glass-assets/mixamo".into(), Into::into),
+        dir: std::env::var_os("GLASS_MIXAMO").filter(|d| !d.is_empty()).map(Into::into),
         log: None,
     };
     let mut args = std::env::args().skip(1);
@@ -136,7 +137,7 @@ fn options() -> Options {
             "--near" => o.near = true,
             "--solo" => o.solo = Some(value()),
             "--clip" => o.clip = value().parse().unwrap_or(0),
-            "--dir" => o.dir = value().into(),
+            "--dir" => o.dir = Some(value().into()),
             "--log" => o.log = Some(value().into()),
             _ => {}
         }
@@ -330,10 +331,9 @@ fn main() {
         None => FIGURES.iter().take(o.figures).collect(),
     };
     for (k, f) in chosen.into_iter().enumerate() {
-        let path = o.dir.join(f.file);
-        if !path.is_file() {
+        let Some(path) = o.dir.as_ref().map(|dir| dir.join(f.file)).filter(|path| path.is_file()) else {
             continue;
-        }
+        };
         let asset = k as u32 + 1;
         op(&format!("asset;id={asset};t=f;r=a{asset}"), Some(path.to_string_lossy().as_bytes()));
         figures.push((asset, f));
