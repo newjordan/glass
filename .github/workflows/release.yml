@@ -86,7 +86,11 @@ jobs:
           echo "$out"
           case $out in "usage: glass"*) ;; *) echo "::error::glass --help did not answer"; exit 1 ;; esac
       - name: Package
-        run: packaging/make-tarball.sh --version "${{ steps.version.outputs.version }}" --out dist
+        run: |
+          # The checkout belongs to the runner's user, not the container's
+          # root; make-tarball.sh reads the commit time from git.
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          packaging/make-tarball.sh --version "${{ steps.version.outputs.version }}" --out dist
       - uses: actions/upload-artifact@v7
         with:
           name: glass-linux-${{ matrix.arch }}
