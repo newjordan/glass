@@ -158,6 +158,41 @@ renames. The throughput rounds ran on the development build just before
 read path.
 [bench/results/2026-10-27/](../bench/results/2026-10-27/) has the details.
 
+## macOS
+
+glass on an M4 Pro (Mac mini, macOS 26.6, Metal), a 160×48 window,
+`bench/tput.py`, medians of 3 rounds:
+
+| Workload | glass |
+| --- | --- |
+| Plain ASCII | 371 MB/s |
+| Unicode | 148 MB/s |
+| Truecolor | 143 MB/s |
+| Cursor motion | 114 MB/s |
+| Scroll region | 270 MB/s |
+| Full-screen TUI | 1,611 fps |
+
+No other terminal has been measured on the Mac yet, so these stand alone.
+
+macOS's pty hands over at most 1 KiB a read. A bare reader that parses
+nothing gets about 270 to 300 MB/s through it, against 860 to 1,040 MB/s
+on the Linux machine. glass's engine alone parses plain text at about 520
+MB/s on the M4 Pro, so the pty is the limit there.
+
+Reading the pty on a thread of its own, ahead of the parsing, helps on
+Linux but cost more than it saved on macOS, where each hand-off carries 1
+KiB. glass reads the pty on the parsing thread there, which took plain
+text from 163 to 371 MB/s.
+
+Startup on the Mac, with the GPU driver warm, from `main`:
+- the window at about 94 ms;
+- the shell running at about 99 ms;
+- the first frame at about 100 ms.
+
+The first launch after a boot waited about 170 ms for the Metal device and
+130 ms to build the pipelines. The shell starts as soon as the window
+exists, without waiting for either.
+
 ## The film
 
 "Mind's eye" is 95 seconds at 1080p and 60 fps. Every frame is a program

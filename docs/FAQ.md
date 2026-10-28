@@ -62,12 +62,13 @@ programs already write.
 | Linux, Wayland, NVIDIA | Tested: one machine, an RTX 3090 on the proprietary driver, Hyprland on Omarchy (Arch Linux). All published numbers come from it. |
 | Linux, Wayland, AMD or Intel (Mesa) | Should work through Vulkan; not tested yet. |
 | Linux, X11 | Supported through winit, without the early frame; not tested for this release. |
-| macOS | A Metal path exists in the renderer; not tested yet. |
+| macOS, Apple Silicon | Runs through Metal: tested on an M4 Pro with macOS 26 (rendering, pictures through files and shared memory, the clipboard, the terminal's tests). Build from source; there is no packaged build yet, and no early frame (the shell still starts before Metal is ready). |
 | Windows | Not supported yet. |
 
-glass needs a Vulkan driver (on Linux), fontconfig (`fc-match`) for fonts,
-and `wl-copy`/`wl-paste` (Wayland) or `xclip` (X11) for the clipboard.
-Prebuilt binaries are Linux x86_64.
+On Linux glass needs a Vulkan driver, fontconfig (`fc-match`) for fonts,
+and `wl-copy`/`wl-paste` (Wayland) or `xclip` (X11) for the clipboard. On
+macOS it finds fonts in the system's font folders and uses `pbcopy` and
+`pbpaste`. Prebuilt binaries are Linux x86_64 and aarch64.
 
 ## Can a program make glass read my files?
 

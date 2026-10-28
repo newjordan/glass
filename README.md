@@ -183,7 +183,7 @@ are not in the repository (`MINDSEYE_ASSETS` names where they are).
 | Linux, Wayland, NVIDIA | tested (one machine: RTX 3090, Hyprland, Omarchy) |
 | Linux, Wayland, AMD or Intel | should work through Vulkan; not tested yet |
 | Linux, X11 | supported, without the early CPU frame; not tested for this release |
-| macOS | a Metal path exists; not tested yet |
+| macOS, Apple Silicon | runs through Metal (tested on an M4 Pro, macOS 26); build from source, no packaged build yet |
 | Windows | not yet |
 
 ## Layout

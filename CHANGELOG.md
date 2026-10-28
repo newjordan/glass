@@ -81,7 +81,8 @@ These are one machine's numbers, not a general claim.
 
 - Linux on Wayland and X11 with Vulkan, for x86_64 and aarch64. The
   release binaries need glibc 2.31 or newer.
-- A Metal path for macOS exists but is untested; there is no macOS build.
+- macOS on Apple Silicon through Metal, from source: tested on an M4 Pro
+  with macOS 26. There is no packaged macOS build yet.
 - Release tarballs with the binary, a desktop entry, icons and the
   licences of every crate built in; a one-line installer
   (`install.sh`); AUR packages `glass-term` (from source) and
