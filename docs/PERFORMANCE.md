@@ -12,25 +12,27 @@ a 154×39 window. Medians.
 
 | Measure | glass | kitty 0.49.2 | |
 | --- | --- | --- | --- |
-| Program's first output on screen, from launch | **61.5 ms** | 206 ms | 3.4× |
-| Window on screen, from launch | **31 ms** | 73 ms | 2.4× |
-| Program running, from launch | **39.5 ms** | 193 ms | 4.9× |
-| Plain ASCII through the pty | **497 MB/s** | 314 MB/s | 1.6× |
-| Unicode | **179 MB/s** | 145 MB/s | 1.2× |
-| Truecolor | **200 MB/s** | 82 MB/s | 2.4× |
-| Cursor motion | **143 MB/s** | 78 MB/s | 1.8× |
-| Scroll region | **451 MB/s** | 342 MB/s | 1.3× |
-| Full-screen TUI frames | **2,673 fps** | 902 fps | 3.0× |
-| CPU over all six workloads | **0.67 s** | 1.09 s | 1.6× less |
+| Program's first output on screen, from launch | **46.1 ms** | 185 ms | 4.0× |
+| Window on screen, from launch | **27.4 ms** | 72.1 ms | 2.6× |
+| Program running, from launch | **34.0 ms** | 174 ms | 5.1× |
+| Plain ASCII through the pty | **490 MB/s** | 326 MB/s | 1.5× |
+| Unicode | **215 MB/s** | 149 MB/s | 1.4× |
+| Truecolor | **253 MB/s** | 91 MB/s | 2.8× |
+| Cursor motion | **214 MB/s** | 81 MB/s | 2.6× |
+| Scroll region | **444 MB/s** | 344 MB/s | 1.3× |
+| Full-screen TUI frames | **3,457 fps** | 917 fps | 3.8× |
+| CPU over all six workloads | **0.57 s** | 1.12 s | 2.0× less |
 | VRAM, idle window | **45 MiB** | 50 MiB | 1.1× less |
-| Key press to the program | **2.25 ms** | 2.43 ms | 1.1× |
+| Key press to the program | **2.20 ms** | 2.25 ms | 1.0× |
 | Key press to the program, while it floods output | **3.0 ms** | 38.6 ms | 13× |
 
 ![glass vs kitty, measure by measure](media/glass-advantage.png)
 
 Every round and every launch behind these is in
-[`bench/scoreboard-20261027b.json`](../bench/scoreboard-20261027b.json), and
-the raw files are in [`bench/results/2026-10-27/`](../bench/results/2026-10-27/).
+[`bench/scoreboard-20261028.json`](../bench/scoreboard-20261028.json), and
+the raw files are in [`bench/results/2026-10-28-linux/`](../bench/results/2026-10-28-linux/)
+and [`bench/results/2026-10-28-keys/`](../bench/results/2026-10-28-keys/).
+VRAM is from 2026-10-27 ([`bench/results/2026-10-27/`](../bench/results/2026-10-27/)).
 
 ## How each was measured
 
@@ -105,9 +107,9 @@ written something, its cells (backgrounds, glyphs from the same fonts,
 underlines and the cursor), as the GPU will draw them. The GPU's first frame
 then replaces it, with nothing visibly changing.
 
-So 31 ms is when the window, with its real background, is on screen. That
-is what Hyprland reports, and it is the same event for kitty. kitty's own
-window is up at 73 ms, and its shell runs at 193 ms.
+So 27.4 ms is when the window, with its real background, is on screen.
+That is what Hyprland reports, and it is the same event for kitty. kitty's
+own window is up at 72.1 ms, and its shell runs at 174 ms.
 
 The early frame is drawn on Wayland only. On X11, or if any step of it
 fails, glass shows the window with the GPU's first frame, and the program
@@ -125,12 +127,12 @@ program writes first is on screen.
   - It is accurate to one frame, 4.2 ms. A calibration client that flips its window at known moments is caught within a frame plus about half a millisecond.
   - The open animation is turned off for the test windows only, so a fade-in doesn't delay either terminal.
 - **Result.** Medians of 12 launches each, the two terminals taking turns:
-  - **glass: 61.5 ms;**
-  - kitty: 206 ms.
+  - **glass: 46.1 ms;**
+  - kitty: 185 ms.
 
-  Every run, the calibration and the GPU load are in [`bench/results/2026-10-27/visible.json`](../bench/results/2026-10-27/visible.json).
-- **How glass gets there.** The shell starts at about 40 ms, as soon as the compositor has settled the window's size, while the GPU is still opening. Its first output is drawn on the CPU in the window's early frame. Before that early text, glass's first output came with the GPU's first frame, at 172.7 ms.
-- **kitty's config.** kitty read the author's config here. In an earlier session with `--config NONE`, kitty's first output came 18 ms sooner than with that config. Either way glass is about three times quicker.
+  Every run, the calibration and the GPU load are in [`bench/results/2026-10-28-linux/visible.json`](../bench/results/2026-10-28-linux/visible.json). The first published run, on 2026-10-27, gave 61.5 against 206 ms ([`bench/results/2026-10-27/visible.json`](../bench/results/2026-10-27/visible.json)).
+- **How glass gets there.** The shell starts at about 35 ms, as soon as the compositor has settled the window's size, while the GPU is still opening. Its first output is drawn on the CPU in the window's early frame. Before that early text, glass's first output came with the GPU's first frame, at 172.7 ms.
+- **kitty's config.** kitty read the author's config here. In an earlier session with `--config NONE`, kitty's first output came 18 ms sooner than with that config. Either way glass is three to four times quicker.
 
 `GLASS_STARTUP_TRACE=1` prints each step of glass's startup on stderr, with
 milliseconds since `main`.
@@ -178,13 +180,13 @@ throughput and twelve launches for startup, the two taking turns.
 | --- | --- | --- | --- |
 | Program running, from launch | **37 ms** | 141 ms | 3.8× |
 | Window on screen, from launch | **162 ms** | 226 ms | 1.4× |
-| Plain ASCII | **363 MB/s** | 273 MB/s | 1.33× |
-| Unicode | 240 MB/s | 235 MB/s | about even |
-| Truecolor | **253 MB/s** | 218 MB/s | 1.16× |
-| Cursor motion | **209 MB/s** | 187 MB/s | 1.12× |
-| Scroll region | **351 MB/s** | 277 MB/s | 1.27× |
-| Full-screen TUI | **2,891 fps** | 2,428 fps | 1.19× |
-| CPU, six workloads | **0.84 s** | 1.37 s | |
+| Plain ASCII | **364 MB/s** | 281 MB/s | 1.30× |
+| Unicode | 246 MB/s | 237.5 MB/s | about even |
+| Truecolor | **254 MB/s** | 214 MB/s | 1.19× |
+| Cursor motion | **209 MB/s** | 188 MB/s | 1.11× |
+| Scroll region | **351 MB/s** | 285 MB/s | 1.23× |
+| Full-screen TUI | **2,863 fps** | 2,436 fps | 1.18× |
+| CPU, six workloads | **0.84 s** | 1.36 s | |
 
 What it took on the Mac:
 
@@ -202,8 +204,8 @@ What it took on the Mac:
 
 Plain text and the scroll region run near what the pty itself can carry: a
 reader that only reads gets about 260 to 300 MB/s through it. Unicode is
-close: Ghostty's rounds ranged from 213 to 304 MB/s, and glass's from 239 to
-241.
+close: Ghostty's rounds ranged from 219 to 316 MB/s, and glass's from 243 to
+247.
 
 ## The film
 

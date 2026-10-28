@@ -23,8 +23,10 @@ please send the numbers whatever they say.
 | `run-visible.sh` | Launch until the program's first output is on screen. The program paints the whole screen magenta first thing; `visible/viscap.c`, a wlr-screencopy client, watches a patch of the headless output (240 Hz) frame by frame for it. The same launches give (a) program running, (b) `openwindow`, and (w) the window first showing at all. `visible/calclient.c` calibrates the capture with a client whose frames' times are known, and every captured launch is paired with one uncaptured, to see what capturing costs. `visible/analyze.py` turns a session into JSON. Builds its helpers with `cc` and `wayland-scanner`. |
 | `take-mindseye.sh` | Records the mind's eye film: glass films itself (`GLASS_RECORD`) while the `glass_mindseye` example runs in it, full-screen on a headless output. |
 | `lib.sh` | Shared: the headless output, launching, and the terminals the harness knows (`term_cmd`). |
-| `scoreboard-20261027b.json` | The published numbers, with every round and launch behind them. The film's board reads it. |
-| `results/2026-10-27/` | The raw files behind the published numbers; see its README. |
+| `scoreboard-20261028.json` | The published Linux numbers, with every round and launch behind them. |
+| `scoreboard-20261027b.json` | The first published numbers (2026-10-27). The film's board reads it. |
+| `results/2026-10-28-linux/` | The raw files behind the published Linux numbers; see its README. |
+| `results/2026-10-27/` | The raw files behind the first published numbers; see its README. |
 | `macos/run-tput.sh` | macOS: `tput.py` in glass and Ghostty, taking turns, a round each; `macos/in-term.sh` runs it inside each, and `macos/ghostty.conf` gives Ghostty glass's grid and font size. |
 | `macos/run-startup.sh` | macOS: launch to window on screen (the window list) and to program running (`macos/stamp.c` writes the clock), glass and Ghostty taking turns. It builds `macos/launch.swift` and `macos/stamp.c` with the Xcode tools. |
 | `results/2026-10-28-macos/` | The Mac runs behind docs/PERFORMANCE.md's macOS section; see its README. |
@@ -123,8 +125,8 @@ RUNS=16 TERMS="glass kitty" bench/run-visible.sh
 
 This is the measure for when the prompt really appears; "window on screen"
 counts the window as soon as its first buffer arrives, before anything is
-written into it. The published medians are glass 61.5 ms and kitty 206 ms
-(`results/2026-10-27/visible.json`; see
+written into it. The published medians are glass 46.1 ms and kitty 185 ms
+(`results/2026-10-28-linux/visible.json`; see
 [docs/PERFORMANCE.md](../docs/PERFORMANCE.md#when-the-prompt-appears)).
 It needs `cc`, `wayland-scanner`, `wayland-protocols` and
 `libwayland-client` to build its two helpers, and it adds one window rule

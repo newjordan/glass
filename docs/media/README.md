@@ -1,15 +1,15 @@
 # Media
 
 What the README, the site and the social posts use. Every number in the
-charts comes from [`bench/scoreboard-20261027b.json`](../../bench/scoreboard-20261027b.json);
+charts comes from [`bench/scoreboard-20261028.json`](../../bench/scoreboard-20261028.json);
 the method is in [docs/PERFORMANCE.md](../PERFORMANCE.md).
 
 | File | What it is |
 | --- | --- |
 | `hero-loop.gif` | 5 s of the mind's eye film, 640×360 at 12 fps (6.5 MB). The top of the README; links to the full film. |
-| `glass-advantage.png` | How many times better glass measured than kitty 0.49.2, measure by measure (3200×2000). |
+| `glass-advantage.png` | How many times better glass measured than kitty 0.49.2, measure by measure (3200×2324). |
 | `glass-throughput.png` | MB/s per workload, glass and kitty 0.49.2 (3200×1800). |
-| `glass-startup.png` | Window on screen and program running, glass and kitty 0.49.2 (3200×1120). |
+| `glass-startup.png` | Prompt on screen, window on screen and program running, glass and kitty 0.49.2 (3200×1360). |
 | `glass-card.png` | The social preview / Open Graph card, 2560×1280 (2× of 1280×640). Upload it under the repo's Settings → Social preview. |
 
 The site keeps its own copy of the loop as a video

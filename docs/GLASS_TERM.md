@@ -532,10 +532,12 @@ engine and real key events to the encoder.
   first GPU frame shows it. Without an early frame (X11, other systems,
   or a step failing), the program starts after the GPU's first frame,
   as before.
-- **Measured.** Medians of 16 runs on one machine, launched
-  through Hyprland on a headless output, against kitty 0.49.2:
-  - window on screen: 31 ms (kitty 73);
-  - program running: 39.5 ms (kitty 193).
+- **Measured.** Medians of 12 runs on one machine, launched
+  through Hyprland on a headless output, against kitty 0.49.2
+  (2026-10-28):
+  - window on screen: 27.4 ms (kitty 72.1);
+  - program running: 34.0 ms (kitty 174);
+  - the program's first output on screen: 46.1 ms (kitty 185).
 - **Pipelines.** Shader pipelines cost about 2 ms in all, as the
   driver's own shader cache already holds them, so glass keeps no
   pipeline cache of its own. `GLASS_STARTUP_TRACE=1` prints each step on

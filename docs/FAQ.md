@@ -1,7 +1,7 @@
 # FAQ
 
 - [Is glass a fork of another terminal?](#is-glass-a-fork-of-another-terminal)
-- [Is the 31 ms window honest?](#is-the-31-ms-window-honest)
+- [Is the 27 ms window honest?](#is-the-27-ms-window-honest)
 - [How does it compare with alacritty, ghostty, foot or wezterm?](#how-does-it-compare-with-alacritty-ghostty-foot-or-wezterm)
 - [Why not use kitty, ghostty or wezterm?](#why-not-use-kitty-ghostty-or-wezterm)
 - [What does it run on?](#what-does-it-run-on)
@@ -18,21 +18,21 @@ a library. The window, the renderer (wgpu), the picture store, the
 keyboard handling, glass's own dialect and every adapter for the other
 dialects (APC graphics, sixel, OSC 1337) are glass's own code.
 
-## Is the 31 ms window honest?
+## Is the 27 ms window honest?
 
 It is when the window, with its real background, is on screen: Hyprland's
 `openwindow` event, which it sends when the window's first buffer arrives,
-and the same event is used for kitty (73 ms).
+and the same event is used for kitty (72 ms).
 
 What makes it fast: the NVIDIA driver takes about 100 ms to open, so glass
 draws the window on the CPU into shared memory first, and the window maps
 then. Your shell starts as soon as the compositor has settled the window's
-size, at about 40 ms. Its first output is drawn on the CPU too, with the
+size, at about 35 ms. Its first output is drawn on the CPU too, with the
 same fonts and colours. The GPU's first frame replaces the CPU-drawn one
 when the driver is ready, with nothing visibly changing.
 
-The number to judge by is when your prompt is on screen: **61.5 ms for
-glass, 206 ms for kitty**. That's the median of 12 launches each, caught
+The number to judge by is when your prompt is on screen: **46.1 ms for
+glass, 185 ms for kitty**. That's the median of 12 launches each, caught
 frame by frame on a 240 Hz output.
 
 The early frame is Wayland only. On X11 there is no early frame, and the
@@ -42,8 +42,11 @@ All of it, with the method: [PERFORMANCE.md](PERFORMANCE.md#when-the-prompt-appe
 
 ## How does it compare with alacritty, ghostty, foot or wezterm?
 
-Not measured yet, so there is no answer to give. Only kitty 0.49.2 has
-been run through the harness, on one machine. Adding a terminal to
+On Linux, only kitty 0.49.2 has been run through the harness, on one
+machine. On macOS, glass was measured against Ghostty 1.4.0 on an M4 Pro:
+ahead on every measure but wide text, which is about even
+([PERFORMANCE.md](PERFORMANCE.md#macos)). Alacritty, foot and wezterm are
+not measured yet. Adding a terminal to
 [`bench/`](../bench/README.md#add-another-terminal) is one line; if you run
 it, please post the numbers, whatever they say.
 

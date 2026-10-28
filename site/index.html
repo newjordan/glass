@@ -261,37 +261,38 @@ footer .legal { margin-top: 32px; }
     <div class="wrap">
       <p class="eyebrow">Measured</p>
       <h2>Fast at text, too.</h2>
-      <p class="lede">Against kitty 0.49.2 on one machine: Ryzen 9 9950X3D, RTX 3090, Hyprland, a 154×39 window. Medians of 5 interleaved throughput rounds, and of 12 to 16 launches each.</p>
+      <p class="lede">Against kitty 0.49.2 on one machine: Ryzen 9 9950X3D, RTX 3090, Hyprland, a 154×39 window. Medians of 5 interleaved throughput rounds, and of 12 launches each.</p>
 
       <div class="stats">
-        <div class="stat"><div class="v">61.5<small>ms</small></div><div class="k">your prompt on screen</div><div class="vs">kitty 0.49.2: 206 ms</div></div>
-        <div class="stat"><div class="v">497<small>MB/s</small></div><div class="k">plain ASCII through the pty</div><div class="vs">kitty 0.49.2: 314 MB/s</div></div>
-        <div class="stat"><div class="v">2,673<small>fps</small></div><div class="k">full-screen TUI frames</div><div class="vs">kitty 0.49.2: 902 fps</div></div>
+        <div class="stat"><div class="v">46.1<small>ms</small></div><div class="k">your prompt on screen</div><div class="vs">kitty 0.49.2: 185 ms</div></div>
+        <div class="stat"><div class="v">3.0<small>ms</small></div><div class="k">a key to the program, mid-flood</div><div class="vs">kitty 0.49.2: 38.6 ms</div></div>
+        <div class="stat"><div class="v">3,457<small>fps</small></div><div class="k">full-screen TUI frames</div><div class="vs">kitty 0.49.2: 917 fps</div></div>
       </div>
 
       <div class="table-wrap">
         <table class="nums">
           <thead><tr><th>Measure</th><th>glass</th><th>kitty 0.49.2</th><th>glass, times better</th></tr></thead>
           <tbody>
-            <tr><td class="m">First output on screen, from launch</td><td class="g">61.5 ms</td><td class="k">206 ms</td><td class="r"><div class="bar"><i style="width:68%"></i><span>3.4×</span></div></td></tr>
-            <tr><td class="m">Window on screen, from launch</td><td class="g">31 ms</td><td class="k">73 ms</td><td class="r"><div class="bar"><i style="width:48%"></i><span>2.4×</span></div></td></tr>
-            <tr><td class="m">Program running, from launch</td><td class="g">39.5 ms</td><td class="k">193 ms</td><td class="r"><div class="bar"><i style="width:98%"></i><span>4.9×</span></div></td></tr>
-            <tr><td class="m">Plain ASCII through the pty</td><td class="g">497 MB/s</td><td class="k">314 MB/s</td><td class="r"><div class="bar"><i style="width:32%"></i><span>1.6×</span></div></td></tr>
-            <tr><td class="m">Unicode</td><td class="g">179 MB/s</td><td class="k">145 MB/s</td><td class="r"><div class="bar"><i style="width:24%"></i><span>1.2×</span></div></td></tr>
-            <tr><td class="m">Truecolor</td><td class="g">200 MB/s</td><td class="k">82 MB/s</td><td class="r"><div class="bar"><i style="width:48%"></i><span>2.4×</span></div></td></tr>
-            <tr><td class="m">Cursor motion</td><td class="g">143 MB/s</td><td class="k">78 MB/s</td><td class="r"><div class="bar"><i style="width:36%"></i><span>1.8×</span></div></td></tr>
-            <tr><td class="m">Scroll region</td><td class="g">451 MB/s</td><td class="k">342 MB/s</td><td class="r"><div class="bar"><i style="width:26%"></i><span>1.3×</span></div></td></tr>
-            <tr><td class="m">Full-screen TUI frames</td><td class="g">2,673 fps</td><td class="k">902 fps</td><td class="r"><div class="bar"><i style="width:60%"></i><span>3.0×</span></div></td></tr>
-            <tr><td class="m">CPU over all six workloads</td><td class="g">0.67 s</td><td class="k">1.09 s</td><td class="r"><div class="bar"><i style="width:32%"></i><span>1.6× less</span></div></td></tr>
-            <tr><td class="m">VRAM, idle window</td><td class="g">45 MiB</td><td class="k">50 MiB</td><td class="r"><div class="bar"><i style="width:22%"></i><span>1.1× less</span></div></td></tr>
-            <tr><td class="m">Key press to the program</td><td class="g">2.25 ms</td><td class="k">2.43 ms</td><td class="r"><div class="bar"><i style="width:22%"></i><span>1.1×</span></div></td></tr>
+            <tr><td class="m">First output on screen, from launch</td><td class="g">46.1 ms</td><td class="k">185 ms</td><td class="r"><div class="bar"><i style="width:31%"></i><span>4.0×</span></div></td></tr>
+            <tr><td class="m">Window on screen, from launch</td><td class="g">27.4 ms</td><td class="k">72.1 ms</td><td class="r"><div class="bar"><i style="width:20%"></i><span>2.6×</span></div></td></tr>
+            <tr><td class="m">Program running, from launch</td><td class="g">34.0 ms</td><td class="k">174 ms</td><td class="r"><div class="bar"><i style="width:39%"></i><span>5.1×</span></div></td></tr>
+            <tr><td class="m">Plain ASCII through the pty</td><td class="g">490 MB/s</td><td class="k">326 MB/s</td><td class="r"><div class="bar"><i style="width:12%"></i><span>1.5×</span></div></td></tr>
+            <tr><td class="m">Unicode</td><td class="g">215 MB/s</td><td class="k">149 MB/s</td><td class="r"><div class="bar"><i style="width:11%"></i><span>1.4×</span></div></td></tr>
+            <tr><td class="m">Truecolor</td><td class="g">253 MB/s</td><td class="k">91 MB/s</td><td class="r"><div class="bar"><i style="width:22%"></i><span>2.8×</span></div></td></tr>
+            <tr><td class="m">Cursor motion</td><td class="g">214 MB/s</td><td class="k">81 MB/s</td><td class="r"><div class="bar"><i style="width:20%"></i><span>2.6×</span></div></td></tr>
+            <tr><td class="m">Scroll region</td><td class="g">444 MB/s</td><td class="k">344 MB/s</td><td class="r"><div class="bar"><i style="width:10%"></i><span>1.3×</span></div></td></tr>
+            <tr><td class="m">Full-screen TUI frames</td><td class="g">3,457 fps</td><td class="k">917 fps</td><td class="r"><div class="bar"><i style="width:29%"></i><span>3.8×</span></div></td></tr>
+            <tr><td class="m">CPU over all six workloads</td><td class="g">0.57 s</td><td class="k">1.12 s</td><td class="r"><div class="bar"><i style="width:15%"></i><span>2.0× less</span></div></td></tr>
+            <tr><td class="m">VRAM, idle window</td><td class="g">45 MiB</td><td class="k">50 MiB</td><td class="r"><div class="bar"><i style="width:8%"></i><span>1.1× less</span></div></td></tr>
+            <tr><td class="m">Key press to the program</td><td class="g">2.20 ms</td><td class="k">2.25 ms</td><td class="r"><div class="bar"><i style="width:8%"></i><span>1.0×</span></div></td></tr>
+            <tr><td class="m">Key press to the program, while it floods output</td><td class="g">3.0 ms</td><td class="k">38.6 ms</td><td class="r"><div class="bar"><i style="width:100%"></i><span>13×</span></div></td></tr>
           </tbody>
         </table>
       </div>
 
       <ul class="notes">
         <li><b>First output on screen</b> is launch until what the program writes first is visible, caught frame by frame on a 240 Hz output. While the GPU driver opens (about 100 ms on NVIDIA), glass draws the window on the CPU: the background, then your shell's text in the same fonts and colours. The GPU's first frame takes over with nothing visibly changing.</li>
-        <li><b>Only kitty has been measured</b>, on one machine. alacritty, ghostty, foot and wezterm: not yet. Other GPUs and CPUs will differ.</li>
+        <li><b>On Linux only kitty has been measured</b>, on one machine. On macOS, against Ghostty 1.4.0 on an M4 Pro, glass is ahead on every measure but wide text, which is about even. alacritty, foot and wezterm: not yet. Other GPUs and CPUs will differ.</li>
         <li><b>Plain ASCII</b> depends on the CPU's cache: on X3D parts glass keeps its parser on the die with the big L3.</li>
       </ul>
       <p class="method">Method, caveats and every run: <a href="https://github.com/newjordan/glass/blob/main/docs/PERFORMANCE.md">docs/PERFORMANCE.md</a> · the harness: <a href="https://github.com/newjordan/glass/tree/main/bench">bench/</a></p>

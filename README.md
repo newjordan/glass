@@ -32,18 +32,18 @@ a 154×39 window). Medians.
 
 | | glass | kitty 0.49.2 | |
 | --- | --- | --- | --- |
-| Program's first output on screen, from launch | **61.5 ms** | 206 ms | 3.4× |
-| Window on screen, from launch | **31 ms** | 73 ms | 2.4× |
-| Program running, from launch | **39.5 ms** | 193 ms | 4.9× |
-| Plain ASCII through the pty | **497 MB/s** | 314 MB/s | 1.6× |
-| Unicode | **179 MB/s** | 145 MB/s | 1.2× |
-| Truecolor | **200 MB/s** | 82 MB/s | 2.4× |
-| Cursor motion | **143 MB/s** | 78 MB/s | 1.8× |
-| Scroll region | **451 MB/s** | 342 MB/s | 1.3× |
-| Full-screen TUI frames | **2,673 fps** | 902 fps | 3.0× |
-| CPU over all six workloads | **0.67 s** | 1.09 s | 1.6× less |
+| Program's first output on screen, from launch | **46.1 ms** | 185 ms | 4.0× |
+| Window on screen, from launch | **27.4 ms** | 72.1 ms | 2.6× |
+| Program running, from launch | **34.0 ms** | 174 ms | 5.1× |
+| Plain ASCII through the pty | **490 MB/s** | 326 MB/s | 1.5× |
+| Unicode | **215 MB/s** | 149 MB/s | 1.4× |
+| Truecolor | **253 MB/s** | 91 MB/s | 2.8× |
+| Cursor motion | **214 MB/s** | 81 MB/s | 2.6× |
+| Scroll region | **444 MB/s** | 344 MB/s | 1.3× |
+| Full-screen TUI frames | **3,457 fps** | 917 fps | 3.8× |
+| CPU over all six workloads | **0.57 s** | 1.12 s | 2.0× less |
 | VRAM, idle window | **45 MiB** | 50 MiB | 1.1× less |
-| Key press to the program | **2.25 ms** | 2.43 ms | 1.1× |
+| Key press to the program | **2.20 ms** | 2.25 ms | 1.0× |
 | Key press to the program, while it floods output | **3.0 ms** | 38.6 ms | 13× |
 
 ![glass vs kitty 0.49.2, measure by measure](docs/media/glass-advantage.png)
@@ -55,8 +55,10 @@ a 154×39 window). Medians.
   CPU: the background first, then your shell's text, with the same fonts
   and colours the GPU draws them in. The GPU's first frame takes over with
   nothing visibly changing.
-- Only kitty has been measured, on one machine. Other terminals, GPUs and
-  CPUs: not yet.
+- On Linux only kitty has been measured, on one machine. On macOS, against
+  Ghostty 1.4.0 on an M4 Pro, glass is ahead on every measure but wide
+  text, which is about even ([docs/PERFORMANCE.md](docs/PERFORMANCE.md#macos)).
+  Other terminals, GPUs and CPUs: not yet.
 
 How each was measured, and every caveat: [docs/PERFORMANCE.md](docs/PERFORMANCE.md).
 The harness and every run: [`bench/`](bench/).

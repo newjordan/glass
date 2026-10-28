@@ -64,16 +64,20 @@ description of what to show.
 Measured against kitty 0.49.2 on one machine (Ryzen 9 9950X3D, RTX 3090,
 Hyprland), both in the same 154×39 window. Throughput workloads are timed
 until the terminal answers DA1, as the median of five interleaved rounds;
-startup is the median of 16 launches (first output on screen: 12, caught at
-240 Hz).
+startup is the median of 12 launches, caught at 240 Hz.
 
 | | glass | kitty 0.49.2 |
 | --- | --- | --- |
-| First output on screen | 61.5 ms | 206 ms |
-| Window on screen | 31 ms | 73 ms |
-| Program running | 39.5 ms | 193 ms |
-| Plain text | 497 MB/s | 314 MB/s |
-| Full-screen TUI | 2,673 fps | 902 fps |
+| First output on screen | 46.1 ms | 185 ms |
+| Window on screen | 27.4 ms | 72.1 ms |
+| Program running | 34.0 ms | 174 ms |
+| Plain text | 490 MB/s | 326 MB/s |
+| Truecolor | 253 MB/s | 91 MB/s |
+| Full-screen TUI | 3,457 fps | 917 fps |
+| Key press to the program, during a flood | 3.0 ms | 38.6 ms |
+
+On macOS (M4 Pro), against Ghostty 1.4.0, glass is ahead on every measure
+but wide text, which is about even; docs/PERFORMANCE.md has the table.
 
 These are one machine's numbers, not a general claim.
 

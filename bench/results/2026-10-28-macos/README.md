@@ -3,7 +3,7 @@
 **The machine:** a Mac mini with an M4 Pro, macOS 26.6.2, and a 4K display that stayed awake for the runs (`caffeinate -d`). The Mac was in ordinary use, with other apps open.
 
 **What was measured:**
-- **glass** at `aacf529` for throughput, and `f727bb8` for startup. The commits in between changed only startup.
+- **glass** at `4660308` for throughput, and `f727bb8` for startup.
 - **Ghostty 1.4.0,** the notarized release.
 - Both had a 160×48 grid at font size 13. Ghostty's settings are in `../../macos/ghostty.conf`.
 
@@ -13,15 +13,15 @@
 
 | Workload | glass | Ghostty | |
 | --- | --- | --- | --- |
-| Plain ASCII | **363 MB/s** | 273 MB/s | 1.33× |
-| Unicode | 240 MB/s | 235 MB/s | about even |
-| Truecolor | **253 MB/s** | 218 MB/s | 1.16× |
-| Cursor motion | **209 MB/s** | 187 MB/s | 1.12× |
-| Scroll region | **351 MB/s** | 277 MB/s | 1.27× |
-| Full-screen TUI | **2,891 fps** | 2,428 fps | 1.19× |
-| CPU, all six | **0.84 s** | 1.37 s | |
+| Plain ASCII | **364 MB/s** | 281 MB/s | 1.30× |
+| Unicode | 246 MB/s | 237.5 MB/s | about even |
+| Truecolor | **254 MB/s** | 214 MB/s | 1.19× |
+| Cursor motion | **209 MB/s** | 188 MB/s | 1.11× |
+| Scroll region | **351 MB/s** | 285 MB/s | 1.23× |
+| Full-screen TUI | **2,863 fps** | 2,436 fps | 1.18× |
+| CPU, all six | **0.84 s** | 1.36 s | |
 
-- **Unicode is a close call.** Ghostty's rounds ranged from 213 to 304 MB/s; glass's stayed between 239 and 241.
+- **Unicode is a close call.** Ghostty's rounds ranged from 219 to 316 MB/s; glass's stayed between 243 and 247.
 - **Accents.** The workload's "á" is an "a" followed by a combining accent. glass stores that accent on the letter's cell, as alacritty's grid does, at the cost of a small allocation.
 
 ## Startup
