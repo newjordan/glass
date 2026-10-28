@@ -6,6 +6,9 @@
 //! (`glass.desktop`): `-e`/`--` and the command, `--title`, `--class`
 //! (or `--app-id`), `--working-directory` (or `--dir`) and `--hold`.
 
+#[global_allocator]
+static ALLOCATOR: mimalloc::MiMalloc = mimalloc::MiMalloc;
+
 mod affinity;
 mod blink;
 mod engine;
