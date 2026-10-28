@@ -17,6 +17,10 @@
 //! `GLASS_AFFINITY=off` leaves the threads where the scheduler puts them;
 //! `auto`, the default, places them as above.
 
+// Only Linux places threads; the reading of cache domains is kept, and
+// tested, everywhere.
+#![cfg_attr(not(target_os = "linux"), allow(dead_code))]
+
 #[cfg(target_os = "linux")]
 use std::path::Path;
 

@@ -16,6 +16,9 @@
 //! Wayland only. Elsewhere, or if any step fails, nothing is drawn here and
 //! the window shows with the GPU's first frame.
 
+// Elsewhere the drawing is built and tested, and never shown.
+#![cfg_attr(not(all(unix, not(target_os = "macos"))), allow(dead_code))]
+
 use std::collections::HashMap;
 
 use ratatui_core::style::{Color, Modifier};
