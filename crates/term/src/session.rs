@@ -700,7 +700,7 @@ impl Session {
         // of hold (tens of microseconds) can be most of the wait.
         let deadline = std::time::Instant::now() + Duration::from_micros(500);
         while std::time::Instant::now() < deadline {
-            if let Some(guard) = self.engine.try_lock().ok() {
+            if let Ok(guard) = self.engine.try_lock() {
                 self.engine_wanted.store(false, Ordering::Release);
                 return guard;
             }

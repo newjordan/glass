@@ -29,10 +29,30 @@ for c in json.load(sys.stdin):
 LOG=$TMPDIR/keys-$TAG-$$.log
 SENT=$TMPDIR/sent-$TAG-$$.log
 ERR=${ERRLOG:-}
-ENVV=""
-[ -n "$ERR" ] && ENVV="GLASS_KEY_TRACE=1"
+ENVV="${SLOW_KEYS:+GLASS_SLOW_KEYS=$SLOW_KEYS}"
+# TRACE lets a run trace without writing: `quiet` runs the same code
+# paths, `1` prints the marks to ERRLOG's file.
+TRACE=${TRACE:-}
+[ -n "$ERR" ] && TRACE=${TRACE:-1}
+[ -n "$TRACE" ] && ENVV="$ENVV GLASS_KEY_TRACE=$TRACE"
 if [ -n "${LOAD:-}" ]; then
-  CMD="sh -c 'yes | head -c 200000000 & exec python3 -I $B/keys.py $LOG'"
+  # The flood must outlast the keys and reach the pty: `yes` writes to
+  # the terminal itself (`/dev/tty`), so the run's output redirection
+  # (an ERRLOG run redirects glass's stderr to a file) does not swallow
+  # it and turn a load run into an idle one.
+  CMD="sh -c 'yes > /dev/tty & exec python3 -I $B/keys.py $LOG'"
+  # FLOOD_MB caps the flood's pace instead (that many MB a second, a
+  # paced writer in python), for telling lock waits from kernel queueing.
+  if [ -n "${FLOOD_MB:-}" ]; then
+    CMD="sh -c 'python3 -c \"import time,sys
+chunk=b\\\"y\\n\\\"*$FLOOD_MB*1024*1024
+while True:
+    t=time.monotonic()
+    sys.stdout.buffer.write(chunk)
+    sys.stdout.buffer.flush()
+    d=time.monotonic()-t
+    if d<1: time.sleep(1-d)\" > /dev/tty & exec python3 -I $B/keys.py $LOG'"
+  fi
 else
   CMD="python3 -I $B/keys.py $LOG"
 fi
