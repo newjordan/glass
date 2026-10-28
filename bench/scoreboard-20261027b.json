@@ -1,0 +1,200 @@
+{
+ "title": "glass vs kitty 0.49.2",
+ "note": "same machine (Ryzen 9 9950X3D, RTX 3090), same 154x39 window; each workload timed until the terminal answers DA1; 5 interleaved rounds; startup: median of 16 launches",
+ "rounds": 5,
+ "throughput": [
+  {
+   "name": "plain ASCII",
+   "glass": 497.4,
+   "kitty": 314.2,
+   "glass_runs": [
+    488.7,
+    497.4,
+    477.1,
+    501.3,
+    498.2
+   ],
+   "kitty_runs": [
+    325.7,
+    326.2,
+    312.3,
+    314.2,
+    301.5
+   ]
+  },
+  {
+   "name": "unicode",
+   "glass": 179.0,
+   "kitty": 145.2,
+   "glass_runs": [
+    179.3,
+    179.2,
+    179.0,
+    177.2,
+    176.3
+   ],
+   "kitty_runs": [
+    145.2,
+    142.2,
+    145.6,
+    142.3,
+    145.2
+   ]
+  },
+  {
+   "name": "truecolor",
+   "glass": 199.7,
+   "kitty": 82.4,
+   "glass_runs": [
+    190.1,
+    202.2,
+    199.7,
+    201.0,
+    197.3
+   ],
+   "kitty_runs": [
+    82.4,
+    82.4,
+    84.4,
+    82.4,
+    85.5
+   ]
+  },
+  {
+   "name": "cursor motion",
+   "glass": 142.9,
+   "kitty": 77.9,
+   "glass_runs": [
+    139.8,
+    136.2,
+    143.0,
+    144.1,
+    142.9
+   ],
+   "kitty_runs": [
+    78.5,
+    77.9,
+    78.1,
+    77.1,
+    76.1
+   ]
+  },
+  {
+   "name": "scroll region",
+   "glass": 451.0,
+   "kitty": 342.3,
+   "glass_runs": [
+    447.3,
+    448.8,
+    451.0,
+    468.3,
+    471.7
+   ],
+   "kitty_runs": [
+    342.3,
+    342.0,
+    350.9,
+    342.7,
+    334.8
+   ]
+  }
+ ],
+ "tui_fps": {
+  "glass": 2673,
+  "kitty": 902
+ },
+ "cpu_s": {
+  "glass": 0.67,
+  "kitty": 1.09
+ },
+ "vram_mib": {
+  "glass": 45,
+  "kitty": 50
+ },
+ "startup_ms": {
+  "glass": 39.5,
+  "kitty": 193.0,
+  "glass_runs": [
+   32,
+   40,
+   33,
+   45,
+   39,
+   42,
+   40,
+   41,
+   41,
+   40,
+   39,
+   39,
+   38,
+   40,
+   39,
+   38
+  ],
+  "kitty_runs": [
+   192,
+   204,
+   198,
+   194,
+   198,
+   151,
+   192,
+   198,
+   192,
+   197,
+   189,
+   190,
+   181,
+   195,
+   180,
+   210
+  ]
+ },
+ "first_frame_ms": {
+  "glass": 31.0,
+  "kitty": 73.0,
+  "glass_runs": [
+   24,
+   31,
+   25,
+   33,
+   29,
+   33,
+   29,
+   31,
+   31,
+   32,
+   30,
+   31,
+   30,
+   32,
+   31,
+   29
+  ],
+  "kitty_runs": [
+   71,
+   75,
+   76,
+   76,
+   75,
+   72,
+   72,
+   74,
+   74,
+   72,
+   72,
+   71,
+   74,
+   72,
+   71,
+   74
+  ]
+ },
+ "key_to_pty_ms": {
+  "glass": 2.25,
+  "kitty": 2.43
+ },
+ "glass_build": "glass/mindseye 28222a960 (sha 21b94aa0); throughput measured on 04b5ccbef, whose read path it shares",
+ "measured": "2026-10-27 19:10 (throughput), 21:00 (startup)"
+}
