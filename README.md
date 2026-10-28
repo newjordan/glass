@@ -32,6 +32,7 @@ a 154×39 window). Medians.
 
 | | glass | kitty 0.49.2 | |
 | --- | --- | --- | --- |
+| Program's first output on screen, from launch | **61.5 ms** | 206 ms | 3.4× |
 | Window on screen, from launch | **31 ms** | 73 ms | 2.4× |
 | Program running, from launch | **39.5 ms** | 193 ms | 4.9× |
 | Plain ASCII through the pty | **497 MB/s** | 314 MB/s | 1.6× |
@@ -46,11 +47,13 @@ a 154×39 window). Medians.
 
 ![glass vs kitty 0.49.2, measure by measure](docs/media/glass-advantage.png)
 
-- **Window on screen** is the window with its real background, drawn on
-  the CPU while the GPU driver opens (about 100 ms on NVIDIA). Your shell
-  starts at 39.5 ms; **your prompt appears with the GPU's first frame**,
-  about 130–180 ms after launch on this machine, a time not yet measured
-  as its own number.
+- **First output on screen** is the one to judge by: launch until what the
+  program writes first is visible, caught frame by frame on a 240 Hz
+  output (one frame, 4.2 ms). The GPU driver takes about a tenth of a
+  second to open on NVIDIA, so until it has, glass draws the window on the
+  CPU: the background first, then your shell's text, with the same fonts
+  and colours the GPU draws them in. The GPU's first frame takes over with
+  nothing visibly changing.
 - Only kitty has been measured, on one machine. Other terminals, GPUs and
   CPUs: not yet.
 

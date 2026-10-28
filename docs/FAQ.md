@@ -25,18 +25,20 @@ It is when the window, with its real background, is on screen: Hyprland's
 and the same event is used for kitty (73 ms).
 
 What makes it fast: the NVIDIA driver takes about 100 ms to open, so glass
-draws the window's background (colour, background image and tint) on the
-CPU into shared memory first, and the window maps then. Your shell starts
-as soon as the compositor has settled the window's size, at 39.5 ms. The
-GPU's first frame replaces the CPU-drawn background when the driver is
-ready, with nothing visibly changing, and **your prompt appears with that
-first GPU frame**, about 130 to 180 ms after launch on the test machine,
-not at 31 ms. That time has not been measured as its own number yet.
+draws the window on the CPU into shared memory first, and the window maps
+then. Your shell starts as soon as the compositor has settled the window's
+size, at about 40 ms. Its first output is drawn on the CPU too, with the
+same fonts and colours. The GPU's first frame replaces the CPU-drawn one
+when the driver is ready, with nothing visibly changing.
+
+The number to judge by is when your prompt is on screen: **61.5 ms for
+glass, 206 ms for kitty**. That's the median of 12 launches each, caught
+frame by frame on a 240 Hz output.
 
 The early frame is Wayland only. On X11 there is no early frame, and the
 program starts after the GPU's first frame.
 
-All of it, with the method: [PERFORMANCE.md](PERFORMANCE.md#what-window-on-screen-shows).
+All of it, with the method: [PERFORMANCE.md](PERFORMANCE.md#when-the-prompt-appears).
 
 ## How does it compare with alacritty, ghostty, foot or wezterm?
 

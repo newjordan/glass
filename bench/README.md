@@ -22,9 +22,9 @@ terminal is one line (below); please send the numbers whatever they say.
 | `results/2026-10-27/` | The raw files behind the published numbers; see its README. |
 | `results/local/` | Where your own runs go by default (ignored by git). |
 
-`run-visible.sh` and `visible/` are the newest measure, launch until the
-program's first output is on screen. Their results are not published yet;
-see below.
+`run-visible.sh` and `visible/` measure launch until the program's first
+output is on screen. The published result is in
+`results/2026-10-27/visible.json`; see below.
 
 ### The six workloads (`tput.py`)
 
@@ -112,9 +112,11 @@ instead; give `tput.py` the terminal's pid the way it reads kitty's
 RUNS=16 TERMS="glass kitty" bench/run-visible.sh
 ```
 
-This is the measure for when the prompt really appears (the published
-"window on screen" is the window with its background, before the GPU's
-first frame; see [docs/PERFORMANCE.md](../docs/PERFORMANCE.md#when-the-prompt-appears)).
+This is the measure for when the prompt really appears; "window on screen"
+counts the window as soon as its first buffer arrives, before anything is
+written into it. The published medians are glass 61.5 ms and kitty 206 ms
+(`results/2026-10-27/visible.json`; see
+[docs/PERFORMANCE.md](../docs/PERFORMANCE.md#when-the-prompt-appears)).
 It needs `cc`, `wayland-scanner`, `wayland-protocols` and
 `libwayland-client` to build its two helpers, and it adds one window rule
 (for `bench-vis-*` windows: no open animation, full opacity) for the

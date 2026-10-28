@@ -1,0 +1,1347 @@
+{
+ "refresh_hz": 240.0,
+ "frame_period_ms": 4.167,
+ "capture_format": "# format 0x00000000 64x64 stride 256 y_invert 0",
+ "capture_cadence": {
+  "frames": 24390,
+  "median_interval_ms": 4.163,
+  "share_of_intervals_over_1.5_periods": 0.0061,
+  "max_interval_ms": 26.87,
+  "recv_minus_ready_median_ms": 0.245
+ },
+ "clock_drift_real_minus_mono_ms": -0.0,
+ "calibration": {
+  "post": {
+   "switches": 30,
+   "seen": 30,
+   "commit_to_frame_ms": {
+    "min": 0.6,
+    "median": 2.23,
+    "max": 8.79
+   },
+   "commit_to_frame_ms_runs": [
+    1.7,
+    8.79,
+    1.64,
+    4.27,
+    1.17,
+    3.67,
+    3.89,
+    3.28,
+    0.66,
+    3.33,
+    1.94,
+    2.2,
+    1.77,
+    2.43,
+    1.98,
+    1.01,
+    3.73,
+    1.61,
+    2.45,
+    1.93,
+    0.72,
+    2.25,
+    1.07,
+    2.72,
+    0.6,
+    0.61,
+    3.36,
+    3.62,
+    3.32,
+    3.6
+   ],
+   "commit_to_presented_ms": {
+    "min": 1.05,
+    "median": 2.71,
+    "max": 6.27
+   },
+   "frame_minus_presented_ms_no_missed_frame": {
+    "min": -2.54,
+    "median": -0.38,
+    "max": -0.15
+   },
+   "switches_seen_after_a_missed_frame": 1
+  },
+  "pre": {
+   "switches": 30,
+   "seen": 30,
+   "commit_to_frame_ms": {
+    "min": 0.71,
+    "median": 1.99,
+    "max": 4.23
+   },
+   "commit_to_frame_ms_runs": [
+    2.53,
+    3.44,
+    4.23,
+    0.88,
+    1.34,
+    2.38,
+    2.31,
+    0.98,
+    2.23,
+    1.52,
+    2.66,
+    3.93,
+    1.39,
+    2.54,
+    1.11,
+    3.62,
+    3.54,
+    1.95,
+    0.87,
+    3.03,
+    1.55,
+    1.29,
+    0.75,
+    1.03,
+    0.71,
+    2.79,
+    2.03,
+    1.13,
+    1.2,
+    3.6
+   ],
+   "commit_to_presented_ms": {
+    "min": 1.52,
+    "median": 3.53,
+    "max": 8.0
+   },
+   "frame_minus_presented_ms_no_missed_frame": {
+    "min": -4.46,
+    "median": -1.16,
+    "max": -0.29
+   },
+   "switches_seen_after_a_missed_frame": 0
+  }
+ },
+ "gpu_during_runs": {
+  "samples": 205,
+  "util_pct_median": 11,
+  "util_pct_max": 56,
+  "mem_used_mib_median": 20648
+ },
+ "summary": {
+  "glass": {
+   "a_program": {
+    "median_ms": 45.2,
+    "runs_ms": [
+     55.86,
+     43.04,
+     46.05,
+     47.24,
+     46.89,
+     44.8,
+     38.76,
+     39.99,
+     38.35,
+     58.8,
+     39.55,
+     45.7
+    ],
+    "n": 12,
+    "min_ms": 38.35,
+    "max_ms": 58.8
+   },
+   "b_openwindow": {
+    "median_ms": 35.4,
+    "runs_ms": [
+     41.11,
+     34.13,
+     36.85,
+     39.33,
+     37.12,
+     36.38,
+     29.87,
+     32.76,
+     26.43,
+     42.63,
+     32.3,
+     34.48
+    ],
+    "n": 12,
+    "min_ms": 26.43,
+    "max_ms": 42.63
+   },
+   "w_window_visible": {
+    "median_ms": 38.6,
+    "runs_ms": [
+     41.52,
+     34.66,
+     42.0,
+     39.73,
+     42.29,
+     41.18,
+     30.77,
+     37.44,
+     31.97,
+     43.07,
+     37.03,
+     34.89
+    ],
+    "n": 12,
+    "min_ms": 30.77,
+    "max_ms": 43.07
+   },
+   "c_output_visible": {
+    "median_ms": 61.5,
+    "runs_ms": [
+     65.94,
+     55.47,
+     72.19,
+     57.11,
+     69.4,
+     69.01,
+     47.26,
+     50.45,
+     48.67,
+     80.49,
+     68.16,
+     55.66
+    ],
+    "n": 12,
+    "min_ms": 47.26,
+    "max_ms": 80.49
+   },
+   "c_minus_a_median_ms": 11.4,
+   "c_runs_with_a_missed_frame_before": 4,
+   "missing_c": 0,
+   "glass_trace_first_frame_median_ms": 206.8,
+   "glass_trace_program_started_median_ms": 44.2,
+   "glass_trace_gpu_device_median_ms": 198.0,
+   "c_minus_trace_first_frame_median_ms": -138.0
+  },
+  "kitty": {
+   "a_program": {
+    "median_ms": 196.3,
+    "runs_ms": [
+     203.15,
+     247.26,
+     189.54,
+     229.93,
+     184.9,
+     184.6,
+     210.01,
+     183.47,
+     213.39,
+     177.34,
+     210.64,
+     181.39
+    ],
+    "n": 12,
+    "min_ms": 177.34,
+    "max_ms": 247.26
+   },
+   "b_openwindow": {
+    "median_ms": 80.9,
+    "runs_ms": [
+     93.4,
+     86.97,
+     81.89,
+     88.69,
+     78.99,
+     79.84,
+     78.8,
+     82.64,
+     79.68,
+     75.21,
+     77.91,
+     82.83
+    ],
+    "n": 12,
+    "min_ms": 75.21,
+    "max_ms": 93.4
+   },
+   "w_window_visible": {
+    "median_ms": 83.2,
+    "runs_ms": [
+     93.92,
+     87.32,
+     84.87,
+     89.22,
+     80.95,
+     80.33,
+     81.56,
+     83.9,
+     82.48,
+     77.41,
+     79.4,
+     84.53
+    ],
+    "n": 12,
+    "min_ms": 77.41,
+    "max_ms": 93.92
+   },
+   "c_output_visible": {
+    "median_ms": 206.4,
+    "runs_ms": [
+     212.47,
+     258.6,
+     200.41,
+     240.02,
+     195.07,
+     193.03,
+     218.01,
+     190.99,
+     221.39,
+     186.65,
+     217.63,
+     188.79
+    ],
+    "n": 12,
+    "min_ms": 186.65,
+    "max_ms": 258.6
+   },
+   "c_minus_a_median_ms": 8.9,
+   "c_runs_with_a_missed_frame_before": 0,
+   "missing_c": 0
+  }
+ },
+ "runs": [
+  {
+   "run": 1,
+   "term": "glass",
+   "capture": true,
+   "workspace": "3",
+   "baseline_rgb": [
+    6,
+    27,
+    49
+   ],
+   "a_program_ms": 55.86,
+   "b_openwindow_ms": 41.11,
+   "glass_trace_ms": {
+    "[main] main": 17.57,
+    "[main] options": 17.64,
+    "[font-open] fonts": 23.51,
+    "[wallpaper-open] wallpaper decoded": 26.29,
+    "[main] event loop": 30.36,
+    "[main] window": 31.55,
+    "[main] early frame": 36.05,
+    "[main] app before the GPU": 53.4,
+    "[app] app": 53.49,
+    "[app] program started": 54.42,
+    "[gpu-open] instance": 104.24,
+    "[gpu-open] adapter": 108.64,
+    "[gpu-open] device": 201.1,
+    "[main] surface": 201.22,
+    "[main] configured": 205.44,
+    "[main] core": 244.36,
+    "[main] wallpaper": 245.87,
+    "[main] renderer": 245.88,
+    "[main] first frame": 248.21
+   },
+   "w_window_visible_ms": 41.52,
+   "w_rgb": [
+    0,
+    2,
+    2
+   ],
+   "c_output_visible_ms": 65.94,
+   "c_rgb": [
+    255,
+    0,
+    255
+   ],
+   "c_frame_gap_ms": 4.47,
+   "c_full_frame": true,
+   "c_prev_rgb": [
+    0,
+    3,
+    4
+   ],
+   "group": "glass"
+  },
+  {
+   "run": 1,
+   "term": "kitty",
+   "capture": true,
+   "workspace": "3",
+   "baseline_rgb": [
+    6,
+    27,
+    49
+   ],
+   "a_program_ms": 203.15,
+   "b_openwindow_ms": 93.4,
+   "w_window_visible_ms": 93.92,
+   "w_rgb": [
+    0,
+    0,
+    0
+   ],
+   "c_output_visible_ms": 212.47,
+   "c_rgb": [
+    255,
+    0,
+    255
+   ],
+   "c_frame_gap_ms": 4.22,
+   "c_full_frame": true,
+   "c_prev_rgb": [
+    0,
+    0,
+    0
+   ],
+   "group": "kitty"
+  },
+  {
+   "run": 2,
+   "term": "kitty",
+   "capture": true,
+   "workspace": "3",
+   "baseline_rgb": [
+    6,
+    27,
+    49
+   ],
+   "a_program_ms": 247.26,
+   "b_openwindow_ms": 86.97,
+   "w_window_visible_ms": 87.32,
+   "w_rgb": [
+    0,
+    0,
+    0
+   ],
+   "c_output_visible_ms": 258.6,
+   "c_rgb": [
+    255,
+    0,
+    255
+   ],
+   "c_frame_gap_ms": 4.14,
+   "c_full_frame": true,
+   "c_prev_rgb": [
+    0,
+    4,
+    5
+   ],
+   "group": "kitty"
+  },
+  {
+   "run": 2,
+   "term": "glass",
+   "capture": true,
+   "workspace": "3",
+   "baseline_rgb": [
+    6,
+    27,
+    49
+   ],
+   "a_program_ms": 43.04,
+   "b_openwindow_ms": 34.13,
+   "glass_trace_ms": {
+    "[main] main": 12.37,
+    "[main] options": 12.43,
+    "[font-open] fonts": 19.77,
+    "[wallpaper-open] wallpaper decoded": 22.82,
+    "[main] event loop": 27.12,
+    "[main] window": 28.29,
+    "[main] early frame": 32.95,
+    "[main] app before the GPU": 40.88,
+    "[app] app": 40.94,
+    "[app] program started": 41.86,
+    "[gpu-open] instance": 76.19,
+    "[gpu-open] adapter": 82.07,
+    "[gpu-open] device": 169.47,
+    "[main] surface": 169.58,
+    "[main] configured": 173.28,
+    "[main] core": 175.26,
+    "[main] wallpaper": 176.64,
+    "[main] renderer": 176.65,
+    "[main] first frame": 177.29
+   },
+   "w_window_visible_ms": 34.66,
+   "w_rgb": [
+    0,
+    2,
+    2
+   ],
+   "c_output_visible_ms": 55.47,
+   "c_rgb": [
+    255,
+    0,
+    255
+   ],
+   "c_frame_gap_ms": 4.17,
+   "c_full_frame": true,
+   "c_prev_rgb": [
+    0,
+    3,
+    4
+   ],
+   "group": "glass"
+  },
+  {
+   "run": 3,
+   "term": "glass",
+   "capture": true,
+   "workspace": "3",
+   "baseline_rgb": [
+    6,
+    27,
+    49
+   ],
+   "a_program_ms": 46.05,
+   "b_openwindow_ms": 36.85,
+   "glass_trace_ms": {
+    "[main] main": 13.65,
+    "[main] options": 13.71,
+    "[wallpaper-open] wallpaper decoded": 23.32,
+    "[main] event loop": 24.41,
+    "[main] window": 25.48,
+    "[font-open] fonts": 27.71,
+    "[main] early frame": 32.41,
+    "[main] app before the GPU": 44.34,
+    "[app] app": 44.41,
+    "[app] program started": 45.29,
+    "[gpu-open] instance": 116.89,
+    "[gpu-open] adapter": 123.26,
+    "[gpu-open] device": 210.73,
+    "[main] surface": 210.89,
+    "[main] configured": 215.29,
+    "[main] core": 217.34,
+    "[main] wallpaper": 218.94,
+    "[main] renderer": 218.97,
+    "[main] first frame": 221.27
+   },
+   "w_window_visible_ms": 42.0,
+   "w_rgb": [
+    0,
+    2,
+    2
+   ],
+   "c_output_visible_ms": 72.19,
+   "c_rgb": [
+    255,
+    0,
+    255
+   ],
+   "c_frame_gap_ms": 14.73,
+   "c_full_frame": true,
+   "c_prev_rgb": [
+    0,
+    3,
+    4
+   ],
+   "group": "glass"
+  },
+  {
+   "run": 3,
+   "term": "kitty",
+   "capture": true,
+   "workspace": "3",
+   "baseline_rgb": [
+    6,
+    27,
+    49
+   ],
+   "a_program_ms": 189.54,
+   "b_openwindow_ms": 81.89,
+   "w_window_visible_ms": 84.87,
+   "w_rgb": [
+    0,
+    0,
+    0
+   ],
+   "c_output_visible_ms": 200.41,
+   "c_rgb": [
+    255,
+    0,
+    255
+   ],
+   "c_frame_gap_ms": 4.12,
+   "c_full_frame": true,
+   "c_prev_rgb": [
+    0,
+    4,
+    5
+   ],
+   "group": "kitty"
+  },
+  {
+   "run": 4,
+   "term": "kitty",
+   "capture": true,
+   "workspace": "3",
+   "baseline_rgb": [
+    6,
+    27,
+    49
+   ],
+   "a_program_ms": 229.93,
+   "b_openwindow_ms": 88.69,
+   "w_window_visible_ms": 89.22,
+   "w_rgb": [
+    0,
+    0,
+    0
+   ],
+   "c_output_visible_ms": 240.02,
+   "c_rgb": [
+    255,
+    0,
+    255
+   ],
+   "c_frame_gap_ms": 4.01,
+   "c_full_frame": true,
+   "c_prev_rgb": [
+    0,
+    4,
+    5
+   ],
+   "group": "kitty"
+  },
+  {
+   "run": 4,
+   "term": "glass",
+   "capture": true,
+   "workspace": "3",
+   "baseline_rgb": [
+    6,
+    27,
+    49
+   ],
+   "a_program_ms": 47.24,
+   "b_openwindow_ms": 39.33,
+   "glass_trace_ms": {
+    "[main] main": 10.11,
+    "[main] options": 10.17,
+    "[font-open] fonts": 16.04,
+    "[wallpaper-open] wallpaper decoded": 20.17,
+    "[main] event loop": 32.39,
+    "[main] window": 33.3,
+    "[main] early frame": 37.36,
+    "[main] app before the GPU": 45.21,
+    "[app] app": 45.27,
+    "[app] program started": 46.41,
+    "[gpu-open] instance": 81.52,
+    "[gpu-open] adapter": 86.6,
+    "[gpu-open] device": 161.57,
+    "[main] surface": 161.65,
+    "[main] configured": 166.54,
+    "[main] core": 168.75,
+    "[main] wallpaper": 170.18,
+    "[main] renderer": 170.2,
+    "[main] first frame": 170.78
+   },
+   "w_window_visible_ms": 39.73,
+   "w_rgb": [
+    0,
+    2,
+    2
+   ],
+   "c_output_visible_ms": 57.11,
+   "c_rgb": [
+    255,
+    0,
+    255
+   ],
+   "c_frame_gap_ms": 4.83,
+   "c_full_frame": true,
+   "c_prev_rgb": [
+    0,
+    3,
+    4
+   ],
+   "group": "glass"
+  },
+  {
+   "run": 5,
+   "term": "glass",
+   "capture": true,
+   "workspace": "3",
+   "baseline_rgb": [
+    6,
+    27,
+    49
+   ],
+   "a_program_ms": 46.89,
+   "b_openwindow_ms": 37.12,
+   "glass_trace_ms": {
+    "[main] main": 12.33,
+    "[main] options": 12.39,
+    "[wallpaper-open] wallpaper decoded": 22.64,
+    "[main] event loop": 24.6,
+    "[main] window": 25.7,
+    "[font-open] fonts": 27.59,
+    "[main] early frame": 33.72,
+    "[main] app before the GPU": 44.92,
+    "[app] app": 45.02,
+    "[app] program started": 45.85,
+    "[gpu-open] instance": 108.86,
+    "[gpu-open] adapter": 113.05,
+    "[gpu-open] device": 194.98,
+    "[main] surface": 195.07,
+    "[main] configured": 199.8,
+    "[main] core": 201.84,
+    "[main] wallpaper": 203.26,
+    "[main] renderer": 203.28,
+    "[main] first frame": 205.06
+   },
+   "w_window_visible_ms": 42.29,
+   "w_rgb": [
+    0,
+    2,
+    2
+   ],
+   "c_output_visible_ms": 69.4,
+   "c_rgb": [
+    255,
+    0,
+    255
+   ],
+   "c_frame_gap_ms": 13.01,
+   "c_full_frame": true,
+   "c_prev_rgb": [
+    0,
+    3,
+    4
+   ],
+   "group": "glass"
+  },
+  {
+   "run": 5,
+   "term": "kitty",
+   "capture": true,
+   "workspace": "3",
+   "baseline_rgb": [
+    6,
+    27,
+    49
+   ],
+   "a_program_ms": 184.9,
+   "b_openwindow_ms": 78.99,
+   "w_window_visible_ms": 80.95,
+   "w_rgb": [
+    0,
+    0,
+    0
+   ],
+   "c_output_visible_ms": 195.07,
+   "c_rgb": [
+    255,
+    0,
+    255
+   ],
+   "c_frame_gap_ms": 4.22,
+   "c_full_frame": true,
+   "c_prev_rgb": [
+    0,
+    4,
+    5
+   ],
+   "group": "kitty"
+  },
+  {
+   "run": 6,
+   "term": "kitty",
+   "capture": true,
+   "workspace": "3",
+   "baseline_rgb": [
+    6,
+    27,
+    49
+   ],
+   "a_program_ms": 184.6,
+   "b_openwindow_ms": 79.84,
+   "w_window_visible_ms": 80.33,
+   "w_rgb": [
+    0,
+    0,
+    0
+   ],
+   "c_output_visible_ms": 193.03,
+   "c_rgb": [
+    255,
+    0,
+    255
+   ],
+   "c_frame_gap_ms": 4.12,
+   "c_full_frame": true,
+   "c_prev_rgb": [
+    0,
+    0,
+    0
+   ],
+   "group": "kitty"
+  },
+  {
+   "run": 6,
+   "term": "glass",
+   "capture": true,
+   "workspace": "3",
+   "baseline_rgb": [
+    6,
+    27,
+    49
+   ],
+   "a_program_ms": 44.8,
+   "b_openwindow_ms": 36.38,
+   "glass_trace_ms": {
+    "[main] main": 12.88,
+    "[main] options": 12.94,
+    "[font-open] fonts": 19.53,
+    "[wallpaper-open] wallpaper decoded": 23.01,
+    "[main] event loop": 25.45,
+    "[main] window": 26.48,
+    "[main] early frame": 31.73,
+    "[main] app before the GPU": 42.88,
+    "[app] app": 42.92,
+    "[app] program started": 43.77,
+    "[gpu-open] instance": 104.74,
+    "[gpu-open] adapter": 108.66,
+    "[gpu-open] device": 201.24,
+    "[main] surface": 201.36,
+    "[main] configured": 205.37,
+    "[main] core": 207.43,
+    "[main] wallpaper": 208.86,
+    "[main] renderer": 208.88,
+    "[main] first frame": 211.36
+   },
+   "w_window_visible_ms": 41.18,
+   "w_rgb": [
+    0,
+    2,
+    2
+   ],
+   "c_output_visible_ms": 69.01,
+   "c_rgb": [
+    255,
+    0,
+    255
+   ],
+   "c_frame_gap_ms": 12.77,
+   "c_full_frame": true,
+   "c_prev_rgb": [
+    0,
+    3,
+    4
+   ],
+   "group": "glass"
+  },
+  {
+   "run": 7,
+   "term": "glass",
+   "capture": true,
+   "workspace": "3",
+   "baseline_rgb": [
+    6,
+    27,
+    49
+   ],
+   "a_program_ms": 38.76,
+   "b_openwindow_ms": 29.87,
+   "glass_trace_ms": {
+    "[main] main": 12.49,
+    "[main] options": 12.55,
+    "[font-open] fonts": 18.43,
+    "[wallpaper-open] wallpaper decoded": 21.52,
+    "[main] event loop": 24.02,
+    "[main] window": 24.97,
+    "[main] early frame": 28.79,
+    "[main] app before the GPU": 36.25,
+    "[app] app": 36.34,
+    "[app] program started": 37.71,
+    "[gpu-open] instance": 68.1,
+    "[gpu-open] adapter": 71.89,
+    "[gpu-open] device": 156.66,
+    "[main] surface": 156.75,
+    "[main] configured": 160.39,
+    "[main] core": 162.32,
+    "[main] wallpaper": 163.65,
+    "[main] renderer": 163.66,
+    "[main] first frame": 165.39
+   },
+   "w_window_visible_ms": 30.77,
+   "w_rgb": [
+    0,
+    2,
+    2
+   ],
+   "c_output_visible_ms": 47.26,
+   "c_rgb": [
+    255,
+    0,
+    255
+   ],
+   "c_frame_gap_ms": 4.56,
+   "c_full_frame": true,
+   "c_prev_rgb": [
+    0,
+    3,
+    4
+   ],
+   "group": "glass"
+  },
+  {
+   "run": 7,
+   "term": "kitty",
+   "capture": true,
+   "workspace": "3",
+   "baseline_rgb": [
+    6,
+    27,
+    49
+   ],
+   "a_program_ms": 210.01,
+   "b_openwindow_ms": 78.8,
+   "w_window_visible_ms": 81.56,
+   "w_rgb": [
+    0,
+    0,
+    0
+   ],
+   "c_output_visible_ms": 218.01,
+   "c_rgb": [
+    255,
+    0,
+    255
+   ],
+   "c_frame_gap_ms": 4.23,
+   "c_full_frame": true,
+   "c_prev_rgb": [
+    0,
+    0,
+    0
+   ],
+   "group": "kitty"
+  },
+  {
+   "run": 8,
+   "term": "kitty",
+   "capture": true,
+   "workspace": "3",
+   "baseline_rgb": [
+    6,
+    27,
+    49
+   ],
+   "a_program_ms": 183.47,
+   "b_openwindow_ms": 82.64,
+   "w_window_visible_ms": 83.9,
+   "w_rgb": [
+    0,
+    0,
+    0
+   ],
+   "c_output_visible_ms": 190.99,
+   "c_rgb": [
+    255,
+    0,
+    255
+   ],
+   "c_frame_gap_ms": 4.31,
+   "c_full_frame": true,
+   "c_prev_rgb": [
+    0,
+    0,
+    0
+   ],
+   "group": "kitty"
+  },
+  {
+   "run": 8,
+   "term": "glass",
+   "capture": true,
+   "workspace": "3",
+   "baseline_rgb": [
+    6,
+    27,
+    49
+   ],
+   "a_program_ms": 39.99,
+   "b_openwindow_ms": 32.76,
+   "glass_trace_ms": {
+    "[main] main": 10.19,
+    "[main] options": 10.26,
+    "[font-open] fonts": 16.37,
+    "[wallpaper-open] wallpaper decoded": 19.95,
+    "[main] event loop": 19.99,
+    "[main] window": 20.93,
+    "[main] early frame": 25.05,
+    "[main] app before the GPU": 37.53,
+    "[app] app": 37.58,
+    "[app] program started": 38.75,
+    "[gpu-open] instance": 110.43,
+    "[gpu-open] adapter": 114.38,
+    "[gpu-open] device": 216.88,
+    "[main] surface": 216.96,
+    "[main] configured": 220.23,
+    "[main] core": 221.85,
+    "[main] wallpaper": 223.05,
+    "[main] renderer": 223.06,
+    "[main] first frame": 223.6
+   },
+   "w_window_visible_ms": 37.44,
+   "w_rgb": [
+    0,
+    2,
+    2
+   ],
+   "c_output_visible_ms": 50.45,
+   "c_rgb": [
+    255,
+    0,
+    255
+   ],
+   "c_frame_gap_ms": 4.71,
+   "c_full_frame": true,
+   "c_prev_rgb": [
+    0,
+    3,
+    4
+   ],
+   "group": "glass"
+  },
+  {
+   "run": 9,
+   "term": "glass",
+   "capture": true,
+   "workspace": "3",
+   "baseline_rgb": [
+    6,
+    27,
+    49
+   ],
+   "a_program_ms": 38.35,
+   "b_openwindow_ms": 26.43,
+   "glass_trace_ms": {
+    "[main] main": 8.75,
+    "[main] options": 8.82,
+    "[font-open] fonts": 14.72,
+    "[wallpaper-open] wallpaper decoded": 17.75,
+    "[main] event loop": 19.13,
+    "[main] window": 20.26,
+    "[main] early frame": 25.38,
+    "[main] app before the GPU": 36.74,
+    "[app] app": 36.81,
+    "[app] program started": 37.61,
+    "[gpu-open] instance": 63.69,
+    "[gpu-open] adapter": 67.33,
+    "[gpu-open] device": 146.86,
+    "[main] surface": 146.94,
+    "[main] configured": 149.99,
+    "[main] core": 151.64,
+    "[main] wallpaper": 152.82,
+    "[main] renderer": 152.83,
+    "[main] first frame": 153.36
+   },
+   "w_window_visible_ms": 31.97,
+   "w_rgb": [
+    0,
+    2,
+    2
+   ],
+   "c_output_visible_ms": 48.67,
+   "c_rgb": [
+    255,
+    0,
+    255
+   ],
+   "c_frame_gap_ms": 4.03,
+   "c_full_frame": true,
+   "c_prev_rgb": [
+    0,
+    3,
+    4
+   ],
+   "group": "glass"
+  },
+  {
+   "run": 9,
+   "term": "kitty",
+   "capture": true,
+   "workspace": "3",
+   "baseline_rgb": [
+    6,
+    27,
+    49
+   ],
+   "a_program_ms": 213.39,
+   "b_openwindow_ms": 79.68,
+   "w_window_visible_ms": 82.48,
+   "w_rgb": [
+    0,
+    0,
+    0
+   ],
+   "c_output_visible_ms": 221.39,
+   "c_rgb": [
+    255,
+    0,
+    255
+   ],
+   "c_frame_gap_ms": 4.24,
+   "c_full_frame": true,
+   "c_prev_rgb": [
+    0,
+    0,
+    0
+   ],
+   "group": "kitty"
+  },
+  {
+   "run": 10,
+   "term": "kitty",
+   "capture": true,
+   "workspace": "3",
+   "baseline_rgb": [
+    6,
+    27,
+    49
+   ],
+   "a_program_ms": 177.34,
+   "b_openwindow_ms": 75.21,
+   "w_window_visible_ms": 77.41,
+   "w_rgb": [
+    0,
+    0,
+    0
+   ],
+   "c_output_visible_ms": 186.65,
+   "c_rgb": [
+    255,
+    0,
+    255
+   ],
+   "c_frame_gap_ms": 4.19,
+   "c_full_frame": true,
+   "c_prev_rgb": [
+    0,
+    0,
+    0
+   ],
+   "group": "kitty"
+  },
+  {
+   "run": 10,
+   "term": "glass",
+   "capture": true,
+   "workspace": "3",
+   "baseline_rgb": [
+    6,
+    27,
+    49
+   ],
+   "a_program_ms": 58.8,
+   "b_openwindow_ms": 42.63,
+   "glass_trace_ms": {
+    "[main] main": 12.92,
+    "[main] options": 13.04,
+    "[wallpaper-open] wallpaper decoded": 22.98,
+    "[main] event loop": 25.41,
+    "[main] window": 27.29,
+    "[font-open] fonts": 29.95,
+    "[main] early frame": 40.94,
+    "[main] app before the GPU": 56.77,
+    "[app] app": 56.84,
+    "[app] program started": 58.08,
+    "[gpu-open] instance": 110.79,
+    "[gpu-open] adapter": 114.63,
+    "[gpu-open] device": 218.55,
+    "[main] surface": 218.7,
+    "[main] configured": 221.89,
+    "[main] core": 223.88,
+    "[main] wallpaper": 225.49,
+    "[main] renderer": 225.51,
+    "[main] first frame": 227.16
+   },
+   "w_window_visible_ms": 43.07,
+   "w_rgb": [
+    0,
+    2,
+    2
+   ],
+   "c_output_visible_ms": 80.49,
+   "c_rgb": [
+    255,
+    0,
+    255
+   ],
+   "c_frame_gap_ms": 4.09,
+   "c_full_frame": true,
+   "c_prev_rgb": [
+    0,
+    3,
+    4
+   ],
+   "group": "glass"
+  },
+  {
+   "run": 11,
+   "term": "glass",
+   "capture": true,
+   "workspace": "3",
+   "baseline_rgb": [
+    6,
+    27,
+    49
+   ],
+   "a_program_ms": 39.55,
+   "b_openwindow_ms": 32.3,
+   "glass_trace_ms": {
+    "[main] main": 8.85,
+    "[main] options": 8.92,
+    "[font-open] fonts": 14.8,
+    "[wallpaper-open] wallpaper decoded": 17.05,
+    "[main] event loop": 20.66,
+    "[main] window": 22.1,
+    "[main] early frame": 25.76,
+    "[main] app before the GPU": 37.91,
+    "[app] app": 37.96,
+    "[app] program started": 38.82,
+    "[gpu-open] instance": 103.81,
+    "[gpu-open] adapter": 107.87,
+    "[gpu-open] device": 201.84,
+    "[main] surface": 202.02,
+    "[main] configured": 205.04,
+    "[main] core": 206.91,
+    "[main] wallpaper": 208.05,
+    "[main] renderer": 208.06,
+    "[main] first frame": 208.56
+   },
+   "w_window_visible_ms": 37.03,
+   "w_rgb": [
+    0,
+    2,
+    2
+   ],
+   "c_output_visible_ms": 68.16,
+   "c_rgb": [
+    255,
+    0,
+    255
+   ],
+   "c_frame_gap_ms": 16.3,
+   "c_full_frame": true,
+   "c_prev_rgb": [
+    0,
+    3,
+    4
+   ],
+   "group": "glass"
+  },
+  {
+   "run": 11,
+   "term": "kitty",
+   "capture": true,
+   "workspace": "3",
+   "baseline_rgb": [
+    6,
+    27,
+    49
+   ],
+   "a_program_ms": 210.64,
+   "b_openwindow_ms": 77.91,
+   "w_window_visible_ms": 79.4,
+   "w_rgb": [
+    0,
+    0,
+    0
+   ],
+   "c_output_visible_ms": 217.63,
+   "c_rgb": [
+    255,
+    0,
+    255
+   ],
+   "c_frame_gap_ms": 4.21,
+   "c_full_frame": true,
+   "c_prev_rgb": [
+    0,
+    0,
+    0
+   ],
+   "group": "kitty"
+  },
+  {
+   "run": 12,
+   "term": "kitty",
+   "capture": true,
+   "workspace": "3",
+   "baseline_rgb": [
+    6,
+    27,
+    49
+   ],
+   "a_program_ms": 181.39,
+   "b_openwindow_ms": 82.83,
+   "w_window_visible_ms": 84.53,
+   "w_rgb": [
+    0,
+    0,
+    0
+   ],
+   "c_output_visible_ms": 188.79,
+   "c_rgb": [
+    255,
+    0,
+    255
+   ],
+   "c_frame_gap_ms": 4.23,
+   "c_full_frame": true,
+   "c_prev_rgb": [
+    0,
+    0,
+    0
+   ],
+   "group": "kitty"
+  },
+  {
+   "run": 12,
+   "term": "glass",
+   "capture": true,
+   "workspace": "3",
+   "baseline_rgb": [
+    6,
+    27,
+    49
+   ],
+   "a_program_ms": 45.7,
+   "b_openwindow_ms": 34.48,
+   "glass_trace_ms": {
+    "[main] main": 13.36,
+    "[main] options": 13.44,
+    "[wallpaper-open] wallpaper decoded": 23.61,
+    "[main] event loop": 25.36,
+    "[main] window": 26.57,
+    "[font-open] fonts": 28.69,
+    "[main] early frame": 33.61,
+    "[main] app before the GPU": 43.48,
+    "[app] app": 43.55,
+    "[app] program started": 44.64,
+    "[gpu-open] instance": 73.27,
+    "[gpu-open] adapter": 77.69,
+    "[gpu-open] device": 159.37,
+    "[main] surface": 159.48,
+    "[main] configured": 162.93,
+    "[main] core": 165.07,
+    "[main] wallpaper": 166.38,
+    "[main] renderer": 166.4,
+    "[main] first frame": 167.01
+   },
+   "w_window_visible_ms": 34.89,
+   "w_rgb": [
+    0,
+    2,
+    2
+   ],
+   "c_output_visible_ms": 55.66,
+   "c_rgb": [
+    255,
+    0,
+    255
+   ],
+   "c_frame_gap_ms": 4.19,
+   "c_full_frame": true,
+   "c_prev_rgb": [
+    0,
+    3,
+    4
+   ],
+   "group": "glass"
+  }
+ ]
+}

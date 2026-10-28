@@ -46,7 +46,8 @@ description of what to show.
 - The early window: on Wayland the window is on screen before the GPU is
   open. Its background (colour, image and tint) is drawn on the CPU into
   shared memory as soon as the window exists, the program starts as soon
-  as the compositor has settled the window's size, and the GPU's first
+  as the compositor has settled the window's size, its first output is
+  drawn on the CPU too (same fonts, same colours), and the GPU's first
   frame takes over when the driver is ready.
 - On processors whose dies carry last-level caches of different sizes
   (AMD's X3D parts), the pty read and parse threads stay on the largest
@@ -63,10 +64,12 @@ description of what to show.
 Measured against kitty 0.49.2 on one machine (Ryzen 9 9950X3D, RTX 3090,
 Hyprland), both in the same 154×39 window. Throughput workloads are timed
 until the terminal answers DA1, as the median of five interleaved rounds;
-startup is the median of 16 launches.
+startup is the median of 16 launches (first output on screen: 12, caught at
+240 Hz).
 
 | | glass | kitty 0.49.2 |
 | --- | --- | --- |
+| First output on screen | 61.5 ms | 206 ms |
 | Window on screen | 31 ms | 73 ms |
 | Program running | 39.5 ms | 193 ms |
 | Plain text | 497 MB/s | 314 MB/s |

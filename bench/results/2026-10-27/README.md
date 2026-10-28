@@ -25,6 +25,7 @@ machine's own configuration for each.
 | `tput-kitty-v1..v5.json` | kitty, throughput rounds 1 to 5, taking turns with glass. |
 | `keys-glass.log`, `keys-kitty.log` | key latency: when `keys.py` read each key (ns, wall clock) |
 | `sent-glass.log`, `sent-kitty.log` | key latency: when each key was sent through Hyprland |
+| `visible.json` | first output on screen (`run-visible.sh`): 12 launches of each terminal at 240 Hz, every run, the capture's frame timing, the calibration and the GPU load. glass is the build that draws its first output on the CPU (after the 0.1.0 renames). |
 
 ```sh
 python3 -I bench/summarize.py bench/results/2026-10-27   # the throughput, CPU and TUI medians
