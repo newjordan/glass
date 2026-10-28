@@ -305,7 +305,9 @@ fn run(host: glass_window::Host, args: Args, palette: glass_window::Palette) -> 
             }
             last_draw = now;
             session.take_output_flag();
+            let began = std::time::Instant::now();
             draw(&mut terminal, &session, &ui, &host, cursor_on);
+            glass_window::keytrace::slow_elapsed("draw", began);
             session.frame_drawn();
         }
     }
@@ -403,7 +405,9 @@ fn shortcut_of(key: &KeyEvent, rows: u16, alternate_screen: bool) -> Option<Shor
 impl Ui {
     /// Returns whether the screen needs drawing again.
     fn input(&mut self, event: Event, session: &mut Session, host: &glass_window::Host, focused: &AtomicBool) -> bool {
-        glass_window::keytrace::mark("key-input");
+        if matches!(&event, Event::Key(k) if k.kind == KeyEventKind::Press) {
+            glass_window::keytrace::mark_or_slow("key-input");
+        }
         match event {
             Event::Key(key) => {
                 // The window's own shortcuts act on press and repeat only;
@@ -423,9 +427,9 @@ impl Ui {
                     return false;
                 };
                 let redraw = self.selection.take().is_some() | session.scroll_to_bottom();
-                glass_window::keytrace::mark("key-encoded");
+                glass_window::keytrace::mark_or_slow("key-encoded");
                 session.write(&bytes);
-                glass_window::keytrace::mark("key-written");
+                glass_window::keytrace::mark_or_slow("key-written");
                 redraw
             }
             Event::Paste(text) => {

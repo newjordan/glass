@@ -28,7 +28,7 @@ fn on() -> bool {
 /// Whether the marks are printed. `GLASS_KEY_TRACE=quiet` runs the same
 /// code paths with the printing off, to tell what the tracing itself
 /// costs from what the steps take.
-fn printing() -> bool {
+pub fn printing() -> bool {
     on() && std::env::var_os("GLASS_KEY_TRACE").is_some_and(|v| v != "quiet")
 }
 
@@ -36,6 +36,59 @@ fn printing() -> bool {
 /// when they are wanted.
 pub fn tracing() -> bool {
     on()
+}
+
+/// Mark a step when the slow-key diagnosis is on: the mark's own cost
+/// is one env lookup, once, and one line per slow event.
+pub fn slow_mark(what: &str) {
+    if slow_keys_us().is_none() {
+        return;
+    }
+    let wall = SystemTime::now()
+        .duration_since(SystemTime::UNIX_EPOCH)
+        .map_or(0, |d| d.as_nanos());
+    let thread = std::thread::current();
+    let _ = writeln!(
+        std::io::stderr().lock(),
+        "glass-key {wall} [{}] {what}",
+        thread.name().unwrap_or("-"),
+    );
+}
+
+/// When `GLASS_SLOW_KEYS` is set (microseconds), waits longer than it
+/// are worth a line. A diagnosis, off unless asked for.
+fn slow_keys_us() -> Option<u64> {
+    static LIMIT: OnceLock<Option<u64>> = OnceLock::new();
+    *LIMIT.get_or_init(|| std::env::var("GLASS_SLOW_KEYS").ok().and_then(|v| v.parse().ok()))
+}
+
+/// `mark` when the trace is on, `slow_mark` when only the slow-key
+/// diagnosis is, so a step logs itself in a run that would otherwise
+/// be perturbed by the printing.
+pub fn mark_or_slow(what: &str) {
+    if printing() {
+        mark(what);
+    } else {
+        slow_mark(what);
+    }
+}
+
+/// Log an elapsed time when the slow-key diagnosis is on: how long one
+/// draw (or any step) took, in a run whose tracing is otherwise off.
+pub fn slow_elapsed(what: &str, began: std::time::Instant) {
+    if let Some(limit) = slow_keys_us() {
+        let took = began.elapsed();
+        if took.as_micros() > u128::from(limit) {
+            let wall = SystemTime::now()
+                .duration_since(SystemTime::UNIX_EPOCH)
+                .map_or(0, |d| d.as_nanos());
+            let _ = writeln!(
+                std::io::stderr().lock(),
+                "glass-key {wall} [-] {what}_took_us {}",
+                took.as_micros()
+            );
+        }
+    }
 }
 
 /// Note that a key reached `what`.
