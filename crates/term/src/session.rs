@@ -140,6 +140,12 @@ impl KeyView {
     /// for the other. An RwLock here did wait: the reader rewrote it
     /// every pumped read of a flood, and a write-preferring lock let a
     /// key's read starve behind thousands of rewrites a second.
+    ///
+    /// The word is one aligned `AtomicU64`, stored and loaded whole, so a
+    /// reader never sees half of one view and half of another. It holds
+    /// 45 bits: two 16-bit sizes, the 8-bit flags, three booleans (bits 40
+    /// to 44). A field that would not fit belongs behind a lock instead;
+    /// the round-trip test below takes every field to its extremes.
     fn pack(self) -> u64 {
         u64::from(self.size.0)
             | u64::from(self.size.1) << 16
@@ -836,7 +842,14 @@ impl Session {
         }
         let wake = tx.clone();
         self.link.attach(Window { host, tx, focused });
-        let _ = wake.send(Msg::Output);
+        // Output that came before the window had no one to wake. Only then:
+        // a wake with nothing to show draws an empty frame, and the
+        // program's first output, a moment later, waits out the pace
+        // after it. The flag is read once the link is set, so output that
+        // comes in between wakes the window either way.
+        if self.output.load(Ordering::Acquire) {
+            let _ = wake.send(Msg::Output);
+        }
     }
 
     /// The engine's lock, taken politely under a flood: ask for it by
