@@ -591,7 +591,11 @@ fn a_temporary_file_transmission_does_not_unlink_through_dotdot() {
     }
     let file = dir.join("tty-graphics-protocol.png");
     std::fs::write(&file, encode_png(1, 1)).unwrap();
-    let climbing = format!("/tmp/..{}", file.display());
+    // As many `..` as the resolved /tmp is deep (/private/tmp on macOS),
+    // so the path lands back at the root and then on the file.
+    let tmp = std::fs::canonicalize("/tmp").unwrap();
+    let up = "../".repeat(tmp.components().count() - 1);
+    let climbing = format!("{}/{up}{}", tmp.display(), file.display().to_string().trim_start_matches('/'));
     let mut intake = Intake::new(1);
     let mut engine = FakeEngine::new();
     apc(

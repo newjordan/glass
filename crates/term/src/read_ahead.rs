@@ -123,7 +123,7 @@ mod tests {
         // SAFETY: openpty fills the two descriptors; the termios is a
         // plain struct cfmakeraw fills before it is applied.
         unsafe {
-            assert_eq!(libc::openpty(&mut master, &mut slave, std::ptr::null_mut(), std::ptr::null(), std::ptr::null()), 0);
+            assert_eq!(libc::openpty(&mut master, &mut slave, std::ptr::null_mut(), std::ptr::null_mut(), std::ptr::null_mut()), 0);
             let mut tio: libc::termios = std::mem::zeroed();
             libc::tcgetattr(slave, &mut tio);
             libc::cfmakeraw(&mut tio);

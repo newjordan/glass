@@ -3484,6 +3484,24 @@ pub(crate) mod testing {
 
     use super::*;
 
+    /// A POSIX shared memory object `name` (with its leading `/`, at most
+    /// 31 bytes for macOS) holding `bytes`, made as a client makes one:
+    /// sized once with `ftruncate`, written through a mapping (macOS
+    /// refuses `write(2)` on one). Any object of that name goes first.
+    pub fn shm_object(name: &std::ffi::CStr, bytes: &[u8]) {
+        unsafe {
+            libc::shm_unlink(name.as_ptr());
+            let fd = libc::shm_open(name.as_ptr(), libc::O_RDWR | libc::O_CREAT | libc::O_EXCL, 0o600);
+            assert!(fd >= 0, "the test object could be created: {}", std::io::Error::last_os_error());
+            assert_eq!(libc::ftruncate(fd, bytes.len() as libc::off_t), 0, "the test object was sized");
+            let map = libc::mmap(std::ptr::null_mut(), bytes.len(), libc::PROT_READ | libc::PROT_WRITE, libc::MAP_SHARED, fd, 0);
+            assert!(map != libc::MAP_FAILED, "the test object was mapped");
+            std::ptr::copy_nonoverlapping(bytes.as_ptr(), map.cast::<u8>(), bytes.len());
+            libc::munmap(map, bytes.len());
+            libc::close(fd);
+        }
+    }
+
     /// A small PNG of a known pattern, encoded in-test.
     pub fn encode_png(w: u32, h: u32) -> Vec<u8> {
         let mut bytes = Vec::new();
@@ -4223,7 +4241,8 @@ mod tests {
             }
             out
         };
-        for path in ["/nonexistent/no-such-file.png", "/proc/self/mem", "/etc"] {
+        let device = if cfg!(target_os = "linux") { "/proc/self/mem" } else { "/dev/null" };
+        for path in ["/nonexistent/no-such-file.png", device, "/etc"] {
             intake
                 .handle(Media::Apc(format!("Ga=T,f=100,t=f,i=1;{}", enc(path)).into_bytes()), &mut engine);
         }
@@ -4346,16 +4365,11 @@ mod tests {
         // creates and removes itself. The dialect reads `S` bytes from
         // `O` (the whole object when `S` is absent), then unlinks it.
         use std::ffi::CString;
-        let name = "/glass-term-test-shm";
+        let name = format!("/glass-shm-{}", std::process::id());
+        let name = name.as_str();
         let c = CString::new(name).unwrap();
         let bytes: Vec<u8> = (0..64u8).collect();
-        unsafe {
-            let fd = libc::shm_open(c.as_ptr(), libc::O_RDWR | libc::O_CREAT | libc::O_EXCL, 0o600);
-            assert!(fd >= 0, "the test object could be created");
-            let wrote = libc::write(fd, bytes.as_ptr().cast(), bytes.len());
-            assert_eq!(wrote, bytes.len() as isize);
-            libc::close(fd);
-        }
+        testing::shm_object(&c, &bytes);
         let enc = |data: &[u8]| {
             const T: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
             let mut out = String::new();
@@ -4373,13 +4387,7 @@ mod tests {
         let png = testing::encode_png(2, 2);
         // Put the PNG in the object, ask for it with `S` covering it.
         let object_name = enc(name.as_bytes());
-        unsafe {
-            let fd = libc::shm_open(c.as_ptr(), libc::O_RDWR, 0o600);
-            assert!(fd >= 0);
-            libc::ftruncate(fd, png.len() as i64);
-            libc::pwrite(fd, png.as_ptr().cast(), png.len(), 0);
-            libc::close(fd);
-        }
+        testing::shm_object(&c, &png);
         let probe = format!(
             "Ga=q,f=100,t=s,s=2,v=2,S={},i=3;{}",
             png.len(),

@@ -886,9 +886,11 @@ fn read_span<F: Fn(&str) -> (String, String)>(
 }
 
 /// Read a `t=s` shared memory object: the payload names it, base64. The
-/// object is opened read-only, checked with `fstat` like a file, `S`
-/// bytes read from `O` (the whole object when `S` is absent), then
-/// closed and unlinked — after a failed read too.
+/// object is opened read-only, its size checked with `fstat`, `S` bytes
+/// taken from `O` (the whole object when `S` is absent), then closed and
+/// unlinked — after a failed read too. It is mapped, not read: macOS
+/// refuses `read(2)` on a shared memory object, reports it as no regular
+/// file, and rounds its size up to a page.
 fn read_shm(name: &str, size: Option<u64>, offset: u64) -> Result<Vec<u8>, (String, String)> {
     let fail = |why: &str| ("EBADF".to_string(), format!("Failed to read image file: {why}"));
     // POSIX names the object after one leading `/`. A name that already
@@ -899,24 +901,43 @@ fn read_shm(name: &str, size: Option<u64>, offset: u64) -> Result<Vec<u8>, (Stri
         return Err(fail("bad shared memory name"));
     }
     let c = std::ffi::CString::new(format!("/{trimmed}")).map_err(|_| fail("bad shared memory name"))?;
-    let fd = unsafe { libc::shm_open(c.as_ptr(), libc::O_RDONLY | libc::O_CLOEXEC, 0) };
+    // macOS's shm_open refuses O_CLOEXEC (EINVAL); there it is set after.
+    let flags = if cfg!(target_os = "macos") { libc::O_RDONLY } else { libc::O_RDONLY | libc::O_CLOEXEC };
+    let fd = unsafe { libc::shm_open(c.as_ptr(), flags, 0) };
     if fd < 0 {
         return Err(fail("could not open the shared memory object"));
     }
-    // Check the open handle like a file's, then read, and close and
-    // unlink in every outcome.
+    if cfg!(target_os = "macos") {
+        unsafe { libc::fcntl(fd, libc::F_SETFD, libc::FD_CLOEXEC) };
+    }
+    // Check the open handle's size, then map and copy the span, and close
+    // and unlink in every outcome.
     let mut stat: libc::stat = unsafe { std::mem::zeroed() };
-    if unsafe { libc::fstat(fd, &mut stat) } != 0
-        || (stat.st_mode & libc::S_IFMT) != libc::S_IFREG
-        || stat.st_size > FILE_LIMIT as i64
-    {
+    if unsafe { libc::fstat(fd, &mut stat) } != 0 || stat.st_size < 0 || stat.st_size > FILE_LIMIT as i64 {
         unsafe { libc::close(fd) };
         let _ = unsafe { libc::shm_unlink(c.as_ptr()) };
-        return Err(fail("not a regular object, or too large"));
+        return Err(fail("not a shared memory object, or too large"));
     }
-    let file = unsafe { std::fs::File::from_raw_fd(fd) };
-    let read = read_span(&file, size, offset, fail);
-    drop(file);
+    let len = stat.st_size as u64;
+    // `S` larger than the object is a short read, as for a file.
+    let start = offset.min(len);
+    let end = start.saturating_add(size.unwrap_or(FILE_LIMIT).min(FILE_LIMIT)).min(len);
+    let read = if end == start {
+        Ok(Vec::new())
+    } else {
+        // SAFETY: the descriptor is open; the mapping is `len` bytes of an
+        // object `fstat` measured, read only, and unmapped before return.
+        let map = unsafe { libc::mmap(std::ptr::null_mut(), len as usize, libc::PROT_READ, libc::MAP_SHARED, fd, 0) };
+        if map == libc::MAP_FAILED {
+            Err(fail("could not map the shared memory object"))
+        } else {
+            // SAFETY: `start..end` lies within the `len` bytes mapped.
+            let bytes = unsafe { std::slice::from_raw_parts(map.cast::<u8>().add(start as usize), (end - start) as usize) }.to_vec();
+            unsafe { libc::munmap(map, len as usize) };
+            Ok(bytes)
+        }
+    };
+    unsafe { libc::close(fd) };
     let _ = unsafe { libc::shm_unlink(c.as_ptr()) };
     read
 }
