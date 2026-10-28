@@ -23,7 +23,7 @@ use std::time::Instant;
 use alacritty_terminal::event::{Event as TermEvent, EventListener, WindowSize};
 use alacritty_terminal::grid::{Dimensions, GridCell};
 use alacritty_terminal::index::{Column, Point};
-use alacritty_terminal::term::cell::Flags as CellFlags;
+use alacritty_terminal::term::cell::{CellExtra, Flags as CellFlags};
 use alacritty_terminal::grid::Scroll;
 use alacritty_terminal::term::{Config, Term, TermMode};
 use alacritty_terminal::vte::ansi::{
@@ -340,6 +340,9 @@ pub struct Engine {
     /// Whether such runs are written at once. Always, but for the tests
     /// that hold the fast path to the parser's own result.
     fast: bool,
+    /// The last combining mark written straight into a cell, and that
+    /// cell's extras: a mark alone on a cell that had none (`put_mark`).
+    mark: Option<(char, Arc<CellExtra>)>,
 }
 
 impl Engine {
@@ -390,6 +393,7 @@ impl Engine {
             joined: Vec::new(),
             mirror: Mirror::default(),
             fast: true,
+            mark: None,
         }
     }
 
@@ -485,6 +489,7 @@ impl Engine {
                 region_bottom,
                 mirror,
                 fast,
+                mark,
                 ..
             } = self;
             let alternate = term.mode().contains(TermMode::ALT_SCREEN);
@@ -511,8 +516,10 @@ impl Engine {
                 primary_snap: None,
                 primary: scrolled,
                 fast: *fast,
+                mark: mark.take(),
             };
             feed(processor, &mut watch, mirror, chunk, *fast);
+            *mark = watch.mark.take();
             *alt_scrolled = watch.alt_scrolled;
             *region_top = watch.region_top;
             *region_bottom = watch.region_bottom;
@@ -687,6 +694,7 @@ impl Engine {
                 primary_snap: None,
                 primary: scrolled,
                 fast: self.fast,
+                mark: None,
             };
             // The wrapper paces itself while the whole buffered frame is
             // applied: it folds the sentinel after every few hundred
@@ -1331,6 +1339,8 @@ struct Watch<'a> {
     /// Whether characters may be written straight into their cells
     /// (`print_plain`); off only for the tests that hold it to `Term`.
     fast: bool,
+    /// The engine's `mark`, for the chunk.
+    mark: Option<(char, Arc<CellExtra>)>,
 }
 
 impl Watch<'_> {
@@ -1363,6 +1373,7 @@ impl Watch<'_> {
             primary_snap: None,
             primary: scrolled,
             fast: engine.fast,
+            mark: None,
         }
     }
 
@@ -1715,7 +1726,7 @@ impl Watch<'_> {
                     match unicode_width::UnicodeWidthChar::width(last) {
                         Some(width @ 1..=2) => width,
                         Some(0) => {
-                            put_mark(row, column, wrap, last);
+                            put_mark(row, column, wrap, last, &mut self.mark);
                             written += 1;
                             held = Some((c, at));
                             at += len;
@@ -2774,14 +2785,38 @@ fn sgr_color(params: &[u16], at: &mut usize) -> Option<AnsiColor> {
 /// accent): on the cell before the cursor at `column` (on the cursor's
 /// own while a wrap is pending), or on the wide character a spacer there
 /// belongs to. Out of line, so the loop it is called from stays small.
+///
+/// A mark alone on a cell that had no extras gives that cell the same
+/// extras as the last such cell, so it shares them (`last`) rather than
+/// allocating its own: accented text repeats a few marks, each of which
+/// `push_zerowidth` would allocate twice. Extras are copied before they
+/// change (`Arc::make_mut`), so a shared one is never changed under
+/// another cell.
 #[cold]
 #[inline(never)]
-fn put_mark(row: &mut alacritty_terminal::grid::Row<alacritty_terminal::term::cell::Cell>, column: usize, wrap: bool, mark: char) {
+fn put_mark(
+    row: &mut alacritty_terminal::grid::Row<alacritty_terminal::term::cell::Cell>,
+    column: usize,
+    wrap: bool,
+    mark: char,
+    last: &mut Option<(char, Arc<CellExtra>)>,
+) {
     let mut at = if wrap { column } else { column.saturating_sub(1) };
     if row[Column(at)].flags.contains(CellFlags::WIDE_CHAR_SPACER) {
         at = at.saturating_sub(1);
     }
-    row[Column(at)].push_zerowidth(mark);
+    let cell = &mut row[Column(at)];
+    if cell.extra.is_some() {
+        cell.push_zerowidth(mark);
+        return;
+    }
+    match last {
+        Some((shared, extra)) if *shared == mark => cell.extra = Some(Arc::clone(extra)),
+        _ => {
+            cell.push_zerowidth(mark);
+            *last = cell.extra.as_ref().map(|extra| (mark, Arc::clone(extra)));
+        }
+    }
 }
 
 /// The next run of at least [`RUN_MIN`] bytes of text in `bytes` (printable
