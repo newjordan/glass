@@ -1,3 +1,7 @@
+// Changed for glass from alacritty_terminal 0.26.0; CHANGES.md lists every change.
+// - a full keyboard mode stack drops its own oldest entry, not the
+//   title stack's (upstream's fix, alacritty/alacritty@54214706).
+
 //! Exports the `Term` type which is a high-level API for the Grid.
 
 use std::ops::{Index, IndexMut, Range};
@@ -1293,7 +1297,7 @@ impl<T: EventListener> Handler for Term<T> {
         trace!("Pushing `{mode:?}` keyboard mode into the stack");
 
         if self.keyboard_mode_stack.len() >= KEYBOARD_MODE_STACK_MAX_DEPTH {
-            let removed = self.title_stack.remove(0);
+            let removed = self.keyboard_mode_stack.remove(0);
             trace!(
                 "Removing '{removed:?}' from bottom of keyboard mode stack that exceeds its \
                  maximum depth"

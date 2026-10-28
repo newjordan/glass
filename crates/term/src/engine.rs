@@ -3373,6 +3373,23 @@ mod tests {
         assert_eq!(chars.chars().filter(|&c| c == '\0').count(), 4);
     }
 
+    /// A program writing marks onto one cell forever keeps nine of them,
+    /// whether they come in one run (glass's fast path) or one feed at a
+    /// time, so it can't exhaust memory that way.
+    #[test]
+    fn marks_on_one_cell_are_capped() {
+        let marks = |term: &Engine, column| term.term.grid()[Line(0)][Column(column)].zerowidth().map_or(0, <[char]>::len);
+        let mut term = engine();
+        let mut text = String::from("a");
+        text.extend(std::iter::repeat_n('\u{301}', 10_000));
+        text.push_str("\x1b[31mb");
+        term.process(text.as_bytes());
+        for _ in 0..1_000 {
+            term.process("\u{301}".as_bytes());
+        }
+        assert_eq!((marks(&term, 0), marks(&term, 1)), (9, 9));
+    }
+
     #[test]
     fn modes_titles_and_clipboard_are_tracked() {
         let mut term = engine();

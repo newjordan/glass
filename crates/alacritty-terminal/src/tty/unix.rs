@@ -1,3 +1,7 @@
+// Changed for glass from alacritty_terminal 0.26.0; CHANGES.md lists every change.
+// - `set_nonblocking` returns its error rather than asserting
+//   (upstream's fix, alacritty/alacritty@985394dd).
+
 //! TTY related functionality.
 
 use std::ffi::{CStr, CString};
@@ -290,7 +294,7 @@ pub fn from_fd(config: &Options, window_id: u64, master: OwnedFd, slave: OwnedFd
             unsafe {
                 // Maybe this should be done outside of this function so nonblocking
                 // isn't forced upon consumers. Although maybe it should be?
-                set_nonblocking(master_fd);
+                set_nonblocking(master_fd)?;
             }
 
             Ok(Pty { child, file: File::from(master), signals, sig_id })
@@ -436,9 +440,9 @@ impl ToWinsize for WindowSize {
     }
 }
 
-unsafe fn set_nonblocking(fd: c_int) {
+unsafe fn set_nonblocking(fd: c_int) -> Result<()> {
     let res = unsafe { fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) | O_NONBLOCK) };
-    assert_eq!(res, 0);
+    if res == 0 { Ok(()) } else { Err(Error::last_os_error()) }
 }
 
 #[test]
