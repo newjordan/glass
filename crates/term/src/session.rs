@@ -466,7 +466,7 @@ impl Session {
             .map_err(|e| format!("pty reader: {e}"))?;
         let output = Arc::new(AtomicBool::new(false));
         let gate = Arc::new(FrameGate::default());
-        let intake = Arc::new(Mutex::new(Intake::new(glass_window::LAYER_PICTURES)));
+        let intake = Arc::new(Mutex::new(starting_intake(grid, rows)));
         let splitter = Arc::new(Mutex::new(intake::Splitter::default()));
         {
             let (engine, writer, output, intake, splitter, gate) = (
@@ -868,6 +868,17 @@ fn pty_fd(master: &dyn MasterPty) -> Option<std::os::fd::OwnedFd> {
     unsafe { std::os::fd::BorrowedFd::borrow_raw(fd) }.try_clone_to_owned().ok()
 }
 
+/// The picture store for a session starting on `grid`, `rows` high, in
+/// the state a resize to it leaves: a program that starts on the size the
+/// window settled on hears no resize, and with the store's default
+/// one-pixel cell a sixel 240 pixels tall would claim 240 rows.
+fn starting_intake(grid: glass_window::GridSize, rows: u16) -> Intake {
+    let mut intake = Intake::new(glass_window::LAYER_PICTURES);
+    intake.set_cell((grid.cell_width, grid.cell_height));
+    intake.set_scrolled_primary(0, 0, rows);
+    intake
+}
+
 fn pty_size(rows: u16, cols: u16, grid: glass_window::GridSize) -> PtySize {
     let px = |cells: u16, cell: u32| u16::try_from(u32::from(cells) * cell).unwrap_or(u16::MAX);
     PtySize { rows, cols, pixel_width: px(cols, grid.cell_width), pixel_height: px(rows, grid.cell_height) }
@@ -1031,6 +1042,32 @@ mod pump_tests {
     /// A tiny APC-graphics picture: direct RGBA, one pixel, transmit and
     /// put, with a reply asked for.
     const APC_PUT: &[u8] = b"\x1b_Gi=31,s=1,v=1,a=T,f=24;AAAA\x1b\\";
+
+    /// A session that starts on the window's settled size and is never
+    /// resized: its store measures pictures in the window's cells, not in
+    /// one-pixel ones. A sixel 240 pixels tall in 20-pixel cells is twelve
+    /// rows, and the text after it lands on the row below it.
+    #[test]
+    fn a_session_never_resized_places_a_sixel_in_real_cells() {
+        let grid = glass_window::GridSize { cols: 40, rows: 30, width_px: 400, height_px: 600, cell_width: 10, cell_height: 20 };
+        let mut engine = Engine::new(30, 40, HostInfo { colors: [[0xd0; 3], [0, 0, 0], [0xff; 3]], cell_px: (10, 20) });
+        let mut intake = starting_intake(grid, 30);
+        let mut splitter = intake::Splitter::default();
+        let mut sixel = b"before\r\n\x1bPq\"1;1;8;240#0;2;100;0;0#0".to_vec();
+        for band in 0..40 {
+            if band > 0 {
+                sixel.push(b'-');
+            }
+            sixel.extend_from_slice(b"!8~");
+        }
+        sixel.extend_from_slice(b"\x1b\\after");
+        pump_bytes(&mut engine, &mut intake, &mut splitter, &sixel);
+        let shown = intake.describe(intake::View { top: engine.top_line(), rows: 30, alternate: false }).placements;
+        assert_eq!(shown.len(), 1, "one sixel");
+        assert_eq!((shown[0].row, shown[0].height), (1.0, 12.0), "240 pixels in 20-pixel cells, under `before`");
+        assert_eq!(engine.cursor().map(|(row, _)| row), Some(13), "the text goes on just below the picture");
+        assert_eq!(engine.scrolled_off_top(), 0, "nothing scrolled");
+    }
 
     /// What plain text asks of the window reaches it: a clipboard write
     /// (OSC 52), a title and the bell, with or without a picture beside
