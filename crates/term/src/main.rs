@@ -141,8 +141,8 @@ fn main() {
     // rather than the other way round.
     let started = Arc::new(Mutex::new(None));
     let early = {
-        let (started, command, dir) = (Arc::clone(&started), args.command.clone(), args.dir.clone());
-        move |grid| *started.lock().unwrap_or_else(|e| e.into_inner()) = Some(Session::start(&command, dir.as_deref(), grid))
+        let (started, command, dir, palette) = (Arc::clone(&started), args.command.clone(), args.dir.clone(), palette.clone());
+        move |grid| *started.lock().unwrap_or_else(|e| e.into_inner()) = Some(Session::start(&command, dir.as_deref(), grid, &palette))
     };
     let app = move |host| {
         let started = started.lock().unwrap_or_else(|e| e.into_inner()).take();
@@ -164,13 +164,16 @@ fn run(
     host: glass_window::Host,
     args: Args,
     palette: glass_window::Palette,
-    started: Option<Result<session::Started, String>>,
+    started: Option<Result<Session, String>>,
 ) -> i32 {
     let grid = host.grid_size();
     let (tx, rx) = mpsc::channel();
     let focused = Arc::new(AtomicBool::new(true));
     let session = match started {
-        Some(started) => started.and_then(|started| Session::attach(started, grid, &palette, host.clone(), tx.clone(), Arc::clone(&focused))),
+        Some(started) => started.map(|mut session| {
+            session.attach(grid, host.clone(), tx.clone(), Arc::clone(&focused));
+            session
+        }),
         None => Session::spawn(&args.command, args.dir.as_deref(), grid, &palette, host.clone(), tx.clone(), Arc::clone(&focused)),
     };
     let mut session = match session {

@@ -494,13 +494,10 @@ pub struct Session {
     /// The parsing thread checks it between pieces and lets them in; a
     /// waiter clears it once the lock is theirs.
     engine_wanted: Arc<AtomicBool>,
-}
-
-/// A program started in its pty, waiting for its session.
-pub struct Started {
-    master: Box<dyn MasterPty + Send>,
-    child: Box<dyn Child + Send + Sync>,
-    /// The size the pty was opened at.
+    /// Where the reading thread tells the window what the program asked
+    /// of it; empty until [`Session::attach`].
+    link: Arc<Link>,
+    /// The pty's size when the program started.
     size: PtySize,
 }
 
@@ -531,6 +528,71 @@ impl Typist {
     #[cfg(test)]
     pub fn with(view: KeyView, writer: Box<dyn Write + Send>) -> Self {
         Self { key_view: Arc::new(AtomicU64::new(view.pack())), writer: Arc::new(Mutex::new(writer)) }
+    }
+}
+
+/// The window a session is attached to, as the reading thread needs it.
+struct Window {
+    host: glass_window::Host,
+    tx: Sender<Msg>,
+    focused: Arc<AtomicBool>,
+}
+
+/// Where the reading thread reports what the program asked of the window.
+/// The program starts before there is a window where the grid is known
+/// first (macOS): until the session is attached, a title or a clipboard
+/// write waits here for it, and a bell or new output has no one to tell.
+#[derive(Default)]
+struct Link {
+    window: std::sync::OnceLock<Window>,
+    /// A title and a clipboard write sent before there was a window. The
+    /// lock is held while either is set or taken, so none is lost to an
+    /// attach in between.
+    waiting: Mutex<(Option<String>, Option<String>)>,
+}
+
+impl Link {
+    fn set_title(&self, title: String) {
+        let mut waiting = lock(&self.waiting);
+        match self.window.get() {
+            Some(window) => window.host.set_title(&title),
+            None => waiting.0 = Some(title),
+        }
+    }
+
+    fn copy(&self, text: String) {
+        let mut waiting = lock(&self.waiting);
+        match self.window.get() {
+            Some(window) => {
+                window.host.copy_to_clipboard(&text);
+            }
+            None => waiting.1 = Some(text),
+        }
+    }
+
+    /// The bell asks for attention, from a window that is not in front.
+    fn bell(&self) {
+        if let Some(window) = self.window.get()
+            && !window.focused.load(Ordering::Relaxed)
+        {
+            window.host.request_attention();
+        }
+    }
+
+    /// Wake the window for new output. False once the window is gone.
+    fn wake(&self) -> bool {
+        self.window.get().is_none_or(|window| window.tx.send(Msg::Output).is_ok())
+    }
+
+    fn attach(&self, window: Window) {
+        let mut waiting = lock(&self.waiting);
+        let window = self.window.get_or_init(|| window);
+        if let Some(title) = waiting.0.take() {
+            window.host.set_title(&title);
+        }
+        if let Some(text) = waiting.1.take() {
+            let _ = window.host.copy_to_clipboard(&text);
+        }
     }
 }
 
@@ -575,13 +637,21 @@ impl Session {
         tx: Sender<Msg>,
         focused: Arc<AtomicBool>,
     ) -> Result<Self, String> {
-        Self::attach(Self::start(command, dir, grid)?, grid, palette, host, tx, focused)
+        let mut session = Self::start(command, dir, grid, palette)?;
+        session.attach(grid, host, tx, focused);
+        Ok(session)
     }
 
-    /// Open a pty of `grid`'s size and start the program in it, before
-    /// there is a session (or a window) to read it: its output waits in
-    /// the pty until [`Session::attach`].
-    pub fn start(command: &[String], dir: Option<&Path>, grid: glass_window::GridSize) -> Result<Started, String> {
+    /// Open a pty of `grid`'s size, start the program in it and start
+    /// reading it, before there is a window: the program's queries are
+    /// answered from its first byte. What it asks of the window waits for
+    /// [`Session::attach`].
+    pub fn start(
+        command: &[String],
+        dir: Option<&Path>,
+        grid: glass_window::GridSize,
+        palette: &glass_window::Palette,
+    ) -> Result<Self, String> {
         let (rows, cols) = if grid.rows == 0 || grid.cols == 0 { (24, 80) } else { (grid.rows, grid.cols) };
         let size = pty_size(rows, cols, grid);
         let pair = native_pty_system().openpty(size).map_err(|e| format!("openpty: {e}"))?;
@@ -617,26 +687,7 @@ impl Session {
         glass_window::startup::mark("program started");
         // Close our copy of the slave so the reader sees the end of output.
         drop(pair.slave);
-        Ok(Started { master: pair.master, child, size })
-    }
-
-    /// The session for a program [`Session::start`] started, on the
-    /// window's `grid`. Where the window's grid is not the one the program
-    /// started on, the pty takes it now, as on any resize.
-    pub fn attach(
-        started: Started,
-        grid: glass_window::GridSize,
-        palette: &glass_window::Palette,
-        host: glass_window::Host,
-        tx: Sender<Msg>,
-        focused: Arc<AtomicBool>,
-    ) -> Result<Self, String> {
-        let Started { master, child, size } = started;
-        let (rows, cols) = if grid.rows == 0 || grid.cols == 0 { (size.rows, size.cols) } else { (grid.rows, grid.cols) };
-        let now = pty_size(rows, cols, grid);
-        if now != size {
-            let _ = master.resize(now);
-        }
+        let master = pair.master;
 
         let info = HostInfo {
             colors: [palette.foreground, palette.background, palette.cursor],
@@ -670,8 +721,9 @@ impl Session {
         // mutex hands the lock straight back to the owner, leaving a
         // key waiting behind every read to come.
         let engine_wanted = Arc::new(AtomicBool::new(false));
+        let link = Arc::new(Link::default());
         {
-            let (engine, writer, output, intake, splitter, gate, key_view, engine_wanted) = (
+            let (engine, writer, output, intake, splitter, gate, key_view, engine_wanted, link) = (
                 Arc::clone(&engine),
                 Arc::clone(&writer),
                 Arc::clone(&output),
@@ -680,6 +732,7 @@ impl Session {
                 Arc::clone(&gate),
                 Arc::clone(&key_view),
                 Arc::clone(&engine_wanted),
+                Arc::clone(&link),
             );
             let parse = std::thread::Builder::new().name("pty-parse".into()).spawn(move || {
                 crate::affinity::place_hot_thread();
@@ -725,13 +778,13 @@ impl Session {
                             let _ = writer.flush();
                         }
                         if let Some(title) = pumped.title.filter(|t| !t.is_empty()) {
-                            host.set_title(&title);
+                            link.set_title(title);
                         }
-                        if pumped.bell && !focused.load(Ordering::Relaxed) {
-                            host.request_attention();
+                        if pumped.bell {
+                            link.bell();
                         }
                         if let Some(text) = pumped.clipboard {
-                            host.copy_to_clipboard(&text);
+                            link.copy(text);
                         }
                         // A frame that ended here is owed a draw, from now:
                         // a draw already under way may have missed it.
@@ -744,7 +797,7 @@ impl Session {
                         // frame was held was put off, and nothing else would
                         // bring it back before the gate gives up waiting.
                         let first = !output.swap(true, Ordering::AcqRel);
-                        if (first || ended) && tx.send(Msg::Output).is_err() {
+                        if (first || ended) && !link.wake() {
                             break 'reads;
                         }
                     }
@@ -766,7 +819,24 @@ impl Session {
             event_seen: Mutex::new(intake::glass_dialect::ShowcaseSeen::default()),
             key_view,
             engine_wanted,
+            link,
+            size,
         })
+    }
+
+    /// The window the session draws in, with its `grid`. Where that is not
+    /// the grid the program started on, the pty takes it now, as on any
+    /// resize; a title or a clipboard write the program sent before there
+    /// was a window reaches it now, and output it wrote is drawn.
+    pub fn attach(&mut self, grid: glass_window::GridSize, host: glass_window::Host, tx: Sender<Msg>, focused: Arc<AtomicBool>) {
+        let size = self.size;
+        let (rows, cols) = if grid.rows == 0 || grid.cols == 0 { (size.rows, size.cols) } else { (grid.rows, grid.cols) };
+        if pty_size(rows, cols, grid) != size {
+            self.resize(rows, cols, grid);
+        }
+        let wake = tx.clone();
+        self.link.attach(Window { host, tx, focused });
+        let _ = wake.send(Msg::Output);
     }
 
     /// The engine's lock, taken politely under a flood: ask for it by
@@ -1143,6 +1213,41 @@ fn pty_size(rows: u16, cols: u16, grid: glass_window::GridSize) -> PtySize {
 mod tests {
     use super::*;
     use crate::engine::{Engine, HostInfo};
+
+    /// A session started before there is a window reads its program from
+    /// the start: a query the program sends first thing is answered with
+    /// no window attached yet.
+    #[test]
+    fn a_started_session_answers_before_the_window() {
+        let dir = std::env::temp_dir().join(format!("glass-start-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let out = dir.join("answer");
+        // Raw, ask DA1, and keep what comes back until its final `c`.
+        let script = "import os, select, sys, tty\n\
+                      tty.setraw(0)\n\
+                      os.write(1, b'\\x1b[c')\n\
+                      got = b''\n\
+                      while not got.endswith(b'c') and select.select([0], [], [], 3)[0]:\n\
+                      \x20   got += os.read(0, 64)\n\
+                      open(sys.argv[1], 'wb').write(got)\n";
+        let command: Vec<String> =
+            ["python3", "-c", script, out.to_str().unwrap()].iter().map(|s| s.to_string()).collect();
+        let grid = glass_window::GridSize { cols: 80, rows: 24, width_px: 640, height_px: 384, cell_width: 8, cell_height: 16 };
+        let session = Session::start(&command, None, grid, &glass_window::Palette::default()).unwrap();
+        let mut answer = Vec::new();
+        for _ in 0..100 {
+            if let Ok(got) = std::fs::read(&out)
+                && !got.is_empty()
+            {
+                answer = got;
+                break;
+            }
+            std::thread::sleep(Duration::from_millis(50));
+        }
+        drop(session);
+        let _ = std::fs::remove_dir_all(&dir);
+        assert_eq!(answer, b"\x1b[?62;4;22c", "the program's DA1 went unanswered before the window");
+    }
 
     #[test]
     fn foreign_variables_are_scrubbed() {
