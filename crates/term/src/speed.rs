@@ -189,10 +189,12 @@ fn feed_pty(engine: &mut Engine, intake: &mut Intake, splitter: &mut Splitter, s
     // SAFETY: both descriptors were just opened and are owned here.
     let (reader, mut writer) = unsafe { (std::fs::File::from_raw_fd(master), std::fs::File::from_raw_fd(slave)) };
     let fd = reader.try_clone().ok().map(std::os::fd::OwnedFd::from);
-    let mut reader: Box<dyn Read> = if env("GLASS_BENCH_AHEAD", 1) == 1 {
-        Box::new(crate::read_ahead::ReadAhead::spawn(Box::new(reader), fd).unwrap())
-    } else {
-        Box::new(reader)
+    // 0 reads here, 1 through the read-ahead, 2 gathered; by default, as
+    // the session reads on this system.
+    let mut reader: Box<dyn Read> = match env("GLASS_BENCH_AHEAD", if cfg!(target_os = "linux") { 1 } else { 2 }) {
+        1 => Box::new(crate::read_ahead::ReadAhead::spawn(Box::new(reader), fd).unwrap()),
+        2 => Box::new(crate::gather::Gathered::spawn(Box::new(reader)).unwrap()),
+        _ => Box::new(reader),
     };
     let data = stream.to_vec();
     let total = data.len();
@@ -322,6 +324,111 @@ pub(crate) fn random_stream(rng: &mut Rng, len: usize) -> Vec<u8> {
         }
     }
     out
+}
+
+/// A random stream of what full-screen programs write: colours and cursor
+/// moves between their characters, in the plain forms the engine applies
+/// itself and in every form next to them that it must leave to the parser
+/// (colon parts, private markers, intermediates, controls inside, too
+/// many parameters, values past a byte or past 65535, a sequence cut
+/// off), with REP, wide characters, half-read UTF-8, regions, scrolls and
+/// synchronized updates between them.
+pub(crate) fn random_painting(rng: &mut Rng, len: usize) -> Vec<u8> {
+    const AROUND: &[&[u8]] = &[
+        b"\x1b[3b", b"\x1b[b", b"\x1b[0b", b"\r\n", b"\n", b"\r", b"\x08", b"\t", "漢".as_bytes(), "🙂".as_bytes(),
+        "é".as_bytes(), "\u{301}".as_bytes(), b"\xc3", b"\xe6\x97", b"\xff", b"\x1b[2;5r", b"\x1b[r", b"\x1b[2J",
+        b"\x1b[K", b"\x1b[?2026h", b"\x1b[?2026l", b"\x1b[?7l", b"\x1b[?7h", b"\x1b[4h", b"\x1b[4l", b"\x1b[38:2::1:2:3m",
+        b"\x1b[4:3m", b"\x1b[58:5:9m", b"\x1b[?25l", b"\x1b[>4;1m", b"\x1b[1 q", b"\x1b[3\n1m", b"\x1b[1\x08;2H",
+        b"\x1b[1;2\x7fm", b"\x1b[", b"\x1b[38;2;1", b"\x1b7", b"\x1b8", b"\x1bM", b"\x1b(0", b"\x1b(B", b"\x1bc",
+        b"\x1b]8;;http://x\x1b\\", b"\x1b]8;;\x1b\\", b"\x1b[?1049h", b"\x1b[?1049l", b"\x1b[6n",
+    ];
+    let mut out = Vec::with_capacity(len + 256);
+    let number = |rng: &mut Rng| -> String {
+        match rng.below(10) {
+            0 => String::new(),
+            1 => ["255", "256", "65535", "65536", "99999999"][rng.below(5)].to_owned(),
+            2 => format!("{}", rng.below(300)),
+            _ => format!("{}", rng.below(110)),
+        }
+    };
+    while out.len() < len {
+        match rng.below(10) {
+            // A colour change.
+            0..=3 => {
+                let mut params: Vec<String> = Vec::new();
+                let most = if rng.below(8) == 0 { 40 } else { 5 };
+                for _ in 0..rng.below(most) {
+                    match rng.below(6) {
+                        0 => {
+                            params.push(["38", "48", "58"][rng.below(3)].to_owned());
+                            params.push("2".to_owned());
+                            for _ in 0..rng.below(4) {
+                                params.push(number(rng));
+                            }
+                        }
+                        1 => {
+                            params.push(["38", "48", "58"][rng.below(3)].to_owned());
+                            params.push(["5", "5", "2", "3", ""][rng.below(5)].to_owned());
+                            params.push(number(rng));
+                        }
+                        _ => params.push(number(rng)),
+                    }
+                }
+                out.extend_from_slice(format!("\x1b[{}m", params.join(";")).as_bytes());
+            }
+            // A cursor move.
+            4 | 5 => {
+                let params: Vec<String> = (0..rng.below(4)).map(|_| number(rng)).collect();
+                let end = [b'H', b'f'][rng.below(2)];
+                out.extend_from_slice(format!("\x1b[{}", params.join(";")).as_bytes());
+                out.push(end);
+            }
+            // The characters between them.
+            6 | 7 => out.extend((0..1 + rng.below(8)).map(|_| 0x20 + rng.below(95) as u8)),
+            8 => out.extend_from_slice(AROUND[rng.below(AROUND.len())]),
+            _ => {
+                let len = rng.below(60);
+                out.extend_from_slice(&random_stream(rng, len));
+            }
+        }
+    }
+    out
+}
+
+/// Applying plain colour changes and cursor moves straight to the grid
+/// leaves every cell of history and screen, the cursor, the pen, the
+/// modes, the scroll count and the replies exactly as the parser alone
+/// does, for escape-dense streams cut into random reads.
+#[test]
+fn escapes_match_the_parser() {
+    let mut rng = Rng::new(41);
+    for round in 0..600 {
+        let len = 200 + rng.below(4000);
+        let stream = random_painting(&mut rng, len);
+        let n = rng.below(20);
+        let cuts = random_cuts(&mut rng, &stream, n);
+        let (rows, cols) = [(6, 10), (24, 80), (3, 40), (39, 154)][round % 4];
+        let run = |fast: bool| {
+            let mut e = engine(rows, cols);
+            e.set_fast(fast);
+            let (mut i, mut s) = (Intake::new(glass_window::LAYER_PICTURES), Splitter::default());
+            let mut replies = Vec::new();
+            let mut pieces = Vec::new();
+            for w in cuts.windows(2) {
+                pieces.clear();
+                s.split(&stream[w[0]..w[1]], &mut pieces);
+                replies.extend(pump(&mut e, &mut i, &pieces).replies);
+            }
+            e.settle();
+            (e.grid_state(), replies, e.alt_scrolled(), e.alternate_screen())
+        };
+        let (fast, slow) = (run(true), run(false));
+        assert!(fast.0.0 == slow.0.0, "cells differ, round {round}: {:?}", String::from_utf8_lossy(&stream));
+        assert_eq!(fast.0.1, slow.0.1, "cursor, round {round}: {:?}", String::from_utf8_lossy(&stream));
+        assert_eq!((fast.0.2, fast.0.3), (slow.0.2, slow.0.3), "history and count, round {round}");
+        assert_eq!(fast.1, slow.1, "replies, round {round}");
+        assert_eq!((fast.2, fast.3), (slow.2, slow.3), "alternate screen, round {round}");
+    }
 }
 
 /// Cut `stream` at `cuts` random points.

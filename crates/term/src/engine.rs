@@ -1641,7 +1641,15 @@ impl Watch<'_> {
         let ascii = plain && self.term.grid().cursor.charsets == Default::default();
         let mut at = 0;
         let mut held: Option<(char, usize)> = None;
-        while let Some((c, len)) = utf8_at(text, at) {
+        loop {
+            // As many as fit go into the cursor's row at once; this loop
+            // takes the one that stopped them.
+            if plain {
+                (at, held) = self.put_row(text, at, held, ascii);
+            }
+            let Some((c, len)) = utf8_at(text, at) else {
+                break;
+            };
             if ('\u{7f}'..='\u{9f}').contains(&c) {
                 break;
             }
@@ -1658,6 +1666,82 @@ impl Watch<'_> {
             self.drained = 0;
         }
         held.map_or(0, |(_, start)| start)
+    }
+
+    /// `print_utf8`'s loop for characters `put_plain` would write, with
+    /// the cursor's row, the pen and the place looked up once rather than
+    /// for each character. Each character is written as the next one is
+    /// decoded, so the last stays held, as there. It stops, taking nothing
+    /// more, at the end of the well-formed text, at a C1 control, or at a
+    /// held character `put_plain` would refuse, and returns where it
+    /// stopped and what it holds.
+    #[inline(always)]
+    fn put_row(&mut self, text: &[u8], mut at: usize, mut held: Option<(char, usize)>, ascii: bool) -> (usize, Option<(char, usize)>) {
+        let columns = self.term.columns();
+        let grid = self.term.grid_mut();
+        if grid.cursor.input_needs_wrap {
+            return (at, held);
+        }
+        let line = grid.cursor.point.line;
+        let mut column = grid.cursor.point.column.0;
+        let (fg, bg, flags) = (grid.cursor.template.fg, grid.cursor.template.bg, grid.cursor.template.flags);
+        let row = &mut grid[line];
+        let underneath = CellFlags::WIDE_CHAR | CellFlags::WIDE_CHAR_SPACER;
+        let mut wrap = false;
+        let mut written = 0;
+        while let Some((c, len)) = utf8_at(text, at) {
+            if ('\u{7f}'..='\u{9f}').contains(&c) {
+                break;
+            }
+            if let Some((last, _)) = held {
+                let width = if (' '..='~').contains(&last) {
+                    if !ascii {
+                        break;
+                    }
+                    1
+                } else {
+                    match unicode_width::UnicodeWidthChar::width(last) {
+                        Some(width @ 1..=2) => width,
+                        _ => break,
+                    }
+                };
+                if wrap
+                    || column + width > columns
+                    || row[Column(column)].flags.intersects(underneath)
+                    || (width == 2 && row[Column(column + 1)].flags.intersects(underneath))
+                {
+                    break;
+                }
+                let cell = &mut row[Column(column)];
+                cell.c = last;
+                cell.fg = fg;
+                cell.bg = bg;
+                cell.flags = if width == 2 { flags | CellFlags::WIDE_CHAR } else { flags };
+                cell.extra = None;
+                if width == 2 {
+                    let spacer = &mut row[Column(column + 1)];
+                    spacer.c = ' ';
+                    spacer.fg = fg;
+                    spacer.bg = bg;
+                    spacer.flags = flags | CellFlags::WIDE_CHAR_SPACER;
+                    spacer.extra = None;
+                }
+                let end = column + width - 1;
+                if end + 1 < columns {
+                    column = end + 1;
+                } else {
+                    column = end;
+                    wrap = true;
+                }
+                written += 1;
+            }
+            held = Some((c, at));
+            at += len;
+        }
+        grid.cursor.point.column = Column(column);
+        grid.cursor.input_needs_wrap = wrap;
+        self.drained += written;
+        (at, held)
     }
 
     /// One character of a run `print_utf8` checked: written straight into
@@ -1728,7 +1812,7 @@ impl Watch<'_> {
     /// stream of output from waiting on memory once per line.
     #[inline]
     fn warm_next_row(&mut self) {
-        #[cfg(target_arch = "x86_64")]
+        #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
         {
             let history = self.term.history_size();
             if history == 0 {
@@ -1739,12 +1823,20 @@ impl Watch<'_> {
             let cells = &row[..Column(grid.columns())];
             let bytes = std::mem::size_of_val(cells);
             let start = cells.as_ptr().cast::<i8>();
-            for offset in (0..bytes).step_by(64) {
+            // Apple's cores fetch 128 bytes a line, x86's 64.
+            let line = if cfg!(target_arch = "aarch64") { 128 } else { 64 };
+            for offset in (0..bytes).step_by(line) {
                 // SAFETY: a prefetch is a hint: it reads nothing the
                 // program sees and cannot fault, and the address is inside
                 // the row's own cells.
+                #[cfg(target_arch = "x86_64")]
                 unsafe {
                     std::arch::x86_64::_mm_prefetch::<{ std::arch::x86_64::_MM_HINT_ET0 }>(start.wrapping_add(offset));
+                }
+                // SAFETY: as above; PRFM is the same hint, for a store.
+                #[cfg(target_arch = "aarch64")]
+                unsafe {
+                    std::arch::asm!("prfm pstl1keep, [{0}]", in(reg) start.wrapping_add(offset), options(nostack, preserves_flags, readonly));
                 }
             }
         }
@@ -2386,8 +2478,10 @@ const RUN_MIN: usize = 24;
 /// once and written a character at a time), when the run starts with the
 /// parser in its ground state, no UTF-8 character half read, and no
 /// synchronized update holding bytes back. The run's last character
-/// still goes through the parser, which keeps it for REP. Everything
-/// else, and every byte when `fast` is off, goes through the parser.
+/// still goes through the parser, which keeps it for REP. The colours
+/// and cursor moves that full-screen programs write between their
+/// characters skip the parser too ([`lane`]). Everything else, and every
+/// byte when `fast` is off, goes through the parser.
 fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, chunk: &[u8], fast: bool) {
     if !fast {
         mirror.follow(chunk);
@@ -2405,10 +2499,9 @@ fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, c
     for esc in memchr::memchr_iter(0x1b, chunk).chain(std::iter::once(chunk.len())) {
         let mut from = stretch;
         stretch = esc + 1;
-        if esc - from < RUN_MIN {
-            continue;
-        }
-        while let Some((start, end)) = next_run(&chunk[..esc], from) {
+        while esc - from >= RUN_MIN
+            && let Some((start, end)) = next_run(&chunk[..esc], from)
+        {
             from = end;
             mirror.catch_up(chunk, known, start);
             // Where in the run the parser is in ground: a run may begin
@@ -2435,11 +2528,205 @@ fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, c
             let run = &chunk[ground..end];
             fed += if run.is_ascii() { watch.print_run(&run[..run.len() - 1]) } else { watch.print_utf8(run) };
         }
+        if esc < chunk.len()
+            && let Some(len) = lane(processor, watch, mirror, chunk, esc, &mut fed, &mut known)
+        {
+            // What follows the sequence is looked into from its end.
+            stretch = esc + len;
+        }
     }
     mirror.catch_up(chunk, known, chunk.len());
     mirror.high_at_start = mirror.high;
     if fed < chunk.len() {
         processor.advance(watch, &chunk[fed..]);
+    }
+}
+
+/// The most parameters a sequence the lane takes may have: well under
+/// vte's 32, past which vte ignores the whole sequence.
+const LANE_PARAMS: usize = 16;
+
+/// A colour change (SGR) or a cursor move (CUP) whose bytes are all in
+/// one chunk, in the plainest form: `ESC [`, digits and semicolons only,
+/// then `m`, `H` or `f`. The parameters are read as vte reads them: each
+/// a run of digits saturating at 65535, an empty one 0.
+struct Simple {
+    params: [u16; LANE_PARAMS],
+    count: usize,
+    goto: bool,
+}
+
+/// The sequence at the start of `rest` (which starts with ESC) and its
+/// length, if it is one [`Simple`] takes.
+#[inline]
+fn simple(rest: &[u8]) -> Option<(usize, Simple)> {
+    if rest.get(1) != Some(&b'[') {
+        return None;
+    }
+    let mut params = [0u16; LANE_PARAMS];
+    let mut count = 0;
+    let mut value = 0u16;
+    for (at, &b) in rest.iter().enumerate().skip(2) {
+        match b {
+            b'0'..=b'9' => value = value.saturating_mul(10).saturating_add(u16::from(b - b'0')),
+            b';' if count + 1 < LANE_PARAMS => {
+                params[count] = value;
+                count += 1;
+                value = 0;
+            }
+            b'm' | b'H' | b'f' => {
+                params[count] = value;
+                return Some((at + 1, Simple { params, count: count + 1, goto: b != b'm' }));
+            }
+            _ => return None,
+        }
+    }
+    None
+}
+
+/// Apply the sequence at `chunk[esc..]` straight to the grid, if it is
+/// one [`Simple`] takes and the parser would read it from its ground
+/// state, and return its length. The bytes before it go to the parser
+/// first, so everything stays in stream order. The parser is left as it
+/// would have left itself: in ground, with nothing half read.
+#[inline]
+fn lane(
+    processor: &mut Processor,
+    watch: &mut Watch<'_>,
+    mirror: &mut Mirror,
+    chunk: &[u8],
+    esc: usize,
+    fed: &mut usize,
+    known: &mut usize,
+) -> Option<usize> {
+    let (len, simple) = simple(&chunk[esc..])?;
+    mirror.catch_up(chunk, *known, esc);
+    *known = esc;
+    if mirror.state != Parse::Ground || (mirror.high && !ends_whole(&chunk[..esc])) {
+        return None;
+    }
+    if *fed < esc {
+        processor.advance(watch, &chunk[*fed..esc]);
+        *fed = esc;
+    }
+    if processor.sync_timeout().sync_timeout().is_some() {
+        return None;
+    }
+    let params = &simple.params[..simple.count];
+    if simple.goto {
+        // vte's CUP: a missing or zero parameter is 1.
+        let or_one = |p: Option<&u16>| p.copied().filter(|&v| v != 0).unwrap_or(1);
+        let (line, column) = (or_one(params.first()), or_one(params.get(1)));
+        alacritty_terminal::vte::ansi::Handler::goto(watch, i32::from(line) - 1, usize::from(column) - 1);
+    } else {
+        sgr(watch, params);
+    }
+    *fed = esc + len;
+    *known = esc + len;
+    mirror.state = Parse::Ground;
+    mirror.high = false;
+    Some(len)
+}
+
+/// Whether `bytes` ends with a whole UTF-8 character, so the parser holds
+/// none half read: its last lead byte starts a valid character that ends
+/// exactly at the end.
+fn ends_whole(bytes: &[u8]) -> bool {
+    let Some(lead) = bytes.iter().rev().take(4).position(|&b| b & 0xc0 != 0x80).map(|k| bytes.len() - 1 - k) else {
+        return false;
+    };
+    let need = match bytes[lead] {
+        0x00..=0x7f => 1,
+        0xc2..=0xdf => 2,
+        0xe0..=0xef => 3,
+        0xf0..=0xf4 => 4,
+        _ => return false,
+    };
+    bytes.len() - lead == need && std::str::from_utf8(&bytes[lead..]).is_ok()
+}
+
+/// vte 0.15's SGR (`attrs_from_sgr_parameters`) for parameters with no
+/// colon parts: each parameter is an attribute, and 38, 48 and 58 take
+/// their colour from the parameters after them.
+fn sgr(watch: &mut Watch<'_>, params: &[u16]) {
+    use alacritty_terminal::vte::ansi::Handler;
+    const NAMED: [NamedColor; 8] = [
+        NamedColor::Black,
+        NamedColor::Red,
+        NamedColor::Green,
+        NamedColor::Yellow,
+        NamedColor::Blue,
+        NamedColor::Magenta,
+        NamedColor::Cyan,
+        NamedColor::White,
+    ];
+    const BRIGHT: [NamedColor; 8] = [
+        NamedColor::BrightBlack,
+        NamedColor::BrightRed,
+        NamedColor::BrightGreen,
+        NamedColor::BrightYellow,
+        NamedColor::BrightBlue,
+        NamedColor::BrightMagenta,
+        NamedColor::BrightCyan,
+        NamedColor::BrightWhite,
+    ];
+    let mut at = 0;
+    while at < params.len() {
+        let param = params[at];
+        at += 1;
+        let attr = match param {
+            0 => Some(Attr::Reset),
+            1 => Some(Attr::Bold),
+            2 => Some(Attr::Dim),
+            3 => Some(Attr::Italic),
+            4 => Some(Attr::Underline),
+            5 => Some(Attr::BlinkSlow),
+            6 => Some(Attr::BlinkFast),
+            7 => Some(Attr::Reverse),
+            8 => Some(Attr::Hidden),
+            9 => Some(Attr::Strike),
+            21 => Some(Attr::CancelBold),
+            22 => Some(Attr::CancelBoldDim),
+            23 => Some(Attr::CancelItalic),
+            24 => Some(Attr::CancelUnderline),
+            25 => Some(Attr::CancelBlink),
+            27 => Some(Attr::CancelReverse),
+            28 => Some(Attr::CancelHidden),
+            29 => Some(Attr::CancelStrike),
+            30..=37 => Some(Attr::Foreground(AnsiColor::Named(NAMED[usize::from(param - 30)]))),
+            38 => sgr_color(params, &mut at).map(Attr::Foreground),
+            39 => Some(Attr::Foreground(AnsiColor::Named(NamedColor::Foreground))),
+            40..=47 => Some(Attr::Background(AnsiColor::Named(NAMED[usize::from(param - 40)]))),
+            48 => sgr_color(params, &mut at).map(Attr::Background),
+            49 => Some(Attr::Background(AnsiColor::Named(NamedColor::Background))),
+            58 => sgr_color(params, &mut at).map(|color| Attr::UnderlineColor(Some(color))),
+            59 => Some(Attr::UnderlineColor(None)),
+            90..=97 => Some(Attr::Foreground(AnsiColor::Named(BRIGHT[usize::from(param - 90)]))),
+            100..=107 => Some(Attr::Background(AnsiColor::Named(BRIGHT[usize::from(param - 100)]))),
+            _ => None,
+        };
+        if let Some(attr) = attr {
+            watch.terminal_attribute(attr);
+        }
+    }
+}
+
+/// vte 0.15's `parse_sgr_color`: `2;r;g;b` or `5;index`, taking the
+/// parameters it reads even when they turn out not to make a colour.
+fn sgr_color(params: &[u16], at: &mut usize) -> Option<AnsiColor> {
+    let mut next = || {
+        let param = params.get(*at).copied();
+        *at += usize::from(param.is_some());
+        param
+    };
+    match next() {
+        Some(2) => Some(AnsiColor::Spec(Rgb {
+            r: u8::try_from(next()?).ok()?,
+            g: u8::try_from(next()?).ok()?,
+            b: u8::try_from(next()?).ok()?,
+        })),
+        Some(5) => Some(AnsiColor::Indexed(u8::try_from(next()?).ok()?)),
+        _ => None,
     }
 }
 
