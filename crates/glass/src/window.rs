@@ -765,6 +765,14 @@ impl<T: Send + 'static> Glass<T> {
     }
 
     fn on_key(&mut self, event: &KeyEvent) {
+        // The mark itself is cheap and always printed under
+        // GLASS_SLOW_KEYS too: the window's receipt of the key is the
+        // first point whose delay a slow-key diagnosis can name.
+        if crate::keytrace::printing() {
+            crate::keytrace::mark("key-window");
+        } else if event.state == ElementState::Pressed {
+            crate::keytrace::slow_mark("key-window");
+        }
         if let Some(shortcut) = input::shortcut(event, self.mods) {
             if event.state == ElementState::Pressed {
                 match shortcut {

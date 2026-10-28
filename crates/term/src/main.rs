@@ -330,7 +330,9 @@ fn run(
             }
             last_draw = now;
             session.take_output_flag();
+            let began = std::time::Instant::now();
             draw(&mut terminal, &session, &ui, &host, cursor_on);
+            glass_window::keytrace::slow_elapsed("draw", began);
             session.frame_drawn();
         }
     }
@@ -353,6 +355,7 @@ fn draw(
     host: &glass_window::Host,
     show_cursor: bool,
 ) {
+    glass_window::keytrace::mark("key-draw-start");
     let style = glass_window::CursorStyle {
         kind: match session.cursor_shape() {
             view::CursorLook::Block => glass_window::CursorKind::Block,
@@ -366,9 +369,12 @@ fn draw(
     // The underline is the word the link covers, so the hover already
     // holds what the frame needs.
     let hover = ui.hover_link;
-    let _ = terminal.draw(|frame| {
+    let drew = terminal.draw(|frame| {
         session.render(frame, ui.selection.as_ref(), hover.as_ref(), host, show_cursor)
     });
+    if drew.is_ok() {
+        glass_window::keytrace::mark("key-draw-end");
+    }
 }
 
 /// What the window does with the mouse and keys itself: selection and
@@ -424,6 +430,9 @@ fn shortcut_of(key: &KeyEvent, rows: u16, alternate_screen: bool) -> Option<Shor
 impl Ui {
     /// Returns whether the screen needs drawing again.
     fn input(&mut self, event: Event, session: &mut Session, host: &glass_window::Host, focused: &AtomicBool) -> bool {
+        if matches!(&event, Event::Key(k) if k.kind == KeyEventKind::Press) {
+            glass_window::keytrace::mark_or_slow("key-input");
+        }
         match event {
             Event::Key(key) => {
                 // The window's own shortcuts act on press and repeat only;
@@ -443,7 +452,9 @@ impl Ui {
                     return false;
                 };
                 let redraw = self.selection.take().is_some() | session.scroll_to_bottom();
+                glass_window::keytrace::mark_or_slow("key-encoded");
                 session.write(&bytes);
+                glass_window::keytrace::mark_or_slow("key-written");
                 redraw
             }
             Event::Paste(text) => {
