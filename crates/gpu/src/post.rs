@@ -98,7 +98,7 @@ pub fn level_sizes(size: (u32, u32)) -> [(u32, u32); LEVELS] {
 pub fn on_by_default() -> bool {
     #[cfg(not(target_arch = "wasm32"))]
     {
-        glass_stage::env::var("GLASS_POST").map_or(true, |v| v != "0")
+        glass_stage::env::var("GLASS_POST").is_none_or(|v| v != "0")
     }
     #[cfg(target_arch = "wasm32")]
     {
