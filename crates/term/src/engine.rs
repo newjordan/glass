@@ -1681,10 +1681,12 @@ impl Watch<'_> {
     /// `print_utf8`'s loop for characters `put_plain` would write, with
     /// the cursor's row, the pen and the place looked up once rather than
     /// for each character. Each character is written as the next one is
-    /// decoded, so the last stays held, as there. It stops, taking nothing
-    /// more, at the end of the well-formed text, at a C1 control, or at a
-    /// held character `put_plain` would refuse, and returns where it
-    /// stopped and what it holds.
+    /// decoded, so the last stays held, as there. A mark that joins the
+    /// character before it (no width of its own: a combining accent) goes
+    /// onto that character's cell here too, as `Term::input` puts it. It
+    /// stops, taking nothing more, at the end of the well-formed text, at
+    /// a C1 control, or at a held character `put_plain` would refuse, and
+    /// returns where it stopped and what it holds.
     #[inline(always)]
     fn put_row(&mut self, text: &[u8], mut at: usize, mut held: Option<(char, usize)>, ascii: bool) -> (usize, Option<(char, usize)>) {
         let columns = self.term.columns();
@@ -1712,6 +1714,13 @@ impl Watch<'_> {
                 } else {
                     match unicode_width::UnicodeWidthChar::width(last) {
                         Some(width @ 1..=2) => width,
+                        Some(0) => {
+                            put_mark(row, column, wrap, last);
+                            written += 1;
+                            held = Some((c, at));
+                            at += len;
+                            continue;
+                        }
                         _ => break,
                     }
                 };
@@ -2759,6 +2768,20 @@ fn sgr_color(params: &[u16], at: &mut usize) -> Option<AnsiColor> {
         Some(5) => Some(AnsiColor::Indexed(u8::try_from(next()?).ok()?)),
         _ => None,
     }
+}
+
+/// `Term::input`'s mark (a character of no width, such as a combining
+/// accent): on the cell before the cursor at `column` (on the cursor's
+/// own while a wrap is pending), or on the wide character a spacer there
+/// belongs to. Out of line, so the loop it is called from stays small.
+#[cold]
+#[inline(never)]
+fn put_mark(row: &mut alacritty_terminal::grid::Row<alacritty_terminal::term::cell::Cell>, column: usize, wrap: bool, mark: char) {
+    let mut at = if wrap { column } else { column.saturating_sub(1) };
+    if row[Column(at)].flags.contains(CellFlags::WIDE_CHAR_SPACER) {
+        at = at.saturating_sub(1);
+    }
+    row[Column(at)].push_zerowidth(mark);
 }
 
 /// The next run of at least [`RUN_MIN`] bytes of text in `bytes` (printable

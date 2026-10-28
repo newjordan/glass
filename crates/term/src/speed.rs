@@ -67,7 +67,8 @@ pub(crate) fn workloads(scale: f64, rows: usize, cols: usize) -> Vec<(&'static s
         .collect();
     out.push(("ascii", build(size(24), || base[rng.below(base.len())].clone())));
 
-    let uni = ["漢字", "テスト", "🙂", "é", "ñ", "Ж", "αβγ", "á", "→", "█", "─"];
+    // As tput.py has them: its "á" is an "a" and a combining accent.
+    let uni = ["漢字", "テスト", "🙂", "é", "ñ", "Ж", "αβγ", "a\u{301}", "→", "█", "─"];
     let mut pool: Vec<String> = uni.iter().map(|s| s.to_string()).collect();
     pool.extend(print[..20].iter().map(|c| c.to_string()));
     let ulines: Vec<Vec<u8>> = (0..400)
