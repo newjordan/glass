@@ -9,6 +9,8 @@
 mod affinity;
 mod blink;
 mod engine;
+#[cfg(any(not(target_os = "linux"), test))]
+mod gather;
 mod intake;
 mod keys;
 #[cfg(any(target_os = "linux", test))]

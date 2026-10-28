@@ -14,6 +14,12 @@
 //! when sysfs cannot be read, or when the CPUs glass was given include
 //! none of the chosen ones.
 //!
+//! macOS has no affinity to set. It does put a thread on its efficiency
+//! cores unless the thread says the user is waiting on it, and it does
+//! that more readily for a window that isn't in front: so there both
+//! threads say so (the user-interactive class), which made wide text in
+//! a window about 5% faster on an M4 Pro.
+//!
 //! `GLASS_AFFINITY=off` leaves the threads where the scheduler puts them;
 //! `auto`, the default, places them as above.
 
@@ -138,8 +144,17 @@ fn chosen() -> Option<&'static [usize]> {
 }
 
 /// Place the calling thread on the largest L3's CPUs, among those it may
-/// run on already. Does nothing where the module says it does nothing.
+/// run on already, or on macOS mark it user-interactive. Does nothing
+/// where the module says it does nothing.
 pub fn place_hot_thread() {
+    #[cfg(target_os = "macos")]
+    if wanted(std::env::var("GLASS_AFFINITY").ok().as_deref()) {
+        // SAFETY: the call sets this thread's own class and takes no
+        // pointers.
+        unsafe {
+            libc::pthread_set_qos_class_self_np(libc::qos_class_t::QOS_CLASS_USER_INTERACTIVE, 0);
+        }
+    }
     #[cfg(target_os = "linux")]
     if let Some(cpus) = chosen() {
         // SAFETY: both sets are plain bit arrays the calls fill or read,

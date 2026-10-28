@@ -461,16 +461,17 @@ impl Session {
         let writer: Arc<Mutex<Box<dyn Write + Send>>> =
             Arc::new(Mutex::new(pair.master.take_writer().map_err(|e| format!("pty writer: {e}"))?));
         let reader = pair.master.try_clone_reader().map_err(|e| format!("pty reader: {e}"))?;
-        // The pty is read on a thread of its own, ahead of the parsing, where
-        // that pays: Linux's pty hands over up to 4 KiB a read. macOS's hands
-        // over 1 KiB, and there the hand-offs cost more than the overlap
-        // saves (plain text through it at 163 MB/s, read here at 375, on an
-        // M4 Pro), so elsewhere the parsing thread reads the pty itself.
+        // The pty is read on a thread of its own, ahead of the parsing.
+        // Linux's pty hands over up to 4 KiB a read, and the reads go over
+        // in hand-offs of up to 16 KiB. macOS's hands over 1 KiB, too
+        // little to hand over one by one (plain text through hand-offs
+        // came to 163 MB/s on an M4 Pro, against 375 read here), so there
+        // the reads gather in one buffer the parsing takes whole.
         #[cfg(target_os = "linux")]
         let mut reader = crate::read_ahead::ReadAhead::spawn(reader, pty_fd(pair.master.as_ref()))
             .map_err(|e| format!("pty reader: {e}"))?;
         #[cfg(not(target_os = "linux"))]
-        let mut reader = reader;
+        let mut reader = crate::gather::Gathered::spawn(reader).map_err(|e| format!("pty reader: {e}"))?;
         let output = Arc::new(AtomicBool::new(false));
         let gate = Arc::new(FrameGate::default());
         let intake = Arc::new(Mutex::new(starting_intake(grid, rows)));
