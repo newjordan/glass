@@ -1,0 +1,19 @@
+[Desktop Entry]
+Version=1.5
+Type=Application
+Name=glass
+GenericName=Terminal emulator
+Comment=A GPU terminal that takes in pictures, layers and 3D scenes
+TryExec=glass
+Exec=glass
+Icon=glass
+Terminal=false
+StartupNotify=false
+StartupWMClass=glass
+Categories=System;TerminalEmulator;
+Keywords=shell;prompt;command;commandline;cmd;terminal;console;
+X-TerminalArgExec=-e
+X-TerminalArgAppId=--class
+X-TerminalArgTitle=--title
+X-TerminalArgDir=--working-directory
+X-TerminalArgHold=--hold
