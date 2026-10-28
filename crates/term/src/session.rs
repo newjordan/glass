@@ -6,7 +6,7 @@ use std::io::{Read, Write};
 use std::path::Path;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::Sender;
-use std::sync::{Arc, Mutex, MutexGuard};
+use std::sync::{Arc, Mutex, MutexGuard, RwLock};
 use std::time::Duration;
 
 use crossterm::event::Event;
@@ -32,6 +32,7 @@ const SYNC_LIMIT: Duration = Duration::from_millis(150);
 
 /// How long a synchronized frame waits for the one before it to be drawn.
 const FRAME_WAIT: Duration = Duration::from_millis(50);
+
 
 const FRAME_BEGIN: &[u8] = b"\x1b[?2026h";
 const FRAME_END: &[u8] = b"\x1b[?2026l";
@@ -96,6 +97,43 @@ pub enum Msg {
     Output,
     /// The window closed.
     Closed,
+}
+
+/// What a key needs to know about the program's state, copied out of the
+/// engine as plain values so a key never waits for the lock the reader
+/// holds while it parses a flood. The parse thread refreshes it after
+/// each read it pumps; nothing else writes it.
+#[derive(Debug, Default)]
+pub struct KeyView {
+    /// `(rows, cols)` of the screen.
+    pub size: (u16, u16),
+    /// The CSI u dialect's flags, as the program set them.
+    pub keyboard_flags: u8,
+    /// Whether the program is on the alternate screen.
+    pub alternate_screen: bool,
+    /// Whether arrow keys are application cursor keys.
+    pub application_cursor: bool,
+    /// Whether the view sits on the live screen.
+    pub at_bottom: bool,
+}
+
+impl KeyView {
+    /// The engine's state as a key needs it.
+    fn of(engine: &Engine) -> Self {
+        let (rows, cols) = engine.size();
+        Self {
+            size: (u16::try_from(rows).unwrap_or(u16::MAX), u16::try_from(cols).unwrap_or(u16::MAX)),
+            keyboard_flags: engine.keyboard_flags(),
+            alternate_screen: engine.alternate_screen(),
+            application_cursor: engine.application_cursor(),
+            // The view is live when no lift into history remains, and on
+            // the primary screen the lift is exactly the distance from
+            // the newest line the view shows to the lines that left the
+            // top. The alternate screen has no history to lift through.
+            at_bottom: engine.alternate_screen()
+                || engine.top_line() == engine.scrolled_off_top() as u64,
+        }
+    }
 }
 
 /// What one read's worth of pumping produced, beside the screen: the
@@ -400,6 +438,14 @@ pub struct Session {
     scene_ids: Mutex<Vec<u32>>,
     /// Showcase counters already reported to the program.
     event_seen: Mutex<intake::glass_dialect::ShowcaseSeen>,
+    /// The program's state a key needs, refreshed by the reader after
+    /// each read it pumps. A key reads it without the engine's lock.
+    key_view: Arc<RwLock<KeyView>>,
+    /// Set by the session's own threads while they wait for the engine,
+    /// which the parsing thread holds read after read under a flood.
+    /// The parsing thread checks it between pieces and lets them in; a
+    /// waiter clears it once the lock is theirs.
+    engine_wanted: Arc<AtomicBool>,
 }
 
 fn lock<T>(mutex: &Mutex<T>) -> MutexGuard<'_, T> {
@@ -476,14 +522,25 @@ impl Session {
         let gate = Arc::new(FrameGate::default());
         let intake = Arc::new(Mutex::new(starting_intake(grid, rows)));
         let splitter = Arc::new(Mutex::new(intake::Splitter::default()));
+        let key_view = Arc::new(RwLock::new(KeyView::default()));
+        // Set by whoever needs the engine and finds the parsing thread
+        // in the middle of a flood, cleared once they hold it. The
+        // parsing thread reads it between pieces and, when it is set,
+        // stays off the lock a moment so a waiter takes it: without
+        // this, a flood's reads come back to back and std's unfair
+        // mutex hands the lock straight back to the owner, leaving a
+        // key waiting behind every read to come.
+        let engine_wanted = Arc::new(AtomicBool::new(false));
         {
-            let (engine, writer, output, intake, splitter, gate) = (
+            let (engine, writer, output, intake, splitter, gate, key_view, engine_wanted) = (
                 Arc::clone(&engine),
                 Arc::clone(&writer),
                 Arc::clone(&output),
                 Arc::clone(&intake),
                 Arc::clone(&splitter),
                 Arc::clone(&gate),
+                Arc::clone(&key_view),
+                Arc::clone(&engine_wanted),
             );
             let parse = std::thread::Builder::new().name("pty-parse".into()).spawn(move || {
                 crate::affinity::place_hot_thread();
@@ -511,12 +568,21 @@ impl Session {
                         let pumped = {
                             let mut pieces = Vec::new();
                             lock(&splitter).split(piece, &mut pieces);
+                            let _wait = glass_window::keytrace::Wait::for_lock("engine");
                             let mut engine = lock(&engine);
+                            // The waiter has the lock: their flag comes
+                            // down, and the next piece may take it back.
+                            engine_wanted.store(false, Ordering::Release);
                             let mut intake = lock(&intake);
-                            pump(&mut engine, &mut intake, &pieces)
+                            let pumped = pump(&mut engine, &mut intake, &pieces);
+                            // Copy what a key needs out while the lock is
+                            // ours: a key typed during the next read does
+                            // not wait for that read to finish.
+                            *key_view.write().unwrap_or_else(|e| e.into_inner()) = KeyView::of(&engine);
+                            pumped
                         };
+
                         if !pumped.replies.is_empty() {
-                            drop(lock(&engine));
                             let mut writer = lock(&writer);
                             let _ = writer.write_all(&pumped.replies);
                             let _ = writer.flush();
@@ -561,11 +627,24 @@ impl Session {
             showcase_shown: Mutex::new(None),
             scene_ids: Mutex::new(Vec::new()),
             event_seen: Mutex::new(intake::glass_dialect::ShowcaseSeen::default()),
+            key_view,
+            engine_wanted,
         })
+    }
+
+    /// The engine's lock, taken politely under a flood: ask for it by
+    /// the flag first, so the parsing thread's next piece boundary
+    /// hands it over instead of running a whole read ahead.
+    fn engine(&self) -> MutexGuard<'_, Engine> {
+        self.engine_wanted.store(true, Ordering::Release);
+        let guard = lock(&self.engine);
+        self.engine_wanted.store(false, Ordering::Release);
+        guard
     }
 
     /// Bytes to the program, as typed.
     pub fn write(&mut self, bytes: &[u8]) {
+        let _wait = glass_window::keytrace::Wait::for_lock("write");
         let mut writer = lock(&self.writer);
         let _ = writer.write_all(bytes);
         let _ = writer.flush();
@@ -573,13 +652,13 @@ impl Session {
 
     /// Bytes onto the screen, as if the program wrote them.
     pub fn feed(&mut self, bytes: &[u8]) {
-        lock(&self.engine).process(bytes);
+        self.engine().process(bytes);
     }
 
     pub fn resize(&mut self, rows: u16, cols: u16, grid: glass_window::GridSize) {
         let (rows, cols) = (rows.max(1), cols.max(1));
         let _ = self.master.resize(pty_size(rows, cols, grid));
-        let mut engine = lock(&self.engine);
+        let mut engine = self.engine();
         engine.resize(usize::from(rows), usize::from(cols));
         engine.set_cell_px((grid.cell_width, grid.cell_height));
         let reflow = engine.take_reflow();
@@ -626,7 +705,7 @@ impl Session {
         host: &glass_window::Host,
         show_cursor: bool,
     ) {
-        let mut engine = lock(&self.engine);
+        let mut engine = self.engine();
         let area = frame.area();
         view::paint(frame.buffer_mut(), area, &mut engine, selection, hover);
         if show_cursor
@@ -639,7 +718,7 @@ impl Session {
         // and the showings visible in the view become one layer group.
         // The view's top line is the scroll count less the rows `Term`'s
         // display offset lifts the view into the scrollback.
-        let engine = lock(&self.engine);
+        let engine = self.engine();
         let top = engine.top_line();
         let alternate = engine.alternate_screen();
         drop(engine);
@@ -649,7 +728,7 @@ impl Session {
         // a cell only when a virtual placement exists, and only for the
         // cells on screen.
         if lock(&self.intake).has_virtual() {
-            let mut engine = lock(&self.engine);
+            let mut engine = self.engine();
             let (cw, ch) = engine.cell_px();
             let cols = area.width;
             let refs: Vec<intake::placeholders::CellRef> = engine
@@ -724,33 +803,33 @@ impl Session {
 
     /// The cursor's shape (block, underline or bar) as the program set it.
     pub fn cursor_shape(&self) -> crate::view::CursorLook {
-        lock(&self.engine).cursor_look()
+        self.engine().cursor_look()
     }
 
     /// Whether the program asked for a blinking cursor.
     pub fn cursor_blinking(&self) -> bool {
-        lock(&self.engine).cursor_blinking()
+        self.engine().cursor_blinking()
     }
 
     /// Whether the cursor is on the screen: not hidden, and not scrolled
     /// off the live screen.
     pub fn cursor_shown(&self) -> bool {
-        lock(&self.engine).cursor().is_some()
+        self.engine().cursor().is_some()
     }
 
     /// The cursor colour the program set, if it set one.
     pub fn cursor_color(&self) -> Option<[u8; 3]> {
-        lock(&self.engine).cursor_color().map(|c| [c.r, c.g, c.b])
+        self.engine().cursor_color().map(|c| [c.r, c.g, c.b])
     }
 
     pub fn selected_text(&self, selection: &Selection) -> String {
-        let mut engine = lock(&self.engine);
+        let mut engine = self.engine();
         let cols = u16::try_from(engine.size().1).unwrap_or(u16::MAX);
         view::text(engine.cells(), cols, selection)
     }
 
     pub fn word_at(&self, row: u16, col: u16) -> Selection {
-        let mut engine = lock(&self.engine);
+        let mut engine = self.engine();
         let cols = u16::try_from(engine.size().1).unwrap_or(u16::MAX);
         view::word(engine.cells(), cols, row, col)
     }
@@ -758,49 +837,61 @@ impl Session {
     /// Move the view `lines` into the scrollback (negative: back toward the
     /// live screen). Returns whether it moved.
     pub fn scroll_back(&mut self, lines: isize) -> bool {
-        lock(&self.engine).scroll_display(lines)
+        self.engine().scroll_display(lines)
     }
 
+    /// A key pulls the view back to the live screen — the usual case —
+    /// without touching the engine at all: the reader's last copy of
+    /// the view already says it is there. Only a view actually lifted
+    /// into the scrollback needs the engine, and under a flood that is
+    /// the one lock a key waits for.
     pub fn scroll_to_bottom(&mut self) -> bool {
-        lock(&self.engine).scroll_to_bottom()
+        if self.key_view.read().unwrap_or_else(|e| e.into_inner()).at_bottom {
+            return false;
+        }
+        let moved = self.engine().scroll_to_bottom();
+        // The view is live again from the engine's side too; a key that
+        // follows reads this without the engine.
+        *self.key_view.write().unwrap_or_else(|e| e.into_inner()) = KeyView::of(&self.engine());
+        moved
     }
 
     pub fn rows(&self) -> u16 {
-        u16::try_from(lock(&self.engine).size().0).unwrap_or(u16::MAX)
+        self.key_view.read().unwrap_or_else(|e| e.into_inner()).size.0
     }
 
     pub fn cols(&self) -> u16 {
-        u16::try_from(lock(&self.engine).size().1).unwrap_or(u16::MAX)
+        u16::try_from(self.engine().size().1).unwrap_or(u16::MAX)
     }
 
     /// The CSI u keyboard dialect's flags, as the program set them.
     pub fn keyboard_flags(&self) -> u8 {
-        lock(&self.engine).keyboard_flags()
+        self.key_view.read().unwrap_or_else(|e| e.into_inner()).keyboard_flags
     }
 
     pub fn alternate_screen(&self) -> bool {
-        lock(&self.engine).alternate_screen()
+        self.key_view.read().unwrap_or_else(|e| e.into_inner()).alternate_screen
     }
 
     pub fn application_cursor(&self) -> bool {
-        lock(&self.engine).application_cursor()
+        self.key_view.read().unwrap_or_else(|e| e.into_inner()).application_cursor
     }
 
     pub fn bracketed_paste(&self) -> bool {
-        lock(&self.engine).bracketed_paste()
+        self.engine().bracketed_paste()
     }
 
     pub fn mouse_protocol(&self) -> (MouseProtocolMode, MouseProtocolEncoding) {
-        lock(&self.engine).mouse_protocol()
+        self.engine().mouse_protocol()
     }
 
     pub fn focus_reports(&self) -> bool {
-        lock(&self.engine).focus_reports()
+        self.engine().focus_reports()
     }
 
     /// The program is in a synchronized update.
     pub fn synchronized(&self) -> bool {
-        lock(&self.engine).synchronized()
+        self.engine().synchronized()
     }
 
     /// When the next animation frame falls due, in milliseconds on the
@@ -831,23 +922,23 @@ impl Session {
     /// Hold the frame: a synchronized update has not finished, and has not
     /// run past its limit.
     pub fn holding_frame(&self) -> bool {
-        lock(&self.engine).holding_frame(SYNC_LIMIT)
+        self.engine().holding_frame(SYNC_LIMIT)
     }
 
     /// End a synchronized update whose deadline passed, applying the bytes
     /// buffered since it opened. Returns whether it ended.
     pub fn end_sync_update(&mut self) -> bool {
-        lock(&self.engine).end_sync_update()
+        self.engine().end_sync_update()
     }
 
     /// The hyperlink open over a cell, if any.
     pub fn link_at(&self, row: u16, col: u16) -> Option<String> {
-        lock(&self.engine).link_at(row, col)
+        self.engine().link_at(row, col)
     }
 
     /// The plain-text URL under a cell, if one sits there.
     pub fn url_at(&self, row: u16, col: u16) -> Option<String> {
-        let mut engine = lock(&self.engine);
+        let mut engine = self.engine();
         let cols = u16::try_from(engine.size().1).unwrap_or(u16::MAX);
         view::url_at(engine.cells(), cols, row, col)
     }
@@ -920,6 +1011,47 @@ mod tests {
         let mut term = engine();
         term.process(input);
         term.take_effects().replies
+    }
+
+    #[test]
+    fn the_key_view_tracks_the_programs_modes_and_the_view() {
+        let mut term = engine();
+        // Start: the primary screen, the live view, the legacy dialect.
+        let start = KeyView::of(&term);
+        assert_eq!(start.size, (24, 80));
+        assert!(start.at_bottom);
+        assert_eq!(start.keyboard_flags, 0);
+        assert!(!start.alternate_screen);
+        assert!(!start.application_cursor);
+
+        // The program pushes the CSI u dialect and application cursor
+        // keys: the view follows. (A switch to the alternate screen
+        // resets the dialect, so it is not pushed here.)
+        term.process(b"\x1b[>1u\x1b[?1h");
+        let modes = KeyView::of(&term);
+        assert_eq!(modes.keyboard_flags, 1);
+        assert!(modes.application_cursor);
+        assert!(!modes.alternate_screen);
+
+        // The alternate screen has no history, so its view is live.
+        term.process(b"\x1b[?1049h");
+        assert!(KeyView::of(&term).alternate_screen);
+        assert!(KeyView::of(&term).at_bottom);
+
+        // Back on the primary screen with history: the view stays on the
+        // live screen while the program writes, and only a scroll back
+        // lifts it into history, where a key pulls it back from.
+        term.process(b"\x1b[?1049l");
+        for _ in 0..30 {
+            term.process(b"\n");
+        }
+        assert!(KeyView::of(&term).at_bottom);
+        // Into the scrollback (up), then a key pulls the view back.
+        assert!(term.scroll_display(3), "scroll did not move");
+        assert!(!KeyView::of(&term).at_bottom);
+        assert!(term.scroll_to_bottom());
+        assert!(KeyView::of(&term).at_bottom);
+        assert!(KeyView::of(&term).at_bottom);
     }
 
     #[test]
