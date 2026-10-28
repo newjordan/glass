@@ -13,6 +13,7 @@ mod blast;
 mod clipboard;
 mod config;
 mod cube;
+mod early;
 mod font;
 pub mod graphics;
 pub mod page;
@@ -205,6 +206,8 @@ pub(crate) enum UserEvent {
     /// Film this frame into the recording begun at this instant
     /// (`record.rs`); `None` ends it.
     Record(Option<std::time::Instant>),
+    /// The GPU is open: the window's renderer can be made.
+    GpuReady,
     /// Close as if the window's close button was pressed.
     Close,
     /// The cockpit has returned; end the event loop.

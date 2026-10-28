@@ -161,8 +161,43 @@ impl Gpu {
 /// the slowest of them rather than their sum.
 pub struct Preparing {
     gpu: Ready<Result<Gpu, String>>,
+    /// Said once the GPU piece is done (`when_gpu_ready`).
+    gpu_done: Arc<Signal>,
     fonts: Option<Ready<Result<Fonts, String>>>,
+    /// The fonts once sized for the window, with the scale they were sized for.
+    sized: Option<(Fonts, f32)>,
     wallpaper: Ready<Option<crate::wallpaper::Wallpaper>>,
+}
+
+/// A piece of startup being done, and who to tell once it is: told at
+/// most once, from the piece's own thread.
+#[derive(Default)]
+struct Signal {
+    state: std::sync::Mutex<(bool, Option<Box<dyn FnOnce() + Send>>)>,
+}
+
+impl Signal {
+    fn done(&self) {
+        let wake = {
+            let mut state = self.state.lock().unwrap_or_else(|e| e.into_inner());
+            state.0 = true;
+            state.1.take()
+        };
+        if let Some(wake) = wake {
+            wake();
+        }
+    }
+
+    /// Have `wake` called once the piece is done. False if it is done
+    /// already, and `wake` is dropped uncalled.
+    fn when_done(&self, wake: Box<dyn FnOnce() + Send>) -> bool {
+        let mut state = self.state.lock().unwrap_or_else(|e| e.into_inner());
+        if state.0 {
+            return false;
+        }
+        state.1 = Some(wake);
+        true
+    }
 }
 
 /// One piece of startup: on a thread of its own, or already done when no
@@ -194,16 +229,34 @@ impl<T: Send + 'static> Ready<T> {
             Self::Done(value) => value,
         }
     }
+
+    /// The piece, once done, left in place for a later `wait`.
+    fn get(&mut self) -> Option<&T> {
+        if matches!(self, Self::Thread(_)) {
+            let Self::Thread(thread) = std::mem::replace(self, Self::Done(None)) else {
+                return None;
+            };
+            *self = Self::Done(thread.join().ok().flatten());
+        }
+        match self {
+            Self::Done(value) => value.as_ref(),
+            Self::Thread(_) => None,
+        }
+    }
 }
 
 impl Preparing {
     /// Start the pieces. The fonts are opened at scale 1; [`Self::fonts`]
     /// sizes them for the window's scale once there is a window.
     pub fn start(options: &Options) -> Self {
-        let gpu = Ready::start("gpu-open", || {
+        let gpu_done = Arc::new(Signal::default());
+        let signal = Arc::clone(&gpu_done);
+        let gpu = Ready::start("gpu-open", move || {
             let instance = wgpu::Instance::default();
             crate::startup::mark("instance");
-            Gpu::open(instance, None)
+            let gpu = Gpu::open(instance, None);
+            signal.done();
+            gpu
         });
         let (family, points) = (options.font_family.clone(), options.font_size);
         let fonts = Ready::start("font-open", move || {
@@ -217,17 +270,66 @@ impl Preparing {
             crate::startup::mark("wallpaper decoded");
             image
         });
-        Self { gpu, fonts: Some(fonts), wallpaper }
+        Self { gpu, gpu_done, fonts: Some(fonts), sized: None, wallpaper }
+    }
+
+    /// Have `wake` called, from the GPU's thread, once the GPU is open.
+    /// False if it is open already: `wake` is not called.
+    pub fn when_gpu_ready(&self, wake: impl FnOnce() + Send + 'static) -> bool {
+        self.gpu_done.when_done(Box::new(wake))
+    }
+
+    /// The window size, in pixels, that holds `cols` by `rows` cells and
+    /// the padding at `scale` (the renderer's `padding_px` on each side).
+    /// The fonts are sized for it here and kept for the renderer.
+    pub fn pixels_for(&mut self, options: &Options, scale: f32, cols: u16, rows: u16) -> Result<(u32, u32), String> {
+        let cell = self.cell(options, scale)?;
+        let pad = (options.padding * scale).round() as u32 * 2;
+        Ok((u32::from(cols) * cell.width + pad, u32::from(rows) * cell.height + pad))
+    }
+
+    /// The grid a window `width` by `height` pixels holds at `scale`, as
+    /// [`Renderer::grid_size`] will measure it.
+    pub fn grid_for(&mut self, options: &Options, scale: f32, width: u32, height: u32) -> Result<GridSize, String> {
+        let cell = self.cell(options, scale)?;
+        let pad = (options.padding * scale).round() * 2.0;
+        let cols = ((width as f32 - pad) / cell.width as f32).floor().max(1.0);
+        let rows = ((height as f32 - pad) / cell.height as f32).floor().max(1.0);
+        Ok(GridSize {
+            cols: cols as u16,
+            rows: rows as u16,
+            width_px: width,
+            height_px: height,
+            cell_width: cell.width,
+            cell_height: cell.height,
+        })
+    }
+
+    /// The cell at `scale`, the fonts sized for it and kept for the renderer.
+    fn cell(&mut self, options: &Options, scale: f32) -> Result<CellMetrics, String> {
+        let fonts = self.fonts(options, scale)?;
+        let cell = fonts.cell;
+        self.sized = Some((fonts, scale));
+        Ok(cell)
+    }
+
+    /// The background image, once decoded, still here for the renderer.
+    pub fn wallpaper(&mut self) -> Option<&crate::wallpaper::Wallpaper> {
+        self.wallpaper.get().and_then(Option::as_ref)
     }
 
     /// The fonts, sized for `scale`.
     fn fonts(&mut self, options: &Options, scale: f32) -> Result<Fonts, String> {
-        let mut fonts = self
-            .fonts
-            .take()
-            .ok_or("the fonts were already taken")?
-            .wait()
-            .ok_or("the font thread failed")??;
+        let mut fonts = match self.sized.take() {
+            Some((fonts, sized)) if sized == scale => return Ok(fonts),
+            Some((fonts, _)) => fonts,
+            None => self
+                .fonts
+                .take()
+                .ok_or("the fonts were already taken")?
+                .wait()
+                .ok_or("the font thread failed")??,
+        };
         fonts.set_size(points_to_px(options.font_size, scale), points_to_px(1.0, scale));
         Ok(fonts)
     }
@@ -430,16 +532,6 @@ impl Renderer {
             .floor()
             .max(0.0) as u16;
         (col.min(grid.cols - 1), row.min(grid.rows - 1))
-    }
-
-    /// A window size in pixels holding `cols × rows` cells.
-    pub fn pixels_for(&self, cols: u16, rows: u16) -> (u32, u32) {
-        let cell = self.fonts.cell;
-        let pad = self.padding_px() as u32 * 2;
-        (
-            u32::from(cols) * cell.width + pad,
-            u32::from(rows) * cell.height + pad,
-        )
     }
 
     /// The window's new size. The surface is configured for it before the

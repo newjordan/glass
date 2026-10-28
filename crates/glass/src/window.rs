@@ -148,6 +148,9 @@ where
         pointer: [0.0, 0.0],
         showcase_press: false,
         cursor: winit::window::CursorIcon::Default,
+        early: None,
+        early_size: (0, 0),
+        cockpit_due: None,
     };
     event_loop
         .run_app(&mut glass)
@@ -491,7 +494,20 @@ struct Glass<T> {
     cursor: winit::window::CursorIcon,
     /// `ANGEL_GLASS_RECORD`: the film being made of this window.
     recorder: Option<crate::record::Recorder>,
+    /// The background drawn on the CPU while the GPU opens (`early.rs`),
+    /// and the size it was drawn at.
+    early: Option<crate::early::Frame>,
+    early_size: (u32, u32),
+    /// With the early frame on show: when the cockpit starts if the
+    /// compositor has not given the window another size by then.
+    cockpit_due: Option<Instant>,
 }
+
+/// How long the cockpit waits, after the early frame maps the window, for
+/// the compositor to settle the window's size (a tiling compositor sends
+/// the size it tiles to a few milliseconds after the map; a floating
+/// window keeps the size it asked for, and nothing comes).
+const SETTLE: Duration = Duration::from_millis(50);
 
 /// `ANGEL_GLASS_STATS=1`: every two seconds, one stderr line with the frames
 /// presented, their render times and the pictures uploaded.
@@ -644,7 +660,96 @@ impl<T: Send + 'static> Glass<T> {
                 .map_err(|e| format!("cannot open a window: {e}"))?,
         );
         crate::startup::mark("window");
-        let preparing = self.preparing.take().ok_or("the window already opened")?;
+        // Sized for the grid asked for before anything is drawn, as the
+        // fonts measure it (a tiling compositor sizes it its own way).
+        let preparing = self.preparing.as_mut().ok_or("the window already opened")?;
+        let (width, height) =
+            preparing.pixels_for(&self.options, window.scale_factor() as f32, self.options.columns, self.options.rows)?;
+        let _ = window.request_inner_size(PhysicalSize::new(width, height));
+        // The monitor's frame, for a cockpit that starts before the GPU.
+        self.cadence = window_cadence(&window);
+        self.host.shared.frame_nanos.store(self.cadence.0.as_nanos() as u64, std::sync::atomic::Ordering::Relaxed);
+        self.window = Some(window);
+        // The GPU takes longest to open. Meanwhile the window shows its
+        // background drawn on the CPU, and takes the size the compositor
+        // gives it; the renderer is made once the GPU is open.
+        self.show_early();
+        crate::startup::mark("early frame");
+        if self.early.is_some() {
+            self.cockpit_due = Some(Instant::now() + SETTLE);
+        }
+        let host = self.host.clone();
+        let waiting = self
+            .preparing
+            .as_ref()
+            .is_some_and(|preparing| preparing.when_gpu_ready(move || host.send(UserEvent::GpuReady)));
+        if !waiting {
+            self.finish_open()?;
+        }
+        Ok(())
+    }
+
+    /// Draw the background on the CPU at the window's size, while there
+    /// is no renderer yet.
+    fn show_early(&mut self) {
+        let (Some(window), Some(preparing)) = (&self.window, self.preparing.as_mut()) else {
+            return;
+        };
+        let look = crate::early::Look {
+            background: self.options.palette.background,
+            opacity: self.options.background_opacity,
+            wallpaper: preparing.wallpaper(),
+        };
+        // The new buffer is committed before the old one goes.
+        if let Some(frame) = crate::early::show(window, &look) {
+            self.early = Some(frame);
+            let size = window.inner_size();
+            self.early_size = (size.width, size.height);
+        }
+    }
+
+    /// Start the cockpit before the GPU is open, on the grid the window
+    /// holds now as the fonts measure it. True if it started.
+    fn start_cockpit_early(&mut self) -> Result<bool, String> {
+        self.cockpit_due = None;
+        if self.app.is_none() || self.renderer.is_some() {
+            return Ok(false);
+        }
+        self.early_regrid()?;
+        crate::startup::mark("cockpit before the GPU");
+        self.start_cockpit()?;
+        Ok(true)
+    }
+
+    /// The grid for the window's size, before there is a renderer to
+    /// measure it; the cockpit, once running, hears of a change.
+    fn early_regrid(&mut self) -> Result<(), String> {
+        let (Some(window), Some(preparing)) = (&self.window, self.preparing.as_mut()) else {
+            return Ok(());
+        };
+        let size = window.inner_size();
+        let grid = preparing.grid_for(&self.options, window.scale_factor() as f32, size.width, size.height)?;
+        let old = std::mem::replace(&mut *self.host.shared.grid.lock_recover(), grid);
+        if self.app.is_none() && (old.cols, old.rows) != (grid.cols, grid.rows) {
+            self.send(Event::Resize(grid.cols, grid.rows));
+        }
+        Ok(())
+    }
+
+    /// The cockpit, and the probe that watches it.
+    fn start_cockpit(&mut self) -> Result<(), String> {
+        self.start_app()?;
+        if let (Some(probe), Some(keys)) = (&self.probe, &self.keys) {
+            probe.start(self.host.clone(), keys.clone());
+        }
+        Ok(())
+    }
+
+    /// Make the renderer once the GPU is open, draw the first frame with
+    /// it, then start the cockpit.
+    fn finish_open(&mut self) -> Result<(), String> {
+        let window = Arc::clone(self.window.as_ref().ok_or("the window is not open")?);
+        let preparing = self.preparing.take().ok_or("the renderer was already made")?;
         let renderer = Renderer::new(Arc::clone(&window), &self.options, preparing)?;
         crate::startup::mark("renderer");
         let cell = renderer.cell();
@@ -656,22 +761,24 @@ impl<T: Send + 'static> Glass<T> {
             cell.width,
             cell.height
         );
-        let (width, height) = renderer.pixels_for(self.options.columns, self.options.rows);
-        let _ = window.request_inner_size(PhysicalSize::new(width, height));
-        *self.host.shared.grid.lock_recover() = renderer.grid_size();
-        self.cadence = window_cadence(&window);
-        self.host.shared.frame_nanos.store(self.cadence.0.as_nanos() as u64, std::sync::atomic::Ordering::Relaxed);
-        self.window = Some(window);
-        self.renderer = Some(renderer);
-        // The first frame maps the window on Wayland. The cockpit (a
-        // terminal's program with it) starts after it: a tiling compositor
-        // settles the window's size only once the window is mapped, and the
-        // size it gave before then is a guess.
-        self.draw(true);
-        crate::startup::mark("first frame");
-        self.start_app()?;
-        if let (Some(probe), Some(keys)) = (&self.probe, &self.keys) {
-            probe.start(self.host.clone(), keys.clone());
+        self.cockpit_due = None;
+        if self.app.is_none() {
+            // The cockpit is running on the grid measured before the GPU
+            // opened: it hears if the renderer's differs.
+            self.renderer = Some(renderer);
+            self.regrid();
+            self.draw(true);
+            crate::startup::mark("first frame");
+        } else {
+            // Without an early frame the cockpit (a terminal's program with
+            // it) starts after this first frame: a tiling compositor
+            // settles the window's size only once the window is mapped,
+            // and the size it gave before then is a guess.
+            *self.host.shared.grid.lock_recover() = renderer.grid_size();
+            self.renderer = Some(renderer);
+            self.draw(true);
+            crate::startup::mark("first frame");
+            self.start_cockpit()?;
         }
         self.environment_extras();
         Ok(())
@@ -872,6 +979,9 @@ impl<T: Send + 'static> Glass<T> {
         }
         let started = Instant::now();
         if renderer.render(&self.current, &self.layers, self.focused) {
+            if self.early.as_mut().is_some_and(crate::early::Frame::presented) {
+                self.early = None;
+            }
             self.last_present = Instant::now();
             self.redraw_owed = false;
             self.layers_dirty = false;
@@ -1153,6 +1263,7 @@ impl<T: Send + 'static> Glass<T> {
 
     /// Drop the renderer (surface, device) before the window it draws into.
     fn release(&mut self) {
+        self.early = None;
         self.renderer = None;
         self.window = None;
     }
@@ -1250,6 +1361,22 @@ impl<T: Send + 'static> ApplicationHandler<UserEvent> for Glass<T> {
     /// The showcase's squire moves now and then while it sits (a leg
     /// swing, a wave): wake for his next move, and only then.
     fn about_to_wait(&mut self, event_loop: &ActiveEventLoop) {
+        // The compositor gave no other size in time: the cockpit starts on
+        // the one the window has.
+        if let Some(due) = self.cockpit_due {
+            if Instant::now() < due {
+                event_loop.set_control_flow(winit::event_loop::ControlFlow::WaitUntil(due));
+                return;
+            }
+            if let Err(error) = self.start_cockpit_early() {
+                self.error = Some(error);
+                event_loop.exit();
+                return;
+            }
+            if self.animation_due.is_none() {
+                event_loop.set_control_flow(winit::event_loop::ControlFlow::Wait);
+            }
+        }
         if self.animation_due.is_none()
             && let Some(due) = self.showcase.next_wake()
         {
@@ -1323,6 +1450,15 @@ impl<T: Send + 'static> ApplicationHandler<UserEvent> for Glass<T> {
                     recorder.finish();
                 }
             }
+            UserEvent::GpuReady => {
+                if self.renderer.is_none()
+                    && self.window.is_some()
+                    && let Err(error) = self.finish_open()
+                {
+                    self.error = Some(error);
+                    event_loop.exit();
+                }
+            }
             UserEvent::Close => self.close(event_loop),
             UserEvent::Exit => event_loop.exit(),
             UserEvent::ExitProcess(code) => {
@@ -1347,6 +1483,28 @@ impl<T: Send + 'static> ApplicationHandler<UserEvent> for Glass<T> {
             WindowEvent::Resized(size) => {
                 if let Some(renderer) = self.renderer.as_mut() {
                     renderer.resize(size.width, size.height);
+                } else if self.early.is_some() && (size.width, size.height) != self.early_size {
+                    // Before the GPU is open: the background again at the
+                    // new size, and the grid for it. The first new size
+                    // after the early frame mapped the window is the
+                    // compositor's own, and the cockpit starts on it.
+                    self.show_early();
+                    let started = self.start_cockpit_early().and_then(|started| {
+                        if !started {
+                            self.early_regrid()?;
+                        }
+                        Ok(started)
+                    });
+                    match started {
+                        Ok(true) if self.animation_due.is_none() => {
+                            event_loop.set_control_flow(winit::event_loop::ControlFlow::Wait);
+                        }
+                        Ok(_) => {}
+                        Err(error) => {
+                            self.error = Some(error);
+                            event_loop.exit();
+                        }
+                    }
                 }
                 self.showcase
                     .fit_window((size.width as f32, size.height as f32));

@@ -89,8 +89,13 @@ printed at the end.
 
 On processors whose dies carry last-level caches of different sizes (AMD's
 X3D parts), glass keeps its pty read and parse threads on the largest one.
-`GLASS_AFFINITY=off` leaves them to the scheduler. `GLASS_STARTUP_TRACE=1`
-prints where startup time goes.
+`GLASS_AFFINITY=off` leaves them to the scheduler.
+
+On Wayland the window is on screen before the GPU is open: its background
+(colour, image and tint) is drawn on the CPU into shared memory the moment
+the window exists, and the program starts as soon as the compositor has
+settled the window's size. The GPU's first frame takes over when the driver
+is ready. `GLASS_STARTUP_TRACE=1` prints where startup time goes.
 
 ## Layout
 

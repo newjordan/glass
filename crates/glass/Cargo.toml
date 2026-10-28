@@ -39,4 +39,11 @@ bincode = { version = "1.3", optional = true }
 flate2 = { version = "1", optional = true }
 libc = { version = "0.2", optional = true }
 
+[target.'cfg(all(unix, not(target_os = "macos")))'.dependencies]
+# The window's first frames, drawn on the CPU into shared memory while the
+# GPU opens (src/early.rs), on a connection of our own to winit's display:
+# the versions winit's own Wayland stack already locks.
+wayland-client = "0.31"
+wayland-backend = { version = "0.3", features = ["client_system"] }
+
 [dev-dependencies]

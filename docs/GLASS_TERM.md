@@ -503,23 +503,40 @@ engine and real key events to the encoder.
   each starts on a thread of its own the moment `run` begins: the GPU
   (the driver's instance, the adapter and the device, most of startup),
   the fonts (the four styles looked up through fontconfig at once) and
-  the background image's decoding. The window opens meanwhile, and the
-  renderer waits only for the slowest of them. The adapter is picked
-  before there is a surface; one that cannot draw to the window gives
-  way to the one the surface picks, as before. The program starts once
-  the first frame has mapped the window, as it always has: a tiling
-  compositor settles a window's size only when it maps it (Hyprland
-  guesses half the screen for a window opened on another workspace), so
-  a program started sooner would start on the wrong size. A resize is
-  handed to the program before the swapchain is made again for it. What
-  is left is the driver: on the operator's machine a bare wgpu program
-  spends about 39 ms in the Vulkan instance (32 of them the NVIDIA
-  driver's, the rest the loader and the integrated GPU's driver) and 60
-  ms in the device, and up to twice that while other work holds the
-  GPU. A first frame
-  drawn without the GPU (a CPU buffer shown until the device is up)
-  would map the window sooner, but it would not be the renderer's frame,
-  so glass does not. Shader pipelines cost about 2 ms in all, as the
+  the background image's decoding. The window opens meanwhile. The
+  adapter is picked before there is a surface; one that cannot draw to
+  the window gives way to the one the surface picks, as before.
+- **The early frame.** What is left is the driver: on the operator's
+  machine a bare wgpu program spends about 39 ms in the Vulkan instance
+  (32 of them the NVIDIA driver's, the rest the loader and the
+  integrated GPU's driver) and 60 ms in the device, and up to twice that
+  while other work holds the GPU. A Wayland window is not shown until
+  something is drawn into it, so once the window exists (about 15 ms in)
+  glass draws its background on the CPU into a shared-memory buffer and
+  commits it (`crates/glass/src/early.rs`). That background is the
+  background colour at the window's opacity, then the background image
+  where its layout puts it, then the tint, as the GPU will draw them. The
+  window maps then, and it is drawn again at each size the compositor
+  gives it until the GPU is open. The renderer is made when the GPU's
+  thread says it is ready. Its first frame replaces the buffer, which is
+  let go three frames later.
+- **The program starts before the GPU is open.** A tiling compositor
+  settles a window's size only when it maps it: Hyprland guesses half
+  the screen for a window opened on another workspace, then sends the
+  tiled size a few milliseconds after the map. So the program starts on
+  the first size after the early frame mapped the window, or 50 ms after
+  the map if none comes (a floating window keeps the size it asked for).
+  Its grid is measured from the fonts, which are ready by then, as the
+  renderer will measure it. If the renderer's grid differs, the program
+  is told, as on any resize. Its output waits in the cells until the
+  first GPU frame shows it. Without an early frame (X11, other systems,
+  or a step failing), the program starts after the GPU's first frame,
+  as before.
+- **Measured.** Medians of 16 runs on the operator's machine, launched
+  through Hyprland on a headless output, against kitty 0.49.2:
+  - window on screen: 31 ms (kitty 73);
+  - program running: 39.5 ms (kitty 193).
+- **Pipelines.** Shader pipelines cost about 2 ms in all, as the
   driver's own shader cache already holds them, so glass keeps no
   pipeline cache of its own. `GLASS_STARTUP_TRACE=1` prints each step on
   stderr: milliseconds since `main`, the wall clock in nanoseconds (to

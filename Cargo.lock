@@ -112,6 +112,8 @@ dependencies = [
  "serde",
  "swash",
  "unicode-width",
+ "wayland-backend",
+ "wayland-client",
  "wgpu",
  "winit",
 ]

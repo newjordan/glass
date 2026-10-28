@@ -93,6 +93,7 @@ impl Board {
             pair("tui_fps", "full-screen TUI", false, "frames/s"),
             pair("cpu_s", "CPU, all six workloads", true, "s"),
             pair("vram_mib", "VRAM, idle window", true, "MiB"),
+            pair("first_frame_ms", "window on screen", true, "ms"),
             pair("startup_ms", "startup, to a running shell", true, "ms"),
         ]
         .into_iter()
