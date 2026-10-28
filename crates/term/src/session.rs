@@ -4,9 +4,9 @@
 
 use std::io::{Read, Write};
 use std::path::Path;
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::mpsc::Sender;
-use std::sync::{Arc, Mutex, MutexGuard, RwLock};
+use std::sync::{Arc, Mutex, MutexGuard};
 use std::time::Duration;
 
 use crossterm::event::Event;
@@ -109,7 +109,7 @@ pub enum Msg {
 /// engine as plain values so a key never waits for the lock the reader
 /// holds while it parses a flood. The parse thread refreshes it after
 /// each read it pumps; nothing else writes it.
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 pub struct KeyView {
     /// `(rows, cols)` of the screen.
     pub size: (u16, u16),
@@ -124,6 +124,31 @@ pub struct KeyView {
 }
 
 impl KeyView {
+    /// The view as one word, for a lock-free handover: the reader thread
+    /// publishes it whole, a key reads it whole, and neither ever waits
+    /// for the other. An RwLock here did wait: the reader rewrote it
+    /// every pumped read of a flood, and a write-preferring lock let a
+    /// key's read starve behind thousands of rewrites a second.
+    fn pack(self) -> u64 {
+        u64::from(self.size.0)
+            | u64::from(self.size.1) << 16
+            | u64::from(self.keyboard_flags) << 32
+            | u64::from(u8::from(self.alternate_screen)) << 40
+            | u64::from(u8::from(self.application_cursor)) << 41
+            | u64::from(u8::from(self.at_bottom)) << 42
+    }
+
+    /// The word [`KeyView::pack`] wrote, back to a view.
+    fn unpack(word: u64) -> Self {
+        Self {
+            size: (word as u16, (word >> 16) as u16),
+            keyboard_flags: (word >> 32) as u8,
+            alternate_screen: word >> 40 & 1 == 1,
+            application_cursor: word >> 41 & 1 == 1,
+            at_bottom: word >> 42 & 1 == 1,
+        }
+    }
+
     /// The engine's state as a key needs it.
     fn of(engine: &Engine) -> Self {
         let (rows, cols) = engine.size();
@@ -446,7 +471,7 @@ pub struct Session {
     event_seen: Mutex<intake::glass_dialect::ShowcaseSeen>,
     /// The program's state a key needs, refreshed by the reader after
     /// each read it pumps. A key reads it without the engine's lock.
-    key_view: Arc<RwLock<KeyView>>,
+    key_view: Arc<AtomicU64>,
     /// Set by the session's own threads while they wait for the engine,
     /// which the parsing thread holds read after read under a flood.
     /// The parsing thread checks it between pieces and lets them in; a
@@ -468,10 +493,22 @@ fn let_waiters_in(wanted: &AtomicBool) {
         return;
     }
     let deadline = std::time::Instant::now() + LOCK_HANDOFF;
+    let mut spun = 0u32;
     while wanted.load(Ordering::Acquire) && std::time::Instant::now() < deadline {
-        std::hint::spin_loop();
+        // A spin first — the waiter may already be running on another
+        // core — then a real yield: the waiter is asleep in the kernel's
+        // futex, and on Linux only leaving the CPU (not `spin_loop`)
+        // gives a sleeping thread its turn.
+        if spun < 64 {
+            std::hint::spin_loop();
+            spun += 1;
+        } else {
+            std::thread::yield_now();
+        }
     }
 }
+
+
 
 impl Session {
     pub fn spawn(
@@ -543,7 +580,7 @@ impl Session {
         let gate = Arc::new(FrameGate::default());
         let intake = Arc::new(Mutex::new(starting_intake(grid, rows)));
         let splitter = Arc::new(Mutex::new(intake::Splitter::default()));
-        let key_view = Arc::new(RwLock::new(KeyView::default()));
+        let key_view = Arc::new(AtomicU64::new(KeyView::default().pack()));
         // Set by whoever needs the engine and finds the parsing thread
         // in the middle of a flood, cleared once they hold it. The
         // parsing thread reads it between pieces and, when it is set,
@@ -596,7 +633,7 @@ impl Session {
                             // Copy what a key needs out while the lock is
                             // ours: a key typed during the next read does
                             // not wait for that read to finish.
-                            *key_view.write().unwrap_or_else(|e| e.into_inner()) = KeyView::of(&engine);
+                            key_view.store(KeyView::of(&engine).pack(), Ordering::Release);
                             pumped
                         };
 
@@ -656,6 +693,19 @@ impl Session {
     /// hands it over instead of running a whole read ahead.
     fn engine(&self) -> MutexGuard<'_, Engine> {
         self.engine_wanted.store(true, Ordering::Release);
+        // A brief spin before the blocking take: under a flood the
+        // parsing thread is bound by the handoff to let go, and a
+        // spinning waiter takes the lock the moment it is free — a
+        // sleeping one pays the futex round trip, which on this scale
+        // of hold (tens of microseconds) can be most of the wait.
+        let deadline = std::time::Instant::now() + Duration::from_micros(500);
+        while std::time::Instant::now() < deadline {
+            if let Some(guard) = self.engine.try_lock().ok() {
+                self.engine_wanted.store(false, Ordering::Release);
+                return guard;
+            }
+            std::hint::spin_loop();
+        }
         let guard = lock(&self.engine);
         self.engine_wanted.store(false, Ordering::Release);
         guard
@@ -865,18 +915,18 @@ impl Session {
     /// into the scrollback needs the engine, and under a flood that is
     /// the one lock a key waits for.
     pub fn scroll_to_bottom(&mut self) -> bool {
-        if self.key_view.read().unwrap_or_else(|e| e.into_inner()).at_bottom {
+        if KeyView::unpack(self.key_view.load(Ordering::Acquire)).at_bottom {
             return false;
         }
         let moved = self.engine().scroll_to_bottom();
         // The view is live again from the engine's side too; a key that
         // follows reads this without the engine.
-        *self.key_view.write().unwrap_or_else(|e| e.into_inner()) = KeyView::of(&self.engine());
+        self.key_view.store(KeyView::of(&self.engine()).pack(), Ordering::Release);
         moved
     }
 
     pub fn rows(&self) -> u16 {
-        self.key_view.read().unwrap_or_else(|e| e.into_inner()).size.0
+        KeyView::unpack(self.key_view.load(Ordering::Acquire)).size.0
     }
 
     pub fn cols(&self) -> u16 {
@@ -885,15 +935,15 @@ impl Session {
 
     /// The CSI u keyboard dialect's flags, as the program set them.
     pub fn keyboard_flags(&self) -> u8 {
-        self.key_view.read().unwrap_or_else(|e| e.into_inner()).keyboard_flags
+        KeyView::unpack(self.key_view.load(Ordering::Acquire)).keyboard_flags
     }
 
     pub fn alternate_screen(&self) -> bool {
-        self.key_view.read().unwrap_or_else(|e| e.into_inner()).alternate_screen
+        KeyView::unpack(self.key_view.load(Ordering::Acquire)).alternate_screen
     }
 
     pub fn application_cursor(&self) -> bool {
-        self.key_view.read().unwrap_or_else(|e| e.into_inner()).application_cursor
+        KeyView::unpack(self.key_view.load(Ordering::Acquire)).application_cursor
     }
 
     pub fn bracketed_paste(&self) -> bool {
@@ -1099,6 +1149,19 @@ mod tests {
         assert!(term.scroll_to_bottom());
         assert!(KeyView::of(&term).at_bottom);
         assert!(KeyView::of(&term).at_bottom);
+    }
+
+    #[test]
+    fn the_key_view_survives_its_trip_through_one_word() {
+        // The view crosses threads as a single word; every field must
+        // come back from it, at the extremes of each.
+        for view in [
+            KeyView::default(),
+            KeyView { size: (24, 80), keyboard_flags: 0xff, alternate_screen: true, application_cursor: true, at_bottom: true },
+            KeyView { size: (u16::MAX, u16::MAX), keyboard_flags: 0, alternate_screen: false, application_cursor: true, at_bottom: false },
+        ] {
+            assert_eq!(KeyView::unpack(view.pack()), view);
+        }
     }
 
     #[test]
