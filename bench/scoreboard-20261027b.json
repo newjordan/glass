@@ -196,5 +196,10 @@
   "kitty": 2.43
  },
  "glass_build": "glass/mindseye 28222a960 (sha 21b94aa0); throughput measured on 04b5ccbef, whose read path it shares",
- "measured": "2026-10-27 19:10 (throughput), 21:00 (startup)"
+ "measured": "2026-10-27 19:10 (throughput), 21:00 (startup)",
+ "visible_ms": {
+  "glass": 61.5,
+  "kitty": 206.4,
+  "note": "launch until the program's first output is on screen; 12 launches each, 240 Hz screencopy; bench/results/2026-10-27/visible.json"
+ }
 }
