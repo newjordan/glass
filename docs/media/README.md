@@ -21,7 +21,8 @@ Chart colours: glass `#14a3c7`, kitty `#c98500`, on a near-black ground.
 ## Release assets
 
 The videos are too big for git. Upload these to the `v0.1.0` release under
-exactly these names; the README and the site link to them there.
+exactly these names. The README and the site link to the film there; the
+30-second cut is for the launch posts.
 
 | Upload as | Source | Size |
 | --- | --- | --- |

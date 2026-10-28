@@ -12,10 +12,9 @@ font from Google Fonts (it falls back to the system's monospace font).
 | `assets/glass-card.jpg` | The Open Graph card, 1280×640. |
 | `assets/glass.svg`, `assets/favicon.svg` | The mark, from `packaging/icons/`. |
 
-The page links to the film and the 30-second cut as `v0.1.0` release
-assets (`glass-mindseye.mp4`, `glass-30s.mp4`; see
-[docs/media/README.md](../docs/media/README.md)), and to the docs on
-GitHub. Every number on it comes from
+The page links to the full film as a `v0.1.0` release asset
+(`glass-mindseye.mp4`; see [docs/media/README.md](../docs/media/README.md)),
+and to the docs on GitHub. Every number on it comes from
 [docs/PERFORMANCE.md](../docs/PERFORMANCE.md); change both together.
 
 ## Look at it locally
