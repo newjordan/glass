@@ -2,8 +2,9 @@
 
 The harness behind every number in the [README](../README.md) and
 [docs/PERFORMANCE.md](../docs/PERFORMANCE.md), and the results it gave.
-Only glass and kitty 0.49.2 have been measured so far. Adding another
-terminal is one line (below); please send the numbers whatever they say.
+On Linux, glass and kitty 0.49.2 have been measured; on macOS, glass and
+Ghostty 1.4.0 (`macos/`). Adding another terminal is one line (below);
+please send the numbers whatever they say.
 
 ## What each file does
 
@@ -20,6 +21,9 @@ terminal is one line (below); please send the numbers whatever they say.
 | `lib.sh` | Shared: the headless output, launching, and the terminals the harness knows (`term_cmd`). |
 | `scoreboard-20261027b.json` | The published numbers, with every round and launch behind them. The film's board reads it. |
 | `results/2026-10-27/` | The raw files behind the published numbers; see its README. |
+| `macos/run-tput.sh` | macOS: `tput.py` in glass and Ghostty, taking turns, a round each; `macos/in-term.sh` runs it inside each, and `macos/ghostty.conf` gives Ghostty glass's grid and font size. |
+| `macos/run-startup.sh` | macOS: launch to window on screen (the window list) and to program running (`macos/stamp.c` writes the clock), glass and Ghostty taking turns. It builds `macos/launch.swift` and `macos/stamp.c` with the Xcode tools. |
+| `results/2026-10-28-macos/` | The Mac runs behind docs/PERFORMANCE.md's macOS section; see its README. |
 | `results/local/` | Where your own runs go by default (ignored by git). |
 
 `run-visible.sh` and `visible/` measure launch until the program's first

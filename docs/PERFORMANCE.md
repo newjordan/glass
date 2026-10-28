@@ -160,38 +160,41 @@ read path.
 
 ## macOS
 
-glass on an M4 Pro (Mac mini, macOS 26.6, Metal), a 160×48 window,
-`bench/tput.py`, medians of 3 rounds:
+glass against Ghostty 1.4.0, on an M4 Pro Mac mini (macOS 26.6, Metal).
+Both had a 160×48 grid. The harness is `bench/macos/`, and the runs and
+their method are in `bench/results/2026-10-28-macos/`. Five rounds for
+throughput and twelve launches for startup, the two taking turns.
 
-| Workload | glass |
-| --- | --- |
-| Plain ASCII | 371 MB/s |
-| Unicode | 148 MB/s |
-| Truecolor | 143 MB/s |
-| Cursor motion | 114 MB/s |
-| Scroll region | 270 MB/s |
-| Full-screen TUI | 1,611 fps |
+| Measure | glass | Ghostty | |
+| --- | --- | --- | --- |
+| Program running, from launch | **37 ms** | 141 ms | 3.8× |
+| Window on screen, from launch | **162 ms** | 226 ms | 1.4× |
+| Plain ASCII | **363 MB/s** | 273 MB/s | 1.33× |
+| Unicode | 240 MB/s | 235 MB/s | about even |
+| Truecolor | **253 MB/s** | 218 MB/s | 1.16× |
+| Cursor motion | **209 MB/s** | 187 MB/s | 1.12× |
+| Scroll region | **351 MB/s** | 277 MB/s | 1.27× |
+| Full-screen TUI | **2,891 fps** | 2,428 fps | 1.19× |
+| CPU, six workloads | **0.84 s** | 1.37 s | |
 
-No other terminal has been measured on the Mac yet, so these stand alone.
+What it took on the Mac:
 
-macOS's pty hands over at most 1 KiB a read. A bare reader that parses
-nothing gets about 270 to 300 MB/s through it, against 860 to 1,040 MB/s
-on the Linux machine. glass's engine alone parses plain text at about 520
-MB/s on the M4 Pro, so the pty is the limit there.
+- **The pty is read on a thread of its own, gathered.**
+  - macOS's pty hands over at most 1 KiB a read, at about 2 µs each.
+  - A thread reads into one buffer, and the parsing takes the whole buffer at once.
+  - After a full read the thread waits 1.5 µs for the program to refill the pty. Its next read then finds bytes instead of sleeping and being woken, which costs more than the read.
+  - Plain text through a window went from 321 to 371 MB/s.
+- **Colour changes and cursor moves skip the parser** in their plain forms. A parity test holds the result to vte's own on random escape-dense streams.
+- **Wide text is written a row at a time,** and a combining accent goes onto its letter's cell without leaving that path.
+- **The row the next scroll reuses is prefetched** on Apple Silicon, as it already was on x86.
+- **mimalloc is glass's allocator.** The system allocator was slow at the many small allocations accents make.
+- **The reading and parsing threads are user-interactive,** which keeps macOS from moving them to the efficiency cores.
+- **The program starts before the window.** macOS takes about 70 ms to let an app make its window. A window there gets the size it asks for, so glass starts the program on that grid as soon as its fonts are loaded.
 
-Reading the pty on a thread of its own, ahead of the parsing, helps on
-Linux but cost more than it saved on macOS, where each hand-off carries 1
-KiB. glass reads the pty on the parsing thread there, which took plain
-text from 163 to 371 MB/s.
-
-Startup on the Mac, with the GPU driver warm, from `main`:
-- the window at about 94 ms;
-- the shell running at about 99 ms;
-- the first frame at about 100 ms.
-
-The first launch after a boot waited about 170 ms for the Metal device and
-130 ms to build the pipelines. The shell starts as soon as the window
-exists, without waiting for either.
+Plain text and the scroll region run near what the pty itself can carry: a
+reader that only reads gets about 260 to 300 MB/s through it. Unicode is
+close: Ghostty's rounds ranged from 213 to 304 MB/s, and glass's from 239 to
+241.
 
 ## The film
 
