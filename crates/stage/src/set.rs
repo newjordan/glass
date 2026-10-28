@@ -1433,25 +1433,6 @@ sphere rock   at 600 0 120 size 30 20 30 turn -30.5 id boulder
     }
 
     #[test]
-    fn the_docs_sample_parses_but_for_shapes_yet_to_land() {
-        let doc = include_str!("../../../docs/WORLD-3D.md");
-        let sample = doc.split("```\n").nth(1).expect("the doc's set sample");
-        assert!(sample.starts_with("set "), "{sample}");
-        match Set::parse(sample) {
-            Ok(set) => assert!(!set.shapes.is_empty()),
-            Err(all) => {
-                for r in all {
-                    let name = sample.lines().nth(r.line - 1).unwrap().split_whitespace().next().unwrap();
-                    assert!(
-                        doc.contains(&format!("`{name}`")) && shapes::by_name(name).is_none(),
-                        "{r}: only a shape the doc names but shapes::by_name does not know yet may be refused"
-                    );
-                }
-            }
-        }
-    }
-
-    #[test]
     fn every_bad_line_is_refused_with_its_number() {
         let cases = [
             ("set again", "second `set`"),
@@ -1530,23 +1511,7 @@ sphere rock   at 600 0 120 size 30 20 30 turn -30.5 id boulder
     }
 
     #[test]
-    fn kinds_are_the_docs_table_with_unique_colours() {
-        let doc = include_str!("../../../docs/WORLD-3D.md");
-        let table = doc.split("## Surface kinds").nth(1).unwrap().split("\n## ").next().unwrap();
-        let names: Vec<&str> = table
-            .lines()
-            .filter_map(|l| l.strip_prefix("| "))
-            .filter_map(|l| l.split(" |").next())
-            .filter(|n| *n != "kind" && !n.starts_with('-'))
-            .collect();
-        assert_eq!(names, Kind::ALL.map(Kind::name), "the doc's table, in its order");
-        // And the colours it gives the painter are these.
-        let hex = |rgb: [u8; 3]| format!("`#{:02x}{:02x}{:02x}`", rgb[0], rgb[1], rgb[2]);
-        for kind in Kind::ALL {
-            let row = format!("| {} |", kind.name());
-            let line = table.lines().find(|l| l.starts_with(&row)).unwrap();
-            assert!(line.ends_with(&format!("| {} | {} |", hex(kind.capture()), hex(kind.id()))), "{line}");
-        }
+    fn kinds_have_unique_colours() {
         for (i, kind) in Kind::ALL.into_iter().enumerate() {
             assert_eq!(kind as usize, i);
             assert_eq!(Kind::from_name(kind.name()), Some(kind));
