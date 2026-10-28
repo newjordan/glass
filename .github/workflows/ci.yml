@@ -130,14 +130,17 @@ jobs:
           test ! -e "$home/.local/glass"
 
   macos:
-    name: macOS build (experimental)
+    name: macOS build and terminal tests
     runs-on: macos-latest
-    # The Metal path is untested; this job shows whether it builds and
-    # never fails the run.
-    continue-on-error: true
+    # glass runs on an M4 Pro through Metal (checked by hand); here the
+    # whole workspace builds, and the terminal's own tests (no GPU) run.
     steps:
       - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - name: Build
         run: cargo build --workspace --locked
+      - name: Terminal tests
+        env:
+          CI: "true"
+        run: cargo test --locked -p glass-term --bin glass

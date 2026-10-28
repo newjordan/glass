@@ -14,8 +14,19 @@ cols, rows = os.get_terminal_size()
 tpid = int(os.environ.get("BENCH_TERM_PID") or os.environ.get("KITTY_PID") or os.getppid())
 
 def cpu(pid):
-    f = open(f"/proc/{pid}/stat").read().rsplit(")", 1)[1].split()
-    return (int(f[11]) + int(f[12])) / os.sysconf("SC_CLK_TCK")
+    try:
+        f = open(f"/proc/{pid}/stat").read().rsplit(")", 1)[1].split()
+        return (int(f[11]) + int(f[12])) / os.sysconf("SC_CLK_TCK")
+    except FileNotFoundError:
+        # No /proc (macOS, the BSDs): ps reports the CPU time as
+        # [[dd-]hh:]mm:ss.ss.
+        import subprocess
+        text = subprocess.run(["ps", "-o", "cputime=", "-p", str(pid)], capture_output=True, text=True).stdout.strip()
+        days, _, clock = text.rpartition("-")
+        seconds = 0.0
+        for part in clock.split(":"):
+            seconds = seconds * 60 + float(part)
+        return seconds + 86400 * int(days or 0)
 
 def write_all(b):
     v = memoryview(b)
