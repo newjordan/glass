@@ -693,9 +693,12 @@ fn a_large_sixel_pan_does_not_spin() {
         intake.handle(Media::Sixel(b"q\"1000000;1;1;1!8192~".to_vec()), &mut engine);
         let _ = tx.send(());
     });
+    // A spin runs for minutes. A shared CI runner, with the other tests
+    // beside it, can take several seconds over the real work.
+    let budget = if std::env::var_os("CI").is_some() { 60 } else { 10 };
     assert!(
-        rx.recv_timeout(std::time::Duration::from_secs(10)).is_ok(),
-        "28 bytes of sixel spun for over 10 s"
+        rx.recv_timeout(std::time::Duration::from_secs(budget)).is_ok(),
+        "28 bytes of sixel spun for over {budget} s"
     );
 }
 

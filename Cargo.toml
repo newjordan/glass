@@ -11,3 +11,8 @@ publish = false
 [profile.release]
 lto = "thin"
 codegen-units = 1
+
+# The allocator's C is built at the profile's level, and unoptimized it made
+# every allocation-heavy test several times slower in debug builds (CI's).
+[profile.dev.package.libmimalloc-sys]
+opt-level = 3
