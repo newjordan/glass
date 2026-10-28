@@ -24,7 +24,7 @@ mod speed;
 mod view;
 
 use std::path::PathBuf;
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex, mpsc};
 use std::time::{Duration, Instant};
 
@@ -183,11 +183,53 @@ fn run(
     let Ok(mut reader) = host.input_reader() else {
         return 1;
     };
+    // Input sent to the app thread and not yet taken in by it, and whether
+    // the program has gone (`--hold`: the next key closes the window).
+    let queued = Arc::new(AtomicUsize::new(0));
+    let held = Arc::new(AtomicBool::new(false));
+    let (typist, waiting, gone) = (session.typist(), Arc::clone(&queued), Arc::clone(&held));
     std::thread::spawn(move || {
         loop {
             match reader(Duration::from_secs(1)) {
                 Ok(Some(event)) => {
-                    if tx.send(Msg::Input(event)).is_err() {
+                    // A key goes to the program from here, not waiting for
+                    // the app thread to finish the frame it is drawing, when
+                    // nothing sent before it waits there still: the program
+                    // gets its input in the order it was given.
+                    if waiting.load(Ordering::Acquire) == 0
+                        && !gone.load(Ordering::Acquire)
+                        && let Event::Key(key) = &event
+                    {
+                        match type_key(&typist, key) {
+                            Typed::Written => {
+                                if tx.send(Msg::Typed).is_err() {
+                                    break;
+                                }
+                                continue;
+                            }
+                            Typed::Nothing => continue,
+                            Typed::Shortcut => {}
+                        }
+                    }
+                    // Only input the app thread may write to the program
+                    // for makes a key typed after it wait its turn there.
+                    let view = typist.view();
+                    let writes = match &event {
+                        Event::Key(key) => shortcut_of(key, view.size.0, view.alternate_screen).is_none(),
+                        Event::Paste(_) => true,
+                        // Reported to the program, or, on the alternate
+                        // screen, a wheel turned into arrow keys.
+                        Event::Mouse(_) => view.mouse_reports || view.alternate_screen,
+                        Event::FocusGained | Event::FocusLost => view.focus_reports,
+                        Event::Resize(..) => false,
+                    };
+                    let msg = if writes {
+                        waiting.fetch_add(1, Ordering::AcqRel);
+                        Msg::Input(event)
+                    } else {
+                        Msg::Aside(event)
+                    };
+                    if tx.send(msg).is_err() {
                         break;
                     }
                 }
@@ -260,6 +302,9 @@ fn run(
             Err(mpsc::RecvTimeoutError::Disconnected) => break,
         };
         for msg in first.into_iter().chain(rx.try_iter()) {
+            // Input the input thread counted is counted off once it has
+            // been taken in, whatever it wrote to the program by then.
+            let counted = matches!(msg, Msg::Input(_));
             match msg {
                 Msg::Output => {
                     let at = clock.elapsed();
@@ -267,25 +312,33 @@ fn run(
                     blink.activity(at);
                 }
                 Msg::Closed => return exited.unwrap_or(0),
-                Msg::Input(event) => {
+                Msg::Typed => {
+                    blink.activity(clock.elapsed());
+                    interactive = true;
+                    dirty |= ui.selection.take().is_some() | session.scroll_to_bottom();
+                }
+                Msg::Input(event) | Msg::Aside(event) => {
                     if exited.is_some() {
                         // `--hold`: the first key after the exit closes.
                         if matches!(event, Event::Key(k) if k.kind != KeyEventKind::Release) {
                             return exited.unwrap_or(0);
                         }
-                        continue;
+                    } else {
+                        if matches!(event, Event::Key(_) | Event::Paste(_)) {
+                            blink.activity(clock.elapsed());
+                        }
+                        // A pointer passing over is not waited on; the rest is.
+                        interactive |= match &event {
+                            Event::Key(_) | Event::Paste(_) => true,
+                            Event::Mouse(mouse) => mouse.kind != MouseEventKind::Moved,
+                            _ => false,
+                        };
+                        dirty |= ui.input(event, &mut session, &host, &focused);
                     }
-                    if matches!(event, Event::Key(_) | Event::Paste(_)) {
-                        blink.activity(clock.elapsed());
-                    }
-                    // A pointer passing over is not waited on; the rest is.
-                    interactive |= match &event {
-                        Event::Key(_) | Event::Paste(_) => true,
-                        Event::Mouse(mouse) => mouse.kind != MouseEventKind::Moved,
-                        _ => false,
-                    };
-                    dirty |= ui.input(event, &mut session, &host, &focused);
                 }
+            }
+            if counted {
+                queued.fetch_sub(1, Ordering::AcqRel);
             }
         }
         // A synchronized update whose deadline passed ends here, before
@@ -303,6 +356,7 @@ fn run(
                 return code;
             }
             session.feed(b"\r\n\x1b[2m[process exited; press a key to close]\x1b[0m");
+            held.store(true, Ordering::Release);
             exited = Some(code);
             dirty = true;
         }
@@ -401,6 +455,39 @@ enum Shortcut {
 /// Whether the key is one of the window's own shortcuts, and what it asks
 /// for. Releases of shortcuts are swallowed (`Swallow`): the press already
 /// acted, and the release is never the program's news.
+/// What became of a key typed from the window's input thread.
+enum Typed {
+    /// Its bytes went to the program.
+    Written,
+    /// It sends nothing (a release the program did not ask for, a key
+    /// with no bytes).
+    Nothing,
+    /// It is one of the window's shortcuts: the app thread takes it.
+    Shortcut,
+}
+
+/// What [`Ui::input`] does with a key that is not one of the window's
+/// shortcuts, from the program's state as the parsing thread last left it,
+/// and without the app thread.
+fn type_key(typist: &session::Typist, key: &KeyEvent) -> Typed {
+    glass_window::keytrace::mark_or_slow("key-input");
+    let view = typist.view();
+    if shortcut_of(key, view.size.0, view.alternate_screen).is_some() {
+        return Typed::Shortcut;
+    }
+    let dialect = KeyboardDialect::from_bits(view.keyboard_flags);
+    if key.kind == KeyEventKind::Release && !dialect.event_types {
+        return Typed::Nothing;
+    }
+    let Some(bytes) = keys::key(key, view.application_cursor, dialect) else {
+        return Typed::Nothing;
+    };
+    glass_window::keytrace::mark_or_slow("key-encoded");
+    typist.write(&bytes);
+    glass_window::keytrace::mark_or_slow("key-written");
+    Typed::Written
+}
+
 fn shortcut_of(key: &KeyEvent, rows: u16, alternate_screen: bool) -> Option<Shortcut> {
     let ctrl = key.modifiers.contains(KeyModifiers::CONTROL);
     let shift = key.modifiers.contains(KeyModifiers::SHIFT);
@@ -616,6 +703,58 @@ mod tests {
 
     fn key(code: KeyCode, modifiers: KeyModifiers, kind: KeyEventKind) -> KeyEvent {
         KeyEvent { code, modifiers, kind, state: KeyEventState::empty() }
+    }
+
+    /// What the input thread types is what the app thread would have
+    /// typed, and the window's shortcuts are left to the app thread.
+    #[test]
+    fn keys_typed_from_the_input_thread_match_the_app_threads() {
+        #[derive(Clone, Default)]
+        struct Sink(Arc<Mutex<Vec<u8>>>);
+        impl std::io::Write for Sink {
+            fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
+                self.0.lock().unwrap().extend_from_slice(bytes);
+                Ok(bytes.len())
+            }
+            fn flush(&mut self) -> std::io::Result<()> {
+                Ok(())
+            }
+        }
+        let typed = |view: session::KeyView, k: KeyEvent| {
+            let sink = Sink::default();
+            let what = type_key(&session::Typist::with(view, Box::new(sink.clone())), &k);
+            let bytes = sink.0.lock().unwrap().clone();
+            (what, bytes)
+        };
+        let primary = session::KeyView { size: (24, 80), at_bottom: true, ..Default::default() };
+        let press = KeyEventKind::Press;
+
+        let (what, bytes) = typed(primary, key(KeyCode::Char('a'), KeyModifiers::NONE, press));
+        assert!(matches!(what, Typed::Written));
+        assert_eq!(bytes, b"a");
+
+        let (what, bytes) = typed(primary, key(KeyCode::Char('a'), KeyModifiers::NONE, KeyEventKind::Release));
+        assert!(matches!(what, Typed::Nothing), "a release in the legacy dialect sends nothing");
+        assert!(bytes.is_empty());
+
+        let ctrl_shift = KeyModifiers::CONTROL | KeyModifiers::SHIFT;
+        let (what, bytes) = typed(primary, key(KeyCode::Char('C'), ctrl_shift, press));
+        assert!(matches!(what, Typed::Shortcut), "copy is the window's");
+        assert!(bytes.is_empty());
+
+        // Shift+PageUp pages the scrollback on the main screen; on the
+        // alternate screen it belongs to the program.
+        let page_up = key(KeyCode::PageUp, KeyModifiers::SHIFT, press);
+        assert!(matches!(typed(primary, page_up).0, Typed::Shortcut));
+        let alternate = session::KeyView { alternate_screen: true, ..primary };
+        let (what, bytes) = typed(alternate, page_up);
+        assert!(matches!(what, Typed::Written));
+        assert_eq!(Some(bytes), keys::key(&page_up, false, KeyboardDialect::from_bits(0)));
+
+        // The program's modes come from the view.
+        let application = session::KeyView { application_cursor: true, ..primary };
+        let (_, bytes) = typed(application, key(KeyCode::Up, KeyModifiers::NONE, press));
+        assert_eq!(bytes, b"\x1bOA");
     }
 
     #[test]

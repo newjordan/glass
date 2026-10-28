@@ -99,6 +99,13 @@ fn frame_cuts(bytes: &[u8]) -> Vec<usize> {
 pub enum Msg {
     /// The window's keys, mouse, paste, focus and size.
     Input(Event),
+    /// Input that writes nothing to the program, so keys typed after it
+    /// need not wait for the app thread to take it in.
+    Aside(Event),
+    /// A key went to the program straight from the window's input thread
+    /// ([`Typist`]); what else typing does (the selection goes, the view
+    /// comes back to the live screen) is the app thread's.
+    Typed,
     /// The program wrote something; the screen has changed.
     Output,
     /// The window closed.
@@ -121,6 +128,10 @@ pub struct KeyView {
     pub application_cursor: bool,
     /// Whether the view sits on the live screen.
     pub at_bottom: bool,
+    /// Whether the program asked to hear of focus changes.
+    pub focus_reports: bool,
+    /// Whether the program asked to hear of the mouse.
+    pub mouse_reports: bool,
 }
 
 impl KeyView {
@@ -136,6 +147,8 @@ impl KeyView {
             | u64::from(u8::from(self.alternate_screen)) << 40
             | u64::from(u8::from(self.application_cursor)) << 41
             | u64::from(u8::from(self.at_bottom)) << 42
+            | u64::from(u8::from(self.focus_reports)) << 43
+            | u64::from(u8::from(self.mouse_reports)) << 44
     }
 
     /// The word [`KeyView::pack`] wrote, back to a view.
@@ -146,6 +159,8 @@ impl KeyView {
             alternate_screen: word >> 40 & 1 == 1,
             application_cursor: word >> 41 & 1 == 1,
             at_bottom: word >> 42 & 1 == 1,
+            focus_reports: word >> 43 & 1 == 1,
+            mouse_reports: word >> 44 & 1 == 1,
         }
     }
 
@@ -163,6 +178,8 @@ impl KeyView {
             // top. The alternate screen has no history to lift through.
             at_bottom: engine.alternate_screen()
                 || engine.top_line() == engine.scrolled_off_top() as u64,
+            focus_reports: engine.focus_reports(),
+            mouse_reports: engine.mouse_protocol().0 != MouseProtocolMode::None,
         }
     }
 }
@@ -487,6 +504,36 @@ pub struct Started {
     size: PtySize,
 }
 
+/// What it takes to type a key into the program without the thread that
+/// draws: the program's state as a key sees it, and the pty. Under a flood
+/// the app thread spends most of its time drawing, and a key handed to it
+/// waits for the frame in hand.
+#[derive(Clone)]
+pub struct Typist {
+    key_view: Arc<AtomicU64>,
+    writer: Arc<Mutex<Box<dyn Write + Send>>>,
+}
+
+impl Typist {
+    /// The program's state as of the last read the parsing thread pumped.
+    pub fn view(&self) -> KeyView {
+        KeyView::unpack(self.key_view.load(Ordering::Acquire))
+    }
+
+    /// Bytes to the program, as typed.
+    pub fn write(&self, bytes: &[u8]) {
+        let mut writer = lock(&self.writer);
+        let _ = writer.write_all(bytes);
+        let _ = writer.flush();
+    }
+
+    /// A typist that sees `view` and writes to `writer`, for tests.
+    #[cfg(test)]
+    pub fn with(view: KeyView, writer: Box<dyn Write + Send>) -> Self {
+        Self { key_view: Arc::new(AtomicU64::new(view.pack())), writer: Arc::new(Mutex::new(writer)) }
+    }
+}
+
 fn lock<T>(mutex: &Mutex<T>) -> MutexGuard<'_, T> {
     mutex.lock().unwrap_or_else(|e| e.into_inner())
 }
@@ -743,6 +790,11 @@ impl Session {
         let guard = lock(&self.engine);
         self.engine_wanted.store(false, Ordering::Release);
         guard
+    }
+
+    /// A handle for typing into the program from another thread.
+    pub fn typist(&self) -> Typist {
+        Typist { key_view: Arc::clone(&self.key_view), writer: Arc::clone(&self.writer) }
     }
 
     /// Bytes to the program, as typed.
@@ -1185,14 +1237,46 @@ mod tests {
         assert!(KeyView::of(&term).at_bottom);
     }
 
+    /// The view says when the program hears of focus and the mouse: input
+    /// that then writes to it must keep its place before typed keys.
+    #[test]
+    fn the_key_view_knows_what_input_the_program_hears() {
+        let mut term = engine();
+        let quiet = KeyView::of(&term);
+        assert!(!quiet.focus_reports && !quiet.mouse_reports);
+        term.process(b"\x1b[?1004h\x1b[?1000h");
+        let hears = KeyView::of(&term);
+        assert!(hears.focus_reports && hears.mouse_reports);
+        term.process(b"\x1b[?1004l\x1b[?1000l\x1b[?1003h");
+        let motion = KeyView::of(&term);
+        assert!(!motion.focus_reports && motion.mouse_reports);
+    }
+
     #[test]
     fn the_key_view_survives_its_trip_through_one_word() {
         // The view crosses threads as a single word; every field must
         // come back from it, at the extremes of each.
         for view in [
             KeyView::default(),
-            KeyView { size: (24, 80), keyboard_flags: 0xff, alternate_screen: true, application_cursor: true, at_bottom: true },
-            KeyView { size: (u16::MAX, u16::MAX), keyboard_flags: 0, alternate_screen: false, application_cursor: true, at_bottom: false },
+            KeyView {
+                size: (24, 80),
+                keyboard_flags: 0xff,
+                alternate_screen: true,
+                application_cursor: true,
+                at_bottom: true,
+                focus_reports: true,
+                mouse_reports: true,
+            },
+            KeyView {
+                size: (u16::MAX, u16::MAX),
+                keyboard_flags: 0,
+                alternate_screen: false,
+                application_cursor: true,
+                at_bottom: false,
+                focus_reports: false,
+                mouse_reports: true,
+            },
+            KeyView { focus_reports: true, ..KeyView::default() },
         ] {
             assert_eq!(KeyView::unpack(view.pack()), view);
         }

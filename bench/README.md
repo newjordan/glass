@@ -28,6 +28,7 @@ please send the numbers whatever they say.
 | `macos/run-tput.sh` | macOS: `tput.py` in glass and Ghostty, taking turns, a round each; `macos/in-term.sh` runs it inside each, and `macos/ghostty.conf` gives Ghostty glass's grid and font size. |
 | `macos/run-startup.sh` | macOS: launch to window on screen (the window list) and to program running (`macos/stamp.c` writes the clock), glass and Ghostty taking turns. It builds `macos/launch.swift` and `macos/stamp.c` with the Xcode tools. |
 | `results/2026-10-28-macos/` | The Mac runs behind docs/PERFORMANCE.md's macOS section; see its README. |
+| `results/2026-10-28-keys/` | Key to pty for glass and kitty, idle and under a flood (`keys-latency.sh`); see its README. |
 | `results/local/` | Where your own runs go by default (ignored by git). |
 
 `run-visible.sh` and `visible/` measure launch until the program's first

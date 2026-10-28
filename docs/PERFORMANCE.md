@@ -24,6 +24,7 @@ a 154×39 window. Medians.
 | CPU over all six workloads | **0.67 s** | 1.09 s | 1.6× less |
 | VRAM, idle window | **45 MiB** | 50 MiB | 1.1× less |
 | Key press to the program | **2.25 ms** | 2.43 ms | 1.1× |
+| Key press to the program, while it floods output | **3.0 ms** | 38.6 ms | 13× |
 
 ![glass vs kitty, measure by measure](media/glass-advantage.png)
 
@@ -84,6 +85,14 @@ Forty key presses, each sent to the window through Hyprland
 reads the byte from the pty. The median of the forty. Hyprland's dispatch
 is in both terminals' numbers. This stops at the program reading the key;
 it does not include drawing the echo.
+
+The same measure while the program floods its output (`yes` writing to
+the terminal for the whole run) is `bench/keys-latency.sh` with
+`LOAD=yes`. The table gives the median of three runs' medians, glass and
+kitty taking turns, measured on 2026-10-28; the logs are in
+[`bench/results/2026-10-28-keys/`](../bench/results/2026-10-28-keys/).
+- **What it measures:** a flood is when a terminal is busiest, and a key typed into it then (Ctrl+C to stop it) waits for whatever the terminal is busy with.
+- **How glass avoids the wait:** the window's input thread writes the key to the pty itself, from the program's modes as the parsing thread last published them. It never takes the engine's lock, and it never waits for a frame to finish drawing.
 
 ## Say this plainly
 

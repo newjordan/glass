@@ -44,6 +44,7 @@ a 154×39 window). Medians.
 | CPU over all six workloads | **0.67 s** | 1.09 s | 1.6× less |
 | VRAM, idle window | **45 MiB** | 50 MiB | 1.1× less |
 | Key press to the program | **2.25 ms** | 2.43 ms | 1.1× |
+| Key press to the program, while it floods output | **3.0 ms** | 38.6 ms | 13× |
 
 ![glass vs kitty 0.49.2, measure by measure](docs/media/glass-advantage.png)
 
