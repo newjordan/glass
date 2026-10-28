@@ -124,9 +124,9 @@ impl Gpu {
     /// preference picks first, which the window checks once it has its
     /// surface.
     fn open(instance: wgpu::Instance, surface: Option<&wgpu::Surface<'_>>) -> Result<Self, String> {
-        let power_preference = match std::env::var("ANGEL_GLASS_GPU").as_deref() {
-            Ok("low") => wgpu::PowerPreference::LowPower,
-            Ok("high") => wgpu::PowerPreference::HighPerformance,
+        let power_preference = match glass_stage::env::var("GLASS_GPU").as_deref() {
+            Some("low") => wgpu::PowerPreference::LowPower,
+            Some("high") => wgpu::PowerPreference::HighPerformance,
             _ => wgpu::PowerPreference::None,
         };
         let adapter = pollster::block_on(instance.request_adapter(&wgpu::RequestAdapterOptions {
@@ -387,9 +387,9 @@ impl Renderer {
         .find(|m| caps.alpha_modes.contains(m))
         .unwrap_or(caps.alpha_modes[0]);
         config.alpha_mode = alpha_mode;
-        let wanted = match std::env::var("ANGEL_GLASS_PRESENT").as_deref() {
-            Ok("fifo") => wgpu::PresentMode::Fifo,
-            Ok("immediate") => wgpu::PresentMode::Immediate,
+        let wanted = match glass_stage::env::var("GLASS_PRESENT").as_deref() {
+            Some("fifo") => wgpu::PresentMode::Fifo,
+            Some("immediate") => wgpu::PresentMode::Immediate,
             _ => wgpu::PresentMode::Mailbox,
         };
         // Fifo measured ~40 ms submit-to-photon (scorecard v2): never
@@ -418,8 +418,7 @@ impl Renderer {
         }
         // One frame in flight keeps key latency honest; the env knob
         // exists for latency experiments (scorecard M1), not tuning.
-        config.desired_maximum_frame_latency = std::env::var("ANGEL_GLASS_FRAME_LATENCY")
-            .ok()
+        config.desired_maximum_frame_latency = glass_stage::env::var("GLASS_FRAME_LATENCY")
             .and_then(|v| v.parse::<u32>().ok())
             .filter(|n| (1..=4).contains(n))
             .unwrap_or(1);

@@ -68,7 +68,7 @@ pub struct Core {
     picture_bytes: usize,
     /// The bytes of pictures written to the GPU by uploads, all told.
     written_bytes: u64,
-    /// ANGEL_GLASS_GPU_PREMULTIPLY: uploaded pictures stay straight in
+    /// GLASS_GPU_PREMULTIPLY: uploaded pictures stay straight in
     /// storage and the shader premultiplies (`PICTURE_STRAIGHT`). It
     /// spares the producer thread the CPU scan; off by default.
     gpu_premultiply: bool,
@@ -232,7 +232,7 @@ impl Core {
             pictures: FastMap::default(),
             picture_bytes: 0,
             written_bytes: 0,
-            gpu_premultiply: std::env::var("ANGEL_GLASS_GPU_PREMULTIPLY").is_ok_and(|v| v == "1"),
+            gpu_premultiply: glass_stage::env::is("GLASS_GPU_PREMULTIPLY", "1"),
             stages: HashMap::new(),
             stage_scenes: HashMap::new(),
             slides: HashMap::new(),

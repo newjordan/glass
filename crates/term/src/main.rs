@@ -126,9 +126,8 @@ fn main() {
         Some(program) => program.clone(),
         None => "glass".into(),
     });
-    // A terminal opens on its prompt, not on the cockpit's assembly.
-    // SAFETY: nothing else runs yet; the window and its threads start below.
-    unsafe { std::env::set_var("ANGEL_GLASS_TRANSITION", "0") };
+    // A terminal opens on its prompt, not on an assembly transition.
+    options.transition = false;
     let palette = options.palette.clone();
     glass_window::startup::mark("options");
     match glass_window::run(options, move |host| run(host, args, palette)) {

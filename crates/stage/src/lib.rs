@@ -12,6 +12,7 @@
 //! (docs/GLASS_CORE.md).
 
 pub mod brand;
+pub mod env;
 pub mod look;
 pub mod marks;
 pub mod normals;

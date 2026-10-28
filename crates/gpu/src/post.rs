@@ -93,12 +93,12 @@ pub fn level_sizes(size: (u32, u32)) -> [(u32, u32); LEVELS] {
 }
 
 /// Whether the post pass runs unless the host says otherwise:
-/// `ANGEL_GLASS_POST=0` turns it off where there is an environment (a
+/// `GLASS_POST=0` turns it off where there is an environment (a
 /// window); the browser's page says so itself.
 pub fn on_by_default() -> bool {
     #[cfg(not(target_arch = "wasm32"))]
     {
-        std::env::var("ANGEL_GLASS_POST").map_or(true, |v| v != "0")
+        glass_stage::env::var("GLASS_POST").map_or(true, |v| v != "0")
     }
     #[cfg(target_arch = "wasm32")]
     {

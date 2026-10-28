@@ -1,6 +1,6 @@
 //! The latency probe: the PTY input-latency harness, adapted to the window.
 //!
-//! `ANGEL_GLASS_PROBE=1` waits for the composer (`Write a message`), then
+//! `GLASS_PROBE=1` waits for the composer (`Write a message`), then
 //! types a draft one key at a time through the same channel the window's
 //! keyboard feeds, and times each key until a presented frame shows it:
 //! keypress to `present()`. Compositor and scanout come after that and are
@@ -20,7 +20,7 @@ pub struct Probe {
     draft: String,
     out: Option<std::path::PathBuf>,
     close: bool,
-    /// `ANGEL_GLASS_PROBE_ENTER=1`: submit the draft with Enter once it
+    /// `GLASS_PROBE_ENTER=1`: submit the draft with Enter once it
     /// is typed, so a scripted run can drive a command, not just text.
     enter: bool,
     expect: Mutex<Option<(String, Option<Instant>)>>,
@@ -30,16 +30,16 @@ pub struct Probe {
 
 impl Probe {
     pub fn from_env() -> Option<Arc<Self>> {
-        let on = std::env::var("ANGEL_GLASS_PROBE").is_ok_and(|v| v == "1");
+        let on = glass_stage::env::is("GLASS_PROBE", "1");
         on.then(|| {
             Arc::new(Self {
-                ready: std::env::var("ANGEL_GLASS_PROBE_READY")
-                    .unwrap_or_else(|_| "Write a message".into()),
-                draft: std::env::var("ANGEL_GLASS_PROBE_TEXT")
-                    .unwrap_or_else(|_| "snappy-input-0123456789-abcdef".into()),
-                out: std::env::var_os("ANGEL_GLASS_PROBE_OUT").map(Into::into),
-                close: std::env::var("ANGEL_GLASS_PROBE_CLOSE").is_ok_and(|v| v == "1"),
-                enter: std::env::var("ANGEL_GLASS_PROBE_ENTER").is_ok_and(|v| v == "1"),
+                ready: glass_stage::env::var("GLASS_PROBE_READY")
+                    .unwrap_or_else(|| "Write a message".into()),
+                draft: glass_stage::env::var("GLASS_PROBE_TEXT")
+                    .unwrap_or_else(|| "snappy-input-0123456789-abcdef".into()),
+                out: glass_stage::env::var_os("GLASS_PROBE_OUT").map(Into::into),
+                close: glass_stage::env::is("GLASS_PROBE_CLOSE", "1"),
+                enter: glass_stage::env::is("GLASS_PROBE_ENTER", "1"),
                 expect: Mutex::new(None),
                 seen: Mutex::new(None),
                 frames: Mutex::new(Vec::new()),

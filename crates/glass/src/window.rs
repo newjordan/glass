@@ -116,6 +116,7 @@ where
         proxy: Arc::new(Mutex::new(event_loop.create_proxy())),
         input: Arc::new(Mutex::new(Some(events))),
     };
+    let assembled = !options.transition;
     let mut glass = Glass {
         options,
         preparing: Some(preparing),
@@ -137,7 +138,7 @@ where
         error: None,
         stats: Stats::from_env(),
         recorder: crate::record::Plan::from_env().map(crate::record::Recorder::new),
-        assembled: std::env::var("ANGEL_GLASS_TRANSITION").is_ok_and(|v| v == "0"),
+        assembled,
         last_present: Instant::now(),
         redraw_owed: false,
         layers_dirty: false,
@@ -216,7 +217,7 @@ struct Glass<T> {
     /// showcase's too, wherever it happens.
     showcase_press: bool,
     cursor: winit::window::CursorIcon,
-    /// `ANGEL_GLASS_RECORD`: the film being made of this window.
+    /// `GLASS_RECORD`: the film being made of this window.
     recorder: Option<crate::record::Recorder>,
     /// The background drawn on the CPU while the GPU opens (`early.rs`),
     /// and the size it was drawn at.
@@ -233,9 +234,9 @@ struct Glass<T> {
 /// window keeps the size it asked for, and nothing comes).
 const SETTLE: Duration = Duration::from_millis(50);
 
-/// `ANGEL_GLASS_STATS=1`: every two seconds, one stderr line with the frames
+/// `GLASS_STATS=1`: every two seconds, one stderr line with the frames
 /// presented, their render times and the pictures uploaded.
-/// `ANGEL_GLASS_STATS_RAW=path` also appends each window's raw presented
+/// `GLASS_STATS_RAW=path` also appends each window's raw presented
 /// frame times there, one JSON array a line, for bench analysis that needs
 /// the series rather than a percentile someone else chose.
 struct Stats {
@@ -252,8 +253,7 @@ struct Stats {
 
 impl Stats {
     fn from_env() -> Option<Self> {
-        std::env::var("ANGEL_GLASS_STATS")
-            .is_ok_and(|v| v == "1")
+        glass_stage::env::is("GLASS_STATS", "1")
             .then(|| Self {
                 since: Instant::now(),
                 frames: Vec::new(),
@@ -261,7 +261,7 @@ impl Stats {
                 key_hops: Vec::new(),
                 upload_bytes: 0,
                 upload: Duration::ZERO,
-                raw: std::env::var_os("ANGEL_GLASS_STATS_RAW").map(Into::into),
+                raw: glass_stage::env::var_os("GLASS_STATS_RAW").map(Into::into),
             })
     }
 
@@ -534,15 +534,14 @@ impl<T: Send + 'static> Glass<T> {
         Ok(())
     }
 
-    /// `ANGEL_GLASS_SHOT=path.png` saves a frame after a delay; the
+    /// `GLASS_SHOT=path.png` saves a frame after a delay; the
     /// recording and the transition's film start here too.
     fn environment_extras(&self) {
         if let Some(plan) = crate::record::Plan::from_env() {
             crate::record::start_clock(&plan, &self.host);
         }
-        if let Some(dir) = std::env::var_os("ANGEL_GLASS_FILM") {
-            let delay = std::env::var("ANGEL_GLASS_FILM_DELAY_MS")
-                .ok()
+        if let Some(dir) = glass_stage::env::var_os("GLASS_FILM") {
+            let delay = glass_stage::env::var("GLASS_FILM_DELAY_MS")
                 .and_then(|v| v.parse().ok())
                 .unwrap_or(8000);
             let host = self.host.clone();
@@ -551,12 +550,11 @@ impl<T: Send + 'static> Glass<T> {
                 host.send(UserEvent::Film(dir.into()));
             });
         }
-        if let Some(path) = std::env::var_os("ANGEL_GLASS_SHOT") {
-            let delay = std::env::var("ANGEL_GLASS_SHOT_DELAY_MS")
-                .ok()
+        if let Some(path) = glass_stage::env::var_os("GLASS_SHOT") {
+            let delay = glass_stage::env::var("GLASS_SHOT_DELAY_MS")
                 .and_then(|v| v.parse().ok())
                 .unwrap_or(5000);
-            let close = std::env::var("ANGEL_GLASS_SHOT_CLOSE").is_ok_and(|v| v == "1");
+            let close = glass_stage::env::is("GLASS_SHOT_CLOSE", "1");
             let host = self.host.clone();
             std::thread::spawn(move || {
                 std::thread::sleep(Duration::from_millis(delay));
@@ -929,7 +927,7 @@ impl<T: Send + 'static> Glass<T> {
         self.window = None;
     }
 
-    /// `ANGEL_GLASS_FILM`: the assembly transition at 30 frames a second, as
+    /// `GLASS_FILM`: the assembly transition at 30 frames a second, as
     /// numbered PNGs, for review.
     fn film(&mut self, dir: &std::path::Path) {
         let _ = std::fs::create_dir_all(dir);

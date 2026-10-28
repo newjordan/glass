@@ -133,7 +133,7 @@ pub(crate) struct GpuPicture {
     /// `scene.rs`): shown with `PICTURE_PREMULTIPLIED`, not `PICTURE`.
     pub(crate) premultiplied: bool,
     /// Stored straight, premultiplied in the shader (`PICTURE_STRAIGHT`,
-    /// under ANGEL_GLASS_GPU_PREMULTIPLY).
+    /// under GLASS_GPU_PREMULTIPLY).
     pub(crate) straight: bool,
     /// The groups a mesh material samples it with, made on first use:
     /// nearest and linear (`scene.rs`).

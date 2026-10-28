@@ -360,21 +360,17 @@ fn apply_event(intake: &mut Intake, event: EngineEvent) {
     }
 }
 
-/// Variables another terminal (or the cockpit's shell pane) set, inherited
-/// when glass is started from one: they would tell a program it runs
+/// Variables another terminal (or a multiplexer) set, inherited when
+/// glass is started from one: they would tell a program it runs
 /// somewhere it does not. Programs learn what glass takes in by asking it.
 const FOREIGN_PREFIXES: [&str; 5] = ["KITTY_", "ALACRITTY_", "GHOSTTY_", "WEZTERM_", "KONSOLE_"];
-const FOREIGN: [&str; 9] = [
+const FOREIGN: [&str; 7] = [
     "WINDOWID",
     "TERMINFO",
     "VTE_VERSION",
     "TMUX",
     "TMUX_PANE",
     "STY",
-    // The shell pane's "stay in this terminal": glass is a window, so an
-    // angelX typed here opens its own (and swallows this one).
-    "ANGEL_GLASS",
-    "ANGEL_GLASS_TRANSITION",
     "TERM_PROGRAM_VERSION",
 ];
 

@@ -5,8 +5,8 @@
 //! STREAM_BENCH_MODE=blast4|big|placements|text (default blast4)
 //! STREAM_BENCH_SECONDS=14  STREAM_BENCH_FPS=120 (0 = free-running)
 //! STREAM_BENCH_W/H (big), STREAM_BENCH_N (placements)
-//! Pair with ANGEL_GLASS_STATS=1 (render percentiles + parts) and, for
-//! ingest runs, ANGEL_GLASS_PRESENT=immediate. Pixel rings are
+//! Pair with GLASS_STATS=1 (render percentiles + parts) and, for
+//! ingest runs, GLASS_PRESENT=immediate. Pixel rings are
 //! pre-generated with the same formula as the Kitty bench, and every
 //! frame differs so no upload can be skipped as unchanged.
 

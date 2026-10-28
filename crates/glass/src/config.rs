@@ -1,15 +1,19 @@
 //! What the window looks like: font, size, colours, opacity, padding.
 //!
-//! Glass keeps its settings in `~/.angelX/glass.conf`, one `key value` a
-//! line. The first launch writes the defaults there to edit; nothing else is
-//! ever read. `ANGEL_GLASS_*` variables override the file.
+//! Glass keeps its settings in `$XDG_CONFIG_HOME/glass/glass.conf`
+//! (`~/.config/glass/glass.conf` when that is unset; `GLASS_CONFIG` names
+//! another file), one `key value` a line. The first launch writes the
+//! defaults there to edit, or copies over the file earlier builds kept in
+//! `~/.angelX/glass.conf`; nothing else is ever read. `GLASS_*` variables
+//! override the file.
 
+use std::ffi::OsString;
 use std::path::{Path, PathBuf};
 
 pub type Rgb = [u8; 3];
 
-/// How braille cells are drawn. The realm, the Delve and the minimaps are
-/// braille, so this is the look of most of the pictures.
+/// How braille cells are drawn: braille art, plots and maps are made of
+/// them, so this is the look of many terminal pictures.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum BrailleStyle {
     /// Round dots with space between them, as a braille font draws them.
@@ -82,13 +86,16 @@ pub struct Options {
     pub background_layout: crate::wallpaper::Layout,
     pub background_tint: f32,
     pub background_linear: bool,
+    /// Whether the first frame with text plays the assembly transition
+    /// (`transition.rs`). `GLASS_TRANSITION=0` turns it off.
+    pub transition: bool,
 }
 
 impl Default for Options {
     fn default() -> Self {
         Self {
-            title: "angelX".into(),
-            app_id: "angelX".into(),
+            title: "glass".into(),
+            app_id: "glass".into(),
             font_family: "monospace".into(),
             font_size: 13.0,
             palette: Palette::default(),
@@ -102,16 +109,29 @@ impl Default for Options {
             background_layout: crate::wallpaper::Layout::Tiled,
             background_tint: 0.0,
             background_linear: false,
+            transition: true,
         }
     }
 }
 
 impl Options {
-    /// `glass.conf` (written with the defaults on the first launch), then
-    /// the `ANGEL_GLASS_*` overrides.
+    /// `glass.conf` (written with the defaults on the first launch, or
+    /// copied from where earlier builds kept it), then the `GLASS_*`
+    /// overrides.
     pub fn from_environment() -> Self {
         let mut options = Self::default();
-        match glass_config_path() {
+        let home = std::env::var_os("HOME");
+        let path = match glass_stage::env::var_os("GLASS_CONFIG").filter(|p| !p.is_empty()) {
+            Some(named) => Some(PathBuf::from(named)),
+            None => default_config_path(std::env::var_os("XDG_CONFIG_HOME"), home.clone()).map(|path| {
+                // The settings of an earlier build, once, where they now live.
+                match home.map(|home| PathBuf::from(home).join(EARLIER_CONFIG)) {
+                    Some(earlier) => migrate(&path, &earlier).unwrap_or(path),
+                    None => path,
+                }
+            }),
+        };
+        match path {
             Some(path) if path.is_file() => apply_conf(&mut options, &path),
             Some(path) => {
                 if let Err(error) = options.save(&path) {
@@ -128,7 +148,7 @@ impl Options {
     pub fn to_conf(&self) -> String {
         let hex = |c: Rgb| format!("#{:02x}{:02x}{:02x}", c[0], c[1], c[2]);
         let mut out = String::from(
-            "# angelX glass: the window's look, one setting a line. Edit freely;\n\
+            "# glass: the window's look, one setting a line. Edit freely;\n\
              # delete this file to start again from the defaults.\n\n",
         );
         let mut line = |key: &str, value: String| out.push_str(&format!("{key} {value}\n"));
@@ -192,35 +212,35 @@ impl Options {
     }
 
     fn apply_env(&mut self) {
-        let var = |name: &str| std::env::var(name).ok().filter(|v| !v.trim().is_empty());
-        if let Some(app_id) = var("ANGEL_GLASS_APP_ID") {
+        let var = |name: &str| glass_stage::env::var(name).filter(|v| !v.trim().is_empty());
+        if let Some(app_id) = var("GLASS_APP_ID") {
             self.app_id = app_id;
         }
-        if let Some(gamma) = var("ANGEL_GLASS_TEXT_GAMMA").and_then(|v| ranged(&v, 0.3, 3.0)) {
+        if let Some(gamma) = var("GLASS_TEXT_GAMMA").and_then(|v| ranged(&v, 0.3, 3.0)) {
             self.text_gamma = gamma;
         }
-        if let Some(path) = var("ANGEL_GLASS_WALLPAPER") {
+        if let Some(path) = var("GLASS_WALLPAPER") {
             self.background_image = (path != "none").then(|| expand_home(&path));
         }
-        if let Some(font) = var("ANGEL_GLASS_FONT") {
+        if let Some(font) = var("GLASS_FONT") {
             self.font_family = font;
         }
-        if let Some(size) = var("ANGEL_GLASS_FONT_SIZE").and_then(|v| ranged(&v, 1.0, 256.0)) {
+        if let Some(size) = var("GLASS_FONT_SIZE").and_then(|v| ranged(&v, 1.0, 256.0)) {
             self.font_size = size;
         }
-        if let Some(opacity) = var("ANGEL_GLASS_OPACITY").and_then(|v| ranged(&v, 0.0, 1.0)) {
+        if let Some(opacity) = var("GLASS_OPACITY").and_then(|v| ranged(&v, 0.0, 1.0)) {
             self.background_opacity = opacity;
         }
-        if let Some(padding) = var("ANGEL_GLASS_PADDING").and_then(|v| ranged(&v, 0.0, 512.0)) {
+        if let Some(padding) = var("GLASS_PADDING").and_then(|v| ranged(&v, 0.0, 512.0)) {
             self.padding = padding;
         }
-        if let Some(style) = var("ANGEL_GLASS_BRAILLE") {
+        if let Some(style) = var("GLASS_BRAILLE") {
             self.braille = match style.as_str() {
                 "pixels" => BrailleStyle::Pixels,
                 _ => BrailleStyle::Dots,
             };
         }
-        if let Some((columns, rows)) = var("ANGEL_GLASS_SIZE").and_then(|v| {
+        if let Some((columns, rows)) = var("GLASS_SIZE").and_then(|v| {
             let (c, r) = v.split_once(['x', 'X'])?;
             let pair: (u16, u16) = (c.trim().parse().ok()?, r.trim().parse().ok()?);
             (pair.0 > 0 && pair.1 > 0).then_some(pair)
@@ -228,15 +248,51 @@ impl Options {
             self.columns = columns;
             self.rows = rows;
         }
+        if var("GLASS_TRANSITION").is_some_and(|v| v == "0") {
+            self.transition = false;
+        }
     }
 }
 
-/// Glass's own settings: `ANGEL_GLASS_CONFIG`, else `~/.angelX/glass.conf`.
-fn glass_config_path() -> Option<PathBuf> {
-    if let Some(path) = std::env::var_os("ANGEL_GLASS_CONFIG").filter(|p| !p.is_empty()) {
-        return Some(PathBuf::from(path));
+/// Where earlier builds kept the settings, under the home directory.
+const EARLIER_CONFIG: &str = ".angelX/glass.conf";
+
+/// Glass's own settings when `GLASS_CONFIG` names none: `glass/glass.conf`
+/// in the XDG config home, `~/.config` when that is unset or not absolute
+/// (as the XDG spec says to treat a relative one).
+fn default_config_path(xdg_config_home: Option<OsString>, home: Option<OsString>) -> Option<PathBuf> {
+    let base = xdg_config_home
+        .map(PathBuf::from)
+        .filter(|dir| dir.is_absolute())
+        .or_else(|| home.map(|home| PathBuf::from(home).join(".config")))?;
+    Some(base.join("glass").join("glass.conf"))
+}
+
+/// Copy `earlier` to `path` when `path` does not exist yet and `earlier`
+/// does: once, saying so on stderr. Returns the file to read, `path` once
+/// copied (`earlier` itself if the copy failed), or `None` when there is
+/// nothing to bring over.
+fn migrate(path: &Path, earlier: &Path) -> Option<PathBuf> {
+    if path.exists() || !earlier.is_file() {
+        return None;
     }
-    std::env::var_os("HOME").map(|home| PathBuf::from(home).join(".angelX/glass.conf"))
+    let partial = path.with_extension("conf.new");
+    let copied = path
+        .parent()
+        .map_or(Ok(()), std::fs::create_dir_all)
+        .and_then(|()| std::fs::copy(earlier, &partial))
+        .and_then(|_| std::fs::rename(&partial, path));
+    match copied {
+        Ok(()) => {
+            eprintln!("GLASS: copied your settings from {} to {}, where glass reads them now", earlier.display(), path.display());
+            Some(path.to_path_buf())
+        }
+        Err(error) => {
+            let _ = std::fs::remove_file(&partial);
+            eprintln!("GLASS: could not copy {} to {}: {error}; reading it where it is", earlier.display(), path.display());
+            Some(earlier.to_path_buf())
+        }
+    }
 }
 
 fn expand_home(path: &str) -> PathBuf {
@@ -486,4 +542,64 @@ mod tests {
         assert!(tiny.font_size >= 1.0, "{}", tiny.font_size);
     }
 
+    /// A fresh, empty directory under the system's temporary one.
+    fn scratch(name: &str) -> PathBuf {
+        let dir = std::env::temp_dir().join(format!("glass-conf-{name}-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        dir
+    }
+
+    #[test]
+    fn the_config_lives_in_the_xdg_config_home() {
+        let path = |xdg: Option<&str>, home: Option<&str>| default_config_path(xdg.map(Into::into), home.map(Into::into));
+        assert_eq!(path(Some("/x/conf"), Some("/home/u")), Some(PathBuf::from("/x/conf/glass/glass.conf")));
+        assert_eq!(path(None, Some("/home/u")), Some(PathBuf::from("/home/u/.config/glass/glass.conf")));
+        // A relative XDG_CONFIG_HOME is ignored, as the spec says.
+        assert_eq!(path(Some("conf"), Some("/home/u")), Some(PathBuf::from("/home/u/.config/glass/glass.conf")));
+        assert_eq!(path(Some(""), Some("/home/u")), Some(PathBuf::from("/home/u/.config/glass/glass.conf")));
+        assert_eq!(path(None, None), None);
+    }
+
+    #[test]
+    fn an_earlier_config_is_copied_over_once() {
+        let dir = scratch("migrate");
+        let earlier = dir.join("home/.angelX/glass.conf");
+        let path = dir.join("config/glass/glass.conf");
+        std::fs::create_dir_all(earlier.parent().unwrap()).unwrap();
+        std::fs::write(&earlier, "font_size 21\n").unwrap();
+        assert_eq!(migrate(&path, &earlier), Some(path.clone()), "copied, and read from its new place");
+        assert_eq!(std::fs::read_to_string(&path).unwrap(), "font_size 21\n");
+        assert!(earlier.is_file(), "the earlier file is left as it was");
+        assert!(!path.with_extension("conf.new").exists());
+        let mut options = Options::default();
+        apply_conf(&mut options, &path);
+        assert_eq!(options.font_size, 21.0);
+        // Once there, it is glass's: edits stay, and nothing is copied again.
+        std::fs::write(&path, "font_size 9\n").unwrap();
+        assert_eq!(migrate(&path, &earlier), None);
+        assert_eq!(std::fs::read_to_string(&path).unwrap(), "font_size 9\n");
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn nothing_is_copied_without_an_earlier_config() {
+        let dir = scratch("fresh");
+        let path = dir.join("config/glass/glass.conf");
+        assert_eq!(migrate(&path, &dir.join("home/.angelX/glass.conf")), None);
+        assert!(!path.exists() && !dir.join("config").exists());
+        // The first launch then writes the defaults, which say glass.
+        Options::default().save(&path).unwrap();
+        let text = std::fs::read_to_string(&path).unwrap();
+        assert!(text.starts_with("# glass: "), "{text}");
+        assert!(!text.to_lowercase().contains("angel"), "{text}");
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn the_defaults_are_glass() {
+        let options = Options::default();
+        assert_eq!((options.title.as_str(), options.app_id.as_str()), ("glass", "glass"));
+        assert!(options.transition);
+    }
 }

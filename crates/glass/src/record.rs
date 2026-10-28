@@ -1,4 +1,4 @@
-//! `ANGEL_GLASS_RECORD=path.mp4`: the window films itself, as it is drawn,
+//! `GLASS_RECORD=path.mp4`: the window films itself, as it is drawn,
 //! into a video through ffmpeg and the GPU's own encoder.
 //!
 //! A clock thread asks for a frame on every tick of the film's rate. The
@@ -10,10 +10,10 @@
 //! the film keeps the wall clock's time and shows a stall as a stall. How
 //! many were repeated is printed at the end.
 //!
-//! - `ANGEL_GLASS_RECORD_FPS`: frames a second, 1..=240 (60).
-//! - `ANGEL_GLASS_RECORD_SECONDS`: how long, 1..=3600 (30).
-//! - `ANGEL_GLASS_RECORD_DELAY_MS`: the wait before the first frame (2000).
-//! - `ANGEL_GLASS_RECORD_CODEC`: the ffmpeg encoder (`hevc_nvenc`).
+//! - `GLASS_RECORD_FPS`: frames a second, 1..=240 (60).
+//! - `GLASS_RECORD_SECONDS`: how long, 1..=3600 (30).
+//! - `GLASS_RECORD_DELAY_MS`: the wait before the first frame (2000).
+//! - `GLASS_RECORD_CODEC`: the ffmpeg encoder (`hevc_nvenc`).
 
 use std::collections::VecDeque;
 use std::io::Write;
@@ -36,20 +36,19 @@ pub(crate) struct Plan {
 
 impl Plan {
     pub fn from_env() -> Option<Self> {
-        let path = std::env::var_os("ANGEL_GLASS_RECORD")?;
+        let path = glass_stage::env::var_os("GLASS_RECORD")?;
         let number = |key: &str, default: u64, range: std::ops::RangeInclusive<u64>| {
-            std::env::var(key)
-                .ok()
+            glass_stage::env::var(key)
                 .and_then(|v| v.parse::<u64>().ok())
                 .unwrap_or(default)
                 .clamp(*range.start(), *range.end())
         };
         Some(Self {
             path: path.into(),
-            fps: number("ANGEL_GLASS_RECORD_FPS", 60, 1..=240) as u32,
-            seconds: number("ANGEL_GLASS_RECORD_SECONDS", 30, 1..=3600) as u32,
-            delay: Duration::from_millis(number("ANGEL_GLASS_RECORD_DELAY_MS", 2000, 0..=600_000)),
-            codec: std::env::var("ANGEL_GLASS_RECORD_CODEC").unwrap_or_else(|_| "hevc_nvenc".into()),
+            fps: number("GLASS_RECORD_FPS", 60, 1..=240) as u32,
+            seconds: number("GLASS_RECORD_SECONDS", 30, 1..=3600) as u32,
+            delay: Duration::from_millis(number("GLASS_RECORD_DELAY_MS", 2000, 0..=600_000)),
+            codec: glass_stage::env::var("GLASS_RECORD_CODEC").unwrap_or_else(|| "hevc_nvenc".into()),
         })
     }
 

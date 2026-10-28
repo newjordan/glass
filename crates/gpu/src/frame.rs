@@ -28,7 +28,7 @@ pub const PICTURE: u32 = 3;
 pub const PICTURE_PREMULTIPLIED: u32 = 4;
 /// An uploaded picture stored straight (not premultiplied) and
 /// premultiplied in the shader instead: only under
-/// ANGEL_GLASS_GPU_PREMULTIPLY=1, a measured prototype lever (off by
+/// GLASS_GPU_PREMULTIPLY=1, a measured prototype lever (off by
 /// default; uploads are otherwise premultiplied on the CPU).
 pub const PICTURE_STRAIGHT: u32 = 5;
 /// Curved foreground parchment: a solid whose `uv` carries fixed material

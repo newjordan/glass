@@ -294,7 +294,7 @@ fn fs_main(arriving: Varyings) -> @location(0) vec4<f32> {
     }
     if in.kind == 5u {
         // An uploaded picture stored straight under
-        // ANGEL_GLASS_GPU_PREMULTIPLY: premultiplied here instead.
+        // GLASS_GPU_PREMULTIPLY: premultiplied here instead.
         let size = vec2<f32>(textureDimensions(atlas));
         let c = textureSampleLevel(atlas, picture_sampler, in.uv / size, 0.0);
         return vec4<f32>(c.rgb * c.a, c.a) * in.color.a;

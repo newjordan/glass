@@ -542,9 +542,29 @@ engine and real key events to the encoder.
   stderr: milliseconds since `main`, the wall clock in nanoseconds (to
   line up with a launcher's clock), the thread and the step.
 
+## Settings
+
+The window's look (font, size, colours, opacity, padding, a background
+picture) is kept in `$XDG_CONFIG_HOME/glass/glass.conf`
+(`~/.config/glass/glass.conf` when that is unset), one `key value` a
+line; the first launch writes the defaults there to edit
+(`crates/glass/src/config.rs`). `GLASS_CONFIG` names another file. A
+`glass.conf` an earlier build kept in `~/.angelX/` is copied to the new
+place once, with a line on stderr saying so.
+
+Environment variables override the file and drive the window's tools:
+`GLASS_FONT`, `GLASS_FONT_SIZE`, `GLASS_OPACITY`, `GLASS_PADDING`,
+`GLASS_WALLPAPER`, `GLASS_SIZE` (`160x48`), `GLASS_BRAILLE`,
+`GLASS_TEXT_GAMMA`, `GLASS_APP_ID`; `GLASS_GPU` (`low`, `high`),
+`GLASS_PRESENT`, `GLASS_FRAME_LATENCY`, `GLASS_POST=0`; `GLASS_STATS=1`
+(and `GLASS_STATS_RAW`), `GLASS_SHOT`, `GLASS_RECORD` (below),
+`GLASS_PROBE`. Each is read in one place
+(`crates/stage/src/env.rs`); the `ANGEL_GLASS_` spelling of every name
+still works, and the `GLASS_` one wins when both are set.
+
 ## Filming the window
 
-`ANGEL_GLASS_RECORD=film.mp4` films the window as it is drawn, through
+`GLASS_RECORD=film.mp4` films the window as it is drawn, through
 ffmpeg and the GPU's encoder (`crates/glass/src/record.rs`). A clock asks
 for a frame on every tick; the window draws it into a texture of its own
 and goes on while the GPU copies it back, so filming costs the window a
@@ -552,9 +572,9 @@ draw, not a wait. A tick the window could not answer in time repeats the
 frame before it, so the film keeps the wall clock's time and a stall
 shows as one; the counts are printed when the film closes.
 
-- `ANGEL_GLASS_RECORD_FPS` (60), `ANGEL_GLASS_RECORD_SECONDS` (30),
-  `ANGEL_GLASS_RECORD_DELAY_MS` (2000).
-- `ANGEL_GLASS_RECORD_CODEC` (`hevc_nvenc`): NVENC takes the RGBA as it
+- `GLASS_RECORD_FPS` (60), `GLASS_RECORD_SECONDS` (30),
+  `GLASS_RECORD_DELAY_MS` (2000).
+- `GLASS_RECORD_CODEC` (`hevc_nvenc`): NVENC takes the RGBA as it
   is and converts it on the GPU; another encoder (`libx264`) converts on
   the CPU.
 

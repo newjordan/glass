@@ -47,6 +47,8 @@ pub use glass_gpu as gpu;
 pub use wgpu;
 /// The 3D scene description (`glass-stage`'s), for `Host::set_scene`.
 pub use glass_stage::scene;
+/// glass's `GLASS_*` settings in the environment (`glass-stage`'s).
+pub use glass_stage::env;
 pub use showcase::{Fit, MODEL_ROOT, Mark, SHOWCASE_PICTURE, Showing};
 pub use window::run;
 

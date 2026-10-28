@@ -1,7 +1,7 @@
 //! A test card for the glass renderer: styles, colours, box drawing, blocks,
 //! braille, emoji and CJK. `q` quits.
 //!
-//! ANGEL_GLASS_SHOT=/tmp/card.png ANGEL_GLASS_SHOT_CLOSE=1 cargo run --example sampler
+//! GLASS_SHOT=/tmp/card.png GLASS_SHOT_CLOSE=1 cargo run --example sampler
 
 use std::time::Duration;
 
