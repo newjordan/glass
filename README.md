@@ -32,7 +32,7 @@ cargo build --release -p glass-term
 ```
 
 The binary is `target/release/glass`. It needs a Wayland or X11 desktop with
-Vulkan, Metal or DX12 (through `wgpu`).
+Vulkan or Metal (through `wgpu`).
 
 ```sh
 glass                       # your shell
@@ -99,12 +99,12 @@ is ready. `GLASS_STARTUP_TRACE=1` prints where startup time goes.
 
 ## Layout
 
-- `crates/term`: the terminal (`glass-term`, binary `glass`): the engine,
+- `crates/term`: the terminal (`angel-glass-term`, binary `glass`): the engine,
   the pseudo-terminal, keys, and `src/intake/`, the dialect adapters and the
   picture store.
-- `crates/glass`: the GPU window and its host API (`glass-window`).
-- `crates/gpu`: rendering (`glass-gpu`).
-- `crates/stage`: layers, scenes and the shared types (`glass-stage`).
+- `crates/glass`: the GPU window and its host API (`angel-glass`).
+- `crates/gpu`: rendering (`angel-gpu`).
+- `crates/stage`: layers, scenes and the shared types (`angel-stage`).
 - `docs/GLASS_TERM.md`: the design, and what each part takes in.
 - `docs/GLASS_DIALECT.md`: the reference for glass's own dialect, with
   `printf` examples.
