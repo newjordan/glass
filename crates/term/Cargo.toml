@@ -34,9 +34,17 @@ flate2 = "1.1.10"
 libc = "0.2"
 # The cursor icon type vte's Handler passes through.
 cursor-icon = "1.2"
+# glTF 2.0's JSON schema as typed data, for the dialect's `asset` op. Only
+# its document types are used: the container, the accessors and every
+# index are read and checked here (src/intake/glass_gltf.rs), so no
+# default feature (file import, image decoding, names) is pulled in.
+gltf = { version = "1.4.1", default-features = false }
 # How many cells a character takes, as `Term` itself measures it, so
 # coverage of in-cell pictures matches where text lands.
 unicode-width = "0.2.2"
+# Finding the next escape in a read without stepping byte by byte; the
+# version already in the workspace lock.
+memchr = "2"
 
 [dev-dependencies]
 # In-test PNG encoding, so adapter tests feed real picture bytes.

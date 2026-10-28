@@ -103,9 +103,13 @@ where
     T: Send + 'static,
     F: FnOnce(Host) -> T + Send + 'static,
 {
+    // The GPU, the fonts and the background image get going while the
+    // window system is reached and the window opens.
+    let preparing = crate::render::Preparing::start(&options);
     let event_loop = EventLoop::<UserEvent>::with_user_event()
         .build()
         .map_err(|e| format!("no window system: {e}"))?;
+    crate::startup::mark("event loop");
     let (keys, events) = mpsc::channel();
     let host = Host {
         shared: Arc::new(Shared::default()),
@@ -114,6 +118,7 @@ where
     };
     let mut glass = Glass {
         options,
+        preparing: Some(preparing),
         host,
         keys: Some(keys),
         app: Some(Box::new(app)),
@@ -131,6 +136,7 @@ where
         probe: Probe::from_env(),
         error: None,
         stats: Stats::from_env(),
+        recorder: crate::record::Plan::from_env().map(crate::record::Recorder::new),
         assembled: std::env::var("ANGEL_GLASS_TRANSITION").is_ok_and(|v| v == "0"),
         last_present: Instant::now(),
         redraw_owed: false,
@@ -437,6 +443,8 @@ fn bomb_sprite() -> Vec<u8> {
 
 struct Glass<T> {
     options: Options,
+    /// The renderer's slow parts, under way since `run` began.
+    preparing: Option<crate::render::Preparing>,
     host: Host,
     /// The cockpit's input. Dropped when the window closes.
     keys: Option<Sender<Event>>,
@@ -481,6 +489,8 @@ struct Glass<T> {
     /// showcase's too, wherever it happens.
     showcase_press: bool,
     cursor: winit::window::CursorIcon,
+    /// `ANGEL_GLASS_RECORD`: the film being made of this window.
+    recorder: Option<crate::record::Recorder>,
 }
 
 /// `ANGEL_GLASS_STATS=1`: every two seconds, one stderr line with the frames
@@ -633,7 +643,10 @@ impl<T: Send + 'static> Glass<T> {
                 .create_window(attributes)
                 .map_err(|e| format!("cannot open a window: {e}"))?,
         );
-        let renderer = Renderer::new(Arc::clone(&window), &self.options)?;
+        crate::startup::mark("window");
+        let preparing = self.preparing.take().ok_or("the window already opened")?;
+        let renderer = Renderer::new(Arc::clone(&window), &self.options, preparing)?;
+        crate::startup::mark("renderer");
         let cell = renderer.cell();
         eprintln!(
             "GLASS: gpu={} present={:?} alpha={:?} cell={}x{}",
@@ -647,11 +660,25 @@ impl<T: Send + 'static> Glass<T> {
         let _ = window.request_inner_size(PhysicalSize::new(width, height));
         *self.host.shared.grid.lock_recover() = renderer.grid_size();
         self.cadence = window_cadence(&window);
+        self.host.shared.frame_nanos.store(self.cadence.0.as_nanos() as u64, std::sync::atomic::Ordering::Relaxed);
         self.window = Some(window);
         self.renderer = Some(renderer);
-        // The first frame maps the window on Wayland.
+        // The first frame maps the window on Wayland. The cockpit (a
+        // terminal's program with it) starts after it: a tiling compositor
+        // settles the window's size only once the window is mapped, and the
+        // size it gave before then is a guess.
         self.draw(true);
+        crate::startup::mark("first frame");
+        self.start_app()?;
+        if let (Some(probe), Some(keys)) = (&self.probe, &self.keys) {
+            probe.start(self.host.clone(), keys.clone());
+        }
+        self.environment_extras();
+        Ok(())
+    }
 
+    /// Start the cockpit on its own thread.
+    fn start_app(&mut self) -> Result<(), String> {
         let app = self.app.take().ok_or("the cockpit already ran")?;
         let host = self.host.clone();
         self.thread = Some(
@@ -668,14 +695,11 @@ impl<T: Send + 'static> Glass<T> {
                         }
                     }
                     let _exit = ExitOnDrop(host.clone());
+                    crate::startup::mark("app");
                     app(host)
                 })
                 .map_err(|e| format!("cockpit thread: {e}"))?,
         );
-        if let (Some(probe), Some(keys)) = (&self.probe, &self.keys) {
-            probe.start(self.host.clone(), keys.clone());
-        }
-        self.environment_extras();
         Ok(())
     }
 
@@ -744,6 +768,9 @@ impl<T: Send + 'static> Glass<T> {
                     dir.display()
                 );
             });
+        }
+        if let Some(plan) = crate::record::Plan::from_env() {
+            crate::record::start_clock(&plan, &self.host);
         }
         if let Some(dir) = std::env::var_os("ANGEL_GLASS_FILM") {
             let delay = std::env::var("ANGEL_GLASS_FILM_DELAY_MS")
@@ -1153,6 +1180,20 @@ impl<T: Send + 'static> Glass<T> {
         eprintln!("GLASS: filmed {} frames into {}", frames + 1, dir.display());
     }
 
+    /// One frame of the film, if its tick still wants one.
+    fn record_frame(&mut self, started: Instant) {
+        let (Some(recorder), Some(renderer)) = (self.recorder.as_mut(), self.renderer.as_mut()) else {
+            return;
+        };
+        renderer.poll_captures(false);
+        recorder.collect();
+        let Some(tick) = recorder.due(started) else {
+            return;
+        };
+        let read = renderer.capture_later(&self.current, &self.layers);
+        recorder.launch(tick, read);
+    }
+
     fn save_capture(&mut self, path: &std::path::Path) {
         let Some(renderer) = self.renderer.as_mut() else {
             return;
@@ -1272,6 +1313,16 @@ impl<T: Send + 'static> ApplicationHandler<UserEvent> for Glass<T> {
             }
             UserEvent::Capture(path) => self.save_capture(&path),
             UserEvent::Film(dir) => self.film(&dir),
+            UserEvent::Record(Some(started)) => self.record_frame(started),
+            UserEvent::Record(None) => {
+                if let Some(recorder) = self.recorder.as_mut() {
+                    if let Some(renderer) = self.renderer.as_ref() {
+                        renderer.poll_captures(true);
+                        recorder.collect();
+                    }
+                    recorder.finish();
+                }
+            }
             UserEvent::Close => self.close(event_loop),
             UserEvent::Exit => event_loop.exit(),
             UserEvent::ExitProcess(code) => {
@@ -1313,6 +1364,7 @@ impl<T: Send + 'static> ApplicationHandler<UserEvent> for Glass<T> {
                 // refresh rate comes with it.
                 if let Some(window) = &self.window {
                     self.cadence = window_cadence(window);
+                    self.host.shared.frame_nanos.store(self.cadence.0.as_nanos() as u64, std::sync::atomic::Ordering::Relaxed);
                 }
                 self.regrid();
             }

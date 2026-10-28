@@ -201,6 +201,7 @@ fn mesh_code(mesh: Option<MeshRef>) -> (u32, u32) {
         MeshRef::Rock { seed } => (16, u32::from(seed)),
         MeshRef::Blob { seed } => (17, u32::from(seed)),
         MeshRef::Fence { posts } => (18, u32::from(posts)),
+        MeshRef::RoundCube { radius, segments } => (19, u32::from(radius) << 16 | u32::from(segments)),
     }
 }
 
@@ -228,6 +229,7 @@ fn mesh_of(kind: u32, arg: u32) -> Option<Option<MeshRef>> {
         16 => MeshRef::Rock { seed: segments },
         17 => MeshRef::Blob { seed: segments },
         18 => MeshRef::Fence { posts: segments },
+        19 => MeshRef::RoundCube { radius: ((arg >> 16) as u16).min(crate::scene::ROUND_RADIUS), segments: (arg & 0xffff) as u16 },
         _ => return None,
     }))
 }
@@ -798,7 +800,8 @@ pub fn decode(bytes: &[u8]) -> Result<Decoded, Refused> {
         let index_list: Vec<u32> = (0..indices).map(|k| u32_at(next + 4 * k)).collect();
         next += 4 * indices;
         let group_list = (0..groups).map(|k| (u32_at(next + 8 * k), u32_at(next + 8 * k + 4))).collect();
-        let mesh = crate::scene::MeshData { positions, normals, uvs, colors, indices: index_list, groups: group_list };
+        // A skinned mesh's joints are a scene's own: a page bends none.
+        let mesh = crate::scene::MeshData { positions, normals, uvs, colors, indices: index_list, groups: group_list, joints: Vec::new(), weights: Vec::new() };
         if mesh.validate().is_err() {
             return Err(Refused::Mesh);
         }
@@ -863,9 +866,14 @@ fn decode_node(word: &dyn Fn(usize) -> u32) -> Option<Node> {
             ceiling: 0,
             // Nor a card's normal map: a page draws no lit cards.
             normals: None,
+            // Nor a scene's finish: a page's props are plain.
+            chrome: 0.0,
+            liquid: 0.0,
+            glow: 0.0,
         },
         face_materials: Vec::new(),
         visible: flags & SHOWN != 0,
+        skin: None,
     })
 }
 
@@ -1153,9 +1161,13 @@ mod tests {
                 role: Default::default(),
                 ceiling: 0,
                 normals: None,
+                chrome: 0.0,
+                liquid: 0.0,
+                glow: 0.0,
             },
             face_materials: Vec::new(),
             visible: id != 3,
+            skin: None,
         }
     }
 
@@ -1407,10 +1419,10 @@ mod tests {
         assert_eq!(ok(&block([u32::MAX, 1, 1], &node)), Err(Refused::Props));
         assert_eq!(ok(&block([0, 0, 1], &node)), Err(Refused::Props));
         assert_eq!(ok(&block([0, u32::from(MAX_GRAIN) + 1, 1], &node)), Err(Refused::Props));
-        // A mesh that is none, a node blended two ways. (19 is past every
+        // A mesh that is none, a node blended two ways. (20 is past every
         // mesh kind, the first free number on the wire.)
         let mut bad = node.clone();
-        bad[4..8].copy_from_slice(&19u32.to_le_bytes());
+        bad[4..8].copy_from_slice(&20u32.to_le_bytes());
         assert_eq!(ok(&block([0, 1, 1], &bad)), Err(Refused::Props));
         let mut bad = node.clone();
         let flags = u32::from_le_bytes(bad[..4].try_into().unwrap()) | BLENDED | PREMULTIPLIED;
@@ -1495,6 +1507,8 @@ mod tests {
             colors: if colored { vec![[1.0, 0.5, 0.25, 1.0]; 3] } else { Vec::new() },
             indices: vec![0, 1, 2],
             groups: Vec::new(),
+            joints: Vec::new(),
+            weights: Vec::new(),
         }
     }
 

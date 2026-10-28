@@ -113,18 +113,21 @@ pub struct Renderer {
     pub alpha_mode: wgpu::CompositeAlphaMode,
 }
 
-impl Renderer {
-    pub fn new(window: Arc<Window>, options: &Options) -> Result<Self, String> {
-        let scale = window.scale_factor() as f32;
-        let fonts = Fonts::load(
-            &options.font_family,
-            points_to_px(options.font_size, scale),
-            points_to_px(1.0, scale),
-        )?;
-        let instance = wgpu::Instance::default();
-        let surface = instance
-            .create_surface(Arc::clone(&window))
-            .map_err(|e| format!("window surface: {e}"))?;
+/// The GPU as far as it goes without a window: the instance, the adapter
+/// and the device.
+pub struct Gpu {
+    instance: wgpu::Instance,
+    adapter: wgpu::Adapter,
+    device: wgpu::Device,
+    queue: wgpu::Queue,
+}
+
+impl Gpu {
+    /// Open an adapter and its device on `instance`. With `surface`, only
+    /// an adapter that can draw to it is taken; without, the one the same
+    /// preference picks first, which the window checks once it has its
+    /// surface.
+    fn open(instance: wgpu::Instance, surface: Option<&wgpu::Surface<'_>>) -> Result<Self, String> {
         let power_preference = match std::env::var("ANGEL_GLASS_GPU").as_deref() {
             Ok("low") => wgpu::PowerPreference::LowPower,
             Ok("high") => wgpu::PowerPreference::HighPerformance,
@@ -133,18 +136,125 @@ impl Renderer {
         let adapter = pollster::block_on(instance.request_adapter(&wgpu::RequestAdapterOptions {
             power_preference,
             force_fallback_adapter: false,
-            compatible_surface: Some(&surface),
+            compatible_surface: surface,
             ..Default::default()
         }))
         .map_err(|e| format!("no GPU adapter for the window: {e}"))?;
-        let info = adapter.get_info();
+        crate::startup::mark("adapter");
         let (device, queue) = pollster::block_on(adapter.request_device(&wgpu::DeviceDescriptor {
             label: Some("glass-device"),
             required_features: wgpu::Features::empty(),
             required_limits: adapter.limits(),
+            memory_hints: wgpu::MemoryHints::Manual { suballocated_device_memory_block_size: (4 << 20)..(4 << 20) },
             ..Default::default()
         }))
         .map_err(|e| format!("GPU device: {e}"))?;
+        crate::startup::mark("device");
+        Ok(Self { instance, adapter, device, queue })
+    }
+}
+
+/// What opening the renderer waits on that needs no window — the GPU
+/// (the driver's instance and device take most of startup), the fonts
+/// (fontconfig) and the decoded background image — each started on a
+/// thread of its own before the window is asked for, so startup waits for
+/// the slowest of them rather than their sum.
+pub struct Preparing {
+    gpu: Ready<Result<Gpu, String>>,
+    fonts: Option<Ready<Result<Fonts, String>>>,
+    wallpaper: Ready<Option<crate::wallpaper::Wallpaper>>,
+}
+
+/// One piece of startup: on a thread of its own, or already done when no
+/// thread could be had.
+enum Ready<T> {
+    Thread(std::thread::JoinHandle<Option<T>>),
+    Done(Option<T>),
+}
+
+impl<T: Send + 'static> Ready<T> {
+    fn start(name: &str, work: impl FnOnce() -> T + Send + 'static) -> Self {
+        // The thread takes the work out of the slot; when no thread starts,
+        // the work is still there and is done here.
+        let slot = Arc::new(std::sync::Mutex::new(Some(work)));
+        let theirs = Arc::clone(&slot);
+        let spawned = std::thread::Builder::new()
+            .name(name.into())
+            .spawn(move || theirs.lock().unwrap_or_else(|e| e.into_inner()).take().map(|work| work()));
+        match spawned {
+            Ok(thread) => Self::Thread(thread),
+            Err(_) => Self::Done(slot.lock().unwrap_or_else(|e| e.into_inner()).take().map(|work| work())),
+        }
+    }
+
+    /// The piece, once done; `None` if its thread died.
+    fn wait(self) -> Option<T> {
+        match self {
+            Self::Thread(thread) => thread.join().ok().flatten(),
+            Self::Done(value) => value,
+        }
+    }
+}
+
+impl Preparing {
+    /// Start the pieces. The fonts are opened at scale 1; [`Self::fonts`]
+    /// sizes them for the window's scale once there is a window.
+    pub fn start(options: &Options) -> Self {
+        let gpu = Ready::start("gpu-open", || {
+            let instance = wgpu::Instance::default();
+            crate::startup::mark("instance");
+            Gpu::open(instance, None)
+        });
+        let (family, points) = (options.font_family.clone(), options.font_size);
+        let fonts = Ready::start("font-open", move || {
+            let fonts = Fonts::load(&family, points_to_px(points, 1.0), points_to_px(1.0, 1.0));
+            crate::startup::mark("fonts");
+            fonts
+        });
+        let settings = options.wallpaper();
+        let wallpaper = Ready::start("wallpaper-open", move || {
+            let image = settings.and_then(|settings| crate::wallpaper::load(&settings));
+            crate::startup::mark("wallpaper decoded");
+            image
+        });
+        Self { gpu, fonts: Some(fonts), wallpaper }
+    }
+
+    /// The fonts, sized for `scale`.
+    fn fonts(&mut self, options: &Options, scale: f32) -> Result<Fonts, String> {
+        let mut fonts = self
+            .fonts
+            .take()
+            .ok_or("the fonts were already taken")?
+            .wait()
+            .ok_or("the font thread failed")??;
+        fonts.set_size(points_to_px(options.font_size, scale), points_to_px(1.0, scale));
+        Ok(fonts)
+    }
+}
+
+impl Renderer {
+    /// The renderer for `window`, from what [`Preparing`] made: the fonts,
+    /// sized here for the window's scale, the GPU and the background image.
+    pub fn new(window: Arc<Window>, options: &Options, mut preparing: Preparing) -> Result<Self, String> {
+        let scale = window.scale_factor() as f32;
+        let fonts = preparing.fonts(options, scale)?;
+        let gpu = preparing.gpu.wait().ok_or("the GPU thread failed")??;
+        let surface = gpu
+            .instance
+            .create_surface(Arc::clone(&window))
+            .map_err(|e| format!("window surface: {e}"))?;
+        crate::startup::mark("surface");
+        // The adapter was picked before there was a window. One that cannot
+        // draw to it (a machine with several GPUs) gives way to the one the
+        // surface itself picks, as if the window had come first.
+        let Gpu { instance, adapter, device, queue } = if gpu.adapter.is_surface_supported(&surface) {
+            gpu
+        } else {
+            Gpu::open(gpu.instance.clone(), Some(&surface))?
+        };
+        drop(instance);
+        let info = adapter.get_info();
         // A GPU validation error is a bug to log, never a reason to take the
         // operator's session down (wgpu's default handler panics).
         device.on_uncaptured_error(std::sync::Arc::new(|error: wgpu::Error| {
@@ -216,14 +326,14 @@ impl Renderer {
             .filter(|n| (1..=4).contains(n))
             .unwrap_or(1);
         surface.configure(&device, &config);
+        crate::startup::mark("configured");
         let present_mode = config.present_mode;
         let mut core = Core::new(device.clone(), queue.clone(), view_format, options.text_gamma);
-        if let Some(image) = options
-            .wallpaper()
-            .and_then(|settings| crate::wallpaper::load(&settings))
-        {
+        crate::startup::mark("core");
+        if let Some(image) = preparing.wallpaper.wait().flatten() {
             core.set_wallpaper(image);
         }
+        crate::startup::mark("wallpaper");
         Ok(Self {
             window,
             surface,
@@ -332,13 +442,16 @@ impl Renderer {
         )
     }
 
+    /// The window's new size. The surface is configured for it before the
+    /// next frame, so the grid it gives is known (and handed on) without
+    /// waiting for the swapchain.
     pub fn resize(&mut self, width: u32, height: u32) {
         if width == 0 || height == 0 {
             return;
         }
         self.config.width = width;
         self.config.height = height;
-        self.surface.configure(&self.device, &self.config);
+        self.reconfigure = true;
     }
 
     pub fn set_scale(&mut self, scale: f32) {
@@ -903,7 +1016,10 @@ impl Renderer {
     /// Whether a transition, or a stage's breathing or flickering layer,
     /// still needs frames.
     pub fn animating(&self) -> bool {
-        self.transition.is_some_and(|t| !t.finished(Instant::now())) || self.core.stages_animating() || self.card_animating()
+        self.transition.is_some_and(|t| !t.finished(Instant::now()))
+            || self.core.stages_animating()
+            || self.core.scenes_animating()
+            || self.card_animating()
     }
 
     /// Take the pictures handed over (`Host::upload_picture`).
@@ -935,7 +1051,9 @@ impl Renderer {
     /// shows them.
     fn render_stages(&mut self) {
         let cell = (self.fonts.cell.width, self.fonts.cell.height);
-        self.core.render_stages(cell, clock());
+        let now = clock();
+        self.core.render_stages(cell, now);
+        self.core.set_scene_clock(now);
         self.core.render_scenes();
     }
 
@@ -1018,7 +1136,30 @@ impl Renderer {
 
     /// Render the frame into a texture and read it back as RGBA rows, for
     /// screenshots taken from inside (no compositor in the picture).
+    /// [`capture`](Self::capture) without waiting for the pixels: they
+    /// come back through the returned handle (`poll_captures`).
+    pub fn capture_later(&mut self, snapshot: &Snapshot, layers: &[Layer]) -> angel_gpu::ReadBack {
+        self.capture_with(snapshot, layers, |core, texture, size| core.read_back_later(texture, size))
+    }
+
+    /// Let captures in flight come back; `wait` until all of them have.
+    pub fn poll_captures(&self, wait: bool) {
+        self.core.poll_read_backs(wait);
+    }
+
     pub fn capture(&mut self, snapshot: &Snapshot, layers: &[Layer]) -> (u32, u32, Vec<u8>) {
+        let (width, height) = (self.config.width, self.config.height);
+        let pixels = self.capture_with(snapshot, layers, |core, texture, size| core.read_back(texture, size));
+        (width, height, pixels)
+    }
+
+    /// Draw the frame into a texture of its own and read it back with `read`.
+    fn capture_with<T>(
+        &mut self,
+        snapshot: &Snapshot,
+        layers: &[Layer],
+        read: impl FnOnce(&angel_gpu::Core, &wgpu::Texture, (u32, u32)) -> T,
+    ) -> T {
         self.render_stages();
         let mut frame_data = self.core.take_frame();
         self.build(snapshot, layers, true, &mut frame_data);
@@ -1048,9 +1189,9 @@ impl Renderer {
             a: alpha,
         };
         self.core.draw(&view, (width, height), clear, &frame_data, "glass-capture");
-        let pixels = self.core.read_back(&texture, (width, height));
+        let read = read(&self.core, &texture, (width, height));
         self.core.keep_frame(frame_data);
-        (width, height, pixels)
+        read
     }
 }
 
@@ -1316,6 +1457,19 @@ mod tests {
         vec![Instance::solid(0.0, 0.0, 1.0, 1.0, [0.0; 4]); n]
     }
 
+    /// A piece of startup gives what its work made, on its own thread, and
+    /// one whose thread died gives nothing rather than taking the window
+    /// down with it.
+    #[test]
+    fn a_startup_piece_gives_its_work_or_nothing() {
+        let here = std::thread::current().id();
+        let piece = Ready::start("test-piece", move || (std::thread::current().id() != here, 7));
+        assert_eq!(piece.wait(), Some((true, 7)));
+        let died: Ready<u32> = Ready::start("test-piece", || panic!("the work failed"));
+        assert_eq!(died.wait(), None);
+        assert_eq!(Ready::Done(Some(3)).wait(), Some(3));
+    }
+
     #[test]
     fn capped_insert_clears_a_full_memo_but_keeps_updates() {
         let mut map: FastMap<u32, u32> = FastMap::default();
@@ -1422,3 +1576,56 @@ mod tests {
 
 include!("render_card.rs");
 
+#[cfg(test)]
+mod atlas_gpu_tests {
+    /// The glyph atlas starts small and grows the first time it fills:
+    /// on a real GPU (skipped with no adapter), an image packed before the
+    /// growth is still where its entry says after it, and one packed after
+    /// lands in the larger texture.
+    #[test]
+    fn the_atlas_grows_and_keeps_what_it_held() {
+        let instance = wgpu::Instance::default();
+        let Ok(adapter) = pollster::block_on(instance.request_adapter(&wgpu::RequestAdapterOptions {
+            power_preference: wgpu::PowerPreference::HighPerformance,
+            force_fallback_adapter: false,
+            compatible_surface: None,
+            ..Default::default()
+        })) else {
+            println!("no GPU adapter: skipped");
+            return;
+        };
+        let Ok((device, queue)) = pollster::block_on(adapter.request_device(&wgpu::DeviceDescriptor {
+            label: Some("atlas-test"),
+            required_limits: adapter.limits(),
+            ..Default::default()
+        })) else {
+            println!("no GPU device: skipped");
+            return;
+        };
+        let mut core = angel_gpu::Core::new(device, queue, wgpu::TextureFormat::Rgba8Unorm, 1.0);
+        let image = |n: u32| -> Vec<u8> { (0..64 * 64).flat_map(|i| [n as u8, (n >> 8) as u8, i as u8, 255]).collect() };
+        let first = core.atlas_insert(64, 64, &image(1)).expect("the first image fits");
+        let (side, _) = core.atlas_pixels();
+        assert_eq!(side, 1024, "a new atlas is small");
+        let mut placed = vec![(first, 1)];
+        let mut n = 2;
+        while core.atlas_pixels().0 == 1024 {
+            let at = core.atlas_insert(64, 64, &image(n)).expect("an image fits as the atlas grows");
+            placed.push((at, n));
+            n += 1;
+            assert!(n < 2000, "the atlas never grew");
+        }
+        let at = core.atlas_insert(64, 64, &image(n)).expect("room after the growth");
+        placed.push((at, n));
+        let (side, pixels) = core.atlas_pixels();
+        assert_eq!(side, 2048);
+        for ([x, y], n) in placed {
+            let want = image(n);
+            for row in [0u32, 31, 63] {
+                let at = ((y + row) * side + x) as usize * 4;
+                let have = &pixels[at..at + 64 * 4];
+                assert_eq!(have, &want[row as usize * 256..row as usize * 256 + 256], "image {n} row {row} at {x},{y}");
+            }
+        }
+    }
+}

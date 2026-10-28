@@ -21,7 +21,9 @@
 
 pub mod apc_graphics;
 pub mod glass_dialect;
+pub mod glass_gltf;
 pub mod glass_scene;
+pub mod glass_tween;
 pub mod osc1337;
 pub mod placeholders;
 pub mod sixel;
@@ -38,6 +40,10 @@ mod position_tests;
 mod conformance;
 #[cfg(test)]
 mod glass_conformance;
+#[cfg(test)]
+mod gltf_tests;
+#[cfg(test)]
+mod tween_tests;
 
 use std::borrow::Cow;
 use std::collections::{HashMap, HashSet};
@@ -416,6 +422,9 @@ pub trait Canvas {
         Err(("ENOSYS".to_string(), "no store behind this canvas".to_string()))
     }
     /// Compose a rectangle of one frame onto another (`a=c`).
+    /// Drop a picture of glass's own dialect from the store (an asset's
+    /// texture no scene shows any more).
+    fn forget_glass(&mut self, _id: u32) {}
     fn compose(&mut self, _compose: Compose) -> Result<(), (String, String)> {
         Err(("ENOSYS".to_string(), "no store behind this canvas".to_string()))
     }
@@ -564,6 +573,19 @@ impl Splitter {
     pub(crate) fn with_body_cap(cap: usize) -> Self {
         Self { state: State::Text, body_cap: cap, passthrough_depth: 0 }
     }
+
+    /// `split` one byte at a time, with no bulk path: the reference the
+    /// bulk path is checked against.
+    #[cfg(test)]
+    pub(crate) fn split_stepwise<'a>(&mut self, input: &'a [u8], out: &mut Vec<Piece<'a>>) {
+        let mut run: Option<usize> = None;
+        for (i, &b) in input.iter().enumerate() {
+            self.step(b, i, input, &mut run, out);
+        }
+        if let Some(start) = run {
+            out.push(Piece::Text(Cow::Borrowed(&input[start..])));
+        }
+    }
 }
 
 /// The most a lifted body may hold; past it the body is dropped and the
@@ -655,6 +677,46 @@ enum State {
 /// Past this the sequence is not lifted and is let go as text.
 pub(crate) const HEAD_CAP: usize = 256;
 
+/// How many bytes of `rest` (which starts with `ESC`) go out as one text
+/// piece when the escape is a CSI or a plain escape that is complete in
+/// `rest`: the same bytes the `Esc`, `Csi` and `EscSeq` states emit for
+/// it, so the result is the byte-at-a-time one. An `ESC` that ends the
+/// piece early is left for the next piece, as those states leave it.
+/// `None` for anything else, or for one this read does not finish: the
+/// states step through those.
+fn whole_escape(rest: &[u8]) -> Option<usize> {
+    match *rest.get(1)? {
+        b'[' => {
+            for (j, &b) in rest.iter().enumerate().skip(2) {
+                if (0x40..=0x7e).contains(&b) {
+                    return Some(j + 1);
+                }
+                if b == 0x1b {
+                    return Some(j);
+                }
+                // The bytes held after `ESC [` once this one is in.
+                if j - 1 > HEAD_CAP {
+                    return Some(j + 1);
+                }
+            }
+            None
+        }
+        b'_' | b']' | b'P' => None,
+        // `ESC ESC`: the first goes out alone.
+        0x1b => Some(1),
+        0x20..=0x2f => {
+            for (j, &b) in rest.iter().enumerate().skip(2) {
+                if (0x20..=0x2f).contains(&b) {
+                    continue;
+                }
+                return Some(if b == 0x1b { j } else { j + 1 });
+            }
+            None
+        }
+        _ => Some(2),
+    }
+}
+
 impl Splitter {
     /// Split `input` into pieces, in order. Text pieces borrow from the
     /// input while the splitter sits in plain text; the pieces a
@@ -667,14 +729,108 @@ impl Splitter {
         // loop, not the state: a run never outlives the read that opened
         // it, so the state stays free of any index into a past read.
         let mut run: Option<usize> = None;
-        for (i, &b) in input.iter().enumerate() {
-            self.step(b, i, input, &mut run, out);
+        let mut i = 0;
+        while i < input.len() {
+            // Most bytes are taken in bulk: the result is the one the
+            // byte-at-a-time step gives, only sooner.
+            if let Some(next) = self.bulk(i, input, &mut run, out) {
+                i = next;
+                continue;
+            }
+            self.step(input[i], i, input, &mut run, out);
+            i += 1;
         }
         // End of the read. A text run never becomes anything else, so it
         // goes out now; anything still inside a sequence stays held in
         // the state, waiting for the bytes that finish it.
         if let Some(start) = run {
             out.push(Piece::Text(Cow::Borrowed(&input[start..])));
+        }
+    }
+
+    /// What [`Splitter::step`] would make of the bytes from `i`, taken
+    /// many at a time where that is the same: a run of plain text up to
+    /// the next `ESC`, a CSI or plain escape that completes in this read
+    /// (borrowed, not copied), a pass-through string's body up to its
+    /// next special byte, a lifted body up to its next special byte.
+    /// Returns where to go on from, or `None` to step one byte.
+    #[inline]
+    fn bulk<'a>(&mut self, i: usize, input: &'a [u8], run: &mut Option<usize>, out: &mut Vec<Piece<'a>>) -> Option<usize> {
+        let rest = &input[i..];
+        // The bytes that end or abort a string body: ESC, BEL, CAN, SUB.
+        // A DCS body (and a tmux one) is not ended by BEL.
+        let special = |b: u8| matches!(b, 0x1b | 0x07 | 0x18 | 0x1a);
+        let special_dcs = |b: u8| matches!(b, 0x1b | 0x18 | 0x1a);
+        let cap = self.body_cap;
+        match &mut self.state {
+            State::Text => {
+                let k = memchr::memchr(0x1b, rest).unwrap_or(rest.len());
+                if k > 0 {
+                    run.get_or_insert(i);
+                    return Some(i + k);
+                }
+                let len = whole_escape(rest)?;
+                if let Some(start) = run.take() {
+                    out.push(Piece::Text(Cow::Borrowed(&input[start..i])));
+                }
+                out.push(Piece::Text(Cow::Borrowed(&rest[..len])));
+                Some(i + len)
+            }
+            State::OscPassing(false) | State::ApcPassing(false) => {
+                let k = rest.iter().position(|&b| special(b)).unwrap_or(rest.len());
+                (k > 0).then(|| {
+                    run.get_or_insert(i);
+                    i + k
+                })
+            }
+            State::DcsPassing(false) => {
+                let k = rest.iter().position(|&b| special_dcs(b)).unwrap_or(rest.len());
+                (k > 0).then(|| {
+                    run.get_or_insert(i);
+                    i + k
+                })
+            }
+            State::ApcBody(body, false) | State::GlassBody(body, false) | State::Osc1337Body(body, false) => {
+                let k = rest.iter().position(|&b| special(b)).unwrap_or(rest.len());
+                if k == 0 {
+                    return None;
+                }
+                let room = cap.saturating_add(1).saturating_sub(body.len());
+                body.extend_from_slice(&rest[..k.min(room)]);
+                if k > room {
+                    // The byte past the cap turns the body into an overflow,
+                    // which drops it and skips the rest of this stretch.
+                    self.state = match self.state {
+                        State::Osc1337Body(..) => State::Osc1337Overflow(false),
+                        _ => State::ApcOverflow(false),
+                    };
+                }
+                Some(i + k)
+            }
+            State::DcsSixel(body, false) | State::TmuxBody(body, false) => {
+                let k = rest.iter().position(|&b| special_dcs(b)).unwrap_or(rest.len());
+                if k == 0 {
+                    return None;
+                }
+                let room = cap.saturating_add(1).saturating_sub(body.len());
+                body.extend_from_slice(&rest[..k.min(room)]);
+                if k > room {
+                    self.state = match self.state {
+                        State::TmuxBody(..) => State::TmuxOverflow(false),
+                        _ => State::DcsSixelOverflow(false),
+                    };
+                }
+                Some(i + k)
+            }
+            State::ApcOverflow(false) | State::Osc1337Overflow(false) => {
+                let k = rest.iter().position(|&b| special(b)).unwrap_or(rest.len());
+                (k > 0).then_some(i + k)
+            }
+            State::DcsSixelOverflow(false) | State::TmuxOverflow(false) => {
+                let k = rest.iter().position(|&b| special_dcs(b)).unwrap_or(rest.len());
+                (k > 0).then_some(i + k)
+            }
+            _ => None,
         }
     }
 
@@ -2738,6 +2894,15 @@ impl Intake {
         self.placements.iter().any(|p| p.virtual_place)
     }
 
+    /// Whether nothing here hangs on the text: no showing on either
+    /// screen, and no layer of glass's own dialect anchored to a line.
+    /// While that holds, what text does (writes, scrolls, clears, a
+    /// screen switch) moves, covers and drops nothing, so the reader may
+    /// feed a run of text pieces to the engine at once.
+    pub fn quiet(&self) -> bool {
+        self.placements.is_empty() && !self.expansion.anchors_text()
+    }
+
     /// Placeholder cells and the relative showings that hang from a virtual
     /// placement, as layers for this frame. Empty unless a virtual placement exists.
     pub fn placeholder_layers(
@@ -3288,6 +3453,11 @@ impl Canvas for CanvasImpl<'_, '_> {
 
     fn expansion(&mut self) -> &mut glass_dialect::Expansion {
         &mut self.intake.expansion
+    }
+
+    fn forget_glass(&mut self, id: u32) {
+        let removed = self.intake.drop_picture(Space::Glass, id);
+        self.intake.drop_parentless_if_removed(removed);
     }
 
     fn open_frame_chunk(&self) -> bool {

@@ -215,7 +215,8 @@ impl Intake {
     pub fn tick_animations(&mut self, now: u64) -> bool {
         let clock = self.clock.max(now);
         self.clock = clock;
-        let mut changed = false;
+        // glass's own dialect's tweens and clips ride the same clock.
+        let mut changed = self.expansion.tick(clock);
         let ids: Vec<u32> = self.animated.keys().copied().collect();
         for id in ids {
             let Some(anim) = self.animated.get_mut(&id) else {
@@ -271,7 +272,7 @@ impl Intake {
     }
 
     pub fn animation_deadline(&self) -> Option<u64> {
-        let mut earliest: Option<u64> = None;
+        let mut earliest: Option<u64> = self.expansion.deadline();
         for anim in self.animated.values() {
             if let Some(due) = anim.due_at(self.clock) {
                 earliest = Some(match earliest {
@@ -287,6 +288,13 @@ impl Intake {
         if now > self.clock {
             self.clock = now;
         }
+        self.expansion.set_clock(self.clock);
+    }
+
+    /// One display frame, in milliseconds: how often running tweens and
+    /// clips of glass's own dialect wake the window.
+    pub fn set_display_frame(&mut self, ms: u64) {
+        self.expansion.set_frame_ms(ms);
     }
 
     fn seeded_animation(&self, id: u32) -> Option<Animation> {

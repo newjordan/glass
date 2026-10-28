@@ -129,7 +129,7 @@ fn glass_sequences_survive_every_split() {
 #[test]
 fn hello_answers_the_version_and_ops() {
     let (_, _, replies) = glass(&apc("hello;r=1"));
-    assert_eq!(replies, b"\x1b_glass;r=1;OK;v=2,ops=hello,picture,layer,group,remove,showcase,scene,frame,chart,model,page,progress\x1b\\".to_vec());
+    assert_eq!(replies, b"\x1b_glass;r=1;OK;v=3,ops=hello,picture,layer,group,remove,showcase,scene,frame,chart,model,page,progress,asset,tween,play\x1b\\".to_vec());
 }
 
 #[test]
@@ -167,6 +167,33 @@ fn a_layer_covers_every_field() {
 }
 
 #[test]
+fn rings_and_lines_are_strokes_with_their_width_and_glow() {
+    let (intake, _, _) = glass(&[
+        apc("layer;id=1;k=ring;c=40b0ffff;lw=2.5;glow=7;add=1;px=100,100,200,200").as_slice(),
+        apc("layer;id=2;k=line;c=ff60c0;a=0.5;px=10,20,300,2").as_slice(),
+        apc("layer;id=3;k=ring;lw=9999;glow=-1;px=0,0,10,10").as_slice(),
+    ].concat());
+    let layers = intake.expansion.frame(0, 24, false);
+    let strokes: Vec<&angel_glass::Stroke> = layers
+        .iter()
+        .filter_map(|l| match &l.kind {
+            angel_glass::LayerKind::Stroke(s) => Some(s),
+            _ => None,
+        })
+        .collect();
+    assert_eq!(strokes.len(), 3);
+    assert_eq!(strokes[0].shape, angel_glass::StrokeShape::Ring);
+    assert_eq!((strokes[0].width, strokes[0].glow), (2.5, 7.0));
+    assert!(layers[0].additive);
+    assert_eq!(strokes[1].shape, angel_glass::StrokeShape::Line);
+    // The defaults: a stroke a pixel and a half wide, with no glow.
+    assert_eq!((strokes[1].width, strokes[1].glow), (1.5, 0.0));
+    assert_eq!(layers[1].angle, 0.5);
+    // Out of range is held to the range, as the other sizes are.
+    assert_eq!((strokes[2].width, strokes[2].glow), (angel_glass::MAX_STROKE_PX, 0.0));
+}
+
+#[test]
 fn every_kind_is_reached() {
     let (intake, _, _) = glass(&[
         apc("picture;id=1;f=24;s=1;v=1;////").as_slice(),
@@ -188,6 +215,7 @@ fn every_kind_is_reached() {
             angel_glass::LayerKind::Glow(_) => "glow",
             angel_glass::LayerKind::Particles(_) => "particles",
             angel_glass::LayerKind::Primitive { .. } => "prim",
+            angel_glass::LayerKind::Stroke(_) => "stroke",
         })
         .collect();
     assert_eq!(kinds, vec!["solid", "glow", "particles", "prim", "picture", "part"]);

@@ -6,11 +6,15 @@
 //! (`glass.desktop`): `-e`/`--` and the command, `--title`, `--class`
 //! (or `--app-id`), `--working-directory` (or `--dir`) and `--hold`.
 
+mod affinity;
 mod blink;
 mod engine;
 mod intake;
 mod keys;
+mod read_ahead;
 mod session;
+#[cfg(test)]
+mod speed;
 mod view;
 
 use std::path::PathBuf;
@@ -24,6 +28,17 @@ use ratatui_core::terminal::Terminal;
 use keys::{KeyboardDialect, MouseProtocolMode};
 use session::{Msg, Session};
 use view::Selection;
+
+/// While output keeps coming, the screen is drawn at most this often. A
+/// draw holds the engine the reader parses into, so drawing after every
+/// read starved the reader (a flood ran at a third of its speed), and the
+/// displays show 60 frames a second anyway.
+const OUTPUT_PACE: Duration = Duration::from_millis(8);
+
+/// How long output after a quiet spell waits for the rest of its write,
+/// so a program that sends one frame in pieces (a cursor move, then its
+/// picture) is drawn once. Output answering a key does not wait.
+const OUTPUT_GATHER: Duration = Duration::from_millis(1);
 
 /// What the command line asked for.
 #[derive(Default)]
@@ -97,6 +112,7 @@ fn opens_outside(url: &str) -> bool {
 }
 
 fn main() {
+    angel_glass::startup::mark("main");
     let args = match parse_args() {
         Ok(args) => args,
         Err(message) => {
@@ -114,6 +130,7 @@ fn main() {
     // SAFETY: nothing else runs yet; the window and its threads start below.
     unsafe { std::env::set_var("ANGEL_GLASS_TRANSITION", "0") };
     let palette = options.palette.clone();
+    angel_glass::startup::mark("options");
     match angel_glass::run(options, move |host| run(host, args, palette)) {
         Ok(code) => std::process::exit(code),
         Err(error) => {
@@ -162,10 +179,23 @@ fn run(host: angel_glass::Host, args: Args, palette: angel_glass::Palette) -> i3
     let mut ui = Ui::default();
     let mut exited: Option<i32> = None;
     let mut dirty = true;
+    // Output not drawn yet, since when; the last draw; whether a key,
+    // paste or click went to the program since, so its answer (an echo)
+    // is drawn the moment it comes.
+    let mut owed: Option<Duration> = None;
+    let mut last_draw = Duration::ZERO;
+    let mut interactive = false;
     let clock = Instant::now();
     let mut blink = blink::CursorBlink::new();
     let mut cursor_on = true;
+    let mut display_frame = 0u64;
     loop {
+        // Tweens and clips of glass's own dialect run at the display's rate.
+        let frame = host.frame_interval().as_millis() as u64;
+        if frame != display_frame {
+            display_frame = frame;
+            session.set_display_frame(frame);
+        }
         // Synchronized output (DECSET 2026) holds the frame until the
         // program has finished it, for a moment at most. A blinking
         // cursor wakes at its next edge instead of the idle poll, and
@@ -182,15 +212,20 @@ fn run(host: angel_glass::Host, args: Args, palette: angel_glass::Palette) -> i3
         let anim_wait = session.animation_deadline().map(|at| Duration::from_millis(at.saturating_sub(now_ms)));
         let focus = Some(focused.load(Ordering::Relaxed));
         let blink_wait = blink.next_wake(now, session.cursor_blinking(), session.cursor_shown(), focus);
+        // Owed output wakes the loop when it falls due. Once due and still
+        // undrawn, a synchronized update holds it: the 20 ms tick below
+        // comes back for it, rather than a zero wait spinning.
+        let output_wait = owed.map(|since| output_due(since, last_draw)).filter(|at| *at > now).map(|at| at - now);
         let wait = if session.synchronized() {
             blink_wait
                 .into_iter()
                 .chain(anim_wait)
+                .chain(output_wait)
                 .min()
                 .unwrap_or(Duration::from_millis(20))
                 .min(Duration::from_millis(20))
         } else {
-            blink_wait.into_iter().chain(anim_wait).min().unwrap_or(Duration::from_millis(250))
+            blink_wait.into_iter().chain(anim_wait).chain(output_wait).min().unwrap_or(Duration::from_millis(250))
         };
         let first = match rx.recv_timeout(wait) {
             Ok(msg) => Some(msg),
@@ -200,8 +235,9 @@ fn run(host: angel_glass::Host, args: Args, palette: angel_glass::Palette) -> i3
         for msg in first.into_iter().chain(rx.try_iter()) {
             match msg {
                 Msg::Output => {
-                    dirty = true;
-                    blink.activity(clock.elapsed());
+                    let at = clock.elapsed();
+                    owed.get_or_insert(at);
+                    blink.activity(at);
                 }
                 Msg::Closed => return exited.unwrap_or(0),
                 Msg::Input(event) => {
@@ -215,6 +251,12 @@ fn run(host: angel_glass::Host, args: Args, palette: angel_glass::Palette) -> i3
                     if matches!(event, Event::Key(_) | Event::Paste(_)) {
                         blink.activity(clock.elapsed());
                     }
+                    // A pointer passing over is not waited on; the rest is.
+                    interactive |= match &event {
+                        Event::Key(_) | Event::Paste(_) => true,
+                        Event::Mouse(mouse) => mouse.kind != MouseEventKind::Moved,
+                        _ => false,
+                    };
                     dirty |= ui.input(event, &mut session, &host, &focused);
                 }
             }
@@ -250,13 +292,29 @@ fn run(host: angel_glass::Host, args: Args, palette: angel_glass::Palette) -> i3
         if session.tick_animations(clock.elapsed().as_millis() as u64) {
             dirty = true;
         }
-        if dirty && !session.holding_frame() {
+        let now = clock.elapsed();
+        let output_ready = owed.is_some_and(|since| interactive || now >= output_due(since, last_draw));
+        if (dirty || output_ready) && !session.holding_frame() {
             dirty = false;
+            // A key's own redraw (a selection cleared) comes before its
+            // echo; the echo is still owed the quick draw.
+            if owed.take().is_some() {
+                interactive = false;
+            }
+            last_draw = now;
             session.take_output_flag();
             draw(&mut terminal, &session, &ui, &host, cursor_on);
+            session.frame_drawn();
         }
     }
     exited.unwrap_or(0)
+}
+
+/// When output that arrived at `since` is drawn, unless a key is waiting
+/// on it: once the rest of its write has had a moment, and not sooner
+/// than the pace after the last draw.
+fn output_due(since: Duration, last_draw: Duration) -> Duration {
+    (since + OUTPUT_GATHER).max(last_draw + OUTPUT_PACE)
 }
 
 /// One frame: the cursor's look (the shape and colour the program asked

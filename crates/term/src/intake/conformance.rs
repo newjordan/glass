@@ -714,13 +714,31 @@ fn the_dec_aspect_table_by_p1() {
 
 #[test]
 fn both_c_and_r_move_the_cursor_by_the_box() {
-    // Spec: the cursor moves by the placement rectangle (c x r); the
-    // image is letterboxed inside it.
+    // Spec: the cursor moves by the placement rectangle (c x r).
     let mut intake = Intake::new(1);
     intake.set_cell((1, 1));
     let mut engine = FakeEngine::new();
     apc(&mut intake, &mut engine, "Ga=T,f=24,s=2,v=1,i=1,c=10,r=10;////////");
     assert_eq!(String::from_utf8_lossy(&engine.fed), format!("\x1b[10C{}", "\n".repeat(9)));
+}
+
+#[test]
+fn both_c_and_r_fill_the_box_whatever_the_shape() {
+    // A 16:9 frame sent over a wide pane (omaradio's milkdrop) covers the
+    // whole pane, as programs written for this dialect see elsewhere;
+    // shrinking it to its shape left most of the pane empty.
+    let mut intake = Intake::new(1);
+    intake.set_cell((10, 20));
+    let mut engine = FakeEngine::new();
+    let payload = "A".repeat((16 * 9 * 3usize).div_ceil(3) * 4);
+    apc(&mut intake, &mut engine, &format!("Ga=T,f=24,s=16,v=9,i=1,c=60,r=6,C=1;{payload}"));
+    let p = intake.placements.last().unwrap();
+    assert_eq!((p.width, p.height), (60.0, 6.0));
+    // One side alone still follows the picture's shape.
+    apc(&mut intake, &mut engine, &format!("Ga=T,f=24,s=16,v=9,i=2,c=8,C=1;{payload}"));
+    let p = intake.placements.last().unwrap();
+    assert_eq!(p.width, 8.0);
+    assert!((p.height - 8.0 * 10.0 * 9.0 / 16.0 / 20.0).abs() < 1e-4, "got {}", p.height);
 }
 
 #[test]

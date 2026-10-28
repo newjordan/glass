@@ -23,7 +23,7 @@ Two words carry the design.
   with the queries only the window can answer handled by a scanner in
   front of it.
 - `src/session.rs`: the pseudo-terminal, a reader thread (read, then
-  `engine.process`), the replies a terminal owes (DA1/DA2, DSR,
+  `pump`) fed by a read-ahead thread (`src/read_ahead.rs`), the replies a terminal owes (DA1/DA2, DSR,
   XTVERSION, XTWINOPS 14/16/18, OSC 10/11/12, DECRQM 2026, focus
   reports, synchronized output 2026, OSC 52 copy, titles, bell), and the
   environment scrub.
@@ -85,9 +85,11 @@ ask, and a cell write under an in-cell picture (sixel or OSC 1337)
 takes it away whole while an APC-graphics placement survives text,
 `EL` and `ED 0`.
 
-What is exact now: the splitter is a byte-at-a-time state machine whose
-between-read state is owned, so no read boundary can lose, duplicate or
-reorder text; every corpus stream proves it at every single split and
+What is exact now: the splitter is a state machine whose between-read
+state is owned, so no read boundary can lose, duplicate or reorder text
+(it takes plain text, a CSI or plain escape complete in the read, and a
+string body in bulk, giving the very pieces its byte-at-a-time steps
+give; a test holds the two together); every corpus stream proves it at every single split and
 as one-byte chunks. Media replies go to the pty right after the media
 piece that earned them, in stream order with the text's replies around
 them. Both decode paths (`image` for PNG, JPEG, GIF, TIFF, WebP, BMP, ICO, TGA and PNM, `o=z` for zlib) run
@@ -236,6 +238,66 @@ remove and picture showcase, and adds:
 - `page` — text the window rasterises as a page;
 - showcase events, only when the program opted in with `events=1`.
 
+Version 3 adds:
+
+- `asset` — a glTF 2.0 model (`.glb`, or `.gltf` with its buffers as
+  `data:` URIs), chunked like `picture` or read from a path under the
+  APC file medium's rules, and the `gltf` mesh kind that hangs its
+  node tree from a scene node. Its meshes go up once through the
+  window's mesh budget, not the 4096 vertices of an inline mesh; its
+  colour textures go in as pictures. The `gltf` crate gives the JSON
+  its types; the container, the accessors and every index are read
+  and checked by glass itself (`src/intake/glass_gltf.rs`), so a
+  truncated, lying or hostile file is an error reply, never a panic
+  or an allocation past a cap.
+- `play` — an asset's clips (translation, rotation and scale; linear,
+  step and cubic-spline keys) played by glass every display frame,
+  with play, pause, seek, loop, speed and stop.
+- `tween` — a layer's, a scene node's or a scene camera's properties
+  eased by glass every display frame from where they stand to where
+  the program says, with the usual easings, `cubic-bezier` and
+  `spring`, delay, repeat, yoyo and `after=` chains
+  (`src/intake/glass_tween.rs`).
+
+Tweens and clips run on the store's animation clock, the same one the
+APC graphics dialect's animations use. The window wakes one display
+frame at a time (the monitor's own refresh, `Host::frame_interval`)
+only while something moves, at the exact end of a delay, and not at
+all when everything is still.
+
+Since then, with no new version (new fields a node takes, which an
+older glass refuses by name):
+
+- **Skins.** A glTF skin's joints and inverse bind matrices and each
+  vertex's `JOINTS_0` and `WEIGHTS_0` are read, and the mesh shader
+  bends the mesh by a palette of its joints' matrices, worked out from
+  where the joints stand every frame the scene is drawn: a clip that
+  moves them bends it, and at rest it stands in its bind pose. At most
+  256 joints a skin and 64 skins an asset. A scene with a look (never
+  one of this dialect's) draws a skinned mesh as it lies.
+- **Chrome and liquid** (`chrome`, `liquid` on a node, its own mesh or
+  every mesh of its asset): a mirror of a studio made in the shader,
+  tinted by the node's colour, with a Fresnel rim, and ripples and a
+  wobble moving with the window's clock; a scene with anything liquid
+  in it is redrawn every display frame by the window itself.
+- **The rounded cube** (`roundcube`), a picture on each of a cube's or
+  rounded cube's faces (`faces`), and a rounded cube's edges in a
+  material of their own (`edge`) that can glow, with a soft halo drawn
+  round them in the scene's own pass.
+
+`cargo run --release --example glass_chrome -- --dir <models>` draws all
+three at once: skinned glTF figures dancing and walking in liquid
+chrome, sixty shapes round them, and a rounded cube with a picture on
+each face and glowing edges, the scene sent again every display frame
+(`--cube` for the cube close up, `--solo man.glb --clip 1` for one
+figure).
+
+Not yet: morph targets, the physically based light the kept metallic,
+roughness and texture maps are for (the lit path has one light; the
+only reflection is chrome's studio), an alpha test for `MASK`
+materials (drawn blended), more than four joints a vertex
+(`JOINTS_1`), and textures named by an external URI.
+
 It ships with the reference above and a demo program
 (`cargo run --example glass_demo`) that draws a short showcase, a
 scene, a chart and a few video frames, and cleans up after itself.
@@ -245,7 +307,7 @@ A sampler (`cargo run --example glass_sampler`, source in
 text with a shimmering truecolour band, a synthwave sunset in DCS
 sixel (252 registers, ordered dither), APC graphics, Unicode
 placeholders, a ray-traced still through OSC 1337, animation, and then
-glass's own dialect, which is most of the show (about 70 of its 105
+glass's own dialect, which is most of the show (about 90 of its 118
 seconds):
 
 - Seven lit solids orbit a paragraph. Each is a `k=prim` with an
@@ -260,6 +322,15 @@ seconds):
   glass.
 - An orrery sits under the text, its planets lit from their sun and
   its orbits drawn as comet tails.
+- A glTF model made in code (`model.rs`, written with `glb.rs`): a
+  brass lantern on a textured plinth, its arms turning by linear keys,
+  its gems bobbing by cubic-spline keys, its ring ticking by step keys
+  and its glass dome breathing. One `asset` in pieces, one `scene`,
+  one `play` and four chained camera `tween`s, then the program is
+  silent while glass animates the model and flies the camera round it.
+- Twelve easings side by side, a dot each going back and forth for
+  ever, beside a scene whose cube turns (slerp, elastic), gem bounces,
+  sphere changes colour, cone springs and camera sways, all tweened.
 - A chart, then a tunnel played as video.
 - A finale stacks the orrery, the knot, the solids, glows and dust.
 
@@ -271,7 +342,8 @@ pixels it covers, capped at 2048 a side, so the linear filter that
 draws it smaller smooths every edge. The scenes are sent at 60 frames
 a second, paced against the clock.
 
-`--scene a,b` plays only the named scenes (`--list` names them), and
+`--scene a,b` plays only the named scenes (`--list` names them;
+`--scene gltf,tweens` shows the model and the tweens), and
 `--loop` repeats the show until `q`. It sizes each picture from the window — columns
 from `stty size` or XTWINOPS 18, one cell's pixels from XTWINOPS 16,
 falling back to 10×20 — so the main picture fills about half the width
@@ -309,7 +381,11 @@ engine and real key events to the encoder.
   The reader thread stays one path: read, then `pump` — the splitter's
   pieces through the engine and the intake in stream order, so text
   replies and a dialect's answers leave in the order the program wrote
-  them. A media piece settles the engine first: an open synchronized
+  them. While the store holds nothing text could move, cover or drop,
+  the text pieces of a read up to the next media piece are one feed (a
+  screen switch ends one, a reset is fed alone); the engine answers the
+  queries in a feed in stream order, after the bytes ahead of each, and
+  its watch follows a screen switch inside a feed. A media piece settles the engine first: an open synchronized
   update is applied through the same counting path `process` uses (in
   paced slices, so a large buffered frame cannot scroll the sentinel
   through a full history before it is counted), and everything the text
@@ -382,6 +458,93 @@ engine and real key events to the encoder.
   has no release or repeat. With no flags pushed, keys stay the legacy
   bytes exactly as before, Shift+Enter as ESC CR included. Releases are
   sent only when event types were asked for.
+
+- **Throughput.** A run of text the parser would print a character at a
+  time is written into the grid without it: printable ASCII a line at a
+  time, UTF-8 decoded once by a strict decoder, each character exactly as
+  `Term::input` would take it. It is done only where the parser's state
+  is known to be ground with no UTF-8 character half read and no
+  synchronized update buffering; that state is followed beside vte from
+  its own transition table, from the last ESC before a run (every state
+  goes to escape on ESC). The run's last character still goes through the
+  parser, for REP. A read reaches `Term` straight from the read buffer
+  (only the queries glass answers itself are cut out of it), and the end
+  of a run of text is found eight bytes at a time. The pty is read on a
+  thread of its own, ahead of the parsing, at most two 16 KiB hand-offs
+  ahead. Tests hold the fast paths
+  to the parser alone (every cell of history and screen, the cursor, the
+  pen, the modes, the counts and the replies) over random streams cut at
+  random reads, and feeds of many pieces to feeds of one. The headless
+  bench is `cargo test --release -p angel-glass-term speed -- --ignored
+  --nocapture` (`GLASS_BENCH_PTY=1` reads through a real pty, which
+  reproduces the windowed numbers).
+- **The read path on the largest cache.** A flood scrolls lines into the
+  ten-thousand-line history, about 37 MB of cells in a full-screen
+  window, and each line scrolled rewrites the oldest. Where the history
+  fits in the last-level cache the parser runs at the speed of its own
+  work (about 570 MB/s of plain text, headless, on the operator's Ryzen 9
+  9950X3D); where it does not, every line waits on memory (about 310
+  MB/s on the same chip's other die, whose L3 is 32 MB). That traffic is
+  the grid's own: `Term` clears the recycled row cell by cell when it
+  scrolls, and the text is then written over it. glass prefetches the
+  row a line ahead (further ahead, or into another cache level, measured
+  no better). On a machine
+  whose CPUs share more than one L3 and the L3s differ in size (AMD's
+  X3D parts), the two threads of the read path, `pty-read` and
+  `pty-parse`, are placed on the CPUs of the largest
+  (`src/affinity.rs`, from `/sys/devices/system/cpu/cpu*/cache/index*`
+  with level 3: its `size` and `shared_cpu_list`), among the CPUs glass
+  was allowed already. No other thread is placed. Nothing is done with
+  one L3 or several of one size (most laptops and desktops), on other
+  systems, when sysfs cannot be read, or when glass was started on none
+  of those CPUs. `GLASS_AFFINITY=off` leaves the threads to the
+  scheduler; `auto` is the default.
+- **Startup.** The slow parts of opening the window need no window, so
+  each starts on a thread of its own the moment `run` begins: the GPU
+  (the driver's instance, the adapter and the device, most of startup),
+  the fonts (the four styles looked up through fontconfig at once) and
+  the background image's decoding. The window opens meanwhile, and the
+  renderer waits only for the slowest of them. The adapter is picked
+  before there is a surface; one that cannot draw to the window gives
+  way to the one the surface picks, as before. The program starts once
+  the first frame has mapped the window, as it always has: a tiling
+  compositor settles a window's size only when it maps it (Hyprland
+  guesses half the screen for a window opened on another workspace), so
+  a program started sooner would start on the wrong size. A resize is
+  handed to the program before the swapchain is made again for it. What
+  is left is the driver: on the operator's machine a bare wgpu program
+  spends about 39 ms in the Vulkan instance (32 of them the NVIDIA
+  driver's, the rest the loader and the integrated GPU's driver) and 60
+  ms in the device, and up to twice that while other work holds the
+  GPU. A first frame
+  drawn without the GPU (a CPU buffer shown until the device is up)
+  would map the window sooner, but it would not be the renderer's frame,
+  so glass does not. Shader pipelines cost about 2 ms in all, as the
+  driver's own shader cache already holds them, so glass keeps no
+  pipeline cache of its own. `GLASS_STARTUP_TRACE=1` prints each step on
+  stderr: milliseconds since `main`, the wall clock in nanoseconds (to
+  line up with a launcher's clock), the thread and the step.
+
+## Filming the window
+
+`ANGEL_GLASS_RECORD=film.mp4` films the window as it is drawn, through
+ffmpeg and the GPU's encoder (`crates/glass/src/record.rs`). A clock asks
+for a frame on every tick; the window draws it into a texture of its own
+and goes on while the GPU copies it back, so filming costs the window a
+draw, not a wait. A tick the window could not answer in time repeats the
+frame before it, so the film keeps the wall clock's time and a stall
+shows as one; the counts are printed when the film closes.
+
+- `ANGEL_GLASS_RECORD_FPS` (60), `ANGEL_GLASS_RECORD_SECONDS` (30),
+  `ANGEL_GLASS_RECORD_DELAY_MS` (2000).
+- `ANGEL_GLASS_RECORD_CODEC` (`hevc_nvenc`): NVENC takes the RGBA as it
+  is and converts it on the GPU; another encoder (`libx264`) converts on
+  the CPU.
+
+`examples/glass_mindseye/` is the show it was made for: sacred
+geometry streamed as ring, line, glow and lit-solid layers, up to about
+eleven thousand a frame, each frame answered by a DA1 so the numbers in
+its corner are measured.
 
 ## Rules for the work
 

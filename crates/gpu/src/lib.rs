@@ -40,6 +40,7 @@ mod stage;
 mod wallpaper;
 
 pub use atlas::Entry;
+pub use draw::ReadBack;
 pub use frame::{COLOR, Draw, Frame, Instance, MASK, MESH_TRIANGLE, PARCHMENT, PICTURE, PICTURE_PREMULTIPLIED, PICTURE_STRAIGHT, PRIMITIVE};
 pub use hash::{FastMap, FxHasher};
 pub use picture::{Picture, PictureInfo, premultiply_in_place, well_formed};

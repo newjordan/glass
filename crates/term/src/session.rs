@@ -30,6 +30,64 @@ const DIALECT_GROUP: u32 = 0x1e5d;
 /// How long a synchronized update (DECSET 2026) may hold the frame back.
 const SYNC_LIMIT: Duration = Duration::from_millis(150);
 
+/// How long a synchronized frame waits for the one before it to be drawn.
+const FRAME_WAIT: Duration = Duration::from_millis(50);
+
+const FRAME_BEGIN: &[u8] = b"\x1b[?2026h";
+const FRAME_END: &[u8] = b"\x1b[?2026l";
+
+/// One frame of flow control for synchronized updates. Each update holds
+/// the screen until it ends, so a program that begins the next update as
+/// soon as one ends (frames sent back to back) would keep every frame
+/// held and the screen would show none of them. A finished frame is owed
+/// a draw, and the next frame's start waits for it, briefly: the program
+/// is held to the pace the screen is drawn at, and every frame it
+/// finishes is seen.
+#[derive(Default)]
+pub struct FrameGate {
+    owed: Mutex<bool>,
+    drawn: std::sync::Condvar,
+}
+
+impl FrameGate {
+    /// A synchronized update ended: its frame is owed a draw.
+    fn finished(&self) {
+        *lock(&self.owed) = true;
+    }
+
+    /// The screen was drawn.
+    pub fn drawn(&self) {
+        *lock(&self.owed) = false;
+        self.drawn.notify_all();
+    }
+
+    /// Wait, at most `limit`, for an owed frame to be drawn.
+    fn wait(&self, limit: Duration) {
+        let owed = lock(&self.owed);
+        let _ = self.drawn.wait_timeout_while(owed, limit, |owed| *owed);
+    }
+}
+
+/// Where `needle` (an escape sequence) next starts in `bytes` at or
+/// after `from`, found as a whole: escape-dense output (a colour on every
+/// cell) is not stopped at for each escape.
+fn find_escape(bytes: &[u8], needle: &[u8], from: usize) -> Option<usize> {
+    memchr::memmem::find(bytes.get(from..)?, needle).map(|p| from + p)
+}
+
+/// Where a read splits for the gate: at each synchronized update's
+/// start (past the read's first byte), so the frame before it can be
+/// drawn before the next begins.
+fn frame_cuts(bytes: &[u8]) -> Vec<usize> {
+    let mut cuts = Vec::new();
+    let mut at = 1;
+    while let Some(p) = find_escape(bytes, FRAME_BEGIN, at) {
+        cuts.push(p);
+        at = p + 1;
+    }
+    cuts
+}
+
 /// What reaches the terminal's thread.
 pub enum Msg {
     /// The window's keys, mouse, paste, focus and size.
@@ -97,8 +155,9 @@ pub fn pump(engine: &mut Engine, intake: &mut Intake, pieces: &[Piece<'_>]) -> P
     let mut title = None;
     let mut bell = false;
     let mut clipboard = None;
-    for piece in pieces {
-        match piece {
+    let mut i = 0;
+    while i < pieces.len() {
+        match &pieces[i] {
             Piece::Text(text) => {
                 let screen = intake.was_alternate();
                 engine.set_in_cell(
@@ -116,11 +175,32 @@ pub fn pump(engine: &mut Engine, intake: &mut Intake, pieces: &[Piece<'_>]) -> P
                         .collect(),
                 );
                 engine.set_motion(intake.motion_end(screen));
-                engine.process(text);
-                replies.extend_from_slice(&engine.take_effects().replies);
+                // While nothing in the store hangs on the text, nothing the
+                // text does can move, cover or drop it: the run of text
+                // pieces up to the next media piece goes to the engine as
+                // one feed, and the store hears once what it did.
+                let end = if intake.quiet() { quiet_run(pieces, i) } else { i + 1 };
+                if end == i + 1 {
+                    engine.process(text);
+                } else {
+                    engine.process_parts(pieces[i..end].iter().map(|piece| match piece {
+                        Piece::Text(text) => text.as_ref(),
+                        Piece::Media(_) => &[][..],
+                    }));
+                }
+                i = end;
+                // Everything the text asked of the window is kept, not only
+                // its replies: a clipboard write (OSC 52, how tmux and
+                // programs over ssh copy), a title, the bell.
+                let effects = engine.take_effects();
+                replies.extend_from_slice(&effects.replies);
+                title = effects.title.or(title);
+                bell |= effects.bell;
+                clipboard = effects.clipboard.or(clipboard);
                 tell_the_store(engine, intake);
             }
             Piece::Media(media) => {
+                i += 1;
                 // A picture is about to be placed. Until that place finishes,
                 // a scroll the place itself feeds is reported.
                 engine.set_motion(Some(u64::MAX));
@@ -142,9 +222,9 @@ pub fn pump(engine: &mut Engine, intake: &mut Intake, pieces: &[Piece<'_>]) -> P
                 replies.extend_from_slice(&intake.take_replies());
                 let effects = engine.take_effects();
                 replies.extend_from_slice(&effects.replies);
-                title = title.or(effects.title);
+                title = effects.title.or(title);
                 bell |= effects.bell;
-                clipboard = clipboard.or(effects.clipboard);
+                clipboard = effects.clipboard.or(clipboard);
                 // The place's own cursor motion (a sixel walking down the
                 // screen) has already scrolled. The store hears that before
                 // the next text piece decides whether a scroll can move a
@@ -154,11 +234,61 @@ pub fn pump(engine: &mut Engine, intake: &mut Intake, pieces: &[Piece<'_>]) -> P
         }
     }
     let effects = engine.take_effects();
-    title = title.or(effects.title);
+    title = effects.title.or(title);
     bell |= effects.bell;
-    clipboard = clipboard.or(effects.clipboard);
+    clipboard = effects.clipboard.or(clipboard);
     replies.extend_from_slice(&effects.replies);
     Pumped { replies, title, bell, clipboard }
+}
+
+/// Where a feed of text pieces that starts at `from` ends: at the next
+/// media piece, after a piece that may switch screens (the engine keeps
+/// the screen a feed began on), or before a reset, which is fed on its
+/// own as it zeroes the count the feed has kept so far.
+fn quiet_run(pieces: &[Piece<'_>], from: usize) -> usize {
+    let mut end = from + 1;
+    if matches!(&pieces[from], Piece::Text(text) if ends_feed(text)) {
+        return end;
+    }
+    while let Some(Piece::Text(next)) = pieces.get(end) {
+        if is_reset(next) {
+            break;
+        }
+        end += 1;
+        if ends_feed(next) {
+            break;
+        }
+    }
+    end
+}
+
+/// Whether a text piece is RIS.
+fn is_reset(text: &[u8]) -> bool {
+    text.starts_with(b"\x1bc")
+}
+
+/// Whether a text piece may switch screens or reset the terminal: a
+/// private mode set or reset naming 47, 1047 or 1049, or RIS. A false
+/// alarm only ends a feed early.
+fn ends_feed(text: &[u8]) -> bool {
+    if is_reset(text) {
+        return true;
+    }
+    let Some(params) = text.strip_prefix(b"\x1b[?") else {
+        return false;
+    };
+    let mut value = 0u32;
+    for &b in params {
+        if b.is_ascii_digit() {
+            value = value.saturating_mul(10).saturating_add(u32::from(b - b'0'));
+        } else {
+            if matches!(value, 47 | 1047 | 1049) {
+                return true;
+            }
+            value = 0;
+        }
+    }
+    matches!(value, 47 | 1047 | 1049)
 }
 
 /// After the engine has applied bytes, the store hears what they did:
@@ -264,6 +394,8 @@ pub struct Session {
     /// Set by the reader when it signals output, cleared when drawn: one
     /// `Msg::Output` in flight however much the program writes.
     output: Arc<AtomicBool>,
+    /// Synchronized frames wait here for the one before to be drawn.
+    gate: Arc<FrameGate>,
     /// The showcase request last handed to the window. Frames and
     /// progress are not part of it, so they never reopen the panel.
     showcase_shown: Mutex<Option<OpenStamp>>,
@@ -321,6 +453,7 @@ impl Session {
         cmd.env("TERM_PROGRAM_VERSION", env!("CARGO_PKG_VERSION"));
 
         let child = pair.slave.spawn_command(cmd).map_err(|e| format!("could not start {}: {e}", command.first().map_or("the shell", String::as_str)))?;
+        angel_glass::startup::mark("program started");
         // Close our copy of the slave so the reader sees the end of output.
         drop(pair.slave);
 
@@ -331,55 +464,86 @@ impl Session {
         let engine = Arc::new(Mutex::new(Engine::new(usize::from(rows), usize::from(cols), info)));
         let writer: Arc<Mutex<Box<dyn Write + Send>>> =
             Arc::new(Mutex::new(pair.master.take_writer().map_err(|e| format!("pty writer: {e}"))?));
-        let mut reader = pair.master.try_clone_reader().map_err(|e| format!("pty reader: {e}"))?;
+        let reader = pair.master.try_clone_reader().map_err(|e| format!("pty reader: {e}"))?;
+        // The pty is read on a thread of its own, ahead of the parsing.
+        let mut reader = crate::read_ahead::ReadAhead::spawn(reader, pty_fd(pair.master.as_ref()))
+            .map_err(|e| format!("pty reader: {e}"))?;
         let output = Arc::new(AtomicBool::new(false));
+        let gate = Arc::new(FrameGate::default());
         let intake = Arc::new(Mutex::new(Intake::new(angel_glass::LAYER_PICTURES)));
         let splitter = Arc::new(Mutex::new(intake::Splitter::default()));
         {
-            let (engine, writer, output, intake, splitter) = (
+            let (engine, writer, output, intake, splitter, gate) = (
                 Arc::clone(&engine),
                 Arc::clone(&writer),
                 Arc::clone(&output),
                 Arc::clone(&intake),
                 Arc::clone(&splitter),
+                Arc::clone(&gate),
             );
-            std::thread::spawn(move || {
+            let parse = std::thread::Builder::new().name("pty-parse".into()).spawn(move || {
+                crate::affinity::place_hot_thread();
                 let mut buf = vec![0u8; 64 * 1024];
-                loop {
+                'reads: loop {
                     let n = match reader.read(&mut buf) {
                         Ok(0) | Err(_) => break,
                         Ok(n) => n,
                     };
-                    // One path: read, then pump the read through the
-                    // splitter, the engine and the intake together, and
-                    // write back what the program is owed.
-                    let pumped = {
-                        let mut pieces = Vec::new();
-                        lock(&splitter).split(&buf[..n], &mut pieces);
-                        let mut engine = lock(&engine);
-                        let mut intake = lock(&intake);
-                        pump(&mut engine, &mut intake, &pieces)
-                    };
-                    if !pumped.replies.is_empty() {
-                        drop(lock(&engine));
-                        let mut writer = lock(&writer);
-                        let _ = writer.write_all(&pumped.replies);
-                        let _ = writer.flush();
-                    }
-                    if let Some(title) = pumped.title.filter(|t| !t.is_empty()) {
-                        host.set_title(&title);
-                    }
-                    if pumped.bell && !focused.load(Ordering::Relaxed) {
-                        host.request_attention();
-                    }
-                    if let Some(text) = pumped.clipboard {
-                        host.copy_to_clipboard(&text);
-                    }
-                    if !output.swap(true, Ordering::AcqRel) && tx.send(Msg::Output).is_err() {
-                        break;
+                    // A read is taken in pieces cut at each synchronized
+                    // frame's start; a frame starting while the one before
+                    // it waits to be drawn waits with it (`FrameGate`).
+                    let mut starts = frame_cuts(&buf[..n]);
+                    starts.push(n);
+                    let mut from = 0;
+                    for to in starts {
+                        let piece = &buf[from..to];
+                        from = to;
+                        if piece.starts_with(FRAME_BEGIN) {
+                            gate.wait(FRAME_WAIT);
+                        }
+                        // One path: read, then pump the read through the
+                        // splitter, the engine and the intake together, and
+                        // write back what the program is owed.
+                        let pumped = {
+                            let mut pieces = Vec::new();
+                            lock(&splitter).split(piece, &mut pieces);
+                            let mut engine = lock(&engine);
+                            let mut intake = lock(&intake);
+                            pump(&mut engine, &mut intake, &pieces)
+                        };
+                        if !pumped.replies.is_empty() {
+                            drop(lock(&engine));
+                            let mut writer = lock(&writer);
+                            let _ = writer.write_all(&pumped.replies);
+                            let _ = writer.flush();
+                        }
+                        if let Some(title) = pumped.title.filter(|t| !t.is_empty()) {
+                            host.set_title(&title);
+                        }
+                        if pumped.bell && !focused.load(Ordering::Relaxed) {
+                            host.request_attention();
+                        }
+                        if let Some(text) = pumped.clipboard {
+                            host.copy_to_clipboard(&text);
+                        }
+                        // A frame that ended here is owed a draw, from now:
+                        // a draw already under way may have missed it.
+                        let ended = find_escape(piece, FRAME_END, 0).is_some();
+                        if ended {
+                            gate.finished();
+                        }
+                        // One output message in flight, but a frame's end
+                        // always wakes the window: a draw it tried while the
+                        // frame was held was put off, and nothing else would
+                        // bring it back before the gate gives up waiting.
+                        let first = !output.swap(true, Ordering::AcqRel);
+                        if (first || ended) && tx.send(Msg::Output).is_err() {
+                            break 'reads;
+                        }
                     }
                 }
             });
+            parse.map_err(|e| format!("pty reader: {e}"))?;
         }
         Ok(Self {
             engine,
@@ -389,6 +553,7 @@ impl Session {
             master: pair.master,
             child,
             output,
+            gate,
             showcase_shown: Mutex::new(None),
             scene_ids: Mutex::new(Vec::new()),
             event_seen: Mutex::new(intake::glass_dialect::ShowcaseSeen::default()),
@@ -442,6 +607,11 @@ impl Session {
 
     pub fn take_output_flag(&self) {
         self.output.store(false, Ordering::Release);
+    }
+
+    /// The screen was drawn: a synchronized frame waiting on it goes on.
+    pub fn frame_drawn(&self) {
+        self.gate.drawn();
     }
 
     pub fn render(
@@ -648,6 +818,12 @@ impl Session {
         lock(&self.intake).set_animation_clock(now);
     }
 
+    /// One display frame of the window, in milliseconds: how often running
+    /// tweens and clips wake it.
+    pub fn set_display_frame(&self, ms: u64) {
+        lock(&self.intake).set_display_frame(ms);
+    }
+
     /// Hold the frame: a synchronized update has not finished, and has not
     /// run past its limit.
     pub fn holding_frame(&self) -> bool {
@@ -686,6 +862,14 @@ impl Drop for Session {
             let _ = self.child.kill();
         }
     }
+}
+
+/// A descriptor of the pty's own, for asking how much it holds.
+fn pty_fd(master: &dyn MasterPty) -> Option<std::os::fd::OwnedFd> {
+    let fd = master.as_raw_fd()?;
+    // SAFETY: the master is open and stays open for this call; the
+    // descriptor is only borrowed to duplicate it.
+    unsafe { std::os::fd::BorrowedFd::borrow_raw(fd) }.try_clone_to_owned().ok()
 }
 
 fn pty_size(rows: u16, cols: u16, grid: angel_glass::GridSize) -> PtySize {
@@ -750,6 +934,76 @@ mod tests {
 }
 
 #[cfg(test)]
+mod gate_tests {
+    use super::*;
+    use std::time::Instant;
+
+    #[test]
+    fn reads_are_cut_at_each_frame_start_but_the_first_byte() {
+        let read = b"\x1b[?2026hA\x1b[?2026l\x1b[c\x1b[?2026hB\x1b[?2026l\x1b[?2026$p";
+        assert_eq!(frame_cuts(read), vec![20]);
+        assert_eq!(frame_cuts(b"text only"), Vec::<usize>::new());
+        assert_eq!(frame_cuts(b"x\x1b[?2026h"), vec![1]);
+        // A start split across reads is not a cut; the next read's
+        // first byte never is.
+        assert_eq!(frame_cuts(b"x\x1b[?20"), Vec::<usize>::new());
+        assert_eq!(find_escape(b"ab\x1b[?2026l", FRAME_END, 0), Some(2));
+        assert_eq!(find_escape(b"\x1b\x1b[?2026l", FRAME_END, 0), Some(1));
+    }
+
+    /// Searching for a frame's escape as a whole finds what stepping from
+    /// escape to escape finds, from every start, in random streams dense
+    /// with escapes and frames.
+    #[test]
+    fn frame_escapes_are_found_as_stepping_finds_them() {
+        let stepping = |bytes: &[u8], needle: &[u8], from: usize| {
+            (from..bytes.len()).find(|&at| bytes[at] == 0x1b && bytes[at..].starts_with(needle))
+        };
+        let mut rng = crate::speed::Rng::new(41);
+        for _ in 0..200 {
+            let len = 50 + rng.below(400);
+            let mut stream = crate::speed::random_stream(&mut rng, len);
+            for _ in 0..rng.below(4) {
+                let at = rng.below(stream.len() + 1);
+                let frame: &[u8] = if rng.below(2) == 0 { FRAME_BEGIN } else { FRAME_END };
+                stream.splice(at..at, frame.iter().copied());
+            }
+            for from in 0..=stream.len() + 1 {
+                for needle in [FRAME_BEGIN, FRAME_END] {
+                    assert_eq!(find_escape(&stream, needle, from), stepping(&stream, needle, from));
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn a_frame_waits_for_the_draw_it_is_owed_and_no_longer() {
+        let gate = Arc::new(FrameGate::default());
+        // Nothing owed: no wait.
+        let started = Instant::now();
+        gate.wait(Duration::from_secs(5));
+        assert!(started.elapsed() < Duration::from_millis(100));
+        // Owed and drawn on another thread: the wait ends with the draw.
+        gate.finished();
+        let drawer = Arc::clone(&gate);
+        let draw = std::thread::spawn(move || {
+            std::thread::sleep(Duration::from_millis(30));
+            drawer.drawn();
+        });
+        let started = Instant::now();
+        gate.wait(Duration::from_secs(5));
+        let waited = started.elapsed();
+        draw.join().unwrap();
+        assert!(waited >= Duration::from_millis(25) && waited < Duration::from_secs(2), "{waited:?}");
+        // Owed and never drawn: the limit ends it.
+        gate.finished();
+        let started = Instant::now();
+        gate.wait(Duration::from_millis(40));
+        assert!(started.elapsed() >= Duration::from_millis(35));
+    }
+}
+
+#[cfg(test)]
 mod pump_tests {
     use super::*;
     use crate::engine::HostInfo;
@@ -781,6 +1035,30 @@ mod pump_tests {
     /// A tiny APC-graphics picture: direct RGBA, one pixel, transmit and
     /// put, with a reply asked for.
     const APC_PUT: &[u8] = b"\x1b_Gi=31,s=1,v=1,a=T,f=24;AAAA\x1b\\";
+
+    /// What plain text asks of the window reaches it: a clipboard write
+    /// (OSC 52), a title and the bell, with or without a picture beside
+    /// them. Text once kept only its replies, so tmux's copies, programs'
+    /// titles and the bell all went nowhere.
+    #[test]
+    fn text_keeps_its_clipboard_title_and_bell() {
+        let (mut engine, mut intake, mut splitter) = rig();
+        let p = pump_bytes(&mut engine, &mut intake, &mut splitter, b"\x1b]52;c;aGk=\x07\x1b]2;one\x07\x07text");
+        assert_eq!(p.clipboard.as_deref(), Some("hi"));
+        assert_eq!(p.title.as_deref(), Some("one"));
+        assert!(p.bell);
+        // tmux names the clipboard and primary at once (`cp`).
+        let p = pump_bytes(&mut engine, &mut intake, &mut splitter, b"\x1b]52;cp;eW8=\x07");
+        assert_eq!(p.clipboard.as_deref(), Some("yo"));
+        // Around a picture, and the latest of each wins.
+        let mut stream = b"\x1b]52;c;aGk=\x07\x1b]2;one\x07".to_vec();
+        stream.extend_from_slice(APC_PUT);
+        stream.extend_from_slice(b"\x1b]52;c;eW8=\x07\x1b]2;two\x07");
+        let p = pump_bytes(&mut engine, &mut intake, &mut splitter, &stream);
+        assert_eq!(p.clipboard.as_deref(), Some("yo"));
+        assert_eq!(p.title.as_deref(), Some("two"));
+        assert!(!p.bell);
+    }
 
     fn grid_text(engine: &mut Engine) -> String {
         let cols = engine.size().1;
@@ -1668,6 +1946,10 @@ fn apply_scenes(expansion: &mut intake::glass_dialect::Expansion, host: &angel_g
     }
     *was = now;
     drop(was);
+    // An asset's meshes go up once, when a scene first shows it.
+    for (id, mesh) in expansion.take_mesh_uploads() {
+        host.upload_mesh(id, mesh.as_ref().clone());
+    }
     for draw in expansion.dirty_scenes() {
         for (id, mesh) in draw.meshes {
             host.upload_mesh(id, mesh);

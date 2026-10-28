@@ -658,13 +658,12 @@ fn place(keys: &Keys, canvas: &mut dyn Canvas, id: u32, width: u32, height: u32)
     let native_rows = shown_h as f32 / ch;
     // The size in cells: `c`/`r` name it outright; one side alone
     // follows the picture's shape; none means the picture's own size.
+    // Both given fill the box. The dialect's text says letterbox, but the
+    // terminals programs are written against stretch to it, and programs
+    // that care about shape size the box themselves (unicode placeholders,
+    // which do letterbox, fit in placeholders.rs).
     let (mut cols, mut rows) = (keys.columns.map(|c| c as f32), keys.rows.map(|r| r as f32));
-    if cols.is_some() && rows.is_some() {
-        // Both given: letterbox inside the box, keeping the shape.
-        let scale = (cols.unwrap() / native_cols.max(1e-6)).min(rows.unwrap() / native_rows.max(1e-6));
-        cols = Some(native_cols * scale);
-        rows = Some(native_rows * scale);
-    } else if let Some(c) = cols.filter(|_| rows.is_none()) {
+    if let Some(c) = cols.filter(|_| rows.is_none()) {
         rows = Some(c * native_rows / native_cols.max(1e-6));
     } else if let Some(r) = rows.filter(|_| cols.is_none()) {
         cols = Some(r * native_cols / native_rows.max(1e-6));
@@ -706,15 +705,9 @@ fn place(keys: &Keys, canvas: &mut dyn Canvas, id: u32, width: u32, height: u32)
     }
     if keys.cursor_policy != 1 {
         // Right past the picture's last column, then down to its last
-        // row, with LF so the screen scrolls when it must. When both `c`
-        // and `r` were given the picture is letterboxed inside that box,
-        // and the cursor moves by the box.
-        let (across_cells, down_cells) = match (keys.columns, keys.rows) {
-            (Some(c), Some(r)) => (c as f32, r as f32),
-            _ => (cols, rows),
-        };
-        let across = across_cells.ceil().max(1.0) as u16;
-        let down = (down_cells.ceil() - 1.0).max(0.0) as u16;
+        // row, with LF so the screen scrolls when it must.
+        let across = cols.ceil().max(1.0) as u16;
+        let down = (rows.ceil() - 1.0).max(0.0) as u16;
         if across > 0 {
             canvas.feed(format!("\x1b[{across}C").as_bytes());
         }
@@ -799,7 +792,7 @@ fn temp_dirs() -> Vec<std::path::PathBuf> {
 /// query is flushed. `S` larger than the file is a short read, not a
 /// failure. `t=t` unlinks only when the path still names the inode that
 /// was read.
-fn read_file(path: &Path, temporary: bool, size: Option<u64>, offset: u64) -> Result<Vec<u8>, (String, String)> {
+pub(crate) fn read_file(path: &Path, temporary: bool, size: Option<u64>, offset: u64) -> Result<Vec<u8>, (String, String)> {
     let fail = |why: &str| ("EBADF".to_string(), format!("Failed to read image file: {why}"));
     let canonical = std::fs::canonicalize(path).map_err(|_| fail("not a readable path"))?;
     if !path_allowed(&canonical) {

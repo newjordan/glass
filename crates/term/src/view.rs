@@ -89,11 +89,9 @@ pub fn paint(
             {
                 continue;
             }
-            let mut text = String::new();
             // A placeholder cell is a picture, never a glyph. The background stays.
             let symbol = if source.c == '\0' || source.c == '\u{10EEEE}' { ' ' } else { source.c };
-            text.push(symbol);
-            cell.set_symbol(&text);
+            cell.set_char(symbol);
             cell.fg = color(source.fg);
             cell.bg = color(source.bg);
             let mut modifier = Modifier::empty();

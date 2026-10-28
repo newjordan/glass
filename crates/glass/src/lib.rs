@@ -20,12 +20,14 @@ mod input;
 mod layer;
 pub mod monolith;
 mod probe;
+mod record;
 #[cfg(feature = "remote")]
 pub mod remote;
 mod render;
 mod shore;
 mod showcase;
 mod squire;
+pub mod startup;
 mod wizard;
 mod sprites;
 mod transition;
@@ -45,7 +47,7 @@ use winit::event_loop::EventLoopProxy;
 pub use backend::GlassBackend;
 pub use config::{BrailleStyle, Options, Palette};
 pub use font::render_page;
-pub use layer::{LAYER_PICTURES, Layer, LayerKind, Particles, Placement, Stand, Tilt};
+pub use layer::{LAYER_PICTURES, Layer, LayerKind, MAX_STROKE_PX, Particles, Placement, Stand, Stroke, StrokeShape, Tilt};
 pub use angel_gpu::Stage;
 /// The renderer core and its wgpu, for a test elsewhere that draws a scene
 /// offscreen on a device of its own (the cockpit's Heartglass test).
@@ -183,6 +185,9 @@ pub(crate) struct Shared {
     pub meshes: Mutex<Vec<(u32, scene::MeshData)>>,
     /// The next showing's marks (`Host::showcase_marks`).
     pub showcase_marks: Mutex<Vec<showcase::Mark>>,
+    /// One display frame of the monitor the window is on, in nanoseconds;
+    /// 0 until the window knows (`Host::frame_interval`).
+    pub frame_nanos: std::sync::atomic::AtomicU64,
 }
 
 pub(crate) enum UserEvent {
@@ -197,6 +202,9 @@ pub(crate) enum UserEvent {
     Capture(std::path::PathBuf),
     /// Film the assembly transition into this directory.
     Film(std::path::PathBuf),
+    /// Film this frame into the recording begun at this instant
+    /// (`record.rs`); `None` ends it.
+    Record(Option<std::time::Instant>),
     /// Close as if the window's close button was pressed.
     Close,
     /// The cockpit has returned; end the event loop.
@@ -412,6 +420,15 @@ impl Host {
         scenes.push((id, None));
         drop(scenes);
         self.shared.pictures_waiting.store(true, Ordering::Release);
+    }
+
+    /// One display frame of the monitor the window is on (60 Hz until
+    /// the window knows): how often a producer's own motion needs a frame.
+    pub fn frame_interval(&self) -> std::time::Duration {
+        match self.shared.frame_nanos.load(Ordering::Relaxed) {
+            0 => std::time::Duration::from_nanos(1_000_000_000 / 60),
+            nanos => std::time::Duration::from_nanos(nanos),
+        }
     }
 
     /// Save the next frame as a PNG, drawn offscreen (no desktop behind it).

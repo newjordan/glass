@@ -10,13 +10,15 @@
 //! The glass dialect's part is the long one: lit solids orbiting the text,
 //! a cloud of 720 lights that becomes five shapes, a tesseract, a glass
 //! knot, an equaliser city and an orrery, each a 3D scene rendered by the
-//! window at twice its size and shaded on the CPU (see `motion.rs`), then
-//! all of it stacked at once.
+//! window at twice its size and shaded on the CPU (see `motion.rs`), a glTF
+//! model made in code (`model.rs`) that glass animates and flies round by
+//! itself, easing curves side by side, then all of it stacked at once.
 //!
 //! ```text
 //! cargo run --example glass_sampler
 //! cargo run --example glass_sampler -- --check
 //! cargo run --example glass_sampler -- --scene knot,orrery --loop
+//! cargo run --example glass_sampler -- --scene gltf,tweens --loop
 //! ```
 //!
 //! `--check` asks glass to answer every op (an `r=` token on each
@@ -25,6 +27,8 @@
 //! scene kept. `--scene a,b` plays only those scenes (`--list` names
 //! them), and `--loop` plays the show until `q`.
 
+mod glb;
+mod model;
 mod motion;
 mod stills;
 
@@ -60,6 +64,10 @@ const HOLD_CHART: u64 = 2000;
 const HOLD_FRAME: u64 = 33;
 const HOLD_CLOSE: u64 = 900;
 const HOLD_FINALE: u64 = 12_000;
+const HOLD_MODEL: u64 = 10_000;
+const HOLD_TWEENS: u64 = 12_000;
+/// The base64 a piece of a chunked asset carries.
+const ASSET_PIECE: usize = 96 * 1024;
 const SCROLL_LINES: u64 = 24;
 const VIDEO_FRAMES: u64 = 90;
 const ANIM_FRAMES: usize = 12;
@@ -754,6 +762,8 @@ const SCENES: &[(&str, SceneFn)] = &[
     ("knot", scene_knot),
     ("city", scene_city),
     ("orrery", scene_orrery),
+    ("gltf", scene_gltf),
+    ("tweens", scene_tweens),
     ("chart", scene_chart),
     ("video", scene_video),
     ("close", scene_close),
@@ -1330,6 +1340,144 @@ fn scene_orrery(rx: &Receiver<Vec<u8>>, fit: Fit) -> bool {
     })
 }
 
+/// An asset, `m=1` piece by piece as `picture` goes: only the last piece
+/// is answered, and only by the first piece's token.
+fn send_asset(id: u32, file: &[u8]) {
+    let text = b64(file);
+    let pieces: Vec<&str> = text.as_bytes().chunks(ASSET_PIECE).map(|c| std::str::from_utf8(c).unwrap_or("")).collect();
+    for (i, piece) in pieces.iter().enumerate() {
+        let more = u8::from(i + 1 < pieces.len());
+        glass(&asset_op(if i == 0 { Some(id) } else { None }, more, piece));
+    }
+}
+
+fn asset_op(id: Option<u32>, more: u8, payload: &str) -> String {
+    match id {
+        Some(id) => format!("asset;id={id};m={more};{payload}"),
+        None => format!("asset;m={more};{payload}"),
+    }
+}
+
+fn play_op(scene: u32, clip: u32) -> String {
+    format!("play;id={scene};clip={clip};loop=1")
+}
+
+fn tween_op(target: &str, props: &str, timing: &str) -> String {
+    format!("tween;{target};{props};{timing}")
+}
+
+/// A glTF model made in code: one `asset` op in pieces, one `scene` that
+/// hangs it from a node, one `play`, and a camera fly-through of four
+/// chained tweens. After that the program sends nothing; glass plays the
+/// clip and eases the camera every frame.
+fn scene_gltf(rx: &Receiver<Vec<u8>>, fit: Fit) -> bool {
+    retire();
+    title(
+        "glass dialect: asset",
+        "a glTF model made in code, uploaded once; glass plays its clip and flies the camera round it",
+    );
+    let (file, summary) = model::lantern();
+    send_asset(31, &file);
+    let (cols, rows) = (fit.cols_f(), fit.rows_f());
+    let st = fit.stage_fit(cols * 0.64, 3.0, rows - 5.0, cols * 0.66, 1.2);
+    let json = r#"{"v":1,"scene":{"camera":{"eye":[0,1.9,5.8],"target":[0,0.95,0],"fov":0.62},"nodes":[{"id":1,"mesh":{"kind":"gltf","asset":31}},{"id":2,"mesh":{"kind":"cylinder","segments":48},"at":[0,-0.06,0],"scale":[2.7,0.06,2.7],"color":[0.09,0.1,0.14,1],"lit":true}]}}"#;
+    glass(&format!(
+        "layer;id=60;k=glow;c=2a6cff;o=0.35;add=1;z=-6;{}",
+        cells(st.x + st.c * 0.15, st.y + st.r * 0.2, st.c * 0.7, st.r * 0.75)
+    ));
+    glass(&scene_place(31, st, 1, 1.0, &b64(json.as_bytes())));
+    glass(&play_op(31, 0));
+    let camera = "id=31;camera=1";
+    glass(&tween_op(camera, "eye=3.7,2.7,3.3;target=0,1.3,0", "dur=2.2;ease=sine-in-out;tid=310"));
+    glass(&tween_op(camera, "eye=-3.3,0.8,2.9;target=0,1.6,0;fov=0.48", "dur=2.4;ease=cubic-in-out;tid=311;after=310"));
+    glass(&tween_op(camera, "eye=0.3,4.8,1.1;target=0,1.15,0;fov=0.75", "dur=2.0;ease=quad-in-out;tid=312;after=311"));
+    glass(&tween_op(camera, "eye=0,1.9,5.8;target=0,0.95,0;fov=0.62", "dur=2.4;ease=back-out;tid=313;after=312"));
+    let lines = [
+        ("asset;id=31;m=1 ... m=0", "\x1b[38;2;120;200;255m"),
+        ("  a .glb made in code, sent in pieces", "\x1b[2m"),
+        ("scene: {\"kind\":\"gltf\",\"asset\":31}", "\x1b[38;2;120;200;255m"),
+        ("  its node tree hangs from node 1", "\x1b[2m"),
+        ("play;id=31;clip=0;loop=1", "\x1b[38;2;255;170;80m"),
+        ("  linear, step and cubic-spline keys", "\x1b[2m"),
+        ("tween;id=31;camera=1;...;after=", "\x1b[38;2;255;120;190m"),
+        ("  four chained moves of the eye", "\x1b[2m"),
+    ];
+    for (i, (line, sgr)) in lines.iter().enumerate() {
+        cup(5 + i as u16 + (i as u16 / 2), 3);
+        styled(sgr.as_bytes());
+        out(line.as_bytes());
+        styled(b"\x1b[0m");
+    }
+    cup(5 + lines.len() as u16 + 5, 3);
+    styled(b"\x1b[38;2;236;232;220m");
+    out(format!("{} nodes, {} triangles, {} clips, 1 texture", summary.nodes, summary.triangles, summary.clips).as_bytes());
+    styled(b"\x1b[0m");
+    caption(fit, "after these few ops the program is silent: every frame here is glass's own");
+    hold(rx, HOLD_MODEL)
+}
+
+/// The easings side by side: one `tween` per dot, each running back and
+/// forth for ever, and a scene whose nodes and camera tween beside them.
+fn scene_tweens(rx: &Receiver<Vec<u8>>, fit: Fit) -> bool {
+    retire();
+    title("glass dialect: tween", "one op per motion: glass eases every frame itself while the program says nothing");
+    const EASES: [&str; 12] = [
+        "linear",
+        "quad-in-out",
+        "cubic-out",
+        "quint-in",
+        "sine-in-out",
+        "expo-out",
+        "circ-in-out",
+        "back-out",
+        "elastic-out",
+        "bounce-out",
+        "cubic-bezier(.68,-.6,.32,1.6)",
+        "spring(120,9)",
+    ];
+    let (cols, rows) = (fit.cols_f(), fit.rows_f());
+    let top = 4.0f32;
+    let step = ((rows - top - 3.0) / EASES.len() as f32).clamp(1.0, 2.0);
+    let x0 = 33.0f32.min(cols * 0.3);
+    let x1 = (cols * 0.56).max(x0 + 8.0);
+    let dot = 1.6f32;
+    let dot_h = fit.square(dot);
+    let halo = 3.6f32;
+    let halo_h = fit.square(halo);
+    for (i, ease) in EASES.iter().enumerate() {
+        let y = top + i as f32 * step;
+        let color = neon(i as f32 / EASES.len() as f32);
+        let row = y.round() as u16;
+        cup(row, 3);
+        styled(format!("\x1b[38;2;{};{};{}m", (color[0] * 255.0) as u8, (color[1] * 255.0) as u8, (color[2] * 255.0) as u8).as_bytes());
+        out(ease.as_bytes());
+        styled(b"\x1b[0m");
+        // The row's middle, in the window's own cells (CUP counts from 1).
+        let mid = f32::from(row) - 0.5;
+        glass(&format!("layer;id={};k=solid;c=ffffff22;z=-1;{}", 400 + i, cells(x0, mid - 0.05, x1 - x0 + dot, 0.1)));
+        // A lit sphere over a soft light, both eased the same way.
+        let spread = (halo - dot) / 2.0;
+        glass(&format!("layer;id={};k=glow;c={};add=1;o=0.7;z=1;{}", 420 + i, hex(color), cells(x0 - spread, mid - halo_h / 2.0, halo, halo_h)));
+        glass(&format!("layer;id={};k=prim;shape=1;c={};z=2;{}", 440 + i, hex(color), cells(x0, mid - dot_h / 2.0, dot, dot_h)));
+        let timing = format!("dur=1.6;delay=0.5;ease={ease};repeat=forever;yoyo=1");
+        let halo_at = format!("at={:.2},{:.2},{halo:.2},{halo_h:.2}", x1 - spread, mid - halo_h / 2.0);
+        let dot_at = format!("at={x1:.2},{:.2},{dot:.2},{dot_h:.2}", mid - dot_h / 2.0);
+        glass(&tween_op(&format!("layer={}", 420 + i), &halo_at, &timing));
+        glass(&tween_op(&format!("layer={}", 440 + i), &dot_at, &timing));
+    }
+    let st = fit.stage_fit((x1 + dot + cols) * 0.5 + 1.0, 4.0, rows - 7.0, cols - x1 - dot - 4.0, 0.9);
+    let json = r#"{"v":1,"scene":{"camera":{"eye":[0,0.6,6.2],"target":[0,0,0],"fov":0.6},"nodes":[{"id":1,"mesh":"cube","at":[-0.8,0.9,0],"scale":[0.8,0.8,0.8],"color":[1,0.55,0.2,1],"lit":true},{"id":2,"mesh":"gem","at":[0.8,0.9,0],"scale":[0.6,0.6,0.6],"color":[0.3,0.9,1,1],"lit":true,"emissive":0.3},{"id":3,"mesh":{"kind":"sphere","segments":32},"at":[-0.8,-0.9,0],"scale":[0.9,0.9,0.9],"color":[1,0.3,0.6,1],"lit":true},{"id":4,"mesh":{"kind":"cone","segments":32},"at":[0.8,-1.2,0],"scale":[0.7,0.9,0.7],"color":[0.6,1,0.4,1],"lit":true}]}}"#;
+    glass(&scene_place(50, st, 1, 1.0, &b64(json.as_bytes())));
+    let forever = "repeat=forever;yoyo=1";
+    glass(&tween_op("id=50;node=1", "rot=0.6124,0.6124,0,0.5", &format!("dur=1.4;ease=elastic-out;{forever}")));
+    glass(&tween_op("id=50;node=2", "scale=1,1,1", &format!("dur=1.2;ease=bounce-out;{forever}")));
+    glass(&tween_op("id=50;node=3", "color=0.2,0.6,1,1;emissive=0.7", &format!("dur=1.5;ease=sine-in-out;{forever}")));
+    glass(&tween_op("id=50;node=4", "at=0.8,-0.5,0", &format!("dur=1.0;ease=spring(140,7);{forever}")));
+    glass(&tween_op("id=50;camera=1", "eye=3.2,1.6,5.2", &format!("dur=3;ease=sine-in-out;{forever}")));
+    caption(fit, "cube: elastic turn (slerp)  gem: bounce  sphere: colour  cone: spring  camera: sine");
+    hold(rx, HOLD_TWEENS)
+}
+
 fn scene_chart(rx: &Receiver<Vec<u8>>, fit: Fit) -> bool {
     let (w, h) = chart_panel(fit);
     let (rgba, marks) = bar_chart(w, h);
@@ -1471,7 +1619,7 @@ fn glass_allowed(op: &str) -> &'static [&'static str] {
             "shape", "speed", "phase", "r", "m",
         ],
         "group" => &["g", "n", "r", "m"],
-        "remove" => &["id", "g", "all", "r", "m"],
+        "remove" => &["id", "g", "all", "asset", "r", "m"],
         "showcase" => &["id", "close", "s", "v", "fit", "events", "r", "m"],
         "scene" => &["id", "at", "px", "anchor", "s", "v", "z", "o", "r"],
         "frame" => &["id", "f", "s", "v", "o", "m", "r"],
@@ -1479,6 +1627,13 @@ fn glass_allowed(op: &str) -> &'static [&'static str] {
         "model" => &["s", "v", "fit", "r"],
         "page" => &["cols", "rows", "r"],
         "progress" => &["t", "pause", "r"],
+        "asset" => &["id", "t", "m", "r"],
+        "tween" => &[
+            "layer", "id", "node", "camera", "at", "px", "o", "a", "c", "size", "b", "h", "rot",
+            "scale", "color", "emissive", "visible", "eye", "target", "fov", "dur", "delay", "ease",
+            "repeat", "yoyo", "tid", "after", "stop", "r",
+        ],
+        "play" => &["id", "node", "clip", "speed", "loop", "t", "pause", "stop", "r"],
         _ => &[],
     }
 }
@@ -1531,7 +1686,7 @@ fn split_glass_payload(record: &str) -> Option<(String, String)> {
     let (op, rest) = record.split_once(';')?;
     let takes = matches!(
         op,
-        "picture" | "group" | "scene" | "frame" | "chart" | "model" | "page"
+        "picture" | "group" | "scene" | "frame" | "chart" | "model" | "page" | "asset"
     );
     if !takes {
         return None;
@@ -1585,7 +1740,7 @@ fn glass_key_pairs(record: &str) -> (String, Vec<(String, String)>) {
     }
     let takes_payload = matches!(
         op.as_str(),
-        "picture" | "group" | "scene" | "frame" | "chart" | "model" | "page"
+        "picture" | "group" | "scene" | "frame" | "chart" | "model" | "page" | "asset"
     );
     if takes_payload && fields.len() >= 2 {
         if let Some(last) = fields.last().copied() {
@@ -2146,7 +2301,7 @@ mod tests {
 
     #[test]
     fn the_show_runs_under_two_minutes_and_most_of_it_is_3d() {
-        let motion = HOLD_PRIMS + HOLD_CLOUD + HOLD_TESSERACT + HOLD_KNOT + HOLD_CITY + HOLD_ORRERY + HOLD_FINALE;
+        let motion = HOLD_PRIMS + HOLD_CLOUD + HOLD_TESSERACT + HOLD_KNOT + HOLD_CITY + HOLD_ORRERY + HOLD_MODEL + HOLD_TWEENS + HOLD_FINALE;
         let ms = HOLD_TEXT
             + HOLD_CURSOR * 3
             + HOLD_SIXEL
@@ -2493,6 +2648,13 @@ mod tests {
             chart_op(11, 6, "Zg=="),
             progress_op(0.5),
             glass_checked("scene;id=1;s=2;v=2;at=1,1,2,2", 7),
+            asset_op(Some(31), 1, "Zg=="),
+            asset_op(None, 0, "Zg=="),
+            play_op(31, 0),
+            tween_op("id=31;camera=1", "eye=0,1,5;target=0,1,0;fov=0.6", "dur=2;ease=back-out;tid=1;after=2"),
+            tween_op("layer=420", "at=1,2,3,4;o=0.5;c=ff00ff", "dur=1.6;delay=0.5;ease=spring(120,9);repeat=forever;yoyo=1"),
+            tween_op("id=50;node=1", "rot=0,0,0,1;scale=1,1,1;color=1,1,1,1;emissive=0;visible=1", "stop=1"),
+            "remove;asset=31".to_string(),
         ];
         // The records the motion scenes put in their groups, each a layer.
         samples.extend(ring_records(fit, 1.3, 94.0, 27.0, 70.0, 16.0).lines().map(str::to_string));

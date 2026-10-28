@@ -17,7 +17,7 @@ escape sequences into one shared description of what to show:
 | CSI u keyboard | the progressive key flags, alongside legacy key bytes |
 | OSC 8 | hyperlinks, opened with Ctrl+click |
 | tmux passthrough | wrapped sequences are unwrapped and taken in |
-| glass's own dialect (`ESC _ glass; …`) | layers, groups, glows, particles, lit primitives, 3D scenes, video frames, charts, models and pages in the showcase |
+| glass's own dialect (`ESC _ glass; …`) | layers, groups, glows, rings and lines, particles, lit primitives, 3D scenes with chrome and liquid materials, glTF 2.0 models with skinning and their animations, tweens glass plays itself, video frames, charts, models and pages in the showcase |
 
 Pictures follow the text. They move with scroll regions and the alternate
 screen, keep their place through reflow on resize, and text written over an
@@ -62,6 +62,35 @@ knot, an equaliser city, an orrery under the text, a chart, a video, and a
 finale that stacks them. `--scene knot,orrery` plays only those scenes,
 `--list` names them, and `--loop` repeats the show.
 `--example glass_demo` is a shorter tour of glass's own dialect.
+
+## Mind's eye
+
+```sh
+cargo run --release -p angel-glass-term --example glass_mindseye -- --surreal
+```
+
+A 95-second film of sacred geometry, streamed live through the pty as
+escape codes: the flower of life, Metatron's cube, the Platonic solids, an
+eye, a torus, up to about 9,600 layers a frame at 60 fps. `--surreal` adds
+floating video cubes, balloons, pizza, Matrix rain and dancing chrome
+figures; the figures are Mixamo glTF characters read from
+`MINDSEYE_ASSETS`, which are not included. `MINDSEYE_BENCH` names a
+scoreboard (from the bench harness) to draw as a web among the layers.
+
+## Recording
+
+`ANGEL_GLASS_RECORD=film.mp4` films the window as it is drawn, through
+ffmpeg and the GPU's encoder (`hevc_nvenc` by default), with
+`ANGEL_GLASS_RECORD_FPS`, `_SECONDS`, `_DELAY_MS` and `_CODEC`. A frame the
+window was too slow for is repeated, not caught up, and the count is
+printed at the end.
+
+## Speed
+
+On processors whose dies carry last-level caches of different sizes (AMD's
+X3D parts), glass keeps its pty read and parse threads on the largest one.
+`GLASS_AFFINITY=off` leaves them to the scheduler. `GLASS_STARTUP_TRACE=1`
+prints where startup time goes.
 
 ## Layout
 

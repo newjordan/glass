@@ -342,6 +342,9 @@ pub fn scene(t: f32, rows: u32) -> Scene {
         role: Default::default(),
         ceiling: 0,
         normals: None,
+        chrome: 0.0,
+        liquid: 0.0,
+        glow: 0.0,
     };
     let mut knight = Node::new(id(), MeshRef::Quad, sprite);
     knight.transform = Transform {
