@@ -33,6 +33,12 @@ const SYNC_LIMIT: Duration = Duration::from_millis(150);
 /// How long a synchronized frame waits for the one before it to be drawn.
 const FRAME_WAIT: Duration = Duration::from_millis(50);
 
+/// How long the parsing thread, having noticed someone waiting for the
+/// engine, stays off the lock so they can take it. A spin, not a sleep:
+/// the wait is already latency, and a sleep's granularity (even 50 µs
+/// asked of Linux) adds whole milliseconds on some systems.
+const LOCK_HANDOFF: Duration = Duration::from_micros(200);
+
 
 const FRAME_BEGIN: &[u8] = b"\x1b[?2026h";
 const FRAME_END: &[u8] = b"\x1b[?2026l";
@@ -452,6 +458,21 @@ fn lock<T>(mutex: &Mutex<T>) -> MutexGuard<'_, T> {
     mutex.lock().unwrap_or_else(|e| e.into_inner())
 }
 
+/// Wait, briefly, for whoever asked for the engine to have it. Called by
+/// the parsing thread between pieces, right after releasing the lock:
+/// the waiter only has to take what is already free, and the flag they
+/// clear when they do ends the wait. A deadline bounds it — a waiter
+/// that asked and gave up (or died) never stops the flood.
+fn let_waiters_in(wanted: &AtomicBool) {
+    if !wanted.load(Ordering::Acquire) {
+        return;
+    }
+    let deadline = std::time::Instant::now() + LOCK_HANDOFF;
+    while wanted.load(Ordering::Acquire) && std::time::Instant::now() < deadline {
+        std::hint::spin_loop();
+    }
+}
+
 impl Session {
     pub fn spawn(
         command: &[String],
@@ -570,9 +591,6 @@ impl Session {
                             lock(&splitter).split(piece, &mut pieces);
                             let _wait = glass_window::keytrace::Wait::for_lock("engine");
                             let mut engine = lock(&engine);
-                            // The waiter has the lock: their flag comes
-                            // down, and the next piece may take it back.
-                            engine_wanted.store(false, Ordering::Release);
                             let mut intake = lock(&intake);
                             let pumped = pump(&mut engine, &mut intake, &pieces);
                             // Copy what a key needs out while the lock is
@@ -582,6 +600,7 @@ impl Session {
                             pumped
                         };
 
+                        let_waiters_in(&engine_wanted);
                         if !pumped.replies.is_empty() {
                             let mut writer = lock(&writer);
                             let _ = writer.write_all(&pumped.replies);
@@ -1011,6 +1030,34 @@ mod tests {
         let mut term = engine();
         term.process(input);
         term.take_effects().replies
+    }
+
+    #[test]
+    fn a_waiter_gets_the_engine_within_the_handoff() {
+        // The parsing thread's side of the handoff: while it spins off
+        // the lock, a waiter that asked by the flag takes it and drops
+        // the flag, and the spin ends. A flag nobody asked through
+        // costs nothing but one load.
+        let wanted = Arc::new(AtomicBool::new(false));
+        let_waiters_in(&wanted);
+        assert!(!wanted.load(Ordering::Acquire), "an unasked flag is left alone");
+
+        let shared = Arc::clone(&wanted);
+        let waiter = std::thread::spawn(move || {
+            shared.store(true, Ordering::Release);
+            // The waiter's own take of the lock, as Session::engine does:
+            // ask, then hold, then the flag comes down.
+            let held = std::time::Instant::now();
+            std::thread::sleep(Duration::from_millis(2));
+            shared.store(false, Ordering::Release);
+            held.elapsed()
+        });
+        let began = std::time::Instant::now();
+        let_waiters_in(&wanted);
+        let held = waiter.join().expect("the waiter finishes");
+        // The spin gave way within the handoff bound, not the waiter's
+        // whole hold.
+        assert!(began.elapsed() < LOCK_HANDOFF + held + Duration::from_millis(50));
     }
 
     #[test]
