@@ -1,0 +1,36 @@
+pkgbase = glass-term-bin
+	pkgdesc = A GPU terminal that takes in pictures, layers, particles and 3D scenes (release binary)
+	pkgver = 0.1.0
+	pkgrel = 1
+	url = https://github.com/newjordan/glass
+	arch = x86_64
+	arch = aarch64
+	license = MIT
+	depends = fontconfig
+	depends = gcc-libs
+	depends = glibc
+	depends = hicolor-icon-theme
+	depends = libx11
+	depends = libxcursor
+	depends = libxi
+	depends = libxkbcommon
+	depends = libxkbcommon-x11
+	depends = vulkan-icd-loader
+	depends = wayland
+	optdepends = vulkan-driver: Vulkan driver for the GPU
+	optdepends = wl-clipboard: clipboard on Wayland
+	optdepends = xclip: clipboard on X11
+	optdepends = xdg-utils: open links with Ctrl+click
+	optdepends = ffmpeg: record the window (GLASS_RECORD)
+	optdepends = xdg-terminal-exec: make glass the default terminal
+	provides = glass-term=0.1.0
+	conflicts = glass-term
+	conflicts = glass-git
+	options = !strip
+	options = !debug
+	source_x86_64 = https://github.com/newjordan/glass/releases/download/v0.1.0/glass-0.1.0-linux-x86_64.tar.gz
+	sha256sums_x86_64 = SKIP
+	source_aarch64 = https://github.com/newjordan/glass/releases/download/v0.1.0/glass-0.1.0-linux-aarch64.tar.gz
+	sha256sums_aarch64 = SKIP
+
+pkgname = glass-term-bin
