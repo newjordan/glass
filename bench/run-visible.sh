@@ -77,9 +77,16 @@ cleanup() {
   hyprctl eval 'if _G.bench_vis_rule then _G.bench_vis_rule:set_enabled(false) end' >/dev/null
   hyprctl eval "hl.monitor({ output = \"$CAP\", mode = \"preferred\", position = \"auto\", scale = 1 })" >/dev/null
   [ -z "$(mine)" ] && hyprctl output remove $CAP >/dev/null
+  hyprctl eval 'if _G.bench_vis_ws then _G.bench_vis_ws:set_enabled(false); _G.bench_vis_ws = nil end' >/dev/null
 }
 trap cleanup EXIT
 
+# The output's own workspace, named before it is made: otherwise Hyprland
+# may hand it the one a real monitor shows. A workspace and an output each
+# take the first rule that names them, so the number is the run's own and
+# the rule is switched off again at the end (cleanup).
+VWS=${BENCH_WS:-$((1000 + $$ % 9000))}
+hyprctl eval "_G.bench_vis_ws = hl.workspace_rule({ workspace = \"$VWS\", monitor = \"$CAP\", default = true })" >/dev/null
 hyprctl output create headless $CAP >/dev/null; sleep 0.5
 hyprctl eval "hl.monitor({ output = \"$CAP\", mode = \"1920x1080@$HZ\", position = \"auto\", scale = 1 })" >/dev/null; sleep 1
 read WS MW MH MHZ < <(hyprctl monitors -j | CAP=$CAP python3 -c 'import json,os,sys
@@ -87,6 +94,13 @@ m=[m for m in json.load(sys.stdin) if m["name"]==os.environ["CAP"]]
 print(*(m and [m[0]["activeWorkspace"]["id"], m[0]["width"], m[0]["height"], m[0]["refreshRate"]] or [""]))')
 # No headless output found: stop rather than open windows on a real monitor.
 [ -n "$WS" ] || { echo "no headless output $CAP" >&2; exit 1; }
+# Should the rule not hold and the output be given a workspace with
+# windows: stop rather than run among them.
+if hyprctl clients -j | WS=$WS python3 -c 'import json,os,sys; sys.exit(0 if any(str(c["workspace"]["id"]) == os.environ["WS"] for c in json.load(sys.stdin)) else 1)'; then
+  echo "headless output $CAP was given workspace $WS, which holds windows; stopping" >&2
+  hyprctl output remove $CAP >/dev/null
+  exit 1
+fi
 echo "output $CAP ${MW}x${MH}@$MHZ workspace $WS; session $W"
 hyprctl eval '_G.bench_vis_rule = hl.window_rule({ name = "bench-vis", match = { class = "^bench-vis-.*$" }, no_anim = true, tag = "-default-opacity", opacity = "1 1" })' >/dev/null
 
@@ -103,6 +117,8 @@ cmd() { case $1 in
   glass) echo "GLASS_STARTUP_TRACE=1 ${GLASS:-glass} --class bench-vis-glass -e $2 2>$3";;
   kitty) echo "${KITTY:-kitty} --class bench-vis-kitty $2 2>$3";;
   kitty-noconf) echo "${KITTY:-kitty} --config NONE --class bench-vis-kitty-noconf $2 2>$3";;
+  # A second glass build, to compare two in one run.
+  glass-alt) echo "GLASS_STARTUP_TRACE=1 ${GLASS_ALT:?GLASS_ALT names a second glass binary} --class bench-vis-glass-alt -e $2 2>$3";;
 esac; }
 
 nvidia-smi --query-gpu=timestamp,utilization.gpu,memory.used --format=csv,noheader -lms 500 > $W/gpu.csv 2>/dev/null & PIDS+=" $!"

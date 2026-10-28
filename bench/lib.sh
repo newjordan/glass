@@ -10,6 +10,12 @@
 
 CAP=${CAP:-GLASSCAP}
 WS=
+# The workspace the headless output opens on. Without a rule naming one,
+# Hyprland hands a new output a workspace of its choosing, and that has
+# been the one a real monitor was showing, windows and all. A workspace and
+# an output each take the first rule that names them, so the number is the
+# run's own and the rule is switched off again in headless_down.
+BENCH_WS=${BENCH_WS:-$((1000 + $$ % 9000))}
 
 command -v hyprctl >/dev/null || { echo "the harness launches terminals through Hyprland (hyprctl); none found" >&2; exit 1; }
 command -v python3 >/dev/null || { echo "the harness needs python3" >&2; exit 1; }
@@ -38,6 +44,7 @@ term_cmd() {
 # Make the headless output and find its workspace. Stops rather than open
 # windows anywhere else.
 headless_up() {
+  hyprctl eval "_G.glass_bench_ws = hl.workspace_rule({ workspace = \"$BENCH_WS\", monitor = \"$CAP\", default = true })" >/dev/null
   hyprctl output create headless "$CAP" >/dev/null
   sleep 1
   WS=$(hyprctl monitors -j | CAP=$CAP python3 -c '
@@ -49,13 +56,14 @@ print(ids[0] if ids else "")')
     hyprctl output remove "$CAP" >/dev/null 2>&1
     exit 1
   fi
-  # Hyprland may hand a new output one of the desktop's own workspaces,
-  # windows and all. The run would open its windows among them, and
-  # headless_down closes whatever is left there, so it stops instead.
+  # Should the rule not hold and the output be given a workspace with
+  # windows, the run would open its windows among them, and headless_down
+  # closes whatever is left there, so it stops instead.
   if [ -n "$(run_windows)" ]; then
     echo "headless output $CAP was given workspace $WS, which holds windows; stopping" >&2
     WS=
     hyprctl output remove "$CAP" >/dev/null 2>&1
+    rule_off
     exit 1
   fi
 }
@@ -96,5 +104,11 @@ headless_down() {
     fi
   fi
   hyprctl output remove "$CAP" >/dev/null
+  rule_off
   WS=
+}
+
+# Switch the workspace rule headless_up made off again.
+rule_off() {
+  hyprctl eval 'if _G.glass_bench_ws then _G.glass_bench_ws:set_enabled(false); _G.glass_bench_ws = nil end' >/dev/null
 }
