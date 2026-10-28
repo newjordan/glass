@@ -415,6 +415,16 @@ impl Engine {
         let mut pass = 0;
         let mut i = 0;
         while i < bytes.len() {
+            // Everything glass answers or holds back begins `ESC [` and one
+            // of these, so a colour or a cursor move (`ESC [ 3`, `ESC [ 2`)
+            // is passed over on its third byte.
+            if bytes[i] != 0x1b
+                || (bytes.get(i + 1) == Some(&b'[')
+                    && bytes.get(i + 2).is_some_and(|b| !matches!(b, b'1' | b'c' | b'0' | b'?' | b'>')))
+            {
+                i = memchr::memchr(0x1b, &bytes[i + 1..]).map_or(bytes.len(), |p| i + 1 + p);
+                continue;
+            }
             // A synchronized update opening ahead of the bytes we answer
             // must be noticed first: the DECRQM that follows it in the
             // same read asks about it.
@@ -2496,6 +2506,9 @@ fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, c
     // as a run is looked into: escape-dense output (an SGR and a letter,
     // over and over) is passed over at the speed of the ESC search.
     let mut stretch = 0;
+    // Where the last sequence the lane took ended: the parser is in
+    // ground there, with nothing half read.
+    let mut lane_end = None;
     for esc in memchr::memchr_iter(0x1b, chunk).chain(std::iter::once(chunk.len())) {
         let mut from = stretch;
         stretch = esc + 1;
@@ -2528,11 +2541,14 @@ fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, c
             let run = &chunk[ground..end];
             fed += if run.is_ascii() { watch.print_run(&run[..run.len() - 1]) } else { watch.print_utf8(run) };
         }
-        if esc < chunk.len()
-            && let Some(len) = lane(processor, watch, mirror, chunk, esc, &mut fed, &mut known)
-        {
-            // What follows the sequence is looked into from its end.
-            stretch = esc + len;
+        if esc < chunk.len() {
+            let after_lane = lane_end == Some(fed);
+            lane_end = None;
+            if let Some(len) = lane(processor, watch, mirror, chunk, esc, &mut fed, &mut known, after_lane) {
+                // What follows the sequence is looked into from its end.
+                stretch = esc + len;
+                lane_end = Some(fed);
+            }
         }
     }
     mirror.catch_up(chunk, known, chunk.len());
@@ -2589,6 +2605,12 @@ fn simple(rest: &[u8]) -> Option<(usize, Simple)> {
 /// state, and return its length. The bytes before it go to the parser
 /// first, so everything stays in stream order. The parser is left as it
 /// would have left itself: in ground, with nothing half read.
+///
+/// `after_lane` says the bytes before it begin where the lane last left
+/// the parser in ground: then a few characters of plain ASCII there (a
+/// cell's worth of text between two colour changes) are written straight
+/// into the grid too, all but the last, which the parser keeps for REP.
+#[allow(clippy::too_many_arguments)]
 #[inline]
 fn lane(
     processor: &mut Processor,
@@ -2598,6 +2620,7 @@ fn lane(
     esc: usize,
     fed: &mut usize,
     known: &mut usize,
+    after_lane: bool,
 ) -> Option<usize> {
     let (len, simple) = simple(&chunk[esc..])?;
     mirror.catch_up(chunk, *known, esc);
@@ -2606,6 +2629,14 @@ fn lane(
         return None;
     }
     if *fed < esc {
+        let text = &chunk[*fed..esc];
+        if after_lane
+            && text.len() > 1
+            && text.iter().all(|b| (0x20..=0x7e).contains(b))
+            && processor.sync_timeout().sync_timeout().is_none()
+        {
+            *fed += watch.print_run(&text[..text.len() - 1]);
+        }
         processor.advance(watch, &chunk[*fed..esc]);
         *fed = esc;
     }
