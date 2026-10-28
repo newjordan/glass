@@ -1,3 +1,6 @@
+// Changed for glass from alacritty_terminal 0.26.0; CHANGES.md lists every change.
+// - a nested `if` is written as an `if ... && let` chain, as clippy 1.99 asks.
+
 //! State management for a selection in the grid.
 //!
 //! A selection should start when the mouse is clicked, and it should be
@@ -296,18 +299,18 @@ impl Selection {
     }
 
     fn range_semantic<T>(term: &Term<T>, mut start: Point, mut end: Point) -> SelectionRange {
-        if start == end {
-            if let Some(matching) = term.bracket_search(start) {
-                if (matching.line == start.line && matching.column < start.column)
-                    || (matching.line < start.line)
-                {
-                    start = matching;
-                } else {
-                    end = matching;
-                }
-
-                return SelectionRange { start, end, is_block: false };
+        if start == end
+            && let Some(matching) = term.bracket_search(start)
+        {
+            if (matching.line == start.line && matching.column < start.column)
+                || (matching.line < start.line)
+            {
+                start = matching;
+            } else {
+                end = matching;
             }
+
+            return SelectionRange { start, end, is_block: false };
         }
 
         let start = term.semantic_search_left(start);

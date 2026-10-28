@@ -1,6 +1,7 @@
 // Changed for glass from alacritty_terminal 0.26.0; CHANGES.md lists every change.
-// - a full keyboard mode stack drops its own oldest entry, not the
-//   title stack's (upstream's fix, alacritty/alacritty@54214706).
+// - a full keyboard mode stack drops its own oldest entry, not the title stack's (upstream's fix,
+//   alacritty/alacritty@54214706).
+// - a nested `if` is a let chain and a tab stop test uses `is_multiple_of`, as clippy 1.99 asks.
 
 //! Exports the `Term` type which is a high-level API for the Grid.
 
@@ -1718,10 +1719,10 @@ impl<T: EventListener> Handler for Term<T> {
             _ => return,
         };
 
-        if let Ok(bytes) = Base64.decode(base64) {
-            if let Ok(text) = String::from_utf8(bytes) {
-                self.event_proxy.send_event(Event::ClipboardStore(clipboard_type, text));
-            }
+        if let Ok(bytes) = Base64.decode(base64)
+            && let Ok(text) = String::from_utf8(bytes)
+        {
+            self.event_proxy.send_event(Event::ClipboardStore(clipboard_type, text));
         }
     }
 
@@ -2343,7 +2344,7 @@ impl TabStops {
     fn resize(&mut self, columns: usize) {
         let mut index = self.tabs.len();
         self.tabs.resize_with(columns, || {
-            let is_tabstop = index % INITIAL_TABSTOPS == 0;
+            let is_tabstop = index.is_multiple_of(INITIAL_TABSTOPS);
             index += 1;
             is_tabstop
         });

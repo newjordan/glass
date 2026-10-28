@@ -1,3 +1,6 @@
+// Changed for glass from alacritty_terminal 0.26.0; CHANGES.md lists every change.
+// - two nested `if`s are written as `if ... && let` chains, as clippy 1.99 asks.
+
 //! The main event loop which performs I/O on the pseudoterminal.
 
 use std::borrow::Cow;
@@ -277,29 +280,28 @@ where
                                 continue;
                             }
 
-                            if event.readable {
-                                if let Err(err) = self.pty_read(&mut state, &mut buf, pipe.as_mut())
-                                {
-                                    // On Linux, a `read` on the master side of a PTY can fail
-                                    // with `EIO` if the client side hangs up.  In that case,
-                                    // just loop back round for the inevitable `Exited` event.
-                                    // This sucks, but checking the process is either racy or
-                                    // blocking.
-                                    #[cfg(target_os = "linux")]
-                                    if err.raw_os_error() == Some(libc::EIO) {
-                                        continue;
-                                    }
-
-                                    error!("Error reading from PTY in event loop: {err}");
-                                    break 'event_loop;
+                            if event.readable
+                                && let Err(err) = self.pty_read(&mut state, &mut buf, pipe.as_mut())
+                            {
+                                // On Linux, a `read` on the master side of a PTY can fail
+                                // with `EIO` if the client side hangs up.  In that case,
+                                // just loop back round for the inevitable `Exited` event.
+                                // This sucks, but checking the process is either racy or
+                                // blocking.
+                                #[cfg(target_os = "linux")]
+                                if err.raw_os_error() == Some(libc::EIO) {
+                                    continue;
                                 }
+
+                                error!("Error reading from PTY in event loop: {err}");
+                                break 'event_loop;
                             }
 
-                            if event.writable {
-                                if let Err(err) = self.pty_write(&mut state) {
-                                    error!("Error writing to PTY in event loop: {err}");
-                                    break 'event_loop;
-                                }
+                            if event.writable
+                                && let Err(err) = self.pty_write(&mut state)
+                            {
+                                error!("Error writing to PTY in event loop: {err}");
+                                break 'event_loop;
                             }
                         },
                         _ => (),

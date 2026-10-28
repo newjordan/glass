@@ -1,6 +1,5 @@
 // Changed for glass from alacritty_terminal 0.26.0; CHANGES.md lists every change.
-// - `ParagraphUp` includes the cursor's own line
-//   (upstream's fix, alacritty/alacritty@7dd7b5b0).
+// - `ParagraphUp` includes the cursor's own line (upstream's fix, alacritty/alacritty@7dd7b5b0).
 
 use std::cmp::min;
 

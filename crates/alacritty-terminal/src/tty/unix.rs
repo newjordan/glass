@@ -1,6 +1,8 @@
 // Changed for glass from alacritty_terminal 0.26.0; CHANGES.md lists every change.
-// - `set_nonblocking` returns its error rather than asserting
-//   (upstream's fix, alacritty/alacritty@985394dd).
+// - `set_nonblocking` returns its error rather than asserting (upstream's fix,
+//   alacritty/alacritty@985394dd).
+// - `ShellUser::from_env` allows `clippy::question_mark`: its suggested `?` would move `pw`, which
+//   the later fields still read.
 
 //! TTY related functionality.
 
@@ -130,6 +132,8 @@ struct ShellUser {
 impl ShellUser {
     /// look for shell, username, longname, and home dir in the respective environment variables
     /// before falling back on looking into `passwd`.
+    // Clippy's `?` for each `match pw` would move `pw`, which the later fields still read.
+    #[allow(clippy::question_mark)]
     fn from_env() -> Result<Self> {
         let mut buf = [0; 1024];
         let pw = get_pw_entry(&mut buf);

@@ -1,6 +1,5 @@
 // Changed for glass from alacritty_terminal 0.26.0; CHANGES.md lists every change.
-// - a cell keeps at most 9 zerowidth characters
-//   (upstream's fix, alacritty/alacritty@ede2ac14).
+// - a cell keeps at most 9 zerowidth characters (upstream's fix, alacritty/alacritty@ede2ac14).
 
 use std::sync::Arc;
 use std::sync::atomic::{AtomicU32, Ordering};

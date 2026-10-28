@@ -1,6 +1,6 @@
 // Changed for glass from alacritty_terminal 0.26.0; CHANGES.md lists every change.
-// - `Row::new` fills the row safely, with no minimum width
-//   (upstream's fix, alacritty/alacritty@d692748d).
+// - `Row::new` fills the row safely, with no minimum width (upstream's fix,
+//   alacritty/alacritty@d692748d).
 
 //! Defines the Row type which makes up lines in the grid.
 
