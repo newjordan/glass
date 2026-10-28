@@ -200,14 +200,37 @@ are not in the repository (`MINDSEYE_ASSETS` names where they are).
 - `docs/`: [the design](docs/GLASS_TERM.md), [the dialect](docs/GLASS_DIALECT.md),
   [configuration](docs/CONFIG.md), [performance](docs/PERFORMANCE.md),
   [FAQ](docs/FAQ.md).
+- `crates/alacritty-terminal`: glass's fork of Alacritty's terminal library
+  (below).
 - `bench/`: the harness behind every number above, and its results.
 - `site/`: the landing page.
 
-The text engine underneath is [`alacritty_terminal`](https://crates.io/crates/alacritty_terminal);
-the window, the renderer, the intake and the dialect are glass's own.
+## Built on
+
+- **[Alacritty](https://alacritty.org)'s terminal library,
+  `alacritty_terminal`**, by Christian Duerr, Joe Wilm and the Alacritty
+  contributors.
+  - It keeps the grid, the scrollback and what every escape sequence means.
+  - glass carries a fork of version 0.26.0 in
+    [`crates/alacritty-terminal`](crates/alacritty-terminal), Apache-2.0 as
+    upstream. Its [README](crates/alacritty-terminal/README.md) says where
+    it comes from, and its [CHANGES.md](crates/alacritty-terminal/CHANGES.md)
+    lists every change.
+  - The window, the renderer, the intake, the dialect and the fast paths
+    that write text, colours and cursor moves straight into the grid are
+    glass's own.
+- **[vte](https://crates.io/crates/vte)**, the escape-sequence parser under
+  it, by the same project.
+- **[wgpu](https://wgpu.rs)** for the GPU, **[winit](https://crates.io/crates/winit)**
+  for the window, **[portable-pty](https://crates.io/crates/portable-pty)**
+  for the pseudo-terminal, **[ratatui](https://ratatui.rs)**'s buffer for
+  the cells, and **[mimalloc](https://github.com/microsoft/mimalloc)** for
+  memory.
 
 ## License
 
-MIT, © Jordan Newman. See [LICENSE](LICENSE). The binary also contains
-crates under their own licences (`alacritty_terminal` is Apache-2.0); the
-release tarballs list them all in `THIRD_PARTY.md`.
+MIT, © Jordan Newman. See [LICENSE](LICENSE). `crates/alacritty-terminal`,
+the fork of Alacritty's library, is Apache-2.0, as upstream
+([its licence](crates/alacritty-terminal/LICENSE-APACHE)). The binary also
+contains crates under their own licences; the release tarballs list them
+all, with their texts, in `THIRD_PARTY.md`.

@@ -31,31 +31,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "alacritty_terminal"
-version = "0.26.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bda177466b9524d59f1b12f0dd30b68696788e9992a7e959021c4a0ed96fcf59"
-dependencies = [
- "base64",
- "bitflags 2.13.2",
- "home",
- "libc",
- "log",
- "miow",
- "parking_lot",
- "piper",
- "polling",
- "regex-automata",
- "rustix 1.1.5",
- "rustix-openpty",
- "serde",
- "signal-hook 0.4.5",
- "unicode-width",
- "vte",
- "windows-sys 0.59.0",
-]
-
-[[package]]
 name = "allocator-api2"
 version = "0.2.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -677,6 +652,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "glass-alacritty-terminal"
+version = "0.26.0"
+dependencies = [
+ "base64",
+ "bitflags 2.13.2",
+ "home",
+ "libc",
+ "log",
+ "miow",
+ "parking_lot",
+ "piper",
+ "polling",
+ "regex-automata",
+ "rustix 1.1.5",
+ "rustix-openpty",
+ "serde",
+ "serde_json",
+ "signal-hook 0.4.5",
+ "unicode-width",
+ "vte",
+ "windows-sys 0.59.0",
+]
+
+[[package]]
 name = "glass-gpu"
 version = "0.1.0"
 dependencies = [
@@ -696,10 +695,10 @@ dependencies = [
 name = "glass-term"
 version = "0.1.0"
 dependencies = [
- "alacritty_terminal",
  "crossterm",
  "cursor-icon",
  "flate2",
+ "glass-alacritty-terminal",
  "glass-stage",
  "glass-window",
  "gltf",

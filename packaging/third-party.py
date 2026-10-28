@@ -112,7 +112,14 @@ def main():
             if any(k["kind"] is None for k in dep["dep_kinds"]):
                 stack.append(dep["pkg"])
 
-    crates = sorted((packages[pid] for pid in seen if pid not in members), key=lambda p: (p["name"], p["version"]))
+    # The workspace's own crates are glass's, under glass's licence, except
+    # a crate carried under another (the fork of alacritty_terminal,
+    # Apache-2.0): that one is listed with its licence like any other.
+    own = packages[root].get("license")
+    crates = sorted(
+        (packages[pid] for pid in seen if pid not in members or packages[pid].get("license") != own),
+        key=lambda p: (p["name"], p["version"]),
+    )
     version = packages[root]["version"]
 
     texts = {}  # sha256 -> (text, [(crate label, file name)])
