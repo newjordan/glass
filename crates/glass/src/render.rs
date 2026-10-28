@@ -309,9 +309,11 @@ impl Preparing {
         Ok(cell)
     }
 
-    /// The background image, once decoded, still here for the renderer.
-    pub fn wallpaper(&mut self) -> Option<&crate::wallpaper::Wallpaper> {
-        self.wallpaper.get().and_then(Option::as_ref)
+    /// The background image, once decoded, still here for the renderer;
+    /// and the fonts, if sized already, to draw the early frames' text.
+    pub fn early_parts(&mut self) -> (Option<&crate::wallpaper::Wallpaper>, Option<&mut Fonts>) {
+        let wallpaper = self.wallpaper.get().and_then(Option::as_ref);
+        (wallpaper, self.sized.as_mut().map(|(fonts, _)| fonts))
     }
 
     /// The fonts, sized for `scale`.
@@ -682,28 +684,7 @@ impl Renderer {
     }
 
     fn rgb(&self, color: Color, fallback: Rgb) -> Rgb {
-        let ansi = &self.palette.ansi;
-        match color {
-            Color::Reset => fallback,
-            Color::Black => ansi[0],
-            Color::Red => ansi[1],
-            Color::Green => ansi[2],
-            Color::Yellow => ansi[3],
-            Color::Blue => ansi[4],
-            Color::Magenta => ansi[5],
-            Color::Cyan => ansi[6],
-            Color::Gray => ansi[7],
-            Color::DarkGray => ansi[8],
-            Color::LightRed => ansi[9],
-            Color::LightGreen => ansi[10],
-            Color::LightYellow => ansi[11],
-            Color::LightBlue => ansi[12],
-            Color::LightMagenta => ansi[13],
-            Color::LightCyan => ansi[14],
-            Color::White => ansi[15],
-            Color::Rgb(r, g, b) => [r, g, b],
-            Color::Indexed(i) => indexed(i, ansi),
-        }
+        cell_rgb(&self.palette, color, fallback)
     }
 
     fn build(&mut self, snapshot: &Snapshot, layers: &[Layer], focused: bool, out: &mut Frame) {
@@ -1399,6 +1380,34 @@ fn premultiply(rgb: Rgb, alpha: f32) -> [f32; 4] {
         f32::from(rgb[2]) / 255.0 * alpha,
         alpha,
     ]
+}
+
+/// A cell colour as RGB: the palette's for the named and indexed colours,
+/// `fallback` for the default. The GPU renderer and the early frames both
+/// read colours through this.
+pub(crate) fn cell_rgb(palette: &Palette, color: Color, fallback: Rgb) -> Rgb {
+    let ansi = &palette.ansi;
+    match color {
+        Color::Reset => fallback,
+        Color::Black => ansi[0],
+        Color::Red => ansi[1],
+        Color::Green => ansi[2],
+        Color::Yellow => ansi[3],
+        Color::Blue => ansi[4],
+        Color::Magenta => ansi[5],
+        Color::Cyan => ansi[6],
+        Color::Gray => ansi[7],
+        Color::DarkGray => ansi[8],
+        Color::LightRed => ansi[9],
+        Color::LightGreen => ansi[10],
+        Color::LightYellow => ansi[11],
+        Color::LightBlue => ansi[12],
+        Color::LightMagenta => ansi[13],
+        Color::LightCyan => ansi[14],
+        Color::White => ansi[15],
+        Color::Rgb(r, g, b) => [r, g, b],
+        Color::Indexed(i) => indexed(i, ansi),
+    }
 }
 
 /// The xterm 256-colour table above the 16 palette colours.

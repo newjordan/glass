@@ -151,6 +151,7 @@ where
         cursor: winit::window::CursorIcon::Default,
         early: None,
         early_size: (0, 0),
+        early_glyphs: crate::early::Glyphs::default(),
         app_due: None,
     };
     event_loop
@@ -223,6 +224,8 @@ struct Glass<T> {
     /// and the size it was drawn at.
     early: Option<crate::early::Frame>,
     early_size: (u32, u32),
+    /// The glyphs the early frames drew, kept between them.
+    early_glyphs: crate::early::Glyphs,
     /// With the early frame on show: when the app starts if the
     /// compositor has not given the window another size by then.
     app_due: Option<Instant>,
@@ -419,13 +422,34 @@ impl<T: Send + 'static> Glass<T> {
         let (Some(window), Some(preparing)) = (&self.window, self.preparing.as_mut()) else {
             return;
         };
+        let (wallpaper, fonts) = preparing.early_parts();
         let look = crate::early::Look {
             background: self.options.palette.background,
             opacity: self.options.background_opacity,
-            wallpaper: preparing.wallpaper(),
+            wallpaper,
         };
+        // With the program running, its cells too, where the renderer will
+        // put them: the padding, then half the space whole cells leave.
+        let grid = *self.host.shared.grid.lock_recover();
+        let text = fonts.filter(|_| self.app.is_none() && grid.cols > 0).map(|fonts| {
+            let pad = (self.options.padding * window.scale_factor() as f32).round();
+            let spare = |window: u32, cells: u16, size: u32| {
+                ((window as f32 - 2.0 * pad - f32::from(cells) * size as f32) / 2.0).max(0.0).floor()
+            };
+            crate::early::Text {
+                snapshot: &self.current,
+                fonts,
+                palette: &self.options.palette,
+                origin: (
+                    (pad + spare(grid.width_px, grid.cols, grid.cell_width)) as u32,
+                    (pad + spare(grid.height_px, grid.rows, grid.cell_height)) as u32,
+                ),
+                focused: self.focused,
+                glyphs: &mut self.early_glyphs,
+            }
+        });
         // The new buffer is committed before the old one goes.
-        if let Some(frame) = crate::early::show(window, &look) {
+        if let Some(frame) = crate::early::show(window, &look, text) {
             self.early = Some(frame);
             let size = window.inner_size();
             self.early_size = (size.width, size.height);
@@ -1048,6 +1072,21 @@ impl<T: Send + 'static> ApplicationHandler<UserEvent> for Glass<T> {
 
     fn user_event(&mut self, event_loop: &ActiveEventLoop, event: UserEvent) {
         match event {
+            UserEvent::Frame if self.renderer.is_none() && self.early.is_some() => {
+                // The program's frame before the GPU is open: drawn early.
+                let fresh = {
+                    let mut slot = self.host.shared.slot.lock_recover();
+                    let fresh = slot.fresh;
+                    if fresh {
+                        std::mem::swap(&mut slot.snapshot, &mut self.current);
+                        slot.fresh = false;
+                    }
+                    fresh
+                };
+                if fresh {
+                    self.show_early();
+                }
+            }
             UserEvent::Frame => self.draw(false),
             UserEvent::Pictures => self.draw(true),
             // Layers are handed over mid-draw (a producer's per-frame
