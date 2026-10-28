@@ -275,6 +275,15 @@ impl Preparing {
         self.gpu_done.when_done(Box::new(wake))
     }
 
+    /// The grid a window opened for `cols` by `rows` cells at `scale`
+    /// will hold, before there is a window: what [`Self::pixels_for`]
+    /// asks for, measured as [`Self::grid_for`] measures it.
+    #[cfg_attr(not(target_os = "macos"), allow(dead_code))]
+    pub fn grid_at(&mut self, options: &Options, scale: f32, cols: u16, rows: u16) -> Result<GridSize, String> {
+        let (width, height) = self.pixels_for(options, scale, cols, rows)?;
+        self.grid_for(options, scale, width, height)
+    }
+
     /// The window size, in pixels, that holds `cols` by `rows` cells and
     /// the padding at `scale` (the renderer's `padding_px` on each side).
     /// The fonts are sized for it here and kept for the renderer.

@@ -402,6 +402,14 @@ pub struct Session {
     event_seen: Mutex<intake::glass_dialect::ShowcaseSeen>,
 }
 
+/// A program started in its pty, waiting for its session.
+pub struct Started {
+    master: Box<dyn MasterPty + Send>,
+    child: Box<dyn Child + Send + Sync>,
+    /// The size the pty was opened at.
+    size: PtySize,
+}
+
 fn lock<T>(mutex: &Mutex<T>) -> MutexGuard<'_, T> {
     mutex.lock().unwrap_or_else(|e| e.into_inner())
 }
@@ -416,10 +424,16 @@ impl Session {
         tx: Sender<Msg>,
         focused: Arc<AtomicBool>,
     ) -> Result<Self, String> {
+        Self::attach(Self::start(command, dir, grid)?, grid, palette, host, tx, focused)
+    }
+
+    /// Open a pty of `grid`'s size and start the program in it, before
+    /// there is a session (or a window) to read it: its output waits in
+    /// the pty until [`Session::attach`].
+    pub fn start(command: &[String], dir: Option<&Path>, grid: glass_window::GridSize) -> Result<Started, String> {
         let (rows, cols) = if grid.rows == 0 || grid.cols == 0 { (24, 80) } else { (grid.rows, grid.cols) };
-        let pair = native_pty_system()
-            .openpty(pty_size(rows, cols, grid))
-            .map_err(|e| format!("openpty: {e}"))?;
+        let size = pty_size(rows, cols, grid);
+        let pair = native_pty_system().openpty(size).map_err(|e| format!("openpty: {e}"))?;
 
         let mut cmd = match command.split_first() {
             Some((program, args)) => {
@@ -452,6 +466,26 @@ impl Session {
         glass_window::startup::mark("program started");
         // Close our copy of the slave so the reader sees the end of output.
         drop(pair.slave);
+        Ok(Started { master: pair.master, child, size })
+    }
+
+    /// The session for a program [`Session::start`] started, on the
+    /// window's `grid`. Where the window's grid is not the one the program
+    /// started on, the pty takes it now, as on any resize.
+    pub fn attach(
+        started: Started,
+        grid: glass_window::GridSize,
+        palette: &glass_window::Palette,
+        host: glass_window::Host,
+        tx: Sender<Msg>,
+        focused: Arc<AtomicBool>,
+    ) -> Result<Self, String> {
+        let Started { master, child, size } = started;
+        let (rows, cols) = if grid.rows == 0 || grid.cols == 0 { (size.rows, size.cols) } else { (grid.rows, grid.cols) };
+        let now = pty_size(rows, cols, grid);
+        if now != size {
+            let _ = master.resize(now);
+        }
 
         let info = HostInfo {
             colors: [palette.foreground, palette.background, palette.cursor],
@@ -459,8 +493,8 @@ impl Session {
         };
         let engine = Arc::new(Mutex::new(Engine::new(usize::from(rows), usize::from(cols), info)));
         let writer: Arc<Mutex<Box<dyn Write + Send>>> =
-            Arc::new(Mutex::new(pair.master.take_writer().map_err(|e| format!("pty writer: {e}"))?));
-        let reader = pair.master.try_clone_reader().map_err(|e| format!("pty reader: {e}"))?;
+            Arc::new(Mutex::new(master.take_writer().map_err(|e| format!("pty writer: {e}"))?));
+        let reader = master.try_clone_reader().map_err(|e| format!("pty reader: {e}"))?;
         // The pty is read on a thread of its own, ahead of the parsing.
         // Linux's pty hands over up to 4 KiB a read, and the reads go over
         // in hand-offs of up to 16 KiB. macOS's hands over 1 KiB, too
@@ -468,7 +502,7 @@ impl Session {
         // came to 163 MB/s on an M4 Pro, against 375 read here), so there
         // the reads gather in one buffer the parsing takes whole.
         #[cfg(target_os = "linux")]
-        let mut reader = crate::read_ahead::ReadAhead::spawn(reader, pty_fd(pair.master.as_ref()))
+        let mut reader = crate::read_ahead::ReadAhead::spawn(reader, pty_fd(master.as_ref()))
             .map_err(|e| format!("pty reader: {e}"))?;
         #[cfg(not(target_os = "linux"))]
         let mut reader = crate::gather::Gathered::spawn(reader).map_err(|e| format!("pty reader: {e}"))?;
@@ -554,7 +588,7 @@ impl Session {
             intake,
             splitter,
             writer,
-            master: pair.master,
+            master,
             child,
             output,
             gate,

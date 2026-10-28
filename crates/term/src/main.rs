@@ -25,7 +25,7 @@ mod view;
 
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{Arc, mpsc};
+use std::sync::{Arc, Mutex, mpsc};
 use std::time::{Duration, Instant};
 
 use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers, MouseButton, MouseEventKind};
@@ -136,7 +136,19 @@ fn main() {
     options.transition = false;
     let palette = options.palette.clone();
     glass_window::startup::mark("options");
-    match glass_window::run(options, move |host| run(host, args, palette)) {
+    // Where the window's grid is known before the window (macOS), the
+    // program starts then, and its first output waits for the window
+    // rather than the other way round.
+    let started = Arc::new(Mutex::new(None));
+    let early = {
+        let (started, command, dir) = (Arc::clone(&started), args.command.clone(), args.dir.clone());
+        move |grid| *started.lock().unwrap_or_else(|e| e.into_inner()) = Some(Session::start(&command, dir.as_deref(), grid))
+    };
+    let app = move |host| {
+        let started = started.lock().unwrap_or_else(|e| e.into_inner()).take();
+        run(host, args, palette, started)
+    };
+    match glass_window::run_early(options, early, app) {
         Ok(code) => std::process::exit(code),
         Err(error) => {
             eprintln!("glass: {error}");
@@ -146,12 +158,22 @@ fn main() {
 }
 
 /// The terminal's life, on the thread glass gives it: until the program
-/// exits or the window closes. Returns the exit code.
-fn run(host: glass_window::Host, args: Args, palette: glass_window::Palette) -> i32 {
+/// exits or the window closes. Returns the exit code. `started` is the
+/// program, if it was started before the window was there.
+fn run(
+    host: glass_window::Host,
+    args: Args,
+    palette: glass_window::Palette,
+    started: Option<Result<session::Started, String>>,
+) -> i32 {
     let grid = host.grid_size();
     let (tx, rx) = mpsc::channel();
     let focused = Arc::new(AtomicBool::new(true));
-    let mut session = match Session::spawn(&args.command, args.dir.as_deref(), grid, &palette, host.clone(), tx.clone(), Arc::clone(&focused)) {
+    let session = match started {
+        Some(started) => started.and_then(|started| Session::attach(started, grid, &palette, host.clone(), tx.clone(), Arc::clone(&focused))),
+        None => Session::spawn(&args.command, args.dir.as_deref(), grid, &palette, host.clone(), tx.clone(), Arc::clone(&focused)),
+    };
+    let mut session = match session {
         Ok(session) => session,
         Err(error) => {
             eprintln!("glass: {error}");

@@ -103,9 +103,34 @@ where
     T: Send + 'static,
     F: FnOnce(Host) -> T + Send + 'static,
 {
+    run_early(options, |_| {}, app)
+}
+
+/// [`run`], with `early` called first, on this thread, with the grid the
+/// window will open on, where that is known before there is a window: on
+/// macOS, which gives a window the size it asks for, on the main display
+/// at that display's scale. macOS takes some 70 ms to let an app make its
+/// window, which a program started from `early` needn't wait out.
+/// Elsewhere the window's size is the compositor's to give, and `early`
+/// is not called.
+pub fn run_early<T, F, E>(options: Options, early: E, app: F) -> Result<T, String>
+where
+    T: Send + 'static,
+    F: FnOnce(Host) -> T + Send + 'static,
+    E: FnOnce(crate::GridSize),
+{
     // The GPU, the fonts and the background image get going while the
     // window system is reached and the window opens.
-    let preparing = crate::render::Preparing::start(&options);
+    #[allow(unused_mut)]
+    let mut preparing = crate::render::Preparing::start(&options);
+    #[cfg(target_os = "macos")]
+    if let Some(scale) = crate::display::main_scale()
+        && let Ok(grid) = preparing.grid_at(&options, scale, options.columns, options.rows)
+    {
+        early(grid);
+    }
+    #[cfg(not(target_os = "macos"))]
+    drop(early);
     let event_loop = EventLoop::<UserEvent>::with_user_event()
         .build()
         .map_err(|e| format!("no window system: {e}"))?;

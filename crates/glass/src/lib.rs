@@ -10,6 +10,8 @@
 mod backend;
 mod clipboard;
 mod config;
+#[cfg(target_os = "macos")]
+mod display;
 mod early;
 mod font;
 pub mod graphics;
@@ -50,7 +52,7 @@ pub use glass_stage::scene;
 /// glass's `GLASS_*` settings in the environment (`glass-stage`'s).
 pub use glass_stage::env;
 pub use showcase::{Fit, MODEL_ROOT, Mark, SHOWCASE_PICTURE, Showing};
-pub use window::run;
+pub use window::{run, run_early};
 
 /// Locking shared state that survives a panicked holder. The window's
 /// shared state is plain data — a grid size, a snapshot slot, layer and
