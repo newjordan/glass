@@ -769,7 +769,7 @@ fn inflate(data: &[u8]) -> Result<Vec<u8>, (String, String)> {
 }
 
 /// A temporary directory the dialect may unlink from.
-fn temp_dirs() -> Vec<std::path::PathBuf> {
+pub(super) fn temp_dirs() -> Vec<std::path::PathBuf> {
     let mut dirs = vec![std::path::PathBuf::from("/tmp"), std::path::PathBuf::from("/dev/shm")];
     if let Ok(dir) = std::env::var("TMPDIR")
         && !dir.is_empty()

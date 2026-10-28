@@ -573,14 +573,24 @@ fn a_file_transmission_reads_a_real_png() {
 #[test]
 fn a_temporary_file_transmission_does_not_unlink_through_dotdot() {
     // The path names /tmp, then climbs out with `..` into this test's own
-    // directory (not under /tmp, /dev/shm or TMPDIR). The path is encoded
-    // once: the payload is the base64 path.
+    // directory, which must not be under /tmp, /dev/shm or TMPDIR (judged
+    // as the dialect judges them). The path is encoded once: the payload
+    // is the base64 path.
     let dir = test_dir("tt");
     std::fs::create_dir_all(&dir).unwrap();
+    let canonical = std::fs::canonicalize(&dir).unwrap();
+    let in_temp = super::apc_graphics::temp_dirs()
+        .iter()
+        .any(|temp| std::fs::canonicalize(temp).is_ok_and(|temp| canonical.starts_with(temp)));
+    if in_temp {
+        // A checkout under a temp directory (a package build in /tmp, say)
+        // has nowhere outside one to put the file: nothing to check.
+        let _ = std::fs::remove_dir_all(&dir);
+        eprintln!("skipped: {} is under a temp directory, so there is no outside to climb into", dir.display());
+        return;
+    }
     let file = dir.join("tty-graphics-protocol.png");
     std::fs::write(&file, encode_png(1, 1)).unwrap();
-    let tmpdir_env = std::env::var("TMPDIR").unwrap_or_default();
-    assert!(!file.starts_with("/tmp") && (tmpdir_env.is_empty() || !file.starts_with(&tmpdir_env)));
     let climbing = format!("/tmp/..{}", file.display());
     let mut intake = Intake::new(1);
     let mut engine = FakeEngine::new();
