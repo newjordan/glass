@@ -107,8 +107,9 @@ soon as the compositor has settled the window's size. The first frame with
 text (the prompt) comes when the GPU is ready: about 130 to 180 ms after
 launch on this machine, depending on GPU load. That is still sooner than
 kitty's shell starts (193 ms), but **it has not been measured as its own
-number yet**, for either terminal. A measure for it (launch until the
-program's first output is on screen) is being added to `bench/`.
+number yet**, for either terminal. `bench/run-visible.sh` measures it
+(launch until the program's first output is on screen, captured frame by
+frame); its results are not published yet.
 
 `GLASS_STARTUP_TRACE=1` prints each step of glass's startup on stderr, with
 milliseconds since `main`.

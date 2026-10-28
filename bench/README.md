@@ -15,16 +15,16 @@ terminal is one line (below); please send the numbers whatever they say.
 | `run-misc.sh` | For each terminal: eight quick startups (a); an idle window's memory, threads, VRAM (`nvidia-smi`) and CPU over 10 s; and key latency, 40 keys sent through Hyprland until `keys.py` reads them. |
 | `keys.py` | Runs inside the terminal: logs the time of every key it reads, until `q`. |
 | `summarize.py` | Medians over the rounds of `run-tput.sh`'s results: MB/s per workload, TUI frames a second, CPU over all six. |
+| `run-visible.sh` | Launch until the program's first output is on screen. The program paints the whole screen magenta first thing; `visible/viscap.c`, a wlr-screencopy client, watches a patch of the headless output (240 Hz) frame by frame for it. The same launches give (a) program running, (b) `openwindow`, and (w) the window first showing at all. `visible/calclient.c` calibrates the capture with a client whose frames' times are known, and every captured launch is paired with one uncaptured, to see what capturing costs. `visible/analyze.py` turns a session into JSON. Builds its helpers with `cc` and `wayland-scanner`. |
 | `take-mindseye.sh` | Records the mind's eye film: glass films itself (`GLASS_RECORD`) while the `glass_mindseye` example runs in it, full-screen on a headless output. |
 | `lib.sh` | Shared: the headless output, launching, and the terminals the harness knows (`term_cmd`). |
 | `scoreboard-20261027b.json` | The published numbers, with every round and launch behind them. The film's board reads it. |
 | `results/2026-10-27/` | The raw files behind the published numbers; see its README. |
 | `results/local/` | Where your own runs go by default (ignored by git). |
 
-TODO: a "time to visible prompt" measure (`run-visible.sh`: launch until the
-program's first output is on screen, for every terminal) is being written
-and is not in this directory yet. See docs/PERFORMANCE.md for what is known
-about it so far.
+`run-visible.sh` and `visible/` are the newest measure, launch until the
+program's first output is on screen. Their results are not published yet;
+see below.
 
 ### The six workloads (`tput.py`)
 
@@ -105,6 +105,20 @@ Then `TERMS="glass foot" ROUNDS="1 2 3 4 5" bench/run-tput.sh`, and the same
 that starts commands through a helper process gets the helper's CPU time
 instead; give `tput.py` the terminal's pid the way it reads kitty's
 (`KITTY_PID`), or set `BENCH_TERM_PID`.
+
+## Time to a visible prompt
+
+```sh
+RUNS=16 TERMS="glass kitty" bench/run-visible.sh
+```
+
+This is the measure for when the prompt really appears (the published
+"window on screen" is the window with its background, before the GPU's
+first frame; see [docs/PERFORMANCE.md](../docs/PERFORMANCE.md#when-the-prompt-appears)).
+It needs `cc`, `wayland-scanner`, `wayland-protocols` and
+`libwayland-client` to build its two helpers, and it adds one window rule
+(for `bench-vis-*` windows: no open animation, full opacity) for the
+length of the run. No result from it is published yet.
 
 ## Record the film
 
