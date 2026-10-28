@@ -137,7 +137,7 @@ for t in terms:
         ff = [r["glass_trace_ms"].get("[main] first frame") for r in rs if "glass_trace_ms" in r]
         ff = [x for x in ff if x is not None]
         s["glass_trace_first_frame_median_ms"] = med(ff)
-        ps = [r["glass_trace_ms"].get("[cockpit] program started") for r in rs if "glass_trace_ms" in r]
+        ps = [r["glass_trace_ms"].get("[app] program started", r["glass_trace_ms"].get("[cockpit] program started")) for r in rs if "glass_trace_ms" in r]
         s["glass_trace_program_started_median_ms"] = med([x for x in ps if x is not None])
         dv = [r["glass_trace_ms"].get("[gpu-open] device") for r in rs if "glass_trace_ms" in r]
         s["glass_trace_gpu_device_median_ms"] = med([x for x in dv if x is not None])
