@@ -837,8 +837,9 @@ fn relative_placements_against_the_cap_stay_quick_and_leave_with_their_parent() 
     }
     let ms = started.elapsed().as_millis();
     eprintln!("50_000 relative placements against the cap: {ms} ms");
-    // About 4 s on a desktop. A shared CI runner is several times slower;
-    // the budget there still catches the quadratic eviction this guards.
+    // Well under a second in a release build on a desktop, and a few seconds
+    // in a debug one; a shared CI runner's debug build took 21 s. The budget
+    // there still catches the quadratic eviction this guards against.
     let budget = if std::env::var_os("CI").is_some() { 60_000 } else { 10_000 };
     assert!(ms < budget, "relative cap took {ms} ms");
     assert!(intake.placements.len() <= 8192, "placements are capped");
