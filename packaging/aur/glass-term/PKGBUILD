@@ -1,0 +1,86 @@
+# Maintainer: Jordan Newman <newjordan@gmail.com>
+#
+# glass built from the release tag's source. glass-term-bin installs the
+# same files from the release tarball. The binary links only glibc and
+# libgcc_s; the libraries below are loaded at run time.
+
+pkgname=glass-term
+pkgver=0.1.0
+pkgrel=1
+pkgdesc='A GPU terminal that takes in pictures, layers, particles and 3D scenes'
+arch=('x86_64' 'aarch64')
+url='https://github.com/newjordan/glass'
+license=('MIT')
+depends=(
+  'fontconfig'
+  'gcc-libs'
+  'glibc'
+  'hicolor-icon-theme'
+  'libx11'
+  'libxcursor'
+  'libxi'
+  'libxkbcommon'
+  'libxkbcommon-x11'
+  'vulkan-icd-loader'
+  'wayland'
+)
+makedepends=('cargo' 'python')
+optdepends=(
+  'vulkan-driver: Vulkan driver for the GPU'
+  'wl-clipboard: clipboard on Wayland'
+  'xclip: clipboard on X11'
+  'xdg-utils: open links with Ctrl+click'
+  'ffmpeg: record the window (GLASS_RECORD)'
+  'xdg-terminal-exec: make glass the default terminal'
+)
+# glass-git (a web browser) also installs /usr/bin/glass.
+conflicts=('glass-term-bin' 'glass-git')
+source=("glass-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
+# updpkgsums fills this in once the tag is pushed (packaging/README.md).
+sha256sums=('SKIP')
+
+_host() {
+  rustc -vV | sed -n 's/^host: //p'
+}
+
+prepare() {
+  cd "glass-$pkgver"
+  export RUSTUP_TOOLCHAIN=stable
+  cargo fetch --locked --target "$(_host)"
+}
+
+build() {
+  cd "glass-$pkgver"
+  export RUSTUP_TOOLCHAIN=stable
+  export CARGO_TARGET_DIR=target
+  cargo build --frozen --release -p glass-term
+  CARGO_NET_OFFLINE=true python packaging/third-party.py \
+    --target "$(_host)" --output target/THIRD_PARTY.md
+}
+
+check() {
+  cd "glass-$pkgver"
+  export RUSTUP_TOOLCHAIN=stable
+  export CARGO_TARGET_DIR=target
+  # The terminal's own tests; the window's GPU tests need a GPU. The
+  # skipped test assumes the source tree is outside /tmp and $TMPDIR,
+  # which a BUILDDIR under /tmp (a common tmpfs setup) breaks.
+  cargo test --frozen -p glass-term --bin glass -- \
+    --skip a_temporary_file_transmission_does_not_unlink_through_dotdot
+}
+
+package() {
+  cd "glass-$pkgver"
+  install -Dm755 target/release/glass -t "$pkgdir/usr/bin/"
+  install -Dm644 packaging/glass.desktop -t "$pkgdir/usr/share/applications/"
+  install -Dm644 packaging/icons/glass.svg -t "$pkgdir/usr/share/icons/hicolor/scalable/apps/"
+  local png size
+  for png in packaging/icons/png/glass-*.png; do
+    size=${png##*/glass-}
+    size=${size%.png}
+    install -Dm644 "$png" "$pkgdir/usr/share/icons/hicolor/${size}x${size}/apps/glass.png"
+  done
+  install -Dm644 LICENSE target/THIRD_PARTY.md -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -Dm644 README.md CHANGELOG.md docs/GLASS_TERM.md docs/GLASS_DIALECT.md \
+    -t "$pkgdir/usr/share/doc/$pkgname/"
+}

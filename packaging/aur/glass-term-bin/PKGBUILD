@@ -1,0 +1,56 @@
+# Maintainer: Jordan Newman <newjordan@gmail.com>
+#
+# glass from the release tarball, as GitHub Actions built it (Ubuntu 20.04,
+# glibc 2.31; packaging/README.md). glass-term builds the same files from
+# source. The binary links only glibc and libgcc_s; the libraries below are
+# loaded at run time.
+
+pkgname=glass-term-bin
+pkgver=0.1.0
+pkgrel=1
+pkgdesc='A GPU terminal that takes in pictures, layers, particles and 3D scenes (release binary)'
+arch=('x86_64' 'aarch64')
+url='https://github.com/newjordan/glass'
+license=('MIT')
+depends=(
+  'fontconfig'
+  'gcc-libs'
+  'glibc'
+  'hicolor-icon-theme'
+  'libx11'
+  'libxcursor'
+  'libxi'
+  'libxkbcommon'
+  'libxkbcommon-x11'
+  'vulkan-icd-loader'
+  'wayland'
+)
+optdepends=(
+  'vulkan-driver: Vulkan driver for the GPU'
+  'wl-clipboard: clipboard on Wayland'
+  'xclip: clipboard on X11'
+  'xdg-utils: open links with Ctrl+click'
+  'ffmpeg: record the window (GLASS_RECORD)'
+  'xdg-terminal-exec: make glass the default terminal'
+)
+provides=("glass-term=$pkgver")
+# glass-git (a web browser) also installs /usr/bin/glass.
+conflicts=('glass-term' 'glass-git')
+# The binary is installed as the release shipped it.
+options=('!strip' '!debug')
+source_x86_64=("$url/releases/download/v$pkgver/glass-$pkgver-linux-x86_64.tar.gz")
+source_aarch64=("$url/releases/download/v$pkgver/glass-$pkgver-linux-aarch64.tar.gz")
+# updpkgsums fills these in from the release (packaging/README.md).
+sha256sums_x86_64=('SKIP')
+sha256sums_aarch64=('SKIP')
+
+package() {
+  cd "glass-$pkgver-linux-$CARCH"
+  install -Dm755 bin/glass -t "$pkgdir/usr/bin/"
+  local file
+  find share -type f | while read -r file; do
+    install -Dm644 "$file" "$pkgdir/usr/$file"
+  done
+  install -Dm644 LICENSE THIRD_PARTY.md -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -Dm644 README.md CHANGELOG.md -t "$pkgdir/usr/share/doc/$pkgname/"
+}
