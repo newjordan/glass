@@ -31,3 +31,10 @@ Upstream's `lib.rs` denies clippy's warnings. Now that the library is a member o
 - **`event_loop.rs`, `selection.rs`, `term/mod.rs`:** four nested `if`s are written as `if … && let` chains (`collapsible_if`).
 - **`term/mod.rs`:** a tab stop test uses `is_multiple_of` (`manual_is_multiple_of`).
 - **`tty/unix.rs`:** `ShellUser::from_env` allows `question_mark`, because the suggested `?` would move `pw`, which the later fields still read.
+
+## Measured and left as upstream
+
+- **`Row::reset`** clears a row the screen scrolls onto. On the Mac mini (M4 Pro) it takes about 13% of the unicode workload, and on the Ryzen about 3.5%.
+  - Four rewrites were timed against it on both machines: two passes, a test of four cells' extras at once, and blank cells copied 2 or 4 at a time. None was faster.
+  - The loop is bound by moving the row into the cache, not by its instructions. The recycled row is the oldest line of a 10,000-line history (about 37 MB), and whatever writes it first pays to bring it in.
+- **`CellExtra`'s inline marks** (upstream's `ede2ac14`, above) were timed against the `Vec` they replace, side by side on the Mac: unicode is about 1% faster (261.6 against 259.0 MB/s, four rounds each), because a mark no longer makes a second allocation.

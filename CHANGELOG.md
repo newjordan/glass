@@ -81,6 +81,15 @@ but wide text, which is about even; docs/PERFORMANCE.md has the table.
 
 These are one machine's numbers, not a general claim.
 
+### The terminal engine
+
+- glass carries Alacritty's `alacritty_terminal` 0.26.0 as a fork in
+  `crates/alacritty-terminal`, Apache-2.0 as upstream. Its README credits
+  the authors and its CHANGES.md lists every change.
+- It takes upstream's five fixes made since that release. Among them, a
+  cell keeps at most nine combining marks, so a program can no longer
+  exhaust memory by writing marks onto one cell.
+
 ### Platforms and packaging
 
 - Linux on Wayland and X11 with Vulkan, for x86_64 and aarch64. The

@@ -21,9 +21,12 @@ work is careful, well tested and readable.
 
 glass already writes plain text, colours and cursor moves into this
 library's grid itself, around the parser, and holds the result to the
-library's own by tests. Going further means changing the grid, for example
-how a scrolled row is cleared and how a combining mark is stored. That
-needs the code here, not behind a crate boundary.
+library's own by tests. Carrying the code lets glass:
+
+- take upstream's fixes as they land rather than at the next release. The
+  first five are in [CHANGES.md](CHANGES.md), among them a cap on the
+  marks one cell can hold;
+- change the grid itself where a measurement shows it pays.
 
 The crate is renamed (`glass-alacritty-terminal`) so it can't be taken for
 an upstream release. Its library keeps the name `alacritty_terminal`, so

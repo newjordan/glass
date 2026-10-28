@@ -19,9 +19,9 @@ grid, the scrollback and what every escape sequence means. glass carries
 version 0.26.0 in [`crates/alacritty-terminal`](../crates/alacritty-terminal),
 Apache-2.0 as upstream, with every change listed in its
 [CHANGES.md](../crates/alacritty-terminal/CHANGES.md). It forked so it can
-change how the grid stores and clears cells; Alacritty doesn't take
-contributions made with language models, which glass's changes were, so
-they stay in glass. The window, the renderer (wgpu), the picture store,
+take upstream's fixes as they land and change the grid where a measurement
+shows it pays. Alacritty doesn't take contributions made with language
+models, which glass's changes were, so they stay in glass. The window, the renderer (wgpu), the picture store,
 the keyboard handling, the fast paths into the grid, glass's own dialect
 and every adapter for the other dialects (APC graphics, sixel, OSC 1337)
 are glass's own code.
