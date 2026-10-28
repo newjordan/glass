@@ -208,7 +208,9 @@ install_release() {
     ln -sfn "$version" "$install_dir/current"
     # Earlier versions are no longer pointed at.
     for old in "$install_dir"/*; do
-        [ -d "$old" ] && [ ! -L "$old" ] && [ -x "$old/bin/glass" ] || continue
+        if [ ! -d "$old" ] || [ -L "$old" ] || [ ! -x "$old/bin/glass" ]; then
+            continue
+        fi
         case ${old##*/} in
             "$version") continue ;;
             [0-9]*.[0-9]*.[0-9]*) rm -rf "$old"; say "removed the earlier ${old##*/}" ;;
