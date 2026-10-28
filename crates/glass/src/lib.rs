@@ -15,6 +15,7 @@ mod font;
 pub mod graphics;
 pub mod page;
 mod input;
+pub mod keytrace;
 mod layer;
 mod probe;
 mod record;

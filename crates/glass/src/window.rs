@@ -740,6 +740,7 @@ impl<T: Send + 'static> Glass<T> {
     }
 
     fn on_key(&mut self, event: &KeyEvent) {
+        crate::keytrace::mark("key-window");
         if let Some(shortcut) = input::shortcut(event, self.mods) {
             if event.state == ElementState::Pressed {
                 match shortcut {
