@@ -20,7 +20,6 @@ use crate::picture::GpuPicture;
 
 /// A scene in its own pixels, drawn into picture `id`'s cells.
 #[derive(Clone, Debug, PartialEq)]
-#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Stage {
     /// The picture id its cells name.
     pub id: u32,

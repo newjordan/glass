@@ -1,15 +1,15 @@
 [package]
 name = "glass-stage"
 version = "0.1.0"
-description = "A game's scene as layers, and a 3D scene of nodes, meshes and materials: what the window (crates/glass) and the browser both draw (docs/RENDER_FOUNDATION.md, docs/GLASS_CORE.md)"
+description = "glass's scene descriptions: layers, and a 3D scene of nodes, meshes and materials, as the window (crates/glass) draws them"
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 publish.workspace = true
 
 [features]
-# Every description a remote window draws, as serde data (crates/glass
-# `remote`, docs/REMOTE_GLASS.md).
+# Every description as serde data: the terminal's scene wire maps onto
+# these types (crates/term/src/intake/glass_scene.rs).
 serde = ["dep:serde"]
 
 [dependencies]

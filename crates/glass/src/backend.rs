@@ -236,9 +236,6 @@ impl Backend for GlassBackend {
             .shared
             .pictures_waiting
             .swap(false, std::sync::atomic::Ordering::AcqRel);
-        if self.host.shared.card_changed.swap(false, std::sync::atomic::Ordering::AcqRel) {
-            self.changed = true;
-        }
         let cursor = self
             .cursor_visible
             .then_some((self.cursor.x, self.cursor.y));
@@ -259,7 +256,6 @@ impl Backend for GlassBackend {
         self.flushed_cursor_style = Some(self.cursor_style);
         let dirty_curr = self.dirty_curr.take();
         {
-            let card = self.host.shared.card.lock_recover().clone();
             let mut slot = self.host.shared.slot.lock_recover();
             sync_into_slot(
                 &self.cells,
@@ -267,7 +263,6 @@ impl Backend for GlassBackend {
                 self.rows,
                 cursor,
                 self.cursor_style,
-                card,
                 &mut self.revision,
                 &mut self.dirty_prev,
                 dirty_curr,
@@ -286,13 +281,11 @@ fn sync_into_slot(
     rows: u16,
     cursor: Option<(u16, u16)>,
     cursor_style: crate::CursorStyle,
-    card: Option<std::sync::Arc<crate::card::Card>>,
     revision: &mut u64,
     dirty_prev: &mut Option<(usize, usize)>,
     dirty_curr: Option<(usize, usize)>,
     slot: &mut crate::Slot,
 ) {
-    slot.snapshot.card = card;
     slot.snapshot.cursor_style = cursor_style;
     let same_dims = slot.snapshot.cols == cols
         && slot.snapshot.rows == rows
@@ -399,7 +392,6 @@ mod tests {
                 rows,
                 Some((x, y)),
                 crate::CursorStyle::default(),
-                None,
                 &mut revision,
                 &mut dirty_prev,
                 dirty_curr.take(),

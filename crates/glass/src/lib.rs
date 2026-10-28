@@ -8,28 +8,19 @@
 //! keyboard and mouse as terminal events, and the window's other services.
 
 mod backend;
-pub mod card;
-mod blast;
 mod clipboard;
 mod config;
-mod cube;
 mod early;
 mod font;
 pub mod graphics;
 pub mod page;
 mod input;
 mod layer;
-pub mod monolith;
 mod probe;
 mod record;
-#[cfg(feature = "remote")]
-pub mod remote;
 mod render;
-mod shore;
 mod showcase;
-mod squire;
 pub mod startup;
-mod wizard;
 mod sprites;
 mod transition;
 mod wallpaper;
@@ -56,7 +47,7 @@ pub use glass_gpu as gpu;
 pub use wgpu;
 /// The 3D scene description (`glass-stage`'s), for `Host::set_scene`.
 pub use glass_stage::scene;
-pub use showcase::{Fit, Herald, Livery, MODEL_ROOT, Mark, SHOWCASE_PICTURE, Showing};
+pub use showcase::{Fit, MODEL_ROOT, Mark, SHOWCASE_PICTURE, Showing};
 pub use window::run;
 
 /// Locking shared state that survives a panicked holder. The window's
@@ -90,7 +81,6 @@ pub fn window_closed(error: &io::Error) -> bool {
 
 /// The grid that fits the window, and its cell size in pixels.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
-#[cfg_attr(feature = "remote", derive(serde::Serialize, serde::Deserialize))]
 pub struct GridSize {
     pub cols: u16,
     pub rows: u16,
@@ -127,7 +117,6 @@ pub(crate) struct Snapshot {
     pub rows: u16,
     pub cursor: Option<(u16, u16)>,
     pub cursor_style: CursorStyle,
-    pub card: Option<Arc<card::Card>>,
     pub revision: u64,
 }
 
@@ -147,8 +136,6 @@ pub(crate) struct Shared {
     /// it pays the copy-on-write on its own thread instead.
     pub layers: Mutex<Arc<Vec<Layer>>>,
     pub game_keyboard: AtomicBool,
-    pub card: Mutex<Option<Arc<card::Card>>>,
-    pub card_changed: AtomicBool,
     /// Pictures handed over (`Host::upload_picture`), waiting for the
     /// render thread.
     pub pictures: Mutex<Vec<graphics::Picture>>,
@@ -214,45 +201,19 @@ pub(crate) enum UserEvent {
     Exit,
     /// End the process with this code, from the window's thread.
     ExitProcess(i32),
-    /// Text for the clipboard of whoever is looking: only a headless host
-    /// sends it (`remote`); a window copies on the cockpit's thread.
-    #[cfg_attr(not(feature = "remote"), allow(dead_code))]
-    Clipboard(String),
-}
-
-/// Where a host's wake-ups go: the window's event loop, or, for a host
-/// with no window of its own (`remote::headless`), the thread that sends
-/// the frames to the windows looking at it.
-pub(crate) enum Wake {
-    Window(EventLoopProxy<UserEvent>),
-    #[cfg_attr(not(feature = "remote"), allow(dead_code))]
-    Channel(std::sync::mpsc::Sender<UserEvent>),
 }
 
 /// What the cockpit thread holds: the window's services.
 #[derive(Clone)]
 pub struct Host {
     shared: Arc<Shared>,
-    proxy: Arc<Mutex<Wake>>,
+    proxy: Arc<Mutex<EventLoopProxy<UserEvent>>>,
     input: Arc<Mutex<Option<Receiver<Event>>>>,
 }
 
 impl Host {
     pub(crate) fn send(&self, event: UserEvent) {
-        match &*self.proxy.lock_recover() {
-            Wake::Window(proxy) => {
-                let _ = proxy.send_event(event);
-            }
-            Wake::Channel(sender) => {
-                let _ = sender.send(event);
-            }
-        }
-    }
-
-    /// Whether this host has a window of its own: false for a session's
-    /// headless host, whose frames go to the windows attached to it.
-    pub fn has_window(&self) -> bool {
-        matches!(&*self.proxy.lock_recover(), Wake::Window(_))
+        let _ = self.proxy.lock_recover().send_event(event);
     }
 
     /// A ratatui backend drawing into this window.
@@ -300,27 +261,8 @@ impl Host {
     }
 
     /// Put text on the system clipboard. False when no clipboard tool ran.
-    /// A headless host hands it to the window looking at it, whose
-    /// clipboard it lands on.
     pub fn copy_to_clipboard(&self, text: &str) -> bool {
-        if self.has_window() {
-            clipboard::copy(text)
-        } else {
-            self.send(UserEvent::Clipboard(text.to_string()));
-            true
-        }
-    }
-
-    /// Put up the card (`card.rs`), change what it says, or (`None`)
-    /// take it down. No wake here: the backend publishes it atomically
-    /// with the cockpit frame.
-    pub fn set_card(&self, card: Option<card::Card>) {
-        let mut current = self.shared.card.lock_recover();
-        if current.is_none() && card.is_none() {
-            return;
-        }
-        *current = card.map(Arc::new);
-        self.shared.card_changed.store(true, std::sync::atomic::Ordering::Release);
+        clipboard::copy(text)
     }
 
     /// Add a layer, or replace the one with the same id.
@@ -351,13 +293,6 @@ impl Host {
             }));
             all.truncate(MAX_LAYERS);
         }
-        self.send(UserEvent::Layers);
-    }
-
-    /// Replace the whole layer list at once: a remote window showing the
-    /// layers of a session on another machine (`remote`).
-    pub fn set_layers(&self, layers: Arc<Vec<Layer>>) {
-        *self.shared.layers.lock_recover() = layers;
         self.send(UserEvent::Layers);
     }
 

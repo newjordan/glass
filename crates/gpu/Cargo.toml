@@ -1,7 +1,7 @@
 [package]
 name = "glass-gpu"
 version = "0.1.0"
-description = "angelX's renderer core: one instanced-quad pipeline, a mesh pipeline with depth for 3D scenes, pictures, stages and the layer compiler on a wgpu device the host makes (docs/GLASS_CORE.md)"
+description = "glass's renderer core: one instanced-quad pipeline, a mesh pipeline with depth for 3D scenes, pictures, stages and the layer compiler on a wgpu device the host makes"
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
@@ -11,14 +11,11 @@ publish.workspace = true
 # wgpu's browser backend, so the core can be checked for wasm32-unknown-unknown
 # (`cargo check -p glass-gpu --target wasm32-unknown-unknown --features web`).
 # The core picks no backend of its own: the window's crate turns on Vulkan and
-# Metal, the browser seat turns on this.
+# Metal, a browser build would turn on this.
 web = ["wgpu/webgpu"]
-# A stage as serde data, for a remote window (docs/REMOTE_GLASS.md).
-serde = ["dep:serde", "glass-stage/serde"]
 
 [dependencies]
-# What a stage is: layers, motes, pictures (shared with the browser).
+# What a stage is: layers, motes, pictures.
 glass-stage = { path = "../stage" }
 wgpu = { version = "30.0.1", default-features = false, features = ["std", "wgsl"] }
 bytemuck = { version = "1", features = ["derive"] }
-serde = { version = "1", features = ["derive"], optional = true }

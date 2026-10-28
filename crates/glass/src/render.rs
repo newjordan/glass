@@ -94,10 +94,6 @@ pub struct Renderer {
     chars: FastMap<(char, u8, u8), Option<Entry>>,
     strings: FastMap<(u64, u8, u8), (Box<str>, Option<Entry>)>,
     fonts: Fonts,
-    /// The card on show (`render_card.rs`), and its pictures.
-    card_show: Option<CardShow>,
-    card_art: CardArt,
-    font_family: String,
     palette: Palette,
     opacity: f32,
     padding: f32,
@@ -455,9 +451,6 @@ impl Renderer {
             chars: FastMap::default(),
             strings: FastMap::default(),
             fonts,
-            card_show: None,
-            card_art: CardArt::default(),
-            font_family: options.font_family.clone(),
             palette: options.palette.clone(),
             opacity: options.background_opacity,
             padding: options.padding,
@@ -1027,13 +1020,6 @@ impl Renderer {
         self.spare_pictures = pictures;
         parts.push((Draw::Atlas, above));
         parts.extend(above_layers);
-        // The card rides over everything the cockpit drew.
-        self.card_update(snapshot.card.as_ref(), Instant::now());
-        self.card_wait_for_window(Instant::now());
-        if self.card_show.is_some() {
-            let card = self.card_parts((ox, oy), time);
-            parts.extend(card);
-        }
         if !self.overlay.is_empty() {
             let overlay = std::mem::take(&mut self.overlay);
             parts.extend(self.core.layer_parts(overlay.iter(), (ox, oy), cw, ch, None, time));
@@ -1111,7 +1097,6 @@ impl Renderer {
         self.transition.is_some_and(|t| !t.finished(Instant::now()))
             || self.core.stages_animating()
             || self.core.scenes_animating()
-            || self.card_animating()
     }
 
     /// Take the pictures handed over (`Host::upload_picture`).
@@ -1665,8 +1650,6 @@ mod tests {
         assert_eq!(group[0].uv, [0.0, 0.0, 800.0, 720.0]);
     }
 }
-
-include!("render_card.rs");
 
 #[cfg(test)]
 mod atlas_gpu_tests {

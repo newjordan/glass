@@ -18,10 +18,10 @@ use winit::window::{UserAttentionType, Window, WindowId};
 
 use crate::config::Options;
 use crate::input::Shortcut;
-use crate::layer::{Layer, LayerKind, Placement};
+use crate::layer::Layer;
 use crate::probe::Probe;
 use crate::render::Renderer;
-use crate::{Host, LockExt, Shared, Snapshot, UserEvent, clipboard, graphics, input};
+use crate::{Host, LockExt, Shared, Snapshot, UserEvent, clipboard, input};
 
 /// The assumed display rate when the monitor does not say: 60 a second.
 const FALLBACK_MILLIHERTZ: u32 = 60_000;
@@ -113,7 +113,7 @@ where
     let (keys, events) = mpsc::channel();
     let host = Host {
         shared: Arc::new(Shared::default()),
-        proxy: Arc::new(Mutex::new(crate::Wake::Window(event_loop.create_proxy()))),
+        proxy: Arc::new(Mutex::new(event_loop.create_proxy())),
         input: Arc::new(Mutex::new(Some(events))),
     };
     let mut glass = Glass {
@@ -166,282 +166,6 @@ where
         Ok(value) => Ok(value),
         Err(panic) => std::panic::resume_unwind(panic),
     }
-}
-
-/// `ANGEL_GLASS_DEMO=lob`: a bomb lobbed across the window over the
-/// cockpit, rising toward the camera with its shadow on the ground, again
-/// and again. The layer sink's height, shown.
-fn lob_demo(host: &Host) {
-    let id = crate::layer::LAYER_PICTURES + 1;
-    host.upload_picture(graphics::Picture {
-        id,
-        width: 32,
-        height: 32,
-        rgba: bomb_sprite(),
-        cols: 0,
-        rows: 0,
-    });
-    // One lob: flight time, peak height, size; then a pause.
-    const FLIGHT: f32 = 1.4;
-    const PEAK: f32 = 360.0;
-    const SIZE: f32 = 48.0;
-    const PAUSE: f32 = 0.6;
-    let started = Instant::now();
-    loop {
-        let t = started.elapsed().as_secs_f32() % (FLIGHT + PAUSE);
-        let grid = host.grid_size();
-        let (w, h) = (grid.width_px as f32, grid.height_px as f32);
-        if t <= FLIGHT {
-            let p = t / FLIGHT;
-            let mut layer = Layer::new(
-                u64::MAX - 1,
-                10,
-                Placement::Pixels([w * (0.15 + 0.7 * p) - SIZE / 2.0, h * 0.62, SIZE, SIZE]),
-                LayerKind::Picture(id),
-            );
-            layer.height = PEAK * 4.0 * p * (1.0 - p);
-            layer.angle = p * 2.0 * std::f32::consts::PI;
-            host.set_layer(layer);
-        } else {
-            host.remove_layer(u64::MAX - 1);
-        }
-        std::thread::sleep(Duration::from_millis(16));
-    }
-}
-
-/// `ANGEL_GLASS_DEMO=slide`: a stage whose scene changes every so often,
-/// each new one sliding in from the next side round (right, below, left,
-/// above), shown over the cockpit. The stage's slide, shown.
-fn slide_demo(host: &Host) {
-    const STAGE: u32 = crate::layer::LAYER_PICTURES + 0x50;
-    const SCENES: [u32; 2] = [STAGE + 1, STAGE + 2];
-    const SIZE: (u32, u32) = (96, 56);
-    const EVERY: f32 = 1.5;
-    // Two scenes: warm and cool checks with a bar across, so a slide reads.
-    for (i, &id) in SCENES.iter().enumerate() {
-        let mut rgba = Vec::with_capacity((SIZE.0 * SIZE.1 * 4) as usize);
-        for y in 0..SIZE.1 {
-            for x in 0..SIZE.0 {
-                let check = ((x / 8 + y / 8) % 2) as u8;
-                let bar = (24..32).contains(&y);
-                let [r, g, b] = match (i, bar) {
-                    (_, true) => [230, 222, 204],
-                    (0, false) => [120 + 40 * check, 70 + 20 * check, 40],
-                    _ => [40, 70 + 20 * check, 120 + 40 * check],
-                };
-                rgba.extend_from_slice(&[r, g, b, 255]);
-            }
-        }
-        host.upload_picture(graphics::Picture {
-            id,
-            width: SIZE.0,
-            height: SIZE.1,
-            rgba,
-            cols: 0,
-            rows: 0,
-        });
-    }
-    let sides = [[1.0, 0.0], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0]];
-    let started = Instant::now();
-    loop {
-        let n = (started.elapsed().as_secs_f32() / EVERY) as usize;
-        let grid = host.grid_size();
-        host.set_stage(crate::Stage {
-            id: STAGE,
-            size: SIZE,
-            cols: 48,
-            rows: 14,
-            layers: vec![Layer::new(
-                0,
-                0,
-                Placement::Pixels([0.0, 0.0, SIZE.0 as f32, SIZE.1 as f32]),
-                LayerKind::Picture(SCENES[n % 2]),
-            )],
-            scene: n as u64 + 1,
-            enter: Some(sides[n % 4]),
-            tilt: 0.0,
-            props: None,
-            impact: 0.0,
-        });
-        let (cw, ch) = (grid.cell_width as f32, grid.cell_height as f32);
-        host.set_layer(Layer::new(
-            u64::MAX - 2,
-            10,
-            Placement::Pixels([cw * 4.0, ch * 4.0, cw * 48.0, ch * 14.0]),
-            LayerKind::Picture(STAGE),
-        ));
-        std::thread::sleep(Duration::from_millis(16));
-    }
-}
-
-/// `ANGEL_GLASS_DEMO=blast`: the full multimedia blast over the cockpit
-/// (`blast.rs`) — a 3D-warped video stream, raycast primitives, sine line
-/// formations across the z axis, everything drifting like a screensaver.
-/// Streams four pictures and replaces one layer group every frame, and
-/// reports its own generation cost every five seconds, so the scene is a
-/// measurement as much as a show. Pair with `ANGEL_GLASS_STATS=1`.
-/// `ANGEL_GLASS_BLAST_X=N` (1..=64) repeats the line formation N times
-/// over, for finding how many layers the compositor can carry.
-fn blast_demo(host: &Host) {
-    use crate::blast;
-    const GROUP: u32 = 0xB1A5_7E57;
-    let copies = std::env::var("ANGEL_GLASS_BLAST_X")
-        .ok()
-        .and_then(|v| v.parse::<usize>().ok())
-        .unwrap_or(1)
-        .clamp(1, 64);
-    let started = Instant::now();
-    let mut frames = 0u32;
-    let mut generated = Duration::ZERO;
-    let mut reported = Instant::now();
-    loop {
-        let t = started.elapsed().as_secs_f32();
-        let grid = host.grid_size();
-        let (w, h) = (grid.width_px as f32, grid.height_px as f32);
-        if w < 50.0 || h < 50.0 {
-            std::thread::sleep(Duration::from_millis(50));
-            continue;
-        }
-        let began = Instant::now();
-        let stream = |id: u32, width: u32, height: u32, rgba: Vec<u8>| {
-            host.upload_picture(graphics::Picture {
-                id,
-                width,
-                height,
-                rgba,
-                cols: 0,
-                rows: 0,
-            });
-        };
-        stream(blast::VIDEO_ID, blast::VIDEO_W, blast::VIDEO_H, blast::warped_video(t));
-        stream(blast::ORBS_ID, blast::ORBS_W, blast::ORBS_H, blast::raycast_orbs(t));
-        stream(blast::CUBE_ID, blast::CUBE_W, blast::CUBE_H, blast::raycast_cube(t));
-        stream(blast::RIBBONS_ID, blast::RIBBONS_W, blast::RIBBONS_H, blast::line_ribbons(t));
-        let layers = blast::scene_layers_x(t, (w, h), copies);
-        generated += began.elapsed();
-        frames += 1;
-        if reported.elapsed() >= Duration::from_secs(5) {
-            eprintln!(
-                "blast: {frames} frames generated, {:.2} ms/frame on the CPU (4 picture streams + {} layers)",
-                generated.as_secs_f64() * 1000.0 / f64::from(frames.max(1)),
-                layers.len()
-            );
-            frames = 0;
-            generated = Duration::ZERO;
-            reported = Instant::now();
-        }
-        host.set_layer_group(GROUP, layers);
-        std::thread::sleep(Duration::from_millis(16));
-    }
-}
-
-/// `ANGEL_GLASS_DEMO=cube`: a floating, turning cube with a different test
-/// picture on each of its six faces (`cube.rs`), drawn by the renderer's 3D
-/// pipeline into a picture and shown over the cockpit as a lifted layer with
-/// its shadow on the ground, as the blast's layers are.
-fn cube_demo(host: &Host) {
-    use crate::cube;
-    for i in 0..6u32 {
-        host.upload_picture(graphics::Picture {
-            id: cube::FACE_ID + i,
-            width: cube::FACE_SIDE,
-            height: cube::FACE_SIDE,
-            rgba: cube::face_picture(i as usize),
-            cols: 0,
-            rows: 0,
-        });
-    }
-    let started = Instant::now();
-    loop {
-        let t = started.elapsed().as_secs_f32();
-        let grid = host.grid_size();
-        let (w, h) = (grid.width_px as f32, grid.height_px as f32);
-        if w < 50.0 || h < 50.0 {
-            std::thread::sleep(Duration::from_millis(50));
-            continue;
-        }
-        host.set_scene(cube::SCENE_ID, cube::scene(t), cube::TARGET);
-        let size = cube::SHOWN.min(w * 0.6).min(h * 0.7);
-        let mut layer = Layer::new(
-            u64::MAX - 3,
-            10,
-            Placement::Pixels([w * 0.62 - size / 2.0, h * 0.5 - size / 2.0, size, size]),
-            LayerKind::Picture(cube::SCENE_ID),
-        );
-        layer.height = 70.0 + 25.0 * (t * 1.1).sin();
-        host.set_layer(layer);
-        std::thread::sleep(Duration::from_millis(16));
-    }
-}
-
-/// `ANGEL_GLASS_DEMO=shore`: a night shoreline in the world's look
-/// (`shore.rs`), filling the window under the cockpit's text. The scene is
-/// drawn at the look's internal size (540 rows, or `ANGEL_GLASS_SHORE_ROWS`)
-/// and the layer that shows it enlarges it by nearest, so each art pixel is
-/// several window pixels, as in the reference.
-fn shore_demo(host: &Host) {
-    use crate::shore;
-    if let Some((width, height, rgba)) = shore::knight_sprite() {
-        host.upload_picture(graphics::Picture {
-            id: shore::KNIGHT_ID,
-            width,
-            height,
-            rgba,
-            cols: 0,
-            rows: 0,
-        });
-    }
-    let rows = std::env::var("ANGEL_GLASS_SHORE_ROWS")
-        .ok()
-        .and_then(|v| v.parse::<u32>().ok())
-        .unwrap_or(shore::ROWS);
-    let started = Instant::now();
-    loop {
-        let t = started.elapsed().as_secs_f32();
-        let grid = host.grid_size();
-        let (w, h) = (grid.width_px, grid.height_px);
-        if w < 50 || h < 50 {
-            std::thread::sleep(Duration::from_millis(50));
-            continue;
-        }
-        host.set_scene(shore::SCENE_ID, shore::scene(t, rows), (w, h));
-        // Below the text: negative z.
-        host.set_layer(Layer::new(
-            u64::MAX - 4,
-            -10,
-            Placement::Pixels([0.0, 0.0, w as f32, h as f32]),
-            LayerKind::Picture(shore::SCENE_ID),
-        ));
-        std::thread::sleep(Duration::from_millis(16));
-    }
-}
-
-/// A round iron bomb with a lit fuse, 32 × 32, straight alpha.
-fn bomb_sprite() -> Vec<u8> {
-    let mut rgba = vec![0u8; 32 * 32 * 4];
-    for y in 0..32 {
-        for x in 0..32 {
-            let (fx, fy) = (x as f32 + 0.5, y as f32 + 0.5);
-            let (dx, dy) = (fx - 16.0, fy - 18.0);
-            let d = (dx * dx + dy * dy).sqrt();
-            let i = (y * 32 + x) * 4;
-            let mut px = [0u8; 4];
-            if d <= 12.5 {
-                // Iron, lit from the top left.
-                let light =
-                    (1.0 - ((dx + 5.0).powi(2) + (dy + 5.0).powi(2)).sqrt() / 18.0).clamp(0.0, 1.0);
-                let v = 28.0 + 70.0 * light * light;
-                px = [v as u8, v as u8, (v + 8.0) as u8, 255];
-            } else if (14.0..=17.0).contains(&fx) && (2.0..6.5).contains(&fy) {
-                px = [120, 82, 40, 255];
-            }
-            if ((fx - 17.0).powi(2) + (fy - 2.5).powi(2)).sqrt() < 2.2 {
-                px = [255, 214, 90, 255];
-            }
-            rgba[i..i + 4].copy_from_slice(&px);
-        }
-    }
-    rgba
 }
 
 struct Glass<T> {
@@ -810,72 +534,9 @@ impl<T: Send + 'static> Glass<T> {
         Ok(())
     }
 
-    /// `ANGEL_GLASS_DEMO=1` puts one translucent quad above the text;
-    /// `ANGEL_GLASS_SHOT=path.png` saves a frame after a delay.
+    /// `ANGEL_GLASS_SHOT=path.png` saves a frame after a delay; the
+    /// recording and the transition's film start here too.
     fn environment_extras(&self) {
-        if std::env::var("ANGEL_GLASS_DEMO").is_ok_and(|v| v == "1") {
-            let grid = self.host.grid_size();
-            let width = 34.0_f32.min(f32::from(grid.cols));
-            self.host.set_layer(Layer::new(
-                u64::MAX,
-                1,
-                Placement::Cells([f32::from(grid.cols) - width - 2.0, 2.0, width, 9.0]),
-                LayerKind::Solid([0.0, 0.85, 1.0, 0.22]),
-            ));
-        }
-        if std::env::var("ANGEL_GLASS_DEMO").is_ok_and(|v| v == "lob") {
-            let host = self.host.clone();
-            std::thread::spawn(move || lob_demo(&host));
-        }
-        if std::env::var("ANGEL_GLASS_DEMO").is_ok_and(|v| v == "slide") {
-            let host = self.host.clone();
-            std::thread::spawn(move || slide_demo(&host));
-        }
-        if std::env::var("ANGEL_GLASS_DEMO").is_ok_and(|v| v == "cube") {
-            let host = self.host.clone();
-            std::thread::spawn(move || cube_demo(&host));
-        }
-        if std::env::var("ANGEL_GLASS_DEMO").is_ok_and(|v| v == "shore") {
-            let host = self.host.clone();
-            std::thread::spawn(move || shore_demo(&host));
-        }
-        if std::env::var("ANGEL_GLASS_DEMO").is_ok_and(|v| v == "blast") {
-            let host = self.host.clone();
-            std::thread::spawn(move || blast_demo(&host));
-        }
-        if let Some(dir) = std::env::var_os("ANGEL_GLASS_BLAST_FILM") {
-            // Film the live scene (the blast, normally) at 30 frames a
-            // second through the same capture path as a still, then:
-            //   ffmpeg -framerate 30 -i frame-%03d.png blast.mp4
-            let seconds: f64 = std::env::var("ANGEL_GLASS_BLAST_FILM_SECONDS")
-                .ok()
-                .and_then(|v| v.parse().ok())
-                .filter(|v: &f64| v.is_finite())
-                .map_or(6.0, |v: f64| v.clamp(1.0, 60.0));
-            let delay = std::env::var("ANGEL_GLASS_BLAST_FILM_DELAY_MS")
-                .ok()
-                .and_then(|v| v.parse().ok())
-                .unwrap_or(3000u64);
-            let host = self.host.clone();
-            std::thread::spawn(move || {
-                let dir = std::path::PathBuf::from(dir);
-                let _ = std::fs::create_dir_all(&dir);
-                std::thread::sleep(Duration::from_millis(delay));
-                let frames = (seconds * 30.0).round() as u32;
-                let started = std::time::Instant::now();
-                for i in 0..frames {
-                    host.capture(dir.join(format!("frame-{i:03}.png")));
-                    let due = Duration::from_secs_f64(f64::from(i + 1) / 30.0);
-                    if let Some(rest) = due.checked_sub(started.elapsed()) {
-                        std::thread::sleep(rest);
-                    }
-                }
-                eprintln!(
-                    "GLASS: filmed {frames} blast frames into {}",
-                    dir.display()
-                );
-            });
-        }
         if let Some(plan) = crate::record::Plan::from_env() {
             crate::record::start_clock(&plan, &self.host);
         }
@@ -1358,8 +1019,7 @@ impl<T: Send + 'static> ApplicationHandler<UserEvent> for Glass<T> {
         }
     }
 
-    /// The showcase's squire moves now and then while it sits (a leg
-    /// swing, a wave): wake for his next move, and only then.
+    /// With the early frame up, wake when the app is due to start.
     fn about_to_wait(&mut self, event_loop: &ActiveEventLoop) {
         // The compositor gave no other size in time: the cockpit starts on
         // the one the window has.
@@ -1376,12 +1036,6 @@ impl<T: Send + 'static> ApplicationHandler<UserEvent> for Glass<T> {
             if self.animation_due.is_none() {
                 event_loop.set_control_flow(winit::event_loop::ControlFlow::Wait);
             }
-        }
-        if self.animation_due.is_none()
-            && let Some(due) = self.showcase.next_wake()
-        {
-            self.animation_due = Some(due);
-            event_loop.set_control_flow(winit::event_loop::ControlFlow::WaitUntil(due));
         }
     }
 
@@ -1464,9 +1118,6 @@ impl<T: Send + 'static> ApplicationHandler<UserEvent> for Glass<T> {
             UserEvent::ExitProcess(code) => {
                 self.release();
                 std::process::exit(code);
-            }
-            UserEvent::Clipboard(text) => {
-                crate::clipboard::copy(&text);
             }
         }
     }
@@ -1602,6 +1253,7 @@ impl<T: Send + 'static> ApplicationHandler<UserEvent> for Glass<T> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::layer::{LayerKind, Placement};
 
     const JUST_NOW: Duration = Duration::from_millis(1);
     const LONG_AGO: Duration = Duration::from_millis(100);

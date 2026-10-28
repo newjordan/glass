@@ -19,9 +19,6 @@ use std::time::Instant;
 
 use crate::graphics::Picture;
 use crate::layer::{LAYER_PICTURES, Layer, LayerKind, Placement};
-use crate::squire;
-use crate::wizard;
-pub use crate::squire::Livery;
 use crate::{Host, LockExt, UserEvent};
 
 /// The picture the showcase shows. Producers upload into it
@@ -40,7 +37,6 @@ pub const MODEL_ROOT: u64 = 1;
 /// point. `rect` is where it answers and `anchor` where it is, both in
 /// the content's own pixels; `text` the lines its tip shows.
 #[derive(Clone, Debug, PartialEq)]
-#[cfg_attr(feature = "remote", derive(serde::Serialize, serde::Deserialize))]
 pub struct Mark {
     pub rect: [f32; 4],
     pub anchor: [f32; 2],
@@ -49,7 +45,6 @@ pub struct Mark {
 
 /// How the content sits in the panel.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-#[cfg_attr(feature = "remote", derive(serde::Serialize, serde::Deserialize))]
 pub enum Fit {
     /// Whole, aspect kept, letterboxed: pictures, video, scenes.
     Contain,
@@ -59,23 +54,12 @@ pub enum Fit {
 }
 
 /// One showing: what it is called, the size of its picture and how it
-/// sits, who brings it in and in what colours, and whether there are
-/// showings before and after it to step to.
+/// sits, and whether there are showings before and after it to step to.
 #[derive(Clone, Debug)]
-#[cfg_attr(feature = "remote", derive(serde::Serialize, serde::Deserialize))]
 pub struct Showing {
     pub title: String,
     pub size: (u32, u32),
     pub fit: Fit,
-    pub herald: Herald,
-    /// The squire's colours: the serving house's, `None` for the Keep's.
-    pub livery: Option<Livery>,
-    /// A formation's other houses, who come along.
-    pub retinue: Vec<Livery>,
-    /// Who each squire is, the lead first then the retinue: the lines a
-    /// squire's tag shows under the pointer (his name and house, his
-    /// epithet).
-    pub names: Vec<Vec<String>>,
     pub back: bool,
     pub forward: bool,
 }
@@ -86,24 +70,10 @@ impl Showing {
             title: title.to_string(),
             size,
             fit,
-            herald: Herald::Squire,
-            livery: None,
-            retinue: Vec::new(),
-            names: Vec::new(),
             back: false,
             forward: false,
         }
     }
-}
-
-/// Who brings the showing in: the squire, who kicks it open, or the
-/// wizard, who conjures it (charts).
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
-#[cfg_attr(feature = "remote", derive(serde::Serialize, serde::Deserialize))]
-pub enum Herald {
-    #[default]
-    Squire,
-    Wizard,
 }
 
 pub(crate) enum Request {
@@ -111,10 +81,6 @@ pub(crate) enum Request {
         title: String,
         size: (u32, u32),
         fit: Fit,
-        livery: Option<Livery>,
-        herald: Herald,
-        retinue: Vec<Livery>,
-        names: Vec<Vec<String>>,
         nav: (bool, bool),
     },
     Close,
@@ -126,23 +92,17 @@ impl Host {
     /// [`Host::showcase_frame`], before or after. Returns the showing's
     /// serial: [`Host::showcase_live`] answers it until this showing is
     /// replaced or the operator closes it.
-    /// The squire who brings it in wears `livery`: the serving house's
-    /// colours, or the Keep's own when none serves.
     pub fn showcase(&self, showing: Showing) -> u64 {
         let serial = self.shared.showcase_serial.fetch_add(1, Ordering::Relaxed) + 1;
         self.shared.showcase_live.store(serial, Ordering::Release);
         // A new showing plays nothing until its producer says so.
         self.shared.showcase_progress.store(f32::NAN.to_bits(), Ordering::Relaxed);
         self.shared.showcase_seek.store(f32::NAN.to_bits(), Ordering::Relaxed);
-        let Showing { title, size, fit, herald, livery, retinue, names, back, forward } = showing;
+        let Showing { title, size, fit, back, forward } = showing;
         *self.shared.showcase.lock_recover() = Some(Request::Open {
             title,
             size,
             fit,
-            livery,
-            herald,
-            retinue,
-            names,
             nav: (back, forward),
         });
         self.send(UserEvent::Showcase);
@@ -301,9 +261,8 @@ struct Metrics {
     icon: f32,
     grip: f32,
     min: [f32; 2],
-    /// The scale, and the squire's pixel.
+    /// The scale.
     s: f32,
-    knight: f32,
 }
 
 impl Metrics {
@@ -320,7 +279,6 @@ impl Metrics {
             grip: (22.0 * s).round(),
             min: [(280.0 * s).round(), (190.0 * s).round()],
             s,
-            knight: squire::pixel(s),
         }
     }
 
@@ -335,8 +293,7 @@ impl Metrics {
 const MIDDLE: u32 = 4;
 /// Opening and closing, in seconds.
 const POP_SECONDS: f32 = 0.3;
-const DUST_SECONDS: f32 = 0.5;
-const CLOSE_SECONDS: f32 = 0.5;
+const CLOSE_SECONDS: f32 = 0.25;
 const DOUBLE_CLICK_SECONDS: f32 = 0.35;
 
 /// Ink, tonal: the frame's hairline, the title, the controls, and the
@@ -357,10 +314,8 @@ pub(crate) struct Popup {
     serial_seen: u64,
     metrics: Metrics,
     pager: Option<(u32, crate::page::Pager)>,
-    /// The pointer, for the squire to face.
+    /// The pointer, in window pixels.
     pointer: [f32; 2],
-    /// The window's size, for the wizard to keep inside.
-    window: (f32, f32),
     /// A playing showing's place and pause, set by the window each draw.
     pub(crate) progress: Option<(f32, bool)>,
     font: String,
@@ -384,14 +339,9 @@ struct Open {
     title: String,
     title_px: (u32, u32),
     last_bar_press: Option<Instant>,
-    /// When new content arrived in the open panel: the squire waves.
-    waved: Option<Instant>,
-    herald: Herald,
     marks: Vec<Mark>,
     /// The mark under the pointer, and its tip's size.
     hot: Option<(usize, (u32, u32))>,
-    /// How many of the retinue came along (their sheets are up).
-    retinue: usize,
     /// Whether there are showings to step back and forward to.
     nav: (bool, bool),
     /// A 3D model, turned by the window.
@@ -401,9 +351,6 @@ struct Open {
     zoom: f32,
     centre: [f32; 2],
     last_content_press: Option<Instant>,
-    names: Vec<Vec<String>>,
-    /// The squire under the pointer, and his tag's size.
-    named: Option<(usize, (u32, u32))>,
     /// When the copy button was last pressed: it glows warm a moment.
     copied: Option<Instant>,
 }
@@ -457,32 +404,6 @@ struct Model {
 /// The turntable's pace, radians a second.
 const SPIN: f32 = 0.45;
 
-impl Herald {
-    /// When the panel springs open, and when the entrance is over.
-    fn impact(self) -> f32 {
-        match self {
-            Herald::Squire => squire::IMPACT,
-            Herald::Wizard => wizard::IMPACT,
-        }
-    }
-
-    /// How long it takes to leave: the wizard's spell lingers.
-    fn close(self) -> f32 {
-        match self {
-            Herald::Squire => CLOSE_SECONDS,
-            Herald::Wizard => 0.8,
-        }
-    }
-
-    fn intro_end(self) -> f32 {
-        match self {
-            // The last of a retinue lands a little after the lead.
-            Herald::Squire => (squire::INTRO_END + 0.12 * squire::MOST_RETINUE as f32).max(squire::IMPACT + DUST_SECONDS),
-            Herald::Wizard => wizard::INTRO_END,
-        }
-    }
-}
-
 impl Default for Popup {
     fn default() -> Self {
         Self {
@@ -492,7 +413,6 @@ impl Default for Popup {
             metrics: Metrics::at(1.0),
             pager: None,
             pointer: [0.0, 0.0],
-            window: (1600.0, 900.0),
             progress: None,
             font: String::new(),
             pending: Vec::new(),
@@ -519,8 +439,7 @@ impl Popup {
                 self.close();
                 Vec::new()
             }
-            Request::Open { title, size, fit, livery, herald, retinue, names, nav } => {
-                self.window = window;
+            Request::Open { title, size, fit, nav } => {
                 self.font = font.to_string();
                 let marks = std::mem::take(&mut *host.shared.showcase_marks.lock_recover());
                 let model = host.shared.showcase_model.lock_recover().take().map(|nodes| Model {
@@ -530,13 +449,9 @@ impl Popup {
                     spinning: Some(Instant::now()),
                 });
                 self.scene_dirty = true;
-                let retinue: Vec<Livery> = retinue.into_iter().take(squire::MOST_RETINUE).collect();
                 self.serial_seen = host.shared.showcase_live.load(Ordering::Acquire);
                 self.metrics = Metrics::at(scale);
-                let mut pictures = vec![self.frame_picture(), self.icons_picture(), squire::sheet(livery.as_ref(), squire::SHEET), wizard::sheet()];
-                for (i, livery) in retinue.iter().enumerate() {
-                    pictures.push(squire::sheet(Some(livery), squire::RETINUE_SHEETS + i as u32));
-                }
+                let mut pictures = vec![self.frame_picture(), self.icons_picture()];
                 let title_px = match self.title_picture(&title, font) {
                     Some(picture) => {
                         let px = (picture.width, picture.height);
@@ -556,10 +471,7 @@ impl Popup {
                     }
                     None => self.initial_rect(size, fit, window),
                 };
-                let (since, waved) = match &self.open {
-                    Some(open) => (open.since, Some(Instant::now())),
-                    None => (Instant::now(), None),
-                };
+                let since = self.open.as_ref().map_or_else(Instant::now, |open| open.since);
                 self.closing = None;
                 self.open = Some(Open {
                     size,
@@ -573,18 +485,13 @@ impl Popup {
                     title: title.clone(),
                     title_px,
                     last_bar_press: None,
-                    waved,
-                    herald,
                     marks,
                     hot: None,
-                    retinue: retinue.len(),
                     nav,
                     model,
                     zoom: 1.0,
                     centre: [size.0 as f32 / 2.0, size.1 as f32 / 2.0],
                     last_content_press: None,
-                    names,
-                    named: None,
                     copied: None,
                 });
                 pictures
@@ -601,7 +508,7 @@ impl Popup {
         let opening = self
             .open
             .as_ref()
-            .is_some_and(|open| open.since.elapsed().as_secs_f32() < open.herald.intro_end());
+            .is_some_and(|open| open.since.elapsed().as_secs_f32() < POP_SECONDS);
         let turning = self.open.as_ref().is_some_and(|o| o.model.as_ref().is_some_and(|m| m.spinning.is_some()));
         let glowing = self
             .open
@@ -716,82 +623,8 @@ impl Popup {
     /// does not see it) and whether the panel must redraw.
     pub(crate) fn pointer(&mut self, p: [f32; 2], window: (f32, f32)) -> (bool, bool) {
         let spot = self.spot(p);
-        let turned = self.faces_left(p) != self.faces_left(self.pointer);
         self.pointer = p;
-        let named = self.hover_squire(p);
-        let turned = turned || named;
-        let (taken, redraw) = self.pointer_on(p, spot, window);
-        (taken, redraw || turned)
-    }
-
-    /// The seated squire under `p`: his place (0 the lead).
-    fn squire_at(&self, p: [f32; 2]) -> Option<usize> {
-        let open = self.open.as_ref()?;
-        if open.herald != Herald::Squire || open.since.elapsed().as_secs_f32() < squire::INTRO_END || open.grab.is_some() {
-            return None;
-        }
-        let m = self.metrics;
-        let px = m.knight;
-        let [w, h] = squire::size(px);
-        (0..=open.retinue).find(|&place| {
-            let seat = seat_x(open.rect, m) - place as f32 * (w + 3.0 * m.s);
-            if place > 0 && seat < m.pad {
-                return false;
-            }
-            inside(p, [open.rect[0] + seat, open.rect[1] - 16.0 * px, w, h])
-        })
-    }
-
-    /// Name the squire under `p`: his tag drawn when he changes. True
-    /// when what is shown changed.
-    fn hover_squire(&mut self, p: [f32; 2]) -> bool {
-        let at = self.squire_at(p);
-        let held = self.open.as_ref().and_then(|o| o.named.map(|(i, _)| i));
-        if at == held {
-            return false;
-        }
-        let tag = at.and_then(|i| {
-            let lines = self.open.as_ref()?.names.get(i)?.clone();
-            self.tip_picture(&lines)
-        });
-        if let Some(open) = self.open.as_mut() {
-            open.named = match (at, tag) {
-                (Some(i), Some(picture)) => {
-                    let size = (picture.width, picture.height);
-                    self.pending.push(picture);
-                    Some((i, size))
-                }
-                _ => None,
-            };
-        }
-        true
-    }
-
-    /// Whether the squire, seated, faces left toward `p`.
-    fn faces_left(&self, p: [f32; 2]) -> bool {
-        let Some(open) = &self.open else { return false };
-        let m = self.metrics;
-        let centre = open.rect[0] + seat_x(open.rect, m) + squire::size(m.knight)[0] / 2.0;
-        p[0] < centre
-    }
-
-    /// When the squire's next idle move is due (a leg swing, the next beat
-    /// of a wave), so the window can sleep until then.
-    pub(crate) fn next_wake(&self) -> Option<Instant> {
-        let open = self.open.as_ref()?;
-        let t = open.since.elapsed().as_secs_f32();
-        if open.herald == Herald::Wizard {
-            if t < wizard::INTRO_END {
-                return None;
-            }
-            let (_, wait) = wizard::idle(t - wizard::INTRO_END);
-            return Some(Instant::now() + std::time::Duration::from_secs_f32(wait.max(0.01)));
-        }
-        if t < squire::INTRO_END {
-            return None;
-        }
-        let (_, wait) = squire::idle(t - squire::INTRO_END, open.waved.map(|w| w.elapsed().as_secs_f32()));
-        Some(Instant::now() + std::time::Duration::from_secs_f32(wait.max(0.02)))
+        self.pointer_on(p, spot, window)
     }
 
     /// Pictures to upload before the next draw.
@@ -803,7 +636,7 @@ impl Popup {
     /// over: the nearest whose answering rect holds the pointer.
     fn mark_at(&self, p: [f32; 2]) -> Option<usize> {
         let open = self.open.as_ref()?;
-        if open.marks.is_empty() || open.since.elapsed().as_secs_f32() < open.herald.intro_end() {
+        if open.marks.is_empty() || open.since.elapsed().as_secs_f32() < POP_SECONDS {
             return None;
         }
         let (rect, s) = content_rect(open, self.metrics)?;
@@ -922,11 +755,11 @@ impl Popup {
         let Some(open) = self.open.as_mut() else {
             return false;
         };
-        // A press on the panel while the squire is still at it skips
-        // to the end of his entrance.
-        if spot != Spot::Outside && open.since.elapsed().as_secs_f32() < open.herald.intro_end() {
+        // A press on the panel while it is still opening skips to the
+        // end of its opening.
+        if spot != Spot::Outside && open.since.elapsed().as_secs_f32() < POP_SECONDS {
             if let Some(done) = Instant::now()
-                .checked_sub(std::time::Duration::from_secs_f32(open.herald.intro_end()))
+                .checked_sub(std::time::Duration::from_secs_f32(POP_SECONDS))
             {
                 open.since = done;
             }
@@ -1093,7 +926,6 @@ impl Popup {
         if let Some(open) = self.open.as_mut() {
             open.rect = open.rect.map(|v| (v * k).round());
             open.hot = None;
-            open.named = None;
             open.title_px = title.as_ref().map_or((0, 0), |p| (p.width, p.height));
         }
         pictures.extend(title);
@@ -1102,7 +934,6 @@ impl Popup {
 
     /// The window was resized: keep the panel on it.
     pub(crate) fn fit_window(&mut self, window: (f32, f32)) {
-        self.window = window;
         let m = self.metrics;
         if let Some(open) = self.open.as_mut() {
             let [x, y, w, h] = open.rect;
@@ -1120,7 +951,7 @@ impl Popup {
             (Some(open), _) => (open, Phase::Open(open.since.elapsed().as_secs_f32())),
             (None, Some((at, open))) => {
                 let t = at.elapsed().as_secs_f32();
-                if t >= open.herald.close() {
+                if t >= CLOSE_SECONDS {
                     self.closing = None;
                     self.scene_dirty = true;
                     return Vec::new();
@@ -1131,49 +962,30 @@ impl Popup {
         };
         let closing = matches!(phase, Phase::Close(_));
         let [x, y, w, h] = open.rect;
-        let px = m.knight;
-        let seat_x = seat_x(open.rect, m);
-        // Opening, the panel waits folded and faint until the squire's
-        // kick, then springs open from the corner he kicked, shaking
-        // off the blow. Closing, he walks it off to the right.
-        // The wizard's: it waits folded until his spark lands, unfolds
-        // from its middle, and folds away into it again.
-        let wizard = open.herald == Herald::Wizard;
-        let impact = open.herald.impact();
-        let (scale, k, content, dx) = match phase {
-            Phase::Open(t) if t < impact => (0.9, 0.3 * (t / 0.15).min(1.0), 0.0, 0.0),
+        // Opening, the panel springs open from its middle as it fades
+        // in, the content a step behind the frame. Closing, it settles
+        // back into its middle as it fades out.
+        let (scale, k, content) = match phase {
             Phase::Open(t) => {
-                let u = ((t - impact) / POP_SECONDS).min(1.0);
-                let shake = if wizard { 0.0 } else { 3.0 * m.s * (u * 45.0).sin() * (1.0 - u) * (1.0 - u) };
+                let u = (t / POP_SECONDS).min(1.0);
                 let k = 0.3 + 0.7 * (u * 2.5).min(1.0);
-                (0.9 + 0.1 * ease_out_back(u), k, k, shake)
-            }
-            Phase::Close(t) if wizard => {
-                let u = ease_in(t / open.herald.close());
-                (1.0 - 0.7 * u, 1.0 - u, 1.0 - u, 0.0)
+                (0.9 + 0.1 * ease_out_back(u), k, ease_out(u))
             }
             Phase::Close(t) => {
-                let u = t / CLOSE_SECONDS;
-                let k = 1.0 - ease_in(u);
-                (1.0, k, k, ease_in(u) * 360.0 * m.s)
+                let u = ease_in((t / CLOSE_SECONDS).min(1.0));
+                (1.0 - 0.06 * u, 1.0 - u, 1.0 - u)
             }
         };
-        // How much of the content the wizard's sweep has brought in.
-        let swept = match phase {
-            Phase::Open(t) if wizard => ease_out(((t - impact) / wizard::SWEEP).clamp(0.0, 1.0)),
-            _ => 1.0,
-        };
-        let pivot = if wizard { [x + w / 2.0, y + h / 2.0] } else { [x, y + h] };
+        let pivot = [x + w / 2.0, y + h / 2.0];
         let place = |r: [f32; 4]| -> Placement {
             Placement::Pixels([
-                pivot[0] + (r[0] - pivot[0]) * scale + dx,
+                pivot[0] + (r[0] - pivot[0]) * scale,
                 pivot[1] + (r[1] - pivot[1]) * scale,
                 r[2] * scale,
                 r[3] * scale,
             ])
         };
         let mut layers = Vec::with_capacity(24);
-        let mut sweep: Option<(f32, f32, f32)> = None;
         let mut push = |rect: [f32; 4], kind: LayerKind, opacity: f32| {
             let mut layer = Layer::new(layers.len() as u64, 0, place(rect), kind);
             layer.opacity = opacity * if matches!(kind_class(&layer.kind), Class::Content) { content } else { k };
@@ -1212,16 +1024,7 @@ impl Popup {
                     let Some((rect, _)) = content_rect(open, m) else { return layers };
                     let [_, _, dw, dh] = rect;
                     let picture = if open.model.is_some() { MODEL_PICTURE } else { SHOWCASE_PICTURE };
-                    if swept < 1.0 {
-                        if swept > 0.0 {
-                            push(
-                                [rect[0], rect[1], (dw * swept).round().max(1.0), dh],
-                                LayerKind::PicturePart(picture, [0.0, 0.0, pw * swept, ph]),
-                                1.0,
-                            );
-                            sweep = Some((rect[0] + dw * swept, rect[1], rect[1] + dh));
-                        }
-                    } else if open.zoom > 1.0 {
+                    if open.zoom > 1.0 {
                         let s0 = rect[2] / pw;
                         push(rect, LayerKind::PicturePart(picture, view_part(open, rect, s0)), 1.0);
                     } else {
@@ -1276,15 +1079,7 @@ impl Popup {
         // The title, cut to the bar's room.
         if open.title_px.0 > 0 {
             let (tw, th) = (open.title_px.0 as f32, open.title_px.1 as f32);
-            let room = if wizard {
-                (w - 2.0 * m.pad - 2.0 * m.icon - 3.0 * m.pad).max(0.0)
-            } else {
-                let party = (0..=open.retinue)
-                    .map(|place| seat_x - place as f32 * (squire::size(px)[0] + 3.0 * m.s))
-                    .filter(|&seat| seat >= m.pad)
-                    .fold(seat_x, f32::min);
-                (party - m.pad - 8.0 * m.s).max(0.0)
-            };
+            let room = (w - 2.0 * m.pad - 2.0 * m.icon - 3.0 * m.pad).max(0.0);
             let lead = nav_width(open, m);
             let shown = tw.min(room - lead);
             if shown > 0.0 {
@@ -1349,155 +1144,30 @@ impl Popup {
             grip_glow,
         );
         // The hot mark: a quiet guide down to the axis, and its tip.
-        let pointing = match (phase, open.hot, content_rect(open, m)) {
-            (Phase::Open(_), Some((i, tip)), Some((rect, s))) => open.marks.get(i).map(|mark| {
-                let at = [rect[0] + mark.anchor[0] * s, rect[1] + mark.anchor[1] * s];
-                layers.push(Layer::new(
-                    layers.len() as u64,
-                    0,
-                    Placement::Pixels([at[0].round() - 0.5, at[1], 1.0, (rect[1] + rect[3] - at[1]).max(0.0)]),
-                    LayerKind::Solid([1.0, 1.0, 1.0, 0.10]),
-                ));
-                let (tw, th) = (tip.0 as f32, tip.1 as f32);
-                let pad = 8.0 * m.s;
-                let (bw, bh) = (tw + 2.0 * pad, th + 2.0 * pad);
-                let bx = (at[0] - bw / 2.0).clamp(rect[0], (rect[0] + rect[2] - bw).max(rect[0]));
-                let above = at[1] - bh - 12.0 * m.s;
-                let by = if above >= rect[1] { above } else { at[1] + 12.0 * m.s };
-                layers.push(Layer::new(layers.len() as u64, 0, Placement::Pixels([bx, by, bw, bh]), LayerKind::Solid(TIP_FILL)));
-                layers.push(Layer::new(layers.len() as u64, 0, Placement::Pixels([bx, by, bw, 1.0]), LayerKind::Solid(RULE)));
-                layers.push(Layer::new(
-                    layers.len() as u64,
-                    0,
-                    Placement::Pixels([(bx + pad).round(), (by + pad).round(), tw, th]),
-                    LayerKind::Picture(TIP_PICTURE),
-                ));
-                at
-            }),
-            _ => None,
-        };
-        if wizard {
-            let wpx = wizard::pixel(m.s);
-            let id = layers.len() as u64;
-            match phase {
-                Phase::Open(t) => {
-                    // Ready at the close button; now and then, idle magic.
-                    let casting = if t < wizard::INTRO_END {
-                        None
-                    } else if open.hover == Spot::Close {
-                        Some(f32::MAX)
-                    } else {
-                        wizard::idle(t - wizard::INTRO_END).0
-                    };
-                    layers.extend(wizard::entrance(t, open.rect, self.window, wpx, m.s, id, pointing, casting))
-                }
-                Phase::Close(t) => {
-                    layers.extend(wizard::exit(t, open.herald.close(), open.rect, self.window, wpx, m.s, id))
-                }
-            }
-            if let Some((edge, top, bottom)) = sweep {
-                layers.push(wizard::sweep_motes(layers.len() as u64, edge, top, bottom, m.s));
-            }
-            return layers;
-        }
-        // The squire and his retinue (a formation's other houses, each in
-        // its colours), and the dust and spark of his kick.
-        let shifted = [x + dx, y, w, h];
-        let faces_left = self.faces_left(self.pointer);
-        for place in 0..=open.retinue {
-            let seat = seat_x - place as f32 * (squire::size(px)[0] + 3.0 * m.s);
-            if place > 0 && seat < m.pad {
-                break;
-            }
-            let sheet = if place == 0 { squire::SHEET } else { squire::RETINUE_SHEETS + place as u32 - 1 };
-            let (pose, his) = match phase {
-                Phase::Open(t) => {
-                    let mut pose = squire::follow(t, open.rect, seat, px, m.s, place);
-                    if pose.frame == squire::Frame::Sit {
-                        if open.hover == Spot::Close {
-                            // Up on their feet, ready to walk it off.
-                            pose.frame = squire::Frame::Stand;
-                            pose.at = squire::roof_stand(open.rect, seat, px);
-                        } else {
-                            let waved = open.waved.map(|w| w.elapsed().as_secs_f32());
-                            // Each swings his legs in his own time; named
-                            // under the pointer, he raises a hand.
-                            let own = t - squire::INTRO_END + 1.7 * place as f32;
-                            pose.frame = if open.named.is_some_and(|(i, _)| i == place) {
-                                squire::Frame::SitWave
-                            } else {
-                                squire::idle(own, waved).0
-                            };
-                            pose.left = faces_left;
-                        }
-                    }
-                    (pose, ((t - 0.12 * place as f32) / 0.1).clamp(0.0, 1.0))
-                }
-                Phase::Close(t) => {
-                    let u = t / CLOSE_SECONDS;
-                    (squire::exit(t, shifted, seat, px), 1.0 - ((u - 0.6) / 0.4).clamp(0.0, 1.0))
-                }
-            };
-            layers.push(squire::layer(layers.len() as u64, sheet, pose, px, his));
-            // His tag, over his head.
-            if let (Phase::Open(_), Some((i, tag))) = (phase, open.named)
-                && i == place
-            {
-                let (tw, th) = (tag.0 as f32, tag.1 as f32);
-                let pad = 7.0 * m.s;
-                let (bw, bh) = (tw + 2.0 * pad, th + 2.0 * pad);
-                let head = [pose.at[0] + squire::size(px)[0] / 2.0, pose.at[1]];
-                let bx = (head[0] - bw / 2.0).clamp(0.0, (self.window.0 - bw).max(0.0));
-                let by = (head[1] - bh - 6.0 * m.s).max(0.0);
-                for layer in [
-                    Layer::new(layers.len() as u64, 0, Placement::Pixels([bx, by, bw, bh]), LayerKind::Solid(TIP_FILL)),
-                    Layer::new(layers.len() as u64 + 1, 0, Placement::Pixels([bx, by + bh - 1.0, bw, 1.0]), LayerKind::Solid(RULE)),
-                    Layer::new(
-                        layers.len() as u64 + 2,
-                        0,
-                        Placement::Pixels([(bx + pad).round(), (by + pad).round(), tw, th]),
-                        LayerKind::Picture(TIP_PICTURE),
-                    ),
-                ] {
-                    layers.push(layer);
-                }
-            }
-        }
-        if let Phase::Open(t) = phase {
-            let age = t - squire::IMPACT;
-            if (0.0..DUST_SECONDS).contains(&age) {
-                let corner = [x - 8.0 * m.s, y + h - 8.0 * m.s, 16.0 * m.s, 16.0 * m.s];
-                let mut dust = Layer::new(
-                    layers.len() as u64,
-                    0,
-                    Placement::Pixels(corner),
-                    LayerKind::Particles(crate::layer::Particles {
-                        color: [0.80, 0.76, 0.70, 0.9],
-                        count: 18,
-                        size: (px * 0.7).round().max(2.0),
-                        life: DUST_SECONDS,
-                        rise: 260.0 * m.s,
-                        sway: 900.0 * m.s,
-                        seed: 7,
-                        burst: Some(age),
-                    }),
-                );
-                dust.opacity = 1.0;
-                layers.push(dust);
-                let flash = 1.0 - (age / 0.2).min(1.0);
-                if flash > 0.0 {
-                    let r = 70.0 * m.s;
-                    let mut spark = Layer::new(
-                        layers.len() as u64,
-                        0,
-                        Placement::Pixels([x - r, y + h - r, 2.0 * r, 2.0 * r]),
-                        LayerKind::Glow([0.77, 0.52, 0.36, 0.55]),
-                    );
-                    spark.additive = true;
-                    spark.opacity = flash;
-                    layers.push(spark);
-                }
-            }
+        if let (Phase::Open(_), Some((i, tip)), Some((rect, s))) = (phase, open.hot, content_rect(open, m))
+            && let Some(mark) = open.marks.get(i)
+        {
+            let at = [rect[0] + mark.anchor[0] * s, rect[1] + mark.anchor[1] * s];
+            layers.push(Layer::new(
+                layers.len() as u64,
+                0,
+                Placement::Pixels([at[0].round() - 0.5, at[1], 1.0, (rect[1] + rect[3] - at[1]).max(0.0)]),
+                LayerKind::Solid([1.0, 1.0, 1.0, 0.10]),
+            ));
+            let (tw, th) = (tip.0 as f32, tip.1 as f32);
+            let pad = 8.0 * m.s;
+            let (bw, bh) = (tw + 2.0 * pad, th + 2.0 * pad);
+            let bx = (at[0] - bw / 2.0).clamp(rect[0], (rect[0] + rect[2] - bw).max(rect[0]));
+            let above = at[1] - bh - 12.0 * m.s;
+            let by = if above >= rect[1] { above } else { at[1] + 12.0 * m.s };
+            layers.push(Layer::new(layers.len() as u64, 0, Placement::Pixels([bx, by, bw, bh]), LayerKind::Solid(TIP_FILL)));
+            layers.push(Layer::new(layers.len() as u64, 0, Placement::Pixels([bx, by, bw, 1.0]), LayerKind::Solid(RULE)));
+            layers.push(Layer::new(
+                layers.len() as u64,
+                0,
+                Placement::Pixels([(bx + pad).round(), (by + pad).round(), tw, th]),
+                LayerKind::Picture(TIP_PICTURE),
+            ));
         }
         layers
     }
@@ -1683,7 +1353,8 @@ enum Phase {
     Close(f32),
 }
 
-/// What a layer is, for its fade: the content waits for the kick.
+/// What a layer is, for its fade: the content comes in a step behind
+/// the frame.
 enum Class {
     Content,
     Chrome,
@@ -1695,13 +1366,6 @@ fn kind_class(kind: &LayerKind) -> Class {
         | LayerKind::PicturePart(SHOWCASE_PICTURE | MODEL_PICTURE, _) => Class::Content,
         _ => Class::Chrome,
     }
-}
-
-/// Where the squire sits on the roof, from its left: just short of the
-/// close button, so the title has the rest.
-fn seat_x(rect: [f32; 4], m: Metrics) -> f32 {
-    let him = squire::size(m.knight)[0];
-    (rect[2] - m.pad - 2.0 * m.icon - 16.0 * m.s - him).max(m.pad)
 }
 
 /// Where contained content sits on screen, and its scale.
@@ -1837,18 +1501,13 @@ mod tests {
             title: String::new(),
             title_px: (0, 0),
             last_bar_press: None,
-            waved: None,
-            herald: Herald::Squire,
             marks: Vec::new(),
             hot: None,
-            retinue: 0,
             nav: (false, false),
             model: None,
             zoom: 1.0,
             centre: [size.0 as f32 / 2.0, size.1 as f32 / 2.0],
             last_content_press: None,
-            names: Vec::new(),
-            named: None,
             copied: None,
         });
         popup
