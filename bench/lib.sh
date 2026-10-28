@@ -49,6 +49,15 @@ print(ids[0] if ids else "")')
     hyprctl output remove "$CAP" >/dev/null 2>&1
     exit 1
   fi
+  # Hyprland may hand a new output one of the desktop's own workspaces,
+  # windows and all. The run would open its windows among them, and
+  # headless_down closes whatever is left there, so it stops instead.
+  if [ -n "$(run_windows)" ]; then
+    echo "headless output $CAP was given workspace $WS, which holds windows; stopping" >&2
+    WS=
+    hyprctl output remove "$CAP" >/dev/null 2>&1
+    exit 1
+  fi
 }
 
 # Open a command on the headless output's workspace, without focusing it.
