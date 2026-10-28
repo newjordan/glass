@@ -1,0 +1,143 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: 0
+  # The package that owns the `glass` binary.
+  GLASS_PACKAGE: glass-term
+  # The runners have no GPU. Pointing the Vulkan loader at no driver means
+  # wgpu finds no adapter, so a GPU test the filters below miss says "no
+  # GPU adapter: skipped" and passes, rather than running its pixel checks
+  # on a software rasterizer the image might ship.
+  VK_DRIVER_FILES: /nonexistent/vulkan-driver.json
+  VK_ICD_FILENAMES: /nonexistent/vulkan-driver.json
+
+jobs:
+  test:
+    name: Build and test (Linux)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      # Building needs no system libraries: wgpu, winit and the Wayland
+      # client load libvulkan, libwayland-client, libxkbcommon and libX11
+      # at run time. The tests need fontconfig and one monospace font
+      # (fc-match monospace); the run-time libraries are here so a test
+      # that loads one finds it.
+      - name: System packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            fontconfig fonts-dejavu-core \
+            libvulkan1 libwayland-client0 libxkbcommon0 libxkbcommon-x11-0 \
+            libx11-6 libx11-xcb1 libxcursor1 libxi6
+
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+
+      # Every target compiles, the GPU integration tests and examples too.
+      - name: Build
+        run: cargo build --workspace --all-targets --locked
+
+      # Unit tests of every crate. Two of them draw on a real GPU and are
+      # skipped by name; the integration tests in crates/glass/tests
+      # (*_gpu.rs) all draw on a real GPU, so only their build is checked
+      # (above). Each GPU test also skips itself when there is no adapter.
+      - name: Unit tests
+        run: >
+          cargo test --workspace --lib --bins --locked --
+          --skip atlas_gpu_tests::
+          --skip it_draws_on_a_real_gpu
+
+      - name: Doc tests
+        run: cargo test --workspace --doc --locked
+
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - uses: Swatinem/rust-cache@v2
+      # Warnings are reported, not fatal, until the existing ones are
+      # cleared; then this becomes `-- -D warnings`. Errors (clippy's
+      # deny-by-default correctness lints) fail the job.
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets --locked
+
+  msrv:
+    name: Rust 1.95 (rust-version)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.95"
+      - uses: Swatinem/rust-cache@v2
+      - name: Check
+        run: cargo check --workspace --locked
+
+  packaging:
+    name: Package and install (Linux)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - name: System packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends desktop-file-utils shellcheck
+      - name: Lint
+        run: |
+          shellcheck packaging/install.sh packaging/make-tarball.sh packaging/icons/render.sh
+          desktop-file-validate packaging/glass.desktop
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Build
+        run: cargo build --locked -p "$GLASS_PACKAGE"
+      # The release's own packaging and installer, end to end: a tarball from
+      # this build, served as a release from a directory, installed into an
+      # empty HOME, run, and uninstalled.
+      - name: Tarball, install, uninstall
+        run: |
+          tarball=$(packaging/make-tarball.sh --bin target/debug/glass --out dist)
+          release=$RUNNER_TEMP/releases/latest/download
+          mkdir -p "$release"
+          cp "$tarball" packaging/install.sh "$release/"
+          (cd "$release" && sha256sum glass-*.tar.gz install.sh > SHA256SUMS)
+          home=$(mktemp -d)
+          HOME=$home GLASS_RELEASES=file://$RUNNER_TEMP/releases sh packaging/install.sh
+          out=$("$home/.local/bin/glass" --help 2>&1 || true)
+          echo "$out"
+          case $out in "usage: glass"*) ;; *) exit 1 ;; esac
+          HOME=$home desktop-file-validate "$home/.local/share/applications/glass.desktop"
+          HOME=$home sh packaging/install.sh --uninstall
+          test ! -e "$home/.local/bin/glass"
+          test ! -e "$home/.local/glass"
+
+  macos:
+    name: macOS build (experimental)
+    runs-on: macos-latest
+    # The Metal path is untested; this job shows whether it builds and
+    # never fails the run.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Build
+        run: cargo build --workspace --locked

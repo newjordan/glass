@@ -1,0 +1,152 @@
+name: Release
+
+# A tag v<version> builds the Linux tarballs and opens a DRAFT release with
+# them, install.sh and SHA256SUMS. Nothing is published until someone
+# reviews the draft and presses Publish (packaging/README.md).
+# Run by hand (workflow_dispatch), it builds the tarballs as workflow
+# artifacts only: a dry run of the release, with no release made.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  # The package that owns the `glass` binary.
+  GLASS_PACKAGE: glass-term
+  # The newest glibc the binaries may need: the container's (Ubuntu 20.04).
+  GLIBC_FLOOR: "2.31"
+  RUST_TOOLCHAIN: stable
+
+jobs:
+  build:
+    name: Build linux-${{ matrix.arch }}
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-24.04
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    # Built inside Ubuntu 20.04, so the binaries link against glibc 2.31 and
+    # run on Ubuntu 20.04+, Debian 11+, RHEL/Rocky/Alma 9+, Fedora, Arch and
+    # the rest. The binary links only libc, libm and libgcc_s; everything
+    # else (Vulkan, Wayland, X11, xkbcommon) is loaded at run time, so the
+    # glibc it was linked against is its only floor. The Ubuntu 22.04
+    # runners are being retired (unsupported from April 2027), so the old
+    # glibc comes from the container rather than from an old runner image.
+    # aarch64 builds natively on GitHub's arm64 runner: no cross linker or
+    # emulator, the same steps as x86_64, and the binary is run before it
+    # is packed.
+    container: ubuntu:20.04
+    steps:
+      - name: Build tools
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            ca-certificates curl gcc libc6-dev git python3
+      - uses: actions/checkout@v7
+      - name: Rust
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs |
+            sh -s -- -y --profile minimal --default-toolchain "$RUST_TOOLCHAIN"
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+      - name: Version
+        id: version
+        run: |
+          rustc -vV
+          version=$(cargo pkgid -p "$GLASS_PACKAGE" | sed 's/.*[#@]//')
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "glass $version"
+          case $GITHUB_REF in
+            refs/tags/*)
+              if [ "$GITHUB_REF_NAME" != "v$version" ]; then
+                echo "::error::tag $GITHUB_REF_NAME does not match the package version $version"
+                exit 1
+              fi ;;
+          esac
+      - name: Build
+        run: cargo build --release --locked -p "$GLASS_PACKAGE"
+      - name: Check the binary
+        run: |
+          bin=target/release/glass
+          need=$(objdump -T "$bin" | grep -o 'GLIBC_[0-9.]*' | sort -uV | tail -n 1)
+          echo "needs ${need:-no versioned glibc symbols}; floor GLIBC_$GLIBC_FLOOR"
+          top=$(printf '%s\nGLIBC_%s\n' "$need" "$GLIBC_FLOOR" | sort -V | tail -n 1)
+          [ "$top" = "GLIBC_$GLIBC_FLOOR" ] || { echo "::error::needs $need, newer than glibc $GLIBC_FLOOR"; exit 1; }
+          objdump -p "$bin" | grep NEEDED
+          out=$("$bin" --help 2>&1 || true)
+          echo "$out"
+          case $out in "usage: glass"*) ;; *) echo "::error::glass --help did not answer"; exit 1 ;; esac
+      - name: Package
+        run: packaging/make-tarball.sh --version "${{ steps.version.outputs.version }}" --out dist
+      - uses: actions/upload-artifact@v7
+        with:
+          name: glass-linux-${{ matrix.arch }}
+          path: dist/*.tar.gz
+          if-no-files-found: error
+
+  release:
+    name: Draft release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: glass-linux-*
+          merge-multiple: true
+          path: dist
+      - name: Sums and notes
+        run: |
+          version=${GITHUB_REF_NAME#v}
+          cp packaging/install.sh dist/
+          (cd dist && sha256sum glass-*.tar.gz install.sh > SHA256SUMS && cat SHA256SUMS)
+          # This version's section of CHANGELOG.md, without its heading.
+          awk -v v="$version" '
+            /^## / { if (on) exit; if ($2 == v || $2 == "[" v "]") { on = 1; next } }
+            on { print }
+          ' CHANGELOG.md > notes.md
+          if [ ! -s notes.md ]; then
+            echo "::error::CHANGELOG.md has no section for $version"
+            exit 1
+          fi
+          if grep -q "^## \[\{0,1\}$version\]\{0,1\} - unreleased" CHANGELOG.md; then
+            echo "::warning::CHANGELOG.md still calls $version unreleased"
+          fi
+          cat >> notes.md <<EOF
+
+          ## Install
+
+          \`\`\`sh
+          curl -fsSL https://github.com/$GITHUB_REPOSITORY/releases/latest/download/install.sh | sh
+          \`\`\`
+
+          Or download the tarball for your machine (\`linux-x86_64\` or \`linux-aarch64\`), check it
+          against \`SHA256SUMS\`, and copy its \`bin\` and \`share\` into a prefix such as \`~/.local\`.
+          The binaries need glibc $GLIBC_FLOOR or newer and a Vulkan driver.
+          EOF
+      - name: Create the draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          assets="dist/glass-*.tar.gz dist/install.sh dist/SHA256SUMS"
+          if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            # A re-run: replace the assets, leave the text someone may have edited.
+            # shellcheck disable=SC2086
+            gh release upload "$GITHUB_REF_NAME" $assets --repo "$GITHUB_REPOSITORY" --clobber
+          else
+            # shellcheck disable=SC2086
+            gh release create "$GITHUB_REF_NAME" $assets --repo "$GITHUB_REPOSITORY" \
+              --draft --verify-tag --title "glass ${GITHUB_REF_NAME#v}" --notes-file notes.md
+          fi
