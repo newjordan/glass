@@ -461,9 +461,16 @@ impl Session {
         let writer: Arc<Mutex<Box<dyn Write + Send>>> =
             Arc::new(Mutex::new(pair.master.take_writer().map_err(|e| format!("pty writer: {e}"))?));
         let reader = pair.master.try_clone_reader().map_err(|e| format!("pty reader: {e}"))?;
-        // The pty is read on a thread of its own, ahead of the parsing.
+        // The pty is read on a thread of its own, ahead of the parsing, where
+        // that pays: Linux's pty hands over up to 4 KiB a read. macOS's hands
+        // over 1 KiB, and there the hand-offs cost more than the overlap
+        // saves (plain text through it at 163 MB/s, read here at 375, on an
+        // M4 Pro), so elsewhere the parsing thread reads the pty itself.
+        #[cfg(target_os = "linux")]
         let mut reader = crate::read_ahead::ReadAhead::spawn(reader, pty_fd(pair.master.as_ref()))
             .map_err(|e| format!("pty reader: {e}"))?;
+        #[cfg(not(target_os = "linux"))]
+        let mut reader = reader;
         let output = Arc::new(AtomicBool::new(false));
         let gate = Arc::new(FrameGate::default());
         let intake = Arc::new(Mutex::new(starting_intake(grid, rows)));
@@ -861,6 +868,7 @@ impl Drop for Session {
 }
 
 /// A descriptor of the pty's own, for asking how much it holds.
+#[cfg(target_os = "linux")]
 fn pty_fd(master: &dyn MasterPty) -> Option<std::os::fd::OwnedFd> {
     let fd = master.as_raw_fd()?;
     // SAFETY: the master is open and stays open for this call; the
@@ -1803,16 +1811,7 @@ mod pump_tests {
         }
         fn object(bare: &str, rgb: &[u8]) -> Shm {
             let path = std::ffi::CString::new(format!("/{bare}")).unwrap();
-            let fd = unsafe { libc::shm_open(path.as_ptr(), libc::O_CREAT | libc::O_RDWR | libc::O_CLOEXEC, 0o600) };
-            assert!(fd >= 0, "shm_open {}", std::io::Error::last_os_error());
-            assert_eq!(unsafe { libc::ftruncate(fd, rgb.len() as i64) }, 0);
-            let mut written = 0;
-            while written < rgb.len() {
-                let n = unsafe { libc::write(fd, rgb[written..].as_ptr().cast(), rgb.len() - written) };
-                assert!(n > 0, "write shm");
-                written += n as usize;
-            }
-            unsafe { libc::close(fd); }
+            crate::intake::testing::shm_object(&path, rgb);
             Shm { path }
         }
 

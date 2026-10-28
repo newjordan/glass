@@ -404,6 +404,10 @@ impl<T: Send + 'static> Glass<T> {
         crate::startup::mark("early frame");
         if self.early.is_some() {
             self.app_due = Some(Instant::now() + SETTLE);
+        } else if cfg!(target_os = "macos") {
+            // macOS gives a window the size it asked for at once, so the app
+            // starts now, on that size, while the GPU opens.
+            self.start_app_early()?;
         }
         let host = self.host.clone();
         let waiting = self

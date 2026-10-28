@@ -11,6 +11,7 @@ mod blink;
 mod engine;
 mod intake;
 mod keys;
+#[cfg(any(target_os = "linux", test))]
 mod read_ahead;
 mod session;
 #[cfg(test)]
