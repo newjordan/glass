@@ -1,6 +1,6 @@
 //! `GlassBackend`: ratatui draws into it exactly as it draws into a terminal.
 //!
-//! The cockpit already produces a grid of cells every frame, so there is no
+//! The app already produces a grid of cells every frame, so there is no
 //! terminal to emulate: changed cells land in the backend's own grid, and
 //! `flush` hands a snapshot of it to the render thread.
 
@@ -66,7 +66,7 @@ fn union_span(a: Option<(usize, usize)>, b: Option<(usize, usize)>) -> Option<(u
 impl GlassBackend {
     /// Set how the cursor is drawn: the shape a program asked for and the
     /// colour it set. The default block with the palette's colour is what
-    /// the cockpit shows, so nothing changes until someone asks.
+    /// a plain text surface shows, so nothing changes until someone asks.
     pub fn set_cursor_style(&mut self, style: crate::CursorStyle) {
         if style != self.cursor_style {
             self.changed = true;

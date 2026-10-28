@@ -1,6 +1,7 @@
 //! The latency probe: the PTY input-latency harness, adapted to the window.
 //!
-//! `GLASS_PROBE=1` waits for the composer (`Write a message`), then
+//! `GLASS_PROBE=1` waits for the ready text (`GLASS_PROBE_READY`, a
+//! shell prompt's `$` unless set) to show, then
 //! types a draft one key at a time through the same channel the window's
 //! keyboard feeds, and times each key until a presented frame shows it:
 //! keypress to `present()`. Compositor and scanout come after that and are
@@ -34,7 +35,7 @@ impl Probe {
         on.then(|| {
             Arc::new(Self {
                 ready: glass_stage::env::var("GLASS_PROBE_READY")
-                    .unwrap_or_else(|| "Write a message".into()),
+                    .unwrap_or_else(|| "$".into()),
                 draft: glass_stage::env::var("GLASS_PROBE_TEXT")
                     .unwrap_or_else(|| "snappy-input-0123456789-abcdef".into()),
                 out: glass_stage::env::var_os("GLASS_PROBE_OUT").map(Into::into),

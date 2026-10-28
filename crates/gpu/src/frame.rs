@@ -203,7 +203,7 @@ mod tests {
     fn the_buffer_pool_stays_bounded_across_frames() {
         // A build pops a handful of buffers but assembly returns one per
         // part: uncapped, the pool (and its retained capacity) grew by
-        // the difference every frame forever — a 90-second blast soak
+        // the difference every frame forever — a 90-second stress soak
         // took the sampler from 1.5 GB to 7.4 GB.
         let mut frame = Frame::default();
         let mut pool: Vec<Vec<Instance>> = Vec::new();

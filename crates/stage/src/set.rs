@@ -1,4 +1,4 @@
-//! A set (docs/WORLD-3D.md, "Set files"): the plain blocks one item of the
+//! A set: the plain blocks one item of the
 //! world is built of (a room, a stretch of the kingdom), read from text, and
 //! the scenes it makes. A capture the art lane paints over, flat colours by
 //! surface kind under the scene's light; the kinds' exact id colours,
@@ -31,8 +31,8 @@ use crate::scene::{
 use crate::brand;
 use crate::shapes;
 
-/// How far the Delve's floor tips (`stage_frame::TILT` in crates/delve): a
-/// room camera is the stage camera at this tilt.
+/// How far a game stage's floor tips toward the camera: a room camera is
+/// the stage camera at this tilt.
 pub const GAME_TILT: f32 = 0.3;
 
 /// The capture's size when a set names none: the art lane's native size.
@@ -55,8 +55,7 @@ pub const MAX_ID: usize = 64;
 /// is in either.
 pub const BACKGROUND: [f32; 4] = [0.0, 0.0, 0.0, 1.0];
 
-/// A side of a cell of an item's swatches (`swatches.png`, docs/WORLD-3D.md
-/// "Swatches"): each kind's patch of the plate lies at the top left of its
+/// A side of a cell of an item's swatches (`swatches.png`): each kind's patch of the plate lies at the top left of its
 /// cell ([`swatch_cell`]), opaque, the rest of the cell clear.
 pub const SWATCH_CELL: u32 = 64;
 /// The swatches' cells a row: kind `i` (in the table's order) is cell
@@ -142,8 +141,8 @@ impl Patches {
 // ---------------------------------------------------------------- kinds ----
 
 /// What a surface is: it tells the painter, and gives the surface a flat
-/// colour in the capture and an exact colour in the id map. The list is the
-/// table in docs/WORLD-3D.md; a new kind is a change to both.
+/// colour in the capture and an exact colour in the id map. The list is
+/// fixed: a new kind is a change here.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum Kind {
     Ground,
@@ -260,19 +259,18 @@ impl Kind {
         matches!(self, Kind::Window | Kind::Fire)
     }
 
-    /// Its capture colour two shades down its bank: the realm's nearest
-    /// plain ink taken two steps down (`light::step_down` in the Delve),
-    /// what a surface of it is drawn with when there is nothing painted of
-    /// it to draw (a chunk with no plate and no patches; a projected surface
-    /// its projector does not see, with no patch). The Delve checks the
-    /// table against its own inks (`world3d::kingdom::darker`).
+    /// Its capture colour two shades down its bank: the nearest plain ink
+    /// taken two steps down, what a surface of it is drawn with when there
+    /// is nothing painted of it to draw (a chunk with no plate and no
+    /// patches; a projected surface its projector does not see, with no
+    /// patch).
     pub fn dark(self) -> [u8; 3] {
         DARK[self.index()]
     }
 
-    /// Its brightness in a look that lights its scene (docs/REALM-MONOLITH.md):
+    /// Its brightness in a look that lights its scene:
     /// a flat grey before the light, which the place's ramp then colours.
-    /// Each sits in its brand class's band (docs/BRAND.md, `brand::class_of`).
+    /// Each sits in its brand class's band.
     /// Roads and paths are the brightest ground (a ribbon to follow), woods
     /// and doors the darkest masses.
     pub fn tone(self) -> f32 {
@@ -302,7 +300,7 @@ const TONES: [f32; 27] = [
     0.26, // rug
     0.32, // stone
     0.28, // brick
-    0.34, // plaster: a mass, never brighter than the ground (docs/BRAND.md)
+    0.34, // plaster: a mass, never brighter than the ground
     0.22, // wood
     0.26, // roof
     0.32, // thatch
@@ -314,7 +312,7 @@ const TONES: [f32; 27] = [
     0.26, // rock
     0.30, // crop
     0.14, // hedge
-    0.34, // bone: dressing, never brighter than a mass (docs/BRAND.md)
+    0.34, // bone: dressing, never brighter than a mass
     0.12, // door
     0.90, // window
     0.90, // fire
@@ -366,7 +364,7 @@ fn unit_rgba(rgb: [u8; 3]) -> [f32; 4] {
 /// The game camera an item is seen through.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum SetCamera {
-    /// `camera room <w> <h>`: the Delve's camera for a room drawn on a stage
+    /// `camera room <w> <h>`: the game's camera for a room drawn on a stage
     /// of `size` pixels, exactly ([`stage_camera`] at [`GAME_TILT`]). The
     /// world is the room's stage: its pixel `(x, y)` is the floor point
     /// `(x, 0, y)`.
@@ -418,7 +416,7 @@ impl SetCamera {
 /// How far apart two stages' edges may be (kingdom pixels) and still meet.
 pub const BORDER_TOLERANCE: f32 = 0.5;
 
-/// The edge two sets' stages share (docs/WORLD-3D.md, "Seams").
+/// The edge two sets' stages share.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Border {
     /// The shared edge's ends as floor points `(x, z)`, the lower coordinate
@@ -532,7 +530,7 @@ fn bounds(mesh: MeshRef) -> ([f32; 3], [f32; 3]) {
 /// The most corners a ground's height field has on a side.
 pub const MAX_GROUND_SIDE: usize = 512;
 
-/// A set's ground as one height field (docs/REALM-MONOLITH.md): `cols` by
+/// A set's ground as one height field: `cols` by
 /// `rows` cells, `step` stage pixels apart, its first corner at floor point
 /// `at` (x, z), and each of its `(cols + 1) * (rows + 1)` corners' height
 /// over the floor and tone (0 to 100), row by row from the corner, x first.
@@ -584,7 +582,7 @@ impl Ground {
                 mesh.normals.push(n.map(|c| c / len));
                 mesh.uvs.push([0.0, 0.0]);
                 // Ground is ground or a route: its tones are held in their
-                // bands (docs/BRAND.md), whatever a set writes.
+                // bands, whatever a set writes.
                 let t = f32::from(self.tones[j * w + i].min(100)) / 100.0;
                 let t = t.clamp(brand::Class::Ground.band().tone.0, brand::Class::Route.band().tone.1);
                 mesh.colors.push([t, t, t, 1.0]);
@@ -603,7 +601,7 @@ impl Ground {
     }
 }
 
-/// A lamp a set stands (docs/REALM-MONOLITH.md): light = activity.
+/// A lamp a set stands: light = activity.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct SetLamp {
     pub at: [f32; 3],
@@ -619,7 +617,7 @@ pub fn ground_mesh_id(key: u64) -> u32 {
 
 // ------------------------------------------------------------------ set ----
 
-/// One fixed view of the world in blocks (docs/WORLD-3D.md).
+/// One fixed view of the world in blocks.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Set {
     pub id: String,
@@ -913,8 +911,8 @@ impl Set {
         (place(&floor, scale, offset), place(&blocks, scale, offset))
     }
 
-    /// The set's world in a look that lights its scene
-    /// (docs/REALM-MONOLITH.md), parted as [`Set::world_nodes`] parts it:
+    /// The set's world in a look that lights its scene, parted as
+    /// [`Set::world_nodes`] parts it:
     /// what lies on the floor (its ground's height field first, as uploaded
     /// mesh `ground_mesh`, then the shapes that lie on the floor) and what
     /// stands on it. Each shape is its kind's tone, lit; water runs; a lit
@@ -931,7 +929,7 @@ impl Set {
         }
         for (i, shape) in self.shapes.iter().enumerate() {
             let kind = shape.kind;
-            // Its class's tone and ceiling (docs/BRAND.md): light never
+            // Its class's tone and ceiling: light never
             // lifts it past its class's step. A tone the set gives its kind
             // is the set's own.
             let class = brand::class_of(kind);
@@ -955,7 +953,7 @@ impl Set {
 
     /// The set's lamps as a look lights with them.
     pub fn look_lamps(&self) -> Vec<crate::look::Lamp> {
-        // No lamp brighter than the brand guide's (docs/BRAND.md).
+        // No lamp brighter than the brand guide's.
         self.lamps
             .iter()
             .map(|l| crate::look::Lamp { at: l.at, reach: l.reach, strength: l.strength.min(brand::LAMP_STRENGTH) })
@@ -999,8 +997,8 @@ pub fn place(nodes: &[Node], scale: f32, offset: [f32; 3]) -> Vec<Node> {
 
 // ----------------------------------------------------------------- sets ----
 
-/// A chunk's world as a look that lights it draws it
-/// (docs/REALM-MONOLITH.md): what lies on the floor (its ground's height
+/// A chunk's world as a look that lights it draws it: what lies on the
+/// floor (its ground's height
 /// field first), what stands, each its kind's tone, lit; and its ground's
 /// mesh with the id it is uploaded under. Unplaced.
 #[derive(Debug, Default)]
@@ -1174,7 +1172,7 @@ impl Sets {
         // The one used is the newest.
         let mut kept = self.kept.remove(at);
         if lit {
-            // Lit (docs/REALM-MONOLITH.md): toned and lit, no plate, the
+            // Lit: toned and lit, no plate, the
             // ground's mesh uploaded under its set's own id, its shapes baked.
             if kept.lit.is_none() {
                 kept.lit = Some(bake(&kept.set, set.key, 0));
@@ -1332,7 +1330,7 @@ fn read_shape(line: usize, words: &[&str]) -> Result<Shape, String> {
         return Err(format!("`{name}` takes a kind next"));
     };
     let Some(kind) = Kind::from_name(kind_name) else {
-        return Err(format!("`{kind_name}` is not a kind (docs/WORLD-3D.md, \"Surface kinds\")"));
+        return Err(format!("`{kind_name}` is not a kind"));
     };
     let triple = |at: usize, word: &str, what: &str| -> Result<[f32; 3], String> {
         if words.get(at) != Some(&word) {
@@ -1389,7 +1387,7 @@ mod tests {
     const SAMPLE: &str = "\
 # a corner of a yard
 set yard-sample
-camera room 768 448            # the Delve's room camera
+camera room 768 448            # the game's room camera
 plate 1536 1024
 
 plane grass   at 384 0 224 size 768 0 448
@@ -1613,7 +1611,7 @@ sphere rock   at 600 0 120 size 30 20 30 turn -30.5 id boulder
     }
 
     #[test]
-    fn the_room_camera_is_the_delves_framed_in_the_plate() {
+    fn the_room_camera_is_the_games_framed_in_the_plate() {
         let set = Set::parse("set r\ncamera room 768 448\nplate 1536 1024\n").unwrap();
         assert_eq!(set.camera.game(), stage_camera(0.3, (768, 448)));
         // The stage is width-bound in a 3:2 plate: 92% of 1536 across, square pixels.
@@ -1884,7 +1882,7 @@ sphere rock   at 600 0 120 size 30 20 30 turn -30.5 id boulder
         assert_eq!(mesh.validate(), Ok(()));
         assert_eq!(mesh.positions.len(), 6);
         // The brand guide holds a ground's tones in its bands: 100 is the
-        // brightest a route may be, never white (docs/BRAND.md).
+        // brightest a route may be, never white.
         let top = brand::Class::Route.band().tone.1;
         assert_eq!(mesh.colors[5], [top, top, top, 1.0], "tone 100 is held at a route's top");
         assert_eq!(mesh.colors[0], [0.2, 0.2, 0.2, 1.0], "tone 20 is as written");

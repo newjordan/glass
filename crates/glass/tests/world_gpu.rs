@@ -1,5 +1,4 @@
-//! A room drawn in 3D on a stage (`glass_stage::scene::World`,
-//! docs/WORLD-3D.md): its blocks and the figures standing among them, drawn
+//! A room drawn in 3D on a stage (`glass_stage::scene::World`): its blocks and the figures standing among them, drawn
 //! with depth on a real GPU and read back. A figure behind a wall is hidden
 //! by it, one in front is not, and a figure's pixels land where an upright
 //! layer's do. Where the machine has no adapter, each test says so and
@@ -90,7 +89,7 @@ impl Gpu {
 }
 
 const SIZE: (u32, u32) = (192, 128);
-/// The Delve's tilt.
+/// The floor's tilt toward the camera, as a game stage draws it.
 const TILT: f32 = 0.3;
 const FIGURE: u32 = 0x8000_7001;
 
@@ -283,7 +282,7 @@ fn the_world_and_its_figures_lie_where_they_were_put_among_the_layers() {
     gpu.clean();
 }
 
-/// A world drawn through a look that lights it (docs/REALM-MONOLITH.md):
+/// A world drawn through a look that lights it:
 /// a figure behind a wall stays hidden until the look keeps it in sight,
 /// and then shows through the wall's stippled opening, the depth it is
 /// tested against leaving the opening out.
@@ -320,7 +319,7 @@ fn a_lit_worlds_reveal_shows_a_figure_through_the_wall_before_it() {
     gpu.clean();
 }
 
-/// A lit card with a normal map (docs/WORLD-TIERS.md, "Normal maps"): a
+/// A lit card with a normal map: a
 /// lamp to its left lights the half of it whose pixels turn left more than
 /// the half that turns away, where without the map, or with the look's
 /// `normals` at 0, both halves are lit alike.

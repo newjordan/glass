@@ -1,4 +1,4 @@
-//! The 3D scene (docs/GLASS_CORE.md, decisions 3 and 4): nodes in a tree, each
+//! The 3D scene: nodes in a tree, each
 //! with a transform and, perhaps, a mesh and a material, seen by a camera.
 //! Plain data and the small maths it needs, no GPU types, so the window and
 //! the browser describe a scene the same way and `glass-gpu` draws it.
@@ -240,8 +240,8 @@ impl Transform {
 /// What a material takes its picture from. Today a picture the host
 /// uploaded, or none (white, so the tint and vertex colours show).
 ///
-/// Planned, not built (docs/GLASS_CORE.md decision 4): `Video(stream)`, the
-/// decoded frames of a clip; `Grid`, the cockpit's text drawn into a target;
+/// Planned, not built: `Video(stream)`, the
+/// decoded frames of a clip; `Grid`, the terminal's text drawn into a target;
 /// `Target(scene, camera)`, another scene's render; `Pixels`, a buffer a
 /// producer writes. Each is one more way to name a texture; nothing else in a
 /// material changes.
@@ -319,7 +319,7 @@ pub struct Material {
     /// window), instead of putting it on the ramp. Ignored without a look.
     pub accent: bool,
     /// Cast the picture onto the surface from a [`Projector`] instead of
-    /// laying it on by the mesh's uvs (docs/WORLD-3D.md, "project back").
+    /// laying it on by the mesh's uvs.
     /// Where the projector sees the surface, the surface is the picture
     /// there, untinted. Where it does not (behind it, outside its picture, a
     /// face turned away from it, or one it sees so much more edge-on than
@@ -336,12 +336,11 @@ pub struct Material {
     /// What the surface is to a look that lights its scene itself
     /// ([`Look::lights`]), past its colour. Ignored otherwise.
     pub role: Role,
-    /// The brand guide's ceiling (docs/BRAND.md, `brand::Class::
-    /// material_ceiling`): in a look that lights its scene, light never
+    /// The brand guide's ceiling (`brand::Class::material_ceiling`): in a look that lights its scene, light never
     /// lifts the surface past step `ceiling - 1` of an eight-step ramp
     /// (scaled to the look's). 0: no ceiling but the ramp's top.
     pub ceiling: u8,
-    /// A card's normal map (`normals`, docs/WORLD-TIERS.md "Lit cards"):
+    /// A card's normal map (`normals`):
     /// the picture of which way each of its picture's pixels faces, so a
     /// look that lights cards (`Look::cards`) lights it pixel by pixel.
     /// `None`, or a picture the drawer does not have: each pixel faces the
@@ -393,7 +392,7 @@ pub enum Role {
 
 /// A patch of a picture tiled over a projected surface where its projector
 /// does not see it (an item's patch of its plate for the surface's kind, in
-/// its swatches picture, docs/WORLD-3D.md "Swatches"): the rectangle `rect`
+/// its swatches picture): the rectangle `rect`
 /// (`[x, y, width, height]` in the picture's pixels) laid on each face from
 /// the side it faces most (a top from above, a front from the front, a side
 /// from the side), mirrored at each repeat (every copy flipped against its
@@ -412,7 +411,7 @@ pub struct Patch {
 /// How a projected surface the projector does not see is shaded by the way
 /// it faces, as a plate paints a block lit from above: a top as it is, a
 /// front and a side (or a bottom) in shade. A room's extra blocks are
-/// shaded the same (`angel-delve`'s `world3d::fit`).
+/// shaded the same.
 pub const FACE_SHADES: [f32; 3] = [1.0, 0.86, 0.74];
 
 /// How much more edge-on than the camera a projector may see a surface and
@@ -1396,7 +1395,7 @@ impl Tilt {
     }
 
     /// The camera that sees a stage's props the way its tilted floor shows
-    /// its layers (docs/GLASS_CORE.md, "3D shots"). The world is the
+    /// its layers. The world is the
     /// stage's own: units are its pixels, `x` runs right across it, `z` runs
     /// down the floor toward the viewer (the floor point `(x, y)` is the
     /// world's `(x, 0, y)`), and `y` is the height up off the floor. A prop
@@ -1444,7 +1443,7 @@ pub fn stage_camera(tilt: f32, size: (u32, u32)) -> Camera {
 /// The most a stage's props may be drawn finer than the stage's own pixels.
 pub const MAX_GRAIN: u8 = 8;
 
-/// The 3D things a stage holds (docs/GLASS_CORE.md, "3D shots"): nodes in the
+/// The 3D things a stage holds: nodes in the
 /// stage's own world (see [`Tilt::camera`]), seen by the camera its tilt
 /// gives, drawn with depth among themselves.
 ///
@@ -1470,8 +1469,7 @@ pub struct Props {
     pub world: Option<World>,
 }
 
-/// A room drawn in 3D among a stage's layers (docs/WORLD-3D.md, "Project
-/// back"): its blocks, each with its painted plate cast on it, and the
+/// A room drawn in 3D among a stage's layers: its blocks, each with its painted plate cast on it, and the
 /// figures standing among them as upright cards, seen by the camera the
 /// stage's tilt gives (the props' camera) and drawn with depth, so a wall
 /// hides the knight behind it and not the one in front.
@@ -1517,7 +1515,7 @@ pub struct World {
     /// (the kingdom's chunks: each its own set, plate and projector), each
     /// crossing a wire as `set` does.
     pub more: Vec<SetRef>,
-    /// The look it is drawn through (docs/REALM-MONOLITH.md): one that
+    /// The look it is drawn through: one that
     /// lights its scene draws the floor and blocks lit, toned and on the
     /// place's ramps, at the stage's own pixel grain, instead of cast with
     /// plates. Its sets are then made lit ([`crate::set::Set::lit_world_nodes`]).
@@ -1528,7 +1526,7 @@ pub struct World {
     pub meshes: Vec<(u32, std::sync::Arc<MeshData>)>,
 }
 
-/// A set's blocks by reference (docs/WORLD-3D.md): which set, the picture
+/// A set's blocks by reference: which set, the picture
 /// its plate is, and how it is placed on the stage (`Set::placed_nodes`).
 #[derive(Clone, Debug, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]

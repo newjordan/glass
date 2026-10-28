@@ -1,7 +1,7 @@
 //! Box-drawing, block and braille characters, drawn by us at the cell's exact
-//! pixel size instead of taken from a font. The realm, the Delve and the
-//! minimaps are braille and half blocks: drawn here they tile without seams at
-//! every size and need no font that covers them.
+//! pixel size instead of taken from a font. Braille art, plots, maps and box
+//! borders are made of these: drawn here they tile without seams at every
+//! size and need no font that covers them.
 
 use crate::config::BrailleStyle;
 use crate::font::CellMetrics;

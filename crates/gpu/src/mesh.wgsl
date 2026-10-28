@@ -945,7 +945,7 @@ fn lit_look(in: Varyings, front: bool, base: vec3<f32>, fog: f32) -> LookOut {
         level = mix(level, fog_level, fog);
     }
     let own_water = role == 3u && scene_look.sun_more.z > 0.5;
-    // The brand guide's ceiling (docs/BRAND.md): however it is lit, a
+    // The brand guide's ceiling: however it is lit, a
     // surface goes no brighter than its class's step of the ramp here.
     let ceiling = draw.flags.z >> 8u;
     if ceiling > 0u && !own_water {

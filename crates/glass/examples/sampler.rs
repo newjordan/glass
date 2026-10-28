@@ -23,7 +23,7 @@ fn paint(buf: &mut Buffer, tick: u32) {
     };
     line(
         buf,
-        "angelX glass — the cockpit's text is one layer of a GPU compositor",
+        "glass — the app's text is one layer of a GPU compositor",
         plain.add_modifier(Modifier::BOLD),
     );
     line(

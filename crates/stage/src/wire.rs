@@ -1,7 +1,7 @@
-//! A stage frame on the wire to the browser: its pictures and its quads in
-//! one little-endian buffer. [`encode`] writes it in the game's wasm;
-//! [`decode`] reads it back where the frame is drawn (the page's renderer
-//! module, `crates/web/render`; before that, `shell/stage.js`).
+//! A stage frame on the wire: its pictures and its quads in one
+//! little-endian buffer. [`encode`] writes it where the frame is made;
+//! [`decode`] reads it back where the frame is drawn, by a renderer that
+//! draws quads (a browser page, say).
 //!
 //! ```text
 //! "STG2", width, height, pictures, quads, scene        u32 × 5 after the tag
@@ -93,7 +93,7 @@ pub const TAG_WORLD: &[u8; 4] = b"STG4";
 /// sets' references after its extra blocks.
 pub const TAG_WORLDS: &[u8; 4] = b"STG5";
 /// The tag of a frame whose world is drawn through a look (`scene::World::
-/// look`, docs/REALM-MONOLITH.md): an `STG5` frame (its further sets'
+/// look`): an `STG5` frame (its further sets'
 /// count always there, maybe 0) with the look after them, as text
 /// (`Look::to_text`): its length (u32), then the text padded to a word.
 pub const TAG_LOOK: &[u8; 4] = b"STG6";

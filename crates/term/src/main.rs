@@ -1,6 +1,6 @@
-//! `glass`: a terminal in angelX's own window. A program (`$SHELL` by
+//! `glass`: a terminal in a GPU window of its own. A program (`$SHELL` by
 //! default) runs in a pseudo-terminal, the engine keeps the screen its
-//! output draws, and glass shows that screen as it shows the cockpit.
+//! output draws, and glass's window (crates/glass) shows that screen.
 //!
 //! Arguments follow the terminal convention `xdg-terminal-exec` speaks
 //! (`glass.desktop`): `-e`/`--` and the command, `--title`, `--class`

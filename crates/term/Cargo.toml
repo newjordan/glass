@@ -23,8 +23,7 @@ serde_json = "1"
 # The same versions glass builds with, so `same Cell` and `Event` are glass's own.
 ratatui-core = { version = "0.1.2", features = ["std", "underline-color"] }
 crossterm = { version = "0.29", default-features = false, features = ["events", "bracketed-paste"] }
-# The program's side: a pseudo-terminal and the screen its output draws,
-# as the cockpit's shell pane has them (cockpit/src/platform/pty.rs).
+# The program's side: a pseudo-terminal and the screen its output draws.
 portable-pty = "0.9.0"
 alacritty_terminal = "0.26.0"
 image = { version = "0.25.10", default-features = false, features = ["png", "jpeg", "gif", "tiff", "webp", "bmp", "ico", "tga", "pnm"] }

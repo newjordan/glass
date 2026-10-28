@@ -1066,7 +1066,7 @@ impl Renderer {
         );
     }
 
-    /// Assemble the cockpit (`transition.rs`), from now.
+    /// Assemble the app's grid (`transition.rs`), from now.
     pub fn start_transition(&mut self) {
         self.transition = Some(transition::Transition::start(Instant::now()));
     }

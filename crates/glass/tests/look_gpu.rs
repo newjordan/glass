@@ -1,5 +1,4 @@
-//! A scene's look on a real GPU, read back (docs/GLASS_CORE.md, "The world's
-//! look"): the scene is drawn at the look's internal size, every pixel is put
+//! A scene's look on a real GPU, read back: the scene is drawn at the look's internal size, every pixel is put
 //! on the ramp by the Bayer threshold, accents are kept, the distance fades
 //! into the fog, and the result is enlarged by nearest. No window, no
 //! surface. Where the machine has no adapter each test says so and passes.

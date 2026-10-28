@@ -1,6 +1,6 @@
-//! Board A races for docs/RENDER_SCORECARD.md, glass side: the exact
-//! streams `scripts/bench/render/kitty_gfx_bench.py` pushes through
-//! Kitty's protocol, here through `Host::upload_picture` + layers.
+//! A picture-streaming race, glass side: the streams a kitty graphics
+//! protocol bench pushes through that protocol, here through
+//! `Host::upload_picture` + layers.
 //!
 //! STREAM_BENCH_MODE=blast4|big|placements|text (default blast4)
 //! STREAM_BENCH_SECONDS=14  STREAM_BENCH_FPS=120 (0 = free-running)
@@ -19,8 +19,8 @@ use ratatui_core::terminal::Terminal;
 use glass_window::graphics::Picture;
 use glass_window::{LAYER_PICTURES, Layer, LayerKind, Placement};
 
-/// (id, w, h, z, cols, rows, row, col): the blast's four streams, as in
-/// the Kitty bench.
+/// (id, w, h, z, cols, rows, row, col): the four streams, as in the
+/// Kitty bench.
 const BLAST4: [(u32, u32, u32, i32, f32, f32, f32, f32); 4] = [
     (11, 320, 200, -1, 40.0, 12.0, 1.0, 1.0),
     (12, 192, 160, 0, 24.0, 10.0, 3.0, 19.0),

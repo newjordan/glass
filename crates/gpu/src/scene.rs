@@ -1,9 +1,9 @@
-//! 3D scenes on the GPU (docs/GLASS_CORE.md, step 2.1): `glass_stage::scene`
+//! 3D scenes on the GPU: `glass_stage::scene`
 //! drawn with a mesh pipeline, a depth buffer and a material that is unlit or
 //! lit by one fixed light, into any
 //! colour view or into a picture the layer system then shows anywhere. A
 //! material may cast its picture from a projector instead of laying it on
-//! by uv (a painted plate thrown back onto its blocks, docs/WORLD-3D.md).
+//! by uv (a painted plate thrown back onto its blocks).
 //!
 //! One draw is one range of one mesh with one material. Opaque draws go
 //! first, in node order, writing depth. Blended draws (straight or
@@ -317,7 +317,7 @@ fn patch_of(material: &Material) -> ([f32; 4], [f32; 3]) {
 /// What a surface is to a look, as `mesh.wgsl` reads `flags.z`: 1 an
 /// accent, 2 a figure, 3 water, 4 the sky, 5 an ember, 0 anything else.
 /// The draw's `flags.z`: its role in the low byte (mesh.wgsl), and its
-/// brand ceiling (`Material::ceiling`, docs/BRAND.md) in the next.
+/// brand ceiling (`Material::ceiling`) in the next.
 fn look_role(material: &Material) -> u32 {
     let role = if material.accent {
         1
@@ -1197,7 +1197,7 @@ impl Core {
     /// it has one): one number a pixel, row by row from the top, 0 at the
     /// camera's near plane to 1 at its far one, and 1 where nothing was
     /// drawn. Empty when the GPU does not answer in time or `size` is not a
-    /// target's. For a capture's depth map (docs/WORLD-3D.md).
+    /// target's. For a capture's depth map.
     pub fn scene_depth(&mut self, scene: &Scene, size: (u32, u32)) -> Vec<f32> {
         let (width, height) = size;
         if width == 0 || height == 0 || width > MAX_TARGET_PX || height > MAX_TARGET_PX {

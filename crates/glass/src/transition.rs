@@ -1,11 +1,11 @@
-//! Transitions: the window animates the whole cockpit, cell by cell.
+//! Transitions: the window animates the app's whole grid, cell by cell.
 //!
 //! The assembly transition is fantasy engineering, not machinery: the walls
 //! (box-drawing borders) slide in from the top and bottom like a stone door,
 //! notch by notch as a cuckoo clock's escapement lets them, and lock with a
 //! small overshoot. Then every cell's stone tile drops from above, rippling
 //! out from the centre, lands with a thunk and a puff of dust, and its
-//! content rides on it. Last, the stone tiles fade and leave the cockpit.
+//! content rides on it. Last, the stone tiles fade and leave the text.
 //!
 //! Everything here is a pure function of time and the cell's place; every
 //! number is fixed (seconds, pixels, radians).

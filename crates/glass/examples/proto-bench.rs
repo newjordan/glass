@@ -1,6 +1,6 @@
 //! The glass side of the Kitty-protocol race, CPU only: how long glass
-//! takes to ingest one blast-sized frame (the same four streams
-//! `kitty-blast.py` pushes into Kitty: 320x200, 192x160, 160x160,
+//! takes to ingest one frame of four picture streams (the four a kitty
+//! graphics bench pushes into Kitty: 320x200, 192x160, 160x160,
 //! 480x140). GPU upload and present are not in this number; Kitty's
 //! query-synced round trip is. Compare like with like and say so.
 //!

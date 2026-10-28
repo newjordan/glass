@@ -1,5 +1,5 @@
 //! The renderer core's 3D scenes, drawn on a real GPU into a texture and read
-//! back (docs/GLASS_CORE.md, step 2.1). No window, no surface: the test makes
+//! back. No window, no surface: the test makes
 //! its own device. Where the machine has no adapter, each test says so and
 //! passes, so this runs everywhere and means something where there is a GPU.
 //! `cargo test -p glass-window --test scene_gpu -- --nocapture` prints the
@@ -588,7 +588,7 @@ fn linear_sampling_blends_texels_and_nearest_keeps_them() {
     gpu.clean();
 }
 
-// ---- 3D shots (docs/GLASS_CORE.md, "3D shots"): light, gems and cones, props on a stage ----
+// ---- 3D shots: light, gems and cones, props on a stage ----
 
 /// The shade a lit surface with unit `normal` gets, as 0..255 of a white one.
 fn lambert_level(normal: [f32; 3], emissive: f32) -> u8 {
@@ -890,7 +890,7 @@ fn a_tilt_of_zero_and_one_of_the_floor_both_keep_depth_among_props() {
     gpu.clean();
 }
 
-// ---- a picture cast from a projector (docs/WORLD-3D.md, "project back") ----
+// ---- a picture cast from a projector ----
 
 type V3 = [f32; 3];
 

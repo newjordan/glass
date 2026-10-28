@@ -1,6 +1,6 @@
 //! Pictures in the window's cells.
 //!
-//! The cockpit hands the window a picture's pixels (`Host::upload_picture`)
+//! The app hands the window a picture's pixels (`Host::upload_picture`)
 //! and marks the cells it shows in: each such cell is the placeholder
 //! character with two marks for its row and column in the picture's grid
 //! (and a third for the id's high byte), its foreground colour naming the

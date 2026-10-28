@@ -10,7 +10,7 @@ use winit::keyboard::{
     Key, KeyCode as Physical, KeyLocation, ModifiersState, NamedKey, PhysicalKey,
 };
 
-/// The window's own keys; the cockpit never sees them.
+/// The window's own keys; the app never sees them.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Shortcut {
     Paste,
@@ -262,7 +262,7 @@ mod tests {
         assert_eq!(at("_"), Some(Shortcut::ZoomOut));
         assert_eq!(at(")"), Some(Shortcut::ZoomReset));
         assert_eq!(at("x"), None);
-        // Without both modifiers the cockpit keeps the key.
+        // Without both modifiers the app keeps the key.
         assert_eq!(
             shortcut_of(&Key::Character("v".into()), PhysicalKey::Code(Physical::Space), SHIFT),
             None

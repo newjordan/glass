@@ -1,4 +1,4 @@
-// The world's look (docs/GLASS_CORE.md): the post pass of a scene that has an
+// The world's look: the post pass of a scene that has an
 // `glass_stage::look::Look`. The scene was drawn at the look's small internal
 // size into a colour texture and an accent mask (mesh.wgsl, `fs_look`); this
 // puts every pixel onto the ramp and writes the result, upscaled by nearest
@@ -124,8 +124,7 @@ fn fs_main(@builtin(position) frag: vec4<f32>) -> @location(0) vec4<f32> {
 // is clear at the world's edge counts as clear). It is a mean and not a
 // weave of the colours it covers (the darkest or brightest of them by the
 // dither, which keeps to the look's own colours): woven, the blur read as
-// a looser dither, not as out of focus (docs/WORLD-TIERS.md, "Depth of
-// field"). Each internal pixel is one value, so it keeps the grain.
+// a looser dither, not as out of focus. Each internal pixel is one value, so it keeps the grain.
 fn soft(p: vec2<u32>, blur: f32, last: vec2<u32>) -> vec4<f32> {
     let r = blur * look.dof.x;
     let reach = i32(ceil(r));

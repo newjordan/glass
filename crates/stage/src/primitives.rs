@@ -1,4 +1,4 @@
-//! The primitive shapes (docs/WORLD-3D.md): what a world's blockout is built
+//! The primitive shapes: what a world's blockout is built
 //! from once the plain cube runs out — towers, roofs, ramps, arches, stairs,
 //! rocks and bushes. Each is sized like the others: a unit across, centred on
 //! the origin, +Y up, outward normals, UVs with `(0, 0` at the top left and

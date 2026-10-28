@@ -1,4 +1,4 @@
-//! The world's look on the GPU (docs/GLASS_CORE.md, "The world's look"): a
+//! The world's look on the GPU: a
 //! scene with an `glass_stage::look::Look` is drawn at the look's internal
 //! size, then a post pass puts every pixel on its ramp.
 //!

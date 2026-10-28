@@ -1,7 +1,6 @@
 //! Stages: a game's scene, drawn by the window into its own texture every
 //! frame at the window's density, and shown wherever its picture id is
-//! placed, as any picture is (docs/RENDER_FOUNDATION.md, "The game
-//! pipeline"). Menus over the game, the assembly transition and resizing
+//! placed, as any picture is. Menus over the game, the assembly transition and resizing
 //! work on it unchanged, because the cells still show it.
 //!
 //! A stage is layers in the game's own pixels: the room's still art scrolled
@@ -394,9 +393,9 @@ impl Core {
                 let standing = !world.blocks.is_empty() || !world.extra.is_empty();
                 let lit = world.look.as_ref().filter(|l| l.lights()).cloned();
                 // Its figures lit by its look as cards, where it says so
-                // (`Look::cards`, docs/WORLD-TIERS.md "Lit cards").
+                // (`Look::cards`).
                 let cards = lit.as_ref().filter(|l| l.cards.is_some()).cloned();
-                // Through its look (docs/REALM-MONOLITH.md): the floor and
+                // Through its look: the floor and
                 // blocks lit and put on their places' ramps at the stage's
                 // own pixel grain, enlarged into the picture; their depth
                 // at the picture's size, what the look's reveal opens
@@ -405,7 +404,7 @@ impl Core {
                 if world.floor.is_empty() && !standing {
                     self.drop_targets(&[picture, id ^ STAGE_WORLD_DEPTH]);
                 } else if let Some(mut look) = lit {
-                    // Through its look (docs/REALM-MONOLITH.md): the floor and
+                    // Through its look: the floor and
                     // blocks lit and put on their places' ramps at the stage's
                     // own pixel grain, enlarged into the picture; their depth
                     // at the picture's size, what the look's reveal opens
@@ -532,8 +531,8 @@ impl Core {
 
     /// Draw `frame` into picture `id`'s texture (a stage's), `size`
     /// pixels, on transparency — a stage composites over whatever
-    /// shows it, and a producer that wants paper paints it (the
-    /// cockpit blacks the Delve's cells) — in a submission of its own
+    /// shows it, and a producer that wants paper paints it (black cells
+    /// under it, say) — in a submission of its own
     /// (the globals hold its size).
     fn draw_into(&mut self, id: u32, size: (u32, u32), frame: &Frame) {
         let Some(target) = self.pictures.get(&id) else {

@@ -1,15 +1,16 @@
-//! A game's scene as layers (docs/RENDER_FOUNDATION.md, "The game
-//! pipeline"): what the window (crates/glass) draws on its stage and the
-//! browser draws on its canvas, from the same description.
+//! What glass's window draws, as plain data: layers, and the stages and
+//! 3D scenes they show. The window (crates/glass) draws them over and
+//! under the terminal's text; another renderer can draw them from the
+//! same description.
 //!
 //! A layer is plain data (what, where, how high). In the window, below the
 //! text is negative `z`, above is zero or positive; on a stage, layers draw
 //! in their order. Layers are solid colours, pictures, glows and motes,
 //! turned and lifted toward the camera. `expand` turns a stage's layers into
 //! plain quads for a renderer that draws nothing else, and `wire` carries
-//! them and their pictures to the browser. `scene` is the 3D description
-//! beside it: nodes with transforms, meshes and materials under a camera
-//! (docs/GLASS_CORE.md).
+//! them and their pictures as bytes. `scene` is the 3D description
+//! beside it: nodes with transforms, meshes and materials under a camera.
+//! `env` reads glass's `GLASS_*` settings.
 
 pub mod brand;
 pub mod env;
@@ -38,7 +39,7 @@ pub enum LayerKind {
     /// A flat colour, straight (not premultiplied) RGBA in 0..1.
     Solid([f32; 4]),
     /// A picture by id (`Host::upload_picture`), over the whole placement.
-    /// Kitty pictures from the cockpit use the same ids, so a layer's own
+    /// Pictures a program sends use the same ids, so a layer's own
     /// pictures take ids from `LAYER_PICTURES` up.
     Picture(u32),
     /// Part of a picture, `[x, y, width, height]` in its pixels, over the
@@ -226,7 +227,7 @@ pub enum Stand {
 
 /// A stage's floor seen at a tilt (`Frame::tilt`), in the stage's own
 /// pixels: rows further up stand further away. Every drawer projects with
-/// it the same way (crates/glass `glass.wgsl`, the browser's `stage.js`):
+/// it the same way (crates/gpu `glass.wgsl`, and any other drawer):
 /// a point `p` on the floor, `d = p - centre`, depth `w = 1 - near·d.y`,
 /// lands at `centre + (zoom·d.x, zoom·squash·d.y) / w`; what stands upright
 /// is placed on its foot so and scaled by `zoom / w`, never tipped.
@@ -278,7 +279,7 @@ impl Tilt {
     }
 }
 
-/// Picture ids from here up belong to layers; the cockpit's Kitty pictures
+/// Picture ids from here up belong to layers; the pictures programs send
 /// stay below.
 pub const LAYER_PICTURES: u32 = 0x8000_0000;
 
@@ -325,14 +326,14 @@ pub const MAX_QUADS: usize = 1_000_000;
 
 impl Layer {
     /// This layer made safe to draw, or `None` when it must not be drawn at
-    /// all. Layers are plain data and arrive from games and, soon, remote
-    /// seats, so nothing a producer sends may reach a renderer unchecked:
+    /// all. Layers are plain data and arrive from programs over a pty,
+    /// so nothing a producer sends may reach a renderer unchecked:
     /// a non-finite placement, colour or lift becomes NaN vertices and
     /// driver-defined output, and a non-positive size has no quad. Finite
     /// but out-of-contract values are clamped to the documented ranges
     /// (straight RGBA in 0..1, lifts from the ground up, flicker no
     /// stronger than the flame itself). Every host calls this at its draw
-    /// boundary: the window's compositor, and `expand` for the browser.
+    /// boundary: the window's compositor, and `expand` for a quad renderer.
     pub fn sanitized(mut self) -> Option<Self> {
         let rect = match self.placement {
             Placement::Pixels(rect) | Placement::Cells(rect) => rect,
@@ -568,7 +569,7 @@ pub struct Quad {
 }
 
 /// A stage's layers as quads at `t` seconds, back to front, for a renderer
-/// that draws nothing else (the browser). `size` gives each named picture's
+/// that draws nothing else (a browser page, say). `size` gives each named picture's
 /// size, for a layer that shows all of one. Each quad keeps its layer's turn
 /// and stand; lifting is left to the window (a stage's layers never lift).
 pub fn expand(layers: &[Layer], t: f32, size: impl Fn(u32) -> Option<(u32, u32)>) -> Vec<Quad> {
@@ -772,7 +773,7 @@ pub fn expand_marks(
 }
 
 /// Quads as layers, the other way from [`expand`]: for a renderer that draws
-/// layers (the browser's `glass-gpu`, which compiles them the way the window
+/// layers (`glass-gpu` built for the web, which compiles them the way the window
 /// does) given the quads the wire carries. A quad is a layer that has had its
 /// moment (opacity applied, flame flickered, motes born), so it comes back as
 /// a layer with none of those left to do: `expand(&layers_of(&quads), t, ..)`
@@ -1031,7 +1032,7 @@ mod expand_tests {
 
     #[test]
     fn random_layers_sanitize_to_the_contract_and_the_cow_agrees() {
-        // Layers arrive from games and remote seats as plain data: any
+        // Layers arrive from programs as plain data: any
         // bit pattern in any field must either drop or land inside the
         // documented ranges, and the fast-path soundness check must
         // agree with the full sanitize on every one.

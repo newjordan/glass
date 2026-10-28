@@ -1,11 +1,11 @@
-//! Glass: angelX's own window. A GPU compositor where the cockpit's text is
-//! one layer and anything else stacks above or below it
-//! (docs/RENDER_FOUNDATION.md).
+//! Glass's window: a GPU compositor where the app's text is one layer and
+//! anything else stacks above or below it.
 //!
-//! The cockpit keeps drawing with ratatui; [`GlassBackend`] is one more
-//! backend for it. [`run`] owns the main thread (winit needs it on macOS) and
-//! runs the cockpit on its own thread with a [`Host`]: the backend, the
-//! keyboard and mouse as terminal events, and the window's other services.
+//! The app draws with ratatui; [`GlassBackend`] is one more backend for
+//! it. [`run`] owns the main thread (winit needs it on macOS) and runs the
+//! app on its own thread with a [`Host`]: the backend, the keyboard and
+//! mouse as terminal events, and the window's other services. The glass
+//! terminal (crates/term) is such an app.
 
 mod backend;
 mod clipboard;
@@ -42,7 +42,7 @@ pub use font::render_page;
 pub use layer::{LAYER_PICTURES, Layer, LayerKind, MAX_STROKE_PX, Particles, Placement, Stand, Stroke, StrokeShape, Tilt};
 pub use glass_gpu::Stage;
 /// The renderer core and its wgpu, for a test elsewhere that draws a scene
-/// offscreen on a device of its own (the cockpit's Heartglass test).
+/// offscreen on a device of its own.
 pub use glass_gpu as gpu;
 pub use wgpu;
 /// The 3D scene description (`glass-stage`'s), for `Host::set_scene`.
@@ -71,8 +71,8 @@ impl<T> LockExt<T> for Mutex<T> {
 pub const WINDOW_CLOSED: &str = "the glass window closed";
 
 /// The most layers one producer set may carry, window layers and a
-/// stage's alike. Far beyond anything drawn today (the blast stress
-/// scene peaks near twelve thousand); it exists so a buggy or hostile
+/// stage's alike. Far beyond anything drawn today (the busiest stress
+/// scenes peak near twelve thousand); it exists so a buggy or hostile
 /// producer cannot make every frame's work unbounded.
 pub(crate) const MAX_LAYERS: usize = 65_536;
 
@@ -199,13 +199,13 @@ pub(crate) enum UserEvent {
     GpuReady,
     /// Close as if the window's close button was pressed.
     Close,
-    /// The cockpit has returned; end the event loop.
+    /// The app has returned; end the event loop.
     Exit,
     /// End the process with this code, from the window's thread.
     ExitProcess(i32),
 }
 
-/// What the cockpit thread holds: the window's services.
+/// What the app's thread holds: the window's services.
 #[derive(Clone)]
 pub struct Host {
     shared: Arc<Shared>,
@@ -223,7 +223,7 @@ impl Host {
         GlassBackend::new(self.clone())
     }
 
-    /// The window's keyboard and mouse as terminal events, for the cockpit's
+    /// The window's keyboard and mouse as terminal events, for the app's
     /// input thread. Once the window closes, it returns [`WINDOW_CLOSED`].
     /// There is one reader; a second call gets an error.
     pub fn input_reader(
@@ -282,8 +282,8 @@ impl Host {
     }
 
     /// Replace every layer of `group` (ids whose top 32 bits are `group`)
-    /// with `layers`, in one go: a producer's per-frame set, such as the
-    /// Delve's thrown things. An empty list clears the group.
+    /// with `layers`, in one go: a producer's per-frame set, such as a
+    /// program's `group` of layers. An empty list clears the group.
     pub fn set_layer_group(&self, group: u32, layers: Vec<Layer>) {
         {
             let mut shared = self.shared.layers.lock_recover();

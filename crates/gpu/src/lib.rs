@@ -1,5 +1,5 @@
-//! The renderer core: the GPU half of angelX's compositor, with no window,
-//! no fonts on disk and no clock of its own (docs/GLASS_CORE.md).
+//! The renderer core: the GPU half of glass's compositor, with no window,
+//! no fonts on disk and no clock of its own.
 //!
 //! The host makes the wgpu `Device` and `Queue` (and, for a window, the
 //! surface) and hands them over; [`Core`] draws one pipeline of instanced
@@ -18,12 +18,12 @@
 //! ([`Core::upload_mesh`]); a material's pictures are the ones
 //! [`Core::upload`] keeps.
 //!
-//! What the core does not do, so that the browser can link it too: open a
+//! What the core does not do, so that a browser build can link it too: open a
 //! window, find a font, read a file or a clock, or start a thread. Wherever
 //! it needs the time (a slide, a breath, a flame, drifting motes) the host
 //! passes it in, as seconds since a start of its own choosing. It names no
 //! wgpu backend either: the window's crate turns on Vulkan and Metal, and
-//! the `web` feature turns on the browser's.
+//! the `web` feature turns on WebGPU's.
 
 use std::collections::HashMap;
 

@@ -5,7 +5,7 @@
 //!
 //! The window owns it outright: the pointer is read here in window
 //! pixels, so moving and sizing follow the hand at the display's pace
-//! with no trip through the cockpit's cells. The cockpit only hands
+//! with no trip through the app's cells. The app only hands
 //! over what to show (`Host::showcase`, `Host::showcase_frame`) and
 //! learns that the operator closed it (`Host::showcase_live`).
 //!
@@ -422,7 +422,7 @@ impl Default for Popup {
 }
 
 impl Popup {
-    /// Take the cockpit's latest request. Returns pictures to upload
+    /// Take the app's latest request. Returns pictures to upload
     /// before the next draw (the frame and its controls, the title).
     pub(crate) fn take_request(
         &mut self,
@@ -573,9 +573,9 @@ impl Popup {
     }
 
     /// Escape closes it, while the pointer is over it. Elsewhere Escape
-    /// stays the cockpit's: it interrupts a running turn, and the agent
-    /// presents mid-turn, so an open panel must never take that key from
-    /// the operator. True when the key was the showcase's.
+    /// stays the app's: a program may be waiting on it while its showing
+    /// is up, so an open panel must never take that key from the
+    /// operator. True when the key was the showcase's.
     pub(crate) fn escape(&mut self, shared: &crate::Shared) -> bool {
         if self.open.is_none() || self.spot(self.pointer) == Spot::Outside {
             return false;
@@ -619,7 +619,7 @@ impl Popup {
         Spot::Content
     }
 
-    /// The pointer moved. True when the showcase took it (the cockpit
+    /// The pointer moved. True when the showcase took it (the app
     /// does not see it) and whether the panel must redraw.
     pub(crate) fn pointer(&mut self, p: [f32; 2], window: (f32, f32)) -> (bool, bool) {
         let spot = self.spot(p);
@@ -1629,7 +1629,7 @@ mod tests {
         let shared = crate::Shared::default();
         let [x, y, w, h] = popup.open.as_ref().unwrap().rect;
         popup.pointer = [x - 40.0, y];
-        assert!(!popup.escape(&shared), "away from the panel, Escape is the cockpit's");
+        assert!(!popup.escape(&shared), "away from the panel, Escape is the app's");
         assert!(popup.is_open());
         popup.pointer = [x + w / 2.0, y + h / 2.0];
         assert!(popup.escape(&shared));

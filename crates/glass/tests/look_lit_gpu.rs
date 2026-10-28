@@ -201,7 +201,7 @@ fn a_brand_ceiling_holds_a_surface_at_its_class_step_however_it_is_lit() {
         return;
     };
     // White ground square to a strong sun: with no ceiling it reaches the
-    // ramp's top; as the brand's ground it stops at its step (docs/BRAND.md).
+    // ramp's top; as the brand's ground it stops at its step.
     let sun = Sun { toward: [0.0, 1.0, 0.0], strength: 1.25, ambient: 0.3, shadow: None, rise: 0.0 };
     let bare = Scene { camera: top_down(), nodes: vec![floor(1, 0.0, 1.0)], look: Some(lit_look(sun)) };
     let top = sample(&gpu.render(&bare), 0.0, 0.0);

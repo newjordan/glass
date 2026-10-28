@@ -32,7 +32,7 @@ pub fn copy(text: &str) -> bool {
     };
     // The write runs on its own thread with a bounded wait for the
     // acknowledgement: a wedged clipboard tool with a full pipe must not
-    // block the caller (the cockpit) on write_all forever.
+    // block the caller (the app) on write_all forever.
     let text = text.to_owned();
     let (done, written_rx) = std::sync::mpsc::channel();
     std::thread::spawn(move || {

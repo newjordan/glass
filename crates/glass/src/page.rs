@@ -1,8 +1,8 @@
 //! A page of text as pixels: lines rasterized with the window's own
 //! font stack (`font.rs`), for a producer that hands the result to
 //! the compositor as a picture instead of painting cells. This is
-//! the one raster service both hosts share — the cockpit asks here
-//! rather than carrying a second font stack of its own.
+//! the one raster service the window and its app share — the app
+//! asks here rather than carrying a second font stack of its own.
 //!
 //! Layout is the cell grid the fonts measure: every glyph advances
 //! by whole cells, lines stack by cell height. The picture is

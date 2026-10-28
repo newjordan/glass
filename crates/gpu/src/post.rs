@@ -1,7 +1,7 @@
 //! The stage's post pass (`post.wgsl`): what burns and flies blooms softly,
 //! the corners fall into black, a film's grain lies in the middle tones and
 //! the last step to eight bits is dithered; a big hit splits the colours a
-//! few pixels and lifts the light. The Delve's look holds: black stays
+//! few pixels and lifts the light. The stage's look holds: black stays
 //! black (the bloom has a threshold, the vignette and the rise multiply,
 //! the grain and the dither leave black alone), the light is the light's
 //! own colour, never a white blowout, and the pixel art is read texel for
@@ -9,15 +9,15 @@
 //!
 //! It runs over a stage's world, before the screen's own marks (the HUD,
 //! the bands) are laid over it: they stay as crisp and as dark as drawn.
-//! Every number is fixed, picked by looking at the Delve's busiest fights;
+//! Every number is fixed, picked by looking at the busiest scenes;
 //! a renderer that cannot afford it turns it off (`Core::set_post`).
 
 use crate::Core;
 use crate::frame::Frame;
 
 /// What counts as light: the part of a colour's brightest channel over
-/// this. The Delve's walls, floors and figures sit under it; its fires,
-/// shots and magic over.
+/// this. Walls, floors and figures sit under it; fires, shots and
+/// sparks over.
 pub const BLOOM_THRESHOLD: f32 = 0.55;
 /// How softly the threshold comes in, either side of it.
 pub const BLOOM_KNEE: f32 = 0.2;
@@ -94,7 +94,7 @@ pub fn level_sizes(size: (u32, u32)) -> [(u32, u32); LEVELS] {
 
 /// Whether the post pass runs unless the host says otherwise:
 /// `GLASS_POST=0` turns it off where there is an environment (a
-/// window); the browser's page says so itself.
+/// window); a browser build's page says so itself.
 pub fn on_by_default() -> bool {
     #[cfg(not(target_arch = "wasm32"))]
     {

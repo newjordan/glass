@@ -1,6 +1,6 @@
 # Glass term: open intake, glass expansion
 
-`glass` (crates/term) is a terminal in angelX's own window. A program
+`glass` (crates/term) is a terminal in a GPU window of its own. A program
 runs in a pseudo-terminal; what it writes comes in, and glass expands it
 into everything the window can show: the text grid, and above and below
 it pictures, layers, particles, 3D scenes and the showcase.
@@ -41,7 +41,7 @@ Two words carry the design.
 ## The glass side, for adapters to target
 
 - `glass_window::Host` (crates/glass/src/lib.rs): `upload_picture`,
-  `set_layer`, `set_layer_group`, `set_layers`, `remove_layer`,
+  `set_layer`, `set_layer_group`, `remove_layer`,
   `set_scene`/`remove_scene`, `set_stage`; the showcase in
   crates/glass/src/showcase.rs (`Host::showcase`, `showcase_frame`).
 - Pictures: `glass_window::graphics` / `glass_gpu::Picture`
@@ -425,8 +425,8 @@ engine and real key events to the encoder.
 - **Cursor shapes and colour.** DECSCUSR 0 to 6 carry through: block
   and hollow block as a block, underline as an underline, beam as a
   bar, hidden hidden, and OSC 12 cursor colour. The shape and colour
-  ride glass's Snapshot additively (`CursorStyle`, `CursorKind`): the
-  cockpit's own look does not change unless it asks for something else.
+  ride glass's Snapshot additively (`CursorStyle`, `CursorKind`): an
+  app's own look does not change unless it asks for something else.
   glass's default, which DECSCUSR 0 restores and which a program that
   never asks gets, is a steady block. DECSCUSR 1, 3 and 5 blink (block,
   underline, bar); 2, 4 and 6 are steady. Mode `?12` sets the blink
@@ -532,7 +532,7 @@ engine and real key events to the encoder.
   first GPU frame shows it. Without an early frame (X11, other systems,
   or a step failing), the program starts after the GPU's first frame,
   as before.
-- **Measured.** Medians of 16 runs on the operator's machine, launched
+- **Measured.** Medians of 16 runs on one machine, launched
   through Hyprland on a headless output, against kitty 0.49.2:
   - window on screen: 31 ms (kitty 73);
   - program running: 39.5 ms (kitty 193).
@@ -613,4 +613,3 @@ its corner are measured.
   scoreboard and cast (`MINDSEYE_BENCH`, `MINDSEYE_ASSETS`). Without
   them a test says it skipped and passes, and an example plays without
   them.
-- Builds stay in this worktree's `crates/target` (on /work).

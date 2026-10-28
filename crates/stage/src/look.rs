@@ -1,4 +1,4 @@
-//! A scene's look (docs/GLASS_CORE.md, "The world's look"): the palette it is
+//! A scene's look: the palette it is
 //! seen through, as plain data. A scene with a [`Look`] is drawn at a small
 //! internal size, every pixel is moved onto one colour ramp by an ordered
 //! dither, a few accent colours are kept as they are, and the distance fades
@@ -59,7 +59,7 @@ pub const FOCUS_MAX: usize = 64;
 pub const DOF_RADIUS_MAX: f32 = 4.0;
 
 /// A card's pixel stored at this alpha is an ink that keeps its colour
-/// under a look's light ([`Cards`]): the Delve's signal inks (a knight's
+/// under a look's light ([`Cards`]): a game's signal inks (a hero's
 /// mark, a foe's eyes), which are game state, as an accent is. Nothing
 /// else draws at it: one step under opaque does not show.
 pub const UNLIT_ALPHA: u8 = 254;
@@ -231,7 +231,7 @@ impl Zone {
 }
 
 /// How a look that lights its scene lights the figures standing in it as
-/// cards (a stage world's `figures`, docs/WORLD-TIERS.md "Lit cards"):
+/// cards (a stage world's `figures`):
 /// each card as an upright face turned to the eye, by the look's sun (its
 /// shadows too) and lamps, at the point of the card it is, so a knight in
 /// the dark between the braziers is dark and one beside a brazier glows
@@ -269,12 +269,12 @@ pub struct Cards {
 }
 
 impl Cards {
-    /// What a lit room's cards are (docs/WORLD-TIERS.md, "Lit cards").
+    /// What a lit room's cards are.
     pub const ROOM: Cards = Cards { least: 0.6, most: 1.6, warm: 0.75, rim: 0.6, reach: 1.8, normals: 1.0 };
 }
 
 /// A depth of field: what is near the eye and far from it is softened, the
-/// play kept pixel-sharp (docs/WORLD-TIERS.md, "Depth of field"). Depth is
+/// play kept pixel-sharp. Depth is
 /// along the camera's own axis (its clip space's `w`, as units of the
 /// world: for a stage camera, how far down the floor a point is), so a
 /// card is as far as its foot. Everything from the nearest of `focus` to

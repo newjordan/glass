@@ -1,5 +1,5 @@
 //! The built-in meshes by name, for text that names a shape: a set file
-//! (a blockout of a room or a stretch of the kingdom, docs/WORLD-3D.md) and
+//! (a blockout of a room or a stretch of the kingdom) and
 //! any tool that writes one. A name is lower case; [`by_name`] answers the
 //! mesh it stands for, sized like the others (a unit across, centred), and
 //! the node's scale makes it the size it needs to be.

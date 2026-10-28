@@ -1,4 +1,4 @@
-//! The brand guide's clamps (docs/BRAND.md): how bright and how coloured
+//! The brand guide's clamps: how bright and how coloured
 //! each class of thing in the world may be, as numbers the engine holds
 //! every asset to, so a world built quickly by many hands still reads as
 //! one place and never as eye chaos.
@@ -86,7 +86,7 @@ impl Class {
         Class::Effect,
     ];
 
-    /// Its name in docs/BRAND.md.
+    /// Its name.
     pub fn name(self) -> &'static str {
         match self {
             Class::Void => "void",
@@ -103,7 +103,7 @@ impl Class {
         }
     }
 
-    /// Its clamps (docs/BRAND.md, "Classes").
+    /// Its clamps.
     pub fn band(self) -> Band {
         let band = |lo, hi, ceiling, chroma| Band { tone: (lo, hi), ceiling, chroma };
         match self {
@@ -180,8 +180,7 @@ pub struct Ladder {
     pub steps: [f32; 8],
 }
 
-/// Stone and dark: dungeons, castles' masses, interiors, night. The
-/// reference corridor (docs/BRAND.md) and the monolith's castle.
+/// Stone and dark: dungeons, castles' masses, interiors, night.
 pub const DUNGEON: Ladder = Ladder { name: "dungeon", steps: [0.060, 0.090, 0.125, 0.170, 0.215, 0.280, 0.365, 0.500] };
 /// Open country under the sky: a step lighter at the top, the same dark.
 pub const OPEN: Ladder = Ladder { name: "open", steps: [0.066, 0.112, 0.162, 0.218, 0.287, 0.368, 0.468, 0.604] };
@@ -580,8 +579,7 @@ pub fn grade_figure(pixels: &mut [[u8; 4]]) {
 mod tests {
     use super::*;
 
-    /// The monolith's ramps (crates/glass/src/monolith.rs), the look the
-    /// user approved: each must sit on a ladder.
+    /// A night scene's approved ramps: each must sit on a ladder.
     const SLATE: [[u8; 3]; 8] = [
         [0x0e, 0x0f, 0x19],
         [0x14, 0x17, 0x27],
