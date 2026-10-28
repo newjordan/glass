@@ -1,6 +1,6 @@
 //! The compositor: turns a grid snapshot and the layer list into instanced
 //! quads and presents them on a transparent surface. The GPU half (the
-//! pipeline, pictures, stages, atlas and layer compiler) is `angel-gpu`'s;
+//! pipeline, pictures, stages, atlas and layer compiler) is `glass-gpu`'s;
 //! this is the window's side: the surface, the fonts and glyph memo, the
 //! text grid and the assembly transition.
 //!
@@ -11,7 +11,7 @@
 use std::sync::Arc;
 use std::time::Instant;
 
-use angel_gpu::{COLOR, Core, Draw, Entry, FastMap, Frame, Instance, MASK, PICTURE, Stage};
+use glass_gpu::{COLOR, Core, Draw, Entry, FastMap, Frame, Instance, MASK, PICTURE, Stage};
 use bytemuck::Zeroable;
 use ratatui_core::style::{Color, Modifier};
 use winit::window::Window;
@@ -74,7 +74,7 @@ pub struct Renderer {
     view_format: wgpu::TextureFormat,
     opaque_only: bool,
     /// The GPU side: pipeline, pictures, stages, atlas and the layer
-    /// compiler (`angel-gpu`).
+    /// compiler (`glass-gpu`).
     core: Core,
     transition: Option<transition::Transition>,
     /// The last frame came back suboptimal: reconfigure before the next.
@@ -1122,7 +1122,7 @@ impl Renderer {
     }
 
     /// A mesh for scenes to name by `id`.
-    pub fn upload_mesh(&mut self, id: u32, mesh: &angel_stage::scene::MeshData) {
+    pub fn upload_mesh(&mut self, id: u32, mesh: &glass_stage::scene::MeshData) {
         if let Err(error) = self.core.upload_mesh(id, mesh) {
             eprintln!("[glass] mesh {id} refused: {error:?}");
         }
@@ -1135,7 +1135,7 @@ impl Renderer {
 
     /// Show a 3D scene in the picture `id`, the given size in pixels (`None`
     /// takes it down).
-    pub fn set_scene(&mut self, id: u32, scene: Option<(angel_stage::scene::Scene, (u32, u32))>) {
+    pub fn set_scene(&mut self, id: u32, scene: Option<(glass_stage::scene::Scene, (u32, u32))>) {
         self.core.set_scene_target(id, scene);
     }
 
@@ -1230,7 +1230,7 @@ impl Renderer {
     /// screenshots taken from inside (no compositor in the picture).
     /// [`capture`](Self::capture) without waiting for the pixels: they
     /// come back through the returned handle (`poll_captures`).
-    pub fn capture_later(&mut self, snapshot: &Snapshot, layers: &[Layer]) -> angel_gpu::ReadBack {
+    pub fn capture_later(&mut self, snapshot: &Snapshot, layers: &[Layer]) -> glass_gpu::ReadBack {
         self.capture_with(snapshot, layers, |core, texture, size| core.read_back_later(texture, size))
     }
 
@@ -1250,7 +1250,7 @@ impl Renderer {
         &mut self,
         snapshot: &Snapshot,
         layers: &[Layer],
-        read: impl FnOnce(&angel_gpu::Core, &wgpu::Texture, (u32, u32)) -> T,
+        read: impl FnOnce(&glass_gpu::Core, &wgpu::Texture, (u32, u32)) -> T,
     ) -> T {
         self.render_stages();
         let mut frame_data = self.core.take_frame();
@@ -1694,7 +1694,7 @@ mod atlas_gpu_tests {
             println!("no GPU device: skipped");
             return;
         };
-        let mut core = angel_gpu::Core::new(device, queue, wgpu::TextureFormat::Rgba8Unorm, 1.0);
+        let mut core = glass_gpu::Core::new(device, queue, wgpu::TextureFormat::Rgba8Unorm, 1.0);
         let image = |n: u32| -> Vec<u8> { (0..64 * 64).flat_map(|i| [n as u8, (n >> 8) as u8, i as u8, 255]).collect() };
         let first = core.atlas_insert(64, 64, &image(1)).expect("the first image fits");
         let (side, _) = core.atlas_pixels();

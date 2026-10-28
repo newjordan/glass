@@ -105,7 +105,7 @@ pub(crate) struct Recorder {
     /// Frames drawn but left out because the encoder was behind.
     skipped: u64,
     /// Frames on their way back from the GPU, oldest first.
-    in_flight: VecDeque<(u64, angel_gpu::ReadBack)>,
+    in_flight: VecDeque<(u64, glass_gpu::ReadBack)>,
 }
 
 /// Frames on their way back at once; a tick past that is left to repeat.
@@ -133,7 +133,7 @@ impl Recorder {
     }
 
     /// A frame drawn for `tick` is on its way back.
-    pub fn launch(&mut self, tick: u64, read: angel_gpu::ReadBack) {
+    pub fn launch(&mut self, tick: u64, read: glass_gpu::ReadBack) {
         self.in_flight.push_back((tick, read));
         self.next = tick + 1;
     }

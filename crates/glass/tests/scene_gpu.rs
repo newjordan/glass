@@ -2,18 +2,18 @@
 //! back (docs/GLASS_CORE.md, step 2.1). No window, no surface: the test makes
 //! its own device. Where the machine has no adapter, each test says so and
 //! passes, so this runs everywhere and means something where there is a GPU.
-//! `cargo test -p angel-glass --test scene_gpu -- --nocapture` prints the
+//! `cargo test -p glass-window --test scene_gpu -- --nocapture` prints the
 //! pixels checked.
 
 use std::sync::{Arc, Mutex};
 
-use angel_gpu::{Core, Draw, Frame, Instance, Picture};
-use angel_gpu::Stage;
-use angel_stage::scene::{
+use glass_gpu::{Core, Draw, Frame, Instance, Picture};
+use glass_gpu::Stage;
+use glass_stage::scene::{
     AMBIENT_LIGHT, AlphaMode, Camera, FACE_SHADES, GRAZING, KEY_LIGHT, Material, MeshData, MeshError, MeshRef, Node, Patch,
     Projection, Projector, Props, Sampling, Scene, Skin, TextureSource, Transform, mat_mul,
 };
-use angel_stage::{Layer, LayerKind, Placement, Stand, Tilt};
+use glass_stage::{Layer, LayerKind, Placement, Stand, Tilt};
 
 const SIZE: (u32, u32) = (64, 64);
 
@@ -417,7 +417,7 @@ fn an_uploaded_mesh_draws_in_groups_and_oversize_is_refused() {
     let pixels = gpu.render(&Scene { camera: ortho(), nodes: vec![gone], look: None });
     expect("a mesh that was never uploaded", at(&pixels, 32, 32), rgba(0, 0, 0), 0);
     let mut huge = mesh.clone();
-    huge.positions = vec![[0.0; 3]; angel_stage::scene::MAX_MESH_VERTICES + 1];
+    huge.positions = vec![[0.0; 3]; glass_stage::scene::MAX_MESH_VERTICES + 1];
     assert_eq!(gpu.core.upload_mesh(10, &huge), Err(MeshError::TooManyVertices));
     let mut bad = mesh.clone();
     bad.indices[0] = 99;
@@ -716,7 +716,7 @@ fn stage_pixels(gpu: &mut Gpu, stage: Stage, scale: u32) -> (Vec<u8>, (u32, u32)
         rect: [0.0, 0.0, size.0 as f32, size.1 as f32],
         uv: [0.0, 0.0, size.0 as f32, size.1 as f32],
         color: [1.0; 4],
-        kind: angel_gpu::PICTURE,
+        kind: glass_gpu::PICTURE,
         ..bytemuck::Zeroable::zeroed()
     };
     let mut parts = vec![(Draw::Picture { id, linear: false }, vec![shown])];
@@ -913,7 +913,7 @@ fn unit(a: V3) -> V3 {
 
 /// An eye at `eye` looking at `target`, +Y up: its right, up and forward,
 /// and the view matrix (world to its own space, looking down -Z).
-fn look(eye: V3, target: V3) -> (V3, V3, V3, angel_stage::scene::Mat4) {
+fn look(eye: V3, target: V3) -> (V3, V3, V3, glass_stage::scene::Mat4) {
     let f = unit(sub(target, eye));
     let r = unit(cross(f, [0.0, 1.0, 0.0]));
     let u = cross(r, f);
@@ -1273,7 +1273,7 @@ fn a_picture_cast_from_the_camera_it_is_drawn_with_comes_back_pixel_for_pixel() 
         .collect();
     gpu.pixels(501, size.0, size.1, rgba.clone());
     // The stage's own camera, which a plate is captured and cast through.
-    let camera = Camera { clear: Some([0.0, 0.0, 0.0, 1.0]), ..angel_stage::scene::stage_camera(0.3, (384, 224)) };
+    let camera = Camera { clear: Some([0.0, 0.0, 0.0, 1.0]), ..glass_stage::scene::stage_camera(0.3, (384, 224)) };
     let projector = Projector::of(&camera, size.0 as f32 / size.1 as f32).unwrap();
     let blocks = [
         Block { centre: [120.0, 30.0, 150.0], size: [60.0, 60.0, 40.0] },
@@ -1317,7 +1317,7 @@ fn the_depth_a_scene_leaves_is_read_back() {
     let want = |d: f32| 100.0 * (d - 0.1) / (d * 99.9);
     for with_look in [false, true] {
         // A look draws small and quantized; the depth is the scene's own, full size.
-        scene.look = with_look.then(|| angel_stage::scene::Look::new((0..16).map(|i| [i * 16; 3]).collect()));
+        scene.look = with_look.then(|| glass_stage::scene::Look::new((0..16).map(|i| [i * 16; 3]).collect()));
         let depth = gpu.core.scene_depth(&scene, SIZE);
         assert_eq!(depth.len(), (SIZE.0 * SIZE.1) as usize);
         let at = |x: u32, y: u32| depth[(y * SIZE.0 + x) as usize];
@@ -1352,7 +1352,7 @@ fn a_skinned_mesh_is_bent_by_its_joints_on_the_gpu() {
     let mut joint = Node::empty(7);
     joint.transform = Transform::from_translation([0.5, 0.0, 0.0]);
     let mut quad = Node::new(1, MeshRef::Uploaded(40), red);
-    let skin = Skin { joints: std::sync::Arc::from([7u64]), inverse_bind: std::sync::Arc::from([angel_stage::scene::IDENTITY_MATRIX]) };
+    let skin = Skin { joints: std::sync::Arc::from([7u64]), inverse_bind: std::sync::Arc::from([glass_stage::scene::IDENTITY_MATRIX]) };
     quad.skin = Some(skin.clone());
     let scene = Scene { camera: ortho(), nodes: vec![joint.clone(), quad.clone()], look: None };
     let pixels = gpu.render(&scene);
@@ -1362,7 +1362,7 @@ fn a_skinned_mesh_is_bent_by_its_joints_on_the_gpu() {
     // Turning the joint a quarter about z turns the quad with it, about the
     // joint: the quad's +x edge (x 0.5 local) goes to y 0.5 over x 0.5.
     let mut turned = joint.clone();
-    turned.transform.rotation = angel_stage::scene::quat_axis_angle([0.0, 0.0, 1.0], std::f32::consts::FRAC_PI_2);
+    turned.transform.rotation = glass_stage::scene::quat_axis_angle([0.0, 0.0, 1.0], std::f32::consts::FRAC_PI_2);
     let scene = Scene { camera: ortho(), nodes: vec![turned, quad.clone()], look: None };
     let pixels = gpu.render(&scene);
     expect("turned: still over x 0.5 (48, 32)", at(&pixels, 48, 32), rgba(255, 0, 0), 0);
@@ -1459,7 +1459,7 @@ fn a_round_cube_shows_its_faces_and_its_glowing_edges_with_a_halo() {
     // Nor on the plain cube, whose normals split at every edge: turned to
     // show three faces, liquid, at several moments.
     let mut cube = node_at(2, MeshRef::Cube, Material { liquid: 1.0, ..Material::color([1.0, 1.0, 1.0, 1.0]) }, [0.0; 3], 1.0);
-    cube.transform.rotation = angel_stage::scene::quat_normalize([0.28, 0.36, 0.0, 0.89]);
+    cube.transform.rotation = glass_stage::scene::quat_normalize([0.28, 0.36, 0.0, 0.89]);
     for t in [0.5, 1.7, 3.3] {
         gpu.core.set_scene_clock(t);
         let pixels = gpu.render(&Scene { camera: ortho(), nodes: vec![cube.clone()], look: None });

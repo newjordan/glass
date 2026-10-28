@@ -414,9 +414,9 @@ impl Session {
     pub fn spawn(
         command: &[String],
         dir: Option<&Path>,
-        grid: angel_glass::GridSize,
-        palette: &angel_glass::Palette,
-        host: angel_glass::Host,
+        grid: glass_window::GridSize,
+        palette: &glass_window::Palette,
+        host: glass_window::Host,
         tx: Sender<Msg>,
         focused: Arc<AtomicBool>,
     ) -> Result<Self, String> {
@@ -453,7 +453,7 @@ impl Session {
         cmd.env("TERM_PROGRAM_VERSION", env!("CARGO_PKG_VERSION"));
 
         let child = pair.slave.spawn_command(cmd).map_err(|e| format!("could not start {}: {e}", command.first().map_or("the shell", String::as_str)))?;
-        angel_glass::startup::mark("program started");
+        glass_window::startup::mark("program started");
         // Close our copy of the slave so the reader sees the end of output.
         drop(pair.slave);
 
@@ -470,7 +470,7 @@ impl Session {
             .map_err(|e| format!("pty reader: {e}"))?;
         let output = Arc::new(AtomicBool::new(false));
         let gate = Arc::new(FrameGate::default());
-        let intake = Arc::new(Mutex::new(Intake::new(angel_glass::LAYER_PICTURES)));
+        let intake = Arc::new(Mutex::new(Intake::new(glass_window::LAYER_PICTURES)));
         let splitter = Arc::new(Mutex::new(intake::Splitter::default()));
         {
             let (engine, writer, output, intake, splitter, gate) = (
@@ -572,7 +572,7 @@ impl Session {
         lock(&self.engine).process(bytes);
     }
 
-    pub fn resize(&mut self, rows: u16, cols: u16, grid: angel_glass::GridSize) {
+    pub fn resize(&mut self, rows: u16, cols: u16, grid: glass_window::GridSize) {
         let (rows, cols) = (rows.max(1), cols.max(1));
         let _ = self.master.resize(pty_size(rows, cols, grid));
         let mut engine = lock(&self.engine);
@@ -619,7 +619,7 @@ impl Session {
         frame: &mut Frame,
         selection: Option<&Selection>,
         hover: Option<&Selection>,
-        host: &angel_glass::Host,
+        host: &glass_window::Host,
         show_cursor: bool,
     ) {
         let mut engine = lock(&self.engine);
@@ -664,7 +664,7 @@ impl Session {
             description.placements.extend(extra);
         }
         for picture in description.pictures {
-            host.upload_picture(angel_glass::gpu::Picture {
+            host.upload_picture(glass_window::gpu::Picture {
                 id: picture.gpu,
                 width: picture.width,
                 height: picture.height,
@@ -678,13 +678,13 @@ impl Session {
             .into_iter()
             .map(|shown| {
                 let kind = match shown.source {
-                    Some([x, y, w, h]) => angel_glass::LayerKind::PicturePart(shown.gpu, [x, y, w, h]),
-                    None => angel_glass::LayerKind::Picture(shown.gpu),
+                    Some([x, y, w, h]) => glass_window::LayerKind::PicturePart(shown.gpu, [x, y, w, h]),
+                    None => glass_window::LayerKind::Picture(shown.gpu),
                 };
-                let mut layer = angel_glass::Layer::new(
+                let mut layer = glass_window::Layer::new(
                     shown.id | (u64::from(PICTURE_GROUP) << 32),
                     shown.z,
-                    angel_glass::Placement::Cells([shown.column, shown.row, shown.width, shown.height]),
+                    glass_window::Placement::Cells([shown.column, shown.row, shown.width, shown.height]),
                     kind,
                 );
                 layer.opacity = 1.0;
@@ -872,7 +872,7 @@ fn pty_fd(master: &dyn MasterPty) -> Option<std::os::fd::OwnedFd> {
     unsafe { std::os::fd::BorrowedFd::borrow_raw(fd) }.try_clone_to_owned().ok()
 }
 
-fn pty_size(rows: u16, cols: u16, grid: angel_glass::GridSize) -> PtySize {
+fn pty_size(rows: u16, cols: u16, grid: glass_window::GridSize) -> PtySize {
     let px = |cells: u16, cell: u32| u16::try_from(u32::from(cells) * cell).unwrap_or(u16::MAX);
     PtySize { rows, cols, pixel_width: px(cols, grid.cell_width), pixel_height: px(rows, grid.cell_height) }
 }
@@ -1017,7 +1017,7 @@ mod pump_tests {
     }
 
     fn rig() -> (Engine, Intake, intake::Splitter) {
-        (engine(), Intake::new(angel_glass::LAYER_PICTURES), intake::Splitter::default())
+        (engine(), Intake::new(glass_window::LAYER_PICTURES), intake::Splitter::default())
     }
 
     /// One stream through pump, as the reader thread would.
@@ -1865,7 +1865,7 @@ mod pump_tests {
 /// The showcase request as last applied, without the frame or the progress.
 #[derive(Clone, PartialEq)]
 enum OpenStamp {
-    Picture { id: u32, seq: u64, fit: angel_glass::Fit },
+    Picture { id: u32, seq: u64, fit: glass_window::Fit },
     Generation(u64),
 }
 
@@ -1883,7 +1883,7 @@ fn open_stamp(intake: &intake::Intake) -> Option<OpenStamp> {
     }
 }
 
-fn apply_showcase(intake: &intake::Intake, host: &angel_glass::Host, stamp: Option<&OpenStamp>) {
+fn apply_showcase(intake: &intake::Intake, host: &glass_window::Host, stamp: Option<&OpenStamp>) {
     use intake::glass_dialect::{ShowcaseAsk, ID_BASE};
     let Some(_) = stamp else {
         host.close_showcase();
@@ -1892,12 +1892,12 @@ fn apply_showcase(intake: &intake::Intake, host: &angel_glass::Host, stamp: Opti
     match intake.expansion.ask() {
         Some(ShowcaseAsk::Picture { id, fit }) => {
             if let Some((width, height, rgba, _)) = intake.picture_pixels(ID_BASE + id) {
-                host.showcase(angel_glass::Showing::new("glass", (width, height), *fit));
+                host.showcase(glass_window::Showing::new("glass", (width, height), *fit));
                 host.showcase_frame(width, height, rgba.as_ref().clone());
             }
         }
         Some(ShowcaseAsk::Video { width, height, fit, .. }) => {
-            host.showcase(angel_glass::Showing::new("video", (*width, *height), *fit));
+            host.showcase(glass_window::Showing::new("video", (*width, *height), *fit));
         }
         Some(ShowcaseAsk::Chart { marks, fit, picture, .. }) => {
             // The picture's pixels, then the marks over them, then the
@@ -1906,7 +1906,7 @@ fn apply_showcase(intake: &intake::Intake, host: &angel_glass::Host, stamp: Opti
             if let Some((width, height, rgba, _)) = intake.picture_pixels(ID_BASE + *picture) {
                 host.showcase_frame(width, height, rgba.as_ref().clone());
                 host.showcase_marks(marks.clone());
-                host.showcase(angel_glass::Showing::new("chart", (width, height), *fit));
+                host.showcase(glass_window::Showing::new("chart", (width, height), *fit));
             }
         }
         Some(ShowcaseAsk::Model { nodes, meshes, size, fit, .. }) => {
@@ -1914,11 +1914,11 @@ fn apply_showcase(intake: &intake::Intake, host: &angel_glass::Host, stamp: Opti
                 host.upload_mesh(*id, mesh.clone());
             }
             host.showcase_model(nodes.clone());
-            host.showcase(angel_glass::Showing::new("model", *size, *fit));
+            host.showcase(glass_window::Showing::new("model", *size, *fit));
         }
         Some(ShowcaseAsk::Page { text, cols, rows, .. }) => {
             if let Some((width, height, rgba)) = raster_page(text, *cols, *rows) {
-                host.showcase(angel_glass::Showing::new("page", (width, height), angel_glass::Fit::Width));
+                host.showcase(glass_window::Showing::new("page", (width, height), glass_window::Fit::Width));
                 host.showcase_frame(width, height, rgba);
             }
         }
@@ -1926,7 +1926,7 @@ fn apply_showcase(intake: &intake::Intake, host: &angel_glass::Host, stamp: Opti
     }
 }
 
-fn apply_frame(intake: &intake::Intake, host: &angel_glass::Host, frame: intake::glass_dialect::PendingFrame) {
+fn apply_frame(intake: &intake::Intake, host: &glass_window::Host, frame: intake::glass_dialect::PendingFrame) {
     use intake::glass_dialect::{PendingFrame, ID_BASE};
     match frame {
         PendingFrame::Pixels { width, height, rgba } => host.showcase_frame(width, height, rgba),
@@ -1938,7 +1938,7 @@ fn apply_frame(intake: &intake::Intake, host: &angel_glass::Host, frame: intake:
     }
 }
 
-fn apply_scenes(expansion: &mut intake::glass_dialect::Expansion, host: &angel_glass::Host, shown: &Mutex<Vec<u32>>) {
+fn apply_scenes(expansion: &mut intake::glass_dialect::Expansion, host: &glass_window::Host, shown: &Mutex<Vec<u32>>) {
     let now = expansion.scene_ids();
     let mut was = lock(shown);
     for id in was.iter().filter(|id| !now.contains(id)) {
@@ -1958,7 +1958,7 @@ fn apply_scenes(expansion: &mut intake::glass_dialect::Expansion, host: &angel_g
     }
 }
 
-fn write_showcase_events(session: &Session, intake: &intake::Intake, host: &angel_glass::Host) {
+fn write_showcase_events(session: &Session, intake: &intake::Intake, host: &glass_window::Host) {
     use intake::glass_dialect::{showcase_event_bytes, ShowcaseNow};
     if !intake.expansion.events_on() {
         *lock(&session.event_seen) = intake::glass_dialect::ShowcaseSeen::default();
@@ -1982,7 +1982,7 @@ fn write_showcase_events(session: &Session, intake: &intake::Intake, host: &ange
 
 fn raster_page(text: &str, cols: u16, rows: u16) -> Option<(u32, u32, Vec<u8>)> {
     let _ = cols;
-    let mut pager = angel_glass::page::Pager::load("monospace", 16)?;
+    let mut pager = glass_window::page::Pager::load("monospace", 16)?;
     let mut lines: Vec<&str> = text.lines().collect();
     if lines.is_empty() {
         lines.push("");
@@ -1990,5 +1990,5 @@ fn raster_page(text: &str, cols: u16, rows: u16) -> Option<(u32, u32, Vec<u8>)> 
     while (lines.len() as u16) < rows {
         lines.push("");
     }
-    pager.render(&lines, angel_glass::page::PLAIN, [232, 224, 208], [22, 20, 18, 255])
+    pager.render(&lines, glass_window::page::PLAIN, [232, 224, 208], [22, 20, 18, 255])
 }

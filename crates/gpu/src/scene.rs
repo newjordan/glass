@@ -1,4 +1,4 @@
-//! 3D scenes on the GPU (docs/GLASS_CORE.md, step 2.1): `angel_stage::scene`
+//! 3D scenes on the GPU (docs/GLASS_CORE.md, step 2.1): `glass_stage::scene`
 //! drawn with a mesh pipeline, a depth buffer and a material that is unlit or
 //! lit by one fixed light, into any
 //! colour view or into a picture the layer system then shows anywhere. A
@@ -26,11 +26,11 @@
 use std::collections::HashMap;
 use std::num::NonZeroU64;
 
-use angel_stage::scene::{
+use glass_stage::scene::{
     AlphaMode, Look, MAX_JOINTS, Mat4, Material, MeshData, MeshError, MeshRef, ROUND_RADIUS, ROUND_SEGMENTS, Role,
     SPHERE_SEGMENTS, Sampling, Scene, TextureSource, mat_finite, mat_point, quat_rotate, skin_matrices,
 };
-use angel_stage::primitives::{FENCE_POSTS, RING_SEGMENTS, STAIR_STEPS};
+use glass_stage::primitives::{FENCE_POSTS, RING_SEGMENTS, STAIR_STEPS};
 use bytemuck::{Pod, Zeroable};
 
 use crate::look::{LookState, MASK_FORMAT};
@@ -1321,7 +1321,7 @@ impl Core {
         // transform is the identity, its pinhole in its matrix), else where
         // the camera stands (one that looks along a direction).
         let eye_size = size;
-        let seen_from = |camera: &angel_stage::scene::Camera| {
+        let seen_from = |camera: &glass_stage::scene::Camera| {
             let m = camera.view_projection(eye_size.0.max(1) as f32 / eye_size.1.max(1) as f32);
             let eye = m.as_ref().and_then(eye_of).unwrap_or(camera.transform.translation);
             (eye, m.as_ref().and_then(crate::look::depth_row))
@@ -1557,7 +1557,7 @@ impl Core {
         let eye = match view_proj.as_ref().and_then(eye_of) {
             Some([x, y, z]) => [x, y, z, 1.0],
             None => {
-                let [x, y, z] = quat_rotate(angel_stage::scene::quat_normalize(scene.camera.transform.rotation), [0.0, 0.0, 1.0]);
+                let [x, y, z] = quat_rotate(glass_stage::scene::quat_normalize(scene.camera.transform.rotation), [0.0, 0.0, 1.0]);
                 [x, y, z, 0.0]
             }
         };
@@ -2087,7 +2087,7 @@ mod tests {
     fn a_glowing_or_liquid_scene_is_told_apart() {
         let mut scene = Scene::default();
         assert!(!moves(&scene));
-        scene.nodes.push(angel_stage::scene::Node::new(1, MeshRef::Cube, Material::default()));
+        scene.nodes.push(glass_stage::scene::Node::new(1, MeshRef::Cube, Material::default()));
         assert!(!moves(&scene));
         scene.nodes[0].face_materials = vec![Material { liquid: 0.5, ..Material::default() }];
         assert!(moves(&scene), "a face's liquid moves it");
@@ -2102,7 +2102,7 @@ mod tests {
             mesh_key(MeshRef::RoundCube { radius: 9999, segments: 0 }),
             mesh_key(MeshRef::RoundCube { radius: 500, segments: 1 })
         );
-        assert!((scale_of(&angel_stage::scene::Transform::from_scale([2.0, 3.0, 0.5]).matrix()) - 3.0).abs() < 1e-6);
+        assert!((scale_of(&glass_stage::scene::Transform::from_scale([2.0, 3.0, 0.5]).matrix()) - 3.0).abs() < 1e-6);
         assert!((radius_of(&MeshData::cube()) - 0.75f32.sqrt()).abs() < 1e-6);
         // Normals that split where faces meet are told; a smooth mesh's are not.
         assert!(splits(&MeshData::cube()) && !splits(&MeshData::round_cube(120, 4)) && !splits(&MeshData::sphere(16)));
@@ -2110,7 +2110,7 @@ mod tests {
 
     #[test]
     fn a_projector_is_told_to_the_shader_and_a_bad_one_casts_nothing() {
-        use angel_stage::scene::Projector;
+        use glass_stage::scene::Projector;
         let m = [[1.0, 2.0, 3.0, 4.0], [5.0, 6.0, 7.0, 8.0], [0.0; 4], [0.0, 0.0, 0.0, 1.0]];
         assert_eq!(projector_of(&Material::default()), ([[0.0; 4]; 4], 0));
         let cast = Material { projector: Some(Projector { view_projection: m }), ..Material::default() };
@@ -2123,8 +2123,8 @@ mod tests {
 
     #[test]
     fn a_patch_is_told_to_the_shader_only_on_a_projected_surface() {
-        use angel_stage::scene::{Patch, Projector};
-        let projector = Some(Projector { view_projection: angel_stage::scene::IDENTITY_MATRIX });
+        use glass_stage::scene::{Patch, Projector};
+        let projector = Some(Projector { view_projection: glass_stage::scene::IDENTITY_MATRIX });
         let none = ([0.0; 4], [0.0; 3]);
         let patch = Some(Patch { picture: 7, rect: [64, 128, 40, 9], origin: [1.0, 2.0, 3.0], texel: 0.5 });
         assert_eq!(patch_of(&Material { projector, patch, ..Material::default() }), ([1.0, 2.0, 3.0, 0.5], [64.0, 128.0, (40 * 256 + 9) as f32]));
@@ -2141,8 +2141,8 @@ mod tests {
     #[test]
     fn the_shaders_face_shades_and_grazing_are_the_scenes() {
         let source = include_str!("mesh.wgsl");
-        let [top, front, side] = angel_stage::scene::FACE_SHADES;
-        for (name, v) in [("FACE_TOP", top), ("FACE_FRONT", front), ("FACE_SIDE", side), ("GRAZING", angel_stage::scene::GRAZING)] {
+        let [top, front, side] = glass_stage::scene::FACE_SHADES;
+        for (name, v) in [("FACE_TOP", top), ("FACE_FRONT", front), ("FACE_SIDE", side), ("GRAZING", glass_stage::scene::GRAZING)] {
             assert!(source.contains(&format!("const {name}: f32 = {v:?};")), "{name}");
         }
     }
@@ -2164,9 +2164,9 @@ mod tests {
     fn the_shaders_light_is_the_scenes() {
         // One light for every scene: the shader spells the same numbers.
         let source = include_str!("mesh.wgsl");
-        let [x, y, z] = angel_stage::scene::KEY_LIGHT;
+        let [x, y, z] = glass_stage::scene::KEY_LIGHT;
         assert!(source.contains(&format!("vec3<f32>({x}, {y}, {z})")), "KEY_LIGHT");
-        assert!(source.contains(&format!("const AMBIENT: f32 = {};", angel_stage::scene::AMBIENT_LIGHT)), "AMBIENT");
+        assert!(source.contains(&format!("const AMBIENT: f32 = {};", glass_stage::scene::AMBIENT_LIGHT)), "AMBIENT");
     }
 
     #[test]
@@ -2191,7 +2191,7 @@ mod tests {
 
     #[test]
     fn the_eye_is_where_a_projections_lines_meet() {
-        use angel_stage::scene::{Camera, Projection, Transform};
+        use glass_stage::scene::{Camera, Projection, Transform};
         // A perspective camera: the eye is where it stands.
         let camera = Camera {
             transform: Transform::from_translation([3.0, 7.0, -2.0]),
@@ -2204,7 +2204,7 @@ mod tests {
         }
         // The stage camera: its transform is the identity, its pinhole on the
         // stage's middle line in front of the floor and above it.
-        let stage = angel_stage::scene::stage_camera(0.3, (384, 224));
+        let stage = glass_stage::scene::stage_camera(0.3, (384, 224));
         let eye = eye_of(&stage.view_projection(384.0 / 224.0).unwrap()).expect("a pinhole");
         assert!((eye[0] - 192.0).abs() < 1e-2, "{eye:?}");
         assert!(eye[2] > 224.0, "toward the viewer past the stage: {eye:?}");

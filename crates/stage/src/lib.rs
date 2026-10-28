@@ -771,7 +771,7 @@ pub fn expand_marks(
 }
 
 /// Quads as layers, the other way from [`expand`]: for a renderer that draws
-/// layers (the browser's `angel-gpu`, which compiles them the way the window
+/// layers (the browser's `glass-gpu`, which compiles them the way the window
 /// does) given the quads the wire carries. A quad is a layer that has had its
 /// moment (opacity applied, flame flickered, motes born), so it comes back as
 /// a layer with none of those left to do: `expand(&layers_of(&quads), t, ..)`

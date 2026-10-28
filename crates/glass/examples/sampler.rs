@@ -156,7 +156,7 @@ fn paint(buf: &mut Buffer, tick: u32) {
 }
 
 fn main() {
-    let result = angel_glass::run(angel_glass::Options::from_environment(), |host| {
+    let result = glass_window::run(glass_window::Options::from_environment(), |host| {
         let mut terminal = Terminal::new(host.backend()).expect("terminal");
         let mut input = host.input_reader().expect("input");
         let mut tick = 0;

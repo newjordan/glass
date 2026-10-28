@@ -7,7 +7,7 @@
 //! {"v":1,"scene":{"camera":{...},"nodes":[...]}}
 //! ```
 
-use angel_glass::scene::{
+use glass_window::scene::{
     Camera, Material, MeshData, MeshRef, Node, Projection, Sampling, Scene, Transform,
 };
 
@@ -69,7 +69,7 @@ impl Dress {
                 }
                 match gpu(g) {
                     Some(id) => Material {
-                        source: angel_glass::scene::TextureSource::Picture(id),
+                        source: glass_window::scene::TextureSource::Picture(id),
                         sampling: Sampling::Linear,
                         chrome: 0.0,
                         ..*node
@@ -424,7 +424,7 @@ fn mesh_of(
                 return Err(WireError::new("EINVAL", "mesh radius must be in 0..0.5"));
             }
             // Kept in thousandths of a unit, so the mesh is one of a few.
-            let radius = (radius * 1000.0).round().clamp(0.0, f32::from(angel_glass::scene::ROUND_RADIUS)) as u16;
+            let radius = (radius * 1000.0).round().clamp(0.0, f32::from(glass_window::scene::ROUND_RADIUS)) as u16;
             MeshRef::RoundCube { radius, segments: u16_of(obj.get("segments"), "mesh segments", 4, 1, 16)? }
         }
         other => return Err(WireError::new("EINVAL", format!("unknown mesh kind {other}"))),
@@ -620,8 +620,8 @@ pub(crate) fn look_rotation(eye: [f32; 3], target: [f32; 3], up: [f32; 3]) -> Re
 /// The unit quaternion `a` turned toward `b` by `t`, along the shorter
 /// arc, at an even angular speed; `t` past 0..1 carries on round.
 pub fn slerp(a: [f32; 4], b: [f32; 4], t: f32) -> [f32; 4] {
-    let a = angel_glass::scene::quat_normalize(a);
-    let mut b = angel_glass::scene::quat_normalize(b);
+    let a = glass_window::scene::quat_normalize(a);
+    let mut b = glass_window::scene::quat_normalize(b);
     let mut dot = a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3];
     if dot < 0.0 {
         b = [-b[0], -b[1], -b[2], -b[3]];
@@ -635,13 +635,13 @@ pub fn slerp(a: [f32; 4], b: [f32; 4], t: f32) -> [f32; 4] {
             a[2] + (b[2] - a[2]) * t,
             a[3] + (b[3] - a[3]) * t,
         ];
-        return angel_glass::scene::quat_normalize(q);
+        return glass_window::scene::quat_normalize(q);
     }
     let theta = dot.acos();
     let sin = theta.sin();
     let wa = ((1.0 - t) * theta).sin() / sin;
     let wb = (t * theta).sin() / sin;
-    angel_glass::scene::quat_normalize([
+    glass_window::scene::quat_normalize([
         a[0] * wa + b[0] * wb,
         a[1] * wa + b[1] * wb,
         a[2] * wa + b[2] * wb,
@@ -920,11 +920,11 @@ mod tests {
         let node = wired.scene.nodes[0].material;
         let made = d.materials(&node, |g| [Some(40), None, Some(50)].get(g).copied().flatten());
         assert_eq!(made.len(), 7);
-        assert_eq!(made[0].source, angel_glass::scene::TextureSource::Picture(40));
+        assert_eq!(made[0].source, glass_window::scene::TextureSource::Picture(40));
         assert_eq!(made[0].sampling, Sampling::Linear);
         assert_eq!(made[0].tint, node.tint, "a picture is tinted by the node's colour");
         assert_eq!(made[1], node, "null is the node's own");
-        assert_eq!(made[2].source, angel_glass::scene::TextureSource::Picture(50));
+        assert_eq!(made[2].source, glass_window::scene::TextureSource::Picture(50));
         assert!(made[3..6].iter().all(|m| *m == node), "faces past the list are the node's");
         assert_eq!(made[6], edge);
         // A cube has six groups and no edge; an edge without a colour takes

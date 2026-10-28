@@ -5,7 +5,7 @@
 //! with the text. This module only turns the visible ones into picture
 //! parts. It draws nothing itself, and it does not touch the glyph.
 
-use angel_stage::marks;
+use glass_stage::marks;
 
 /// The private-use character a program prints where a picture part belongs.
 pub const GLYPH: char = '\u{10EEEE}';

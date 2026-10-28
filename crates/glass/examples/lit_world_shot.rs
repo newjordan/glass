@@ -3,7 +3,7 @@
 //! toned at the stage's own pixel grain, through the GPU core offscreen.
 //! The harness the realm's generators are looked at with.
 //!
-//! cargo run -p angel-glass --example lit_world_shot -- <out.png> <look.txt> <set>... [--stage W H] [--scale N] [--at X Z]
+//! cargo run -p glass-window --example lit_world_shot -- <out.png> <look.txt> <set>... [--stage W H] [--scale N] [--at X Z]
 //!
 //! The sets are placed on a stage `W` x `H` (384 x 224 unless said) with the
 //! floor point `(X, Z)` at its middle; `--scale` window pixels to a stage
@@ -14,10 +14,10 @@ use std::path::Path;
 use std::process::ExitCode;
 use std::sync::Arc;
 
-use angel_gpu::{Core, Draw, Frame, Instance, Stage};
-use angel_stage::look::{Look, Sun};
-use angel_stage::scene::{Props, World};
-use angel_stage::set::{GAME_TILT, Set, ground_mesh_id, place};
+use glass_gpu::{Core, Draw, Frame, Instance, Stage};
+use glass_stage::look::{Look, Sun};
+use glass_stage::scene::{Props, World};
+use glass_stage::set::{GAME_TILT, Set, ground_mesh_id, place};
 
 fn main() -> ExitCode {
     match run() {
@@ -74,7 +74,7 @@ fn run() -> Result<(), String> {
     for (key, set) in &parsed {
         let id = ground_mesh_id(*key);
         let (floor, blocks, mesh) = set.lit_world_nodes(id);
-        let tag = |mut n: angel_stage::scene::Node| {
+        let tag = |mut n: glass_stage::scene::Node| {
             n.id |= key << 40;
             n
         };
@@ -85,17 +85,17 @@ fn run() -> Result<(), String> {
         }
         for lamp in set.look_lamps() {
             if look.lamps.len() < 8 {
-                look.lamps.push(angel_stage::look::Lamp { at: [lamp.at[0] + offset[0], lamp.at[1], lamp.at[2] + offset[2]], ..lamp });
+                look.lamps.push(glass_stage::look::Lamp { at: [lamp.at[0] + offset[0], lamp.at[1], lamp.at[2] + offset[2]], ..lamp });
             }
         }
     }
     if let Some(sun) = &mut look.sun
         && sun.shadow.is_none()
     {
-        sun.shadow = Some(angel_stage::look::Shadow { focus: [stage.0 as f32 / 2.0, 0.0, stage.1 as f32 / 2.0], reach: stage.0 as f32 * 2.5 });
+        sun.shadow = Some(glass_stage::look::Shadow { focus: [stage.0 as f32 / 2.0, 0.0, stage.1 as f32 / 2.0], reach: stage.0 as f32 * 2.5 });
     }
     world.look = Some(look);
-    let frame = angel_stage::Frame {
+    let frame = glass_stage::Frame {
         size: stage,
         layers: Vec::new(),
         pictures: Vec::new(),
@@ -111,7 +111,7 @@ fn run() -> Result<(), String> {
     write_png(Path::new(&out), size, &pixels)
 }
 
-fn shoot(frame: angel_stage::Frame, size: (u32, u32)) -> Result<Vec<u8>, String> {
+fn shoot(frame: glass_stage::Frame, size: (u32, u32)) -> Result<Vec<u8>, String> {
     const STAGE: u32 = 0x00FA_57A4;
     let instance = wgpu::Instance::default();
     let adapter = pollster::block_on(instance.request_adapter(&wgpu::RequestAdapterOptions {
@@ -161,7 +161,7 @@ fn shoot(frame: angel_stage::Frame, size: (u32, u32)) -> Result<Vec<u8>, String>
         rect: [0.0, 0.0, size.0 as f32, size.1 as f32],
         uv: [0.0, 0.0, size.0 as f32, size.1 as f32],
         color: [1.0; 4],
-        kind: angel_gpu::PICTURE,
+        kind: glass_gpu::PICTURE,
         ..bytemuck::Zeroable::zeroed()
     };
     let mut parts = vec![(Draw::Picture { id: STAGE, linear: false }, vec![shown])];

@@ -7,9 +7,9 @@
 use std::collections::HashSet;
 use std::sync::{Arc, Mutex};
 
-use angel_gpu::Core;
-use angel_stage::look::{Look, Reveal, Shadow, Sun, Zone, luminance, unit_rgb};
-use angel_stage::scene::{Camera, Material, MeshRef, Node, Projection, Role, Scene, Transform, quat_axis_angle};
+use glass_gpu::Core;
+use glass_stage::look::{Look, Reveal, Shadow, Sun, Zone, luminance, unit_rgb};
+use glass_stage::scene::{Camera, Material, MeshRef, Node, Projection, Role, Scene, Transform, quat_axis_angle};
 
 const RAMP: [[u8; 3]; 5] = [[16, 24, 48], [32, 48, 96], [96, 112, 160], [160, 176, 208], [224, 232, 240]];
 const REDS: [[u8; 3]; 5] = [[40, 8, 8], [80, 16, 16], [150, 40, 30], [200, 90, 70], [240, 180, 160]];
@@ -206,10 +206,10 @@ fn a_brand_ceiling_holds_a_surface_at_its_class_step_however_it_is_lit() {
     let bare = Scene { camera: top_down(), nodes: vec![floor(1, 0.0, 1.0)], look: Some(lit_look(sun)) };
     let top = sample(&gpu.render(&bare), 0.0, 0.0);
     let mut ground = floor(1, 0.0, 1.0);
-    ground.material.ceiling = angel_stage::brand::Class::Ground.material_ceiling();
+    ground.material.ceiling = glass_stage::brand::Class::Ground.material_ceiling();
     let held = Scene { camera: top_down(), nodes: vec![ground], look: Some(lit_look(sun)) };
     let pixels = gpu.render(&held);
-    let step = angel_stage::brand::Class::Ground.ceiling_on(RAMP.len()).unwrap();
+    let step = glass_stage::brand::Class::Ground.ceiling_on(RAMP.len()).unwrap();
     let brightest = pixels.chunks(4).map(|p| luma([p[0], p[1], p[2]])).fold(0.0f32, f32::max);
     println!("unheld {top:?}; held at step {step} ({:?}), brightest {brightest:.3}", RAMP[step]);
     assert_eq!(top, *RAMP.last().unwrap(), "unheld, the white ground is the ramp's top");

@@ -1,7 +1,7 @@
-//! Walk the monolith (`angel_glass::monolith`) in a window of its own: the
+//! Walk the monolith (`glass_window::monolith`) in a window of its own: the
 //! GPU core draws the place as the shots do, and the keys move the knight.
 //!
-//! cargo run -p angel-glass --example monolith_walk [-- --rows N]
+//! cargo run -p glass-window --example monolith_walk [-- --rows N]
 //!
 //! W A S D walk (Shift runs), Q E turn the eye about the knight, Z X pull it
 //! in and out, R back to the start, Esc leaves.
@@ -10,8 +10,8 @@ use std::collections::HashSet;
 use std::sync::Arc;
 use std::time::Instant;
 
-use angel_glass::monolith::{self, Follow, Walker};
-use angel_gpu::{Core, Picture};
+use glass_window::monolith::{self, Follow, Walker};
+use glass_gpu::{Core, Picture};
 use winit::application::ApplicationHandler;
 use winit::event::{ElementState, WindowEvent};
 use winit::event_loop::{ActiveEventLoop, ControlFlow, EventLoop};

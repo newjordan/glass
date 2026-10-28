@@ -5,9 +5,9 @@
 
 use std::path::{Path, PathBuf};
 
-/// The layouts and the decoded image are the renderer core's (`angel-gpu`):
+/// The layouts and the decoded image are the renderer core's (`glass-gpu`):
 /// this module finds the file and decodes it.
-pub use angel_gpu::{Layout, Wallpaper};
+pub use glass_gpu::{Layout, Wallpaper};
 
 /// Where the background image comes from and how it shows.
 #[derive(Clone, Debug, PartialEq)]

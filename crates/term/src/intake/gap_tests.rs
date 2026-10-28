@@ -21,7 +21,7 @@ struct Rig {
 
 impl Rig {
     fn new() -> Self {
-        Self { engine: engine(), intake: Intake::new(angel_glass::LAYER_PICTURES), splitter: super::Splitter::default() }
+        Self { engine: engine(), intake: Intake::new(glass_window::LAYER_PICTURES), splitter: super::Splitter::default() }
     }
 
     fn pump(&mut self, bytes: &[u8]) -> Vec<u8> {
@@ -62,7 +62,7 @@ fn text_of(bytes: &[u8]) -> String {
 }
 
 fn mark(index: usize) -> char {
-    angel_stage::marks::mark(index)
+    glass_stage::marks::mark(index)
 }
 
 fn cells(engine: &mut Engine) -> Vec<super::placeholders::CellRef> {

@@ -2,7 +2,7 @@
 //! with its shadow, each lit layer with its light, and on a tilted stage
 //! each stamped with how it stands on the floor.
 
-use angel_stage::{Layer, LayerKind, Placement, Stand, StrokeShape, Tilt, motes, stroke_pad};
+use glass_stage::{Layer, LayerKind, Placement, Stand, StrokeShape, Tilt, motes, stroke_pad};
 use bytemuck::Zeroable;
 
 use crate::Core;
@@ -34,7 +34,7 @@ impl Core {
         tilt: Option<Tilt>,
         now: f64,
     ) -> Vec<(Draw, Vec<Instance>)> {
-        // The window's side of `angel_stage::MAX_QUADS`: however many
+        // The window's side of `glass_stage::MAX_QUADS`: however many
         // layers arrive, one call emits at most this many instances.
         const MAX_INSTANCES: usize = 1_000_000;
         let mut emitted = 0usize;
@@ -258,9 +258,9 @@ impl Core {
     }
 }
 
-/// A flame's strength now (`angel_stage::flicker` on the host's clock).
+/// A flame's strength now (`glass_stage::flicker` on the host's clock).
 fn flicker(amount: f32, seed: u64, now: f64) -> f32 {
-    angel_stage::flicker(amount, seed, now as f32)
+    glass_stage::flicker(amount, seed, now as f32)
 }
 
 /// How an instance stands on a tilted stage's floor (`glass.wgsl`).

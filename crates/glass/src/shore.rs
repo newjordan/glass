@@ -16,8 +16,8 @@
 //! by luminance), so surfaces here are greys of chosen luminance, and a box is
 //! "lit" by a fixed brightness for each of its faces.
 
-use angel_stage::look::{Dither, Fog, Look};
-use angel_stage::scene::{
+use glass_stage::look::{Dither, Fog, Look};
+use glass_stage::scene::{
     AlphaMode, Camera, Material, MeshRef, Node, Projection, Sampling, Scene, TextureSource, Transform,
     quat_axis_angle, quat_mul, quat_normalize,
 };
@@ -369,7 +369,7 @@ pub fn scene(t: f32, rows: u32) -> Scene {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use angel_stage::scene::quat_rotate;
+    use glass_stage::scene::quat_rotate;
 
     #[test]
     fn the_look_is_the_measured_one_and_is_valid() {
@@ -537,9 +537,9 @@ mod tests {
             view_formats: &[],
         });
         let view = texture.create_view(&Default::default());
-        let mut core = angel_gpu::Core::new(device.clone(), queue, format, 1.0);
+        let mut core = glass_gpu::Core::new(device.clone(), queue, format, 1.0);
         let (w, h, rgba) = knight_sprite().expect("sprite");
-        core.upload(angel_gpu::Picture { id: KNIGHT_ID, width: w, height: h, rgba, cols: 0, rows: 0 });
+        core.upload(glass_gpu::Picture { id: KNIGHT_ID, width: w, height: h, rgba, cols: 0, rows: 0 });
         let ramp: HashSet<[u8; 3]> = RAMP.iter().copied().chain([MOON]).collect();
         for (n, t) in [0.0f32, 40.0, 95.0].into_iter().enumerate() {
             core.begin_frame();

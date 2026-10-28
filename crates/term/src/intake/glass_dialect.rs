@@ -244,9 +244,9 @@ struct Wanted {
     breathe: f32,
     additive: bool,
     flicker: f32,
-    stand: angel_glass::Stand,
-    placement: angel_glass::Placement,
-    kind: angel_glass::LayerKind,
+    stand: glass_window::Stand,
+    placement: glass_window::Placement,
+    kind: glass_window::LayerKind,
     /// Anchored to the text (`at=` without `anchor=window`): it scrolls
     /// with the text and leaves with it. `false` pins it to the window.
     text: bool,
@@ -270,24 +270,24 @@ struct Wanted {
 #[derive(Clone, Debug, PartialEq)]
 pub enum ShowcaseAsk {
     /// An uploaded picture, as version 1 opened the showcase.
-    Picture { id: u32, fit: angel_glass::Fit },
+    Picture { id: u32, fit: glass_window::Fit },
     /// A video panel of this pixel size. Frames arrive separately.
-    Video { width: u32, height: u32, fit: angel_glass::Fit, generation: u64 },
+    Video { width: u32, height: u32, fit: glass_window::Fit, generation: u64 },
     /// Chart marks over a picture uploaded with `picture`. The picture's
     /// size is the chart's size. `generation` moves only when the request does.
     Chart {
-        marks: Vec<angel_glass::Mark>,
+        marks: Vec<glass_window::Mark>,
         size: (u32, u32),
-        fit: angel_glass::Fit,
+        fit: glass_window::Fit,
         picture: u32,
         generation: u64,
     },
     /// A model, nodes from the scene wire.
     Model {
-        nodes: Vec<angel_glass::scene::Node>,
-        meshes: Vec<(u32, angel_glass::scene::MeshData)>,
+        nodes: Vec<glass_window::scene::Node>,
+        meshes: Vec<(u32, glass_window::scene::MeshData)>,
         size: (u32, u32),
-        fit: angel_glass::Fit,
+        fit: glass_window::Fit,
         generation: u64,
     },
     /// Page text the window rasterises when the request changes.
@@ -306,8 +306,8 @@ pub enum PendingFrame {
 /// A scene the session should draw, once it is dirty.
 pub struct SceneDraw {
     pub window_id: u32,
-    pub scene: angel_glass::scene::Scene,
-    pub meshes: Vec<(u32, angel_glass::scene::MeshData)>,
+    pub scene: glass_window::scene::Scene,
+    pub meshes: Vec<(u32, glass_window::scene::MeshData)>,
     pub size: (u32, u32),
 }
 
@@ -316,8 +316,8 @@ pub struct SceneDraw {
 struct KeptScene {
     program_id: u32,
     window_id: u32,
-    scene: angel_glass::scene::Scene,
-    meshes: Vec<(u32, angel_glass::scene::MeshData)>,
+    scene: glass_window::scene::Scene,
+    meshes: Vec<(u32, glass_window::scene::MeshData)>,
     size: (u32, u32),
     wanted: Wanted,
     dirty: bool,
@@ -387,7 +387,7 @@ pub struct Expansion {
     frame_ms: u64,
     next_texture: u32,
     /// Asset meshes for the window, once per scene that newly shows them.
-    uploads: Vec<(u32, Arc<angel_glass::scene::MeshData>)>,
+    uploads: Vec<(u32, Arc<glass_window::scene::MeshData>)>,
 }
 
 impl Default for Expansion {
@@ -404,16 +404,16 @@ impl Expansion {
     /// The frame's layers, positioned against the view: text-anchored
     /// layers move with the view's top line exactly as the intake's own
     /// showings do, and window-pinned layers never move.
-    pub fn frame(&self, top: u64, rows: u16, alternate: bool) -> Vec<angel_glass::Layer> {
+    pub fn frame(&self, top: u64, rows: u16, alternate: bool) -> Vec<glass_window::Layer> {
         let mut out = Vec::new();
-        let push = |w: &Wanted, out: &mut Vec<angel_glass::Layer>| {
+        let push = |w: &Wanted, out: &mut Vec<glass_window::Layer>| {
             let row = if w.text { w.line as f32 - top as f32 + w.row_off } else { 0.0 };
             let h = rect_h(&w.placement);
             if !w.text || (w.alternate == alternate && row < f32::from(rows) && row + h > 0.0) {
                 // Only a text-anchored layer takes its row from the view; a
                 // window-pinned one keeps the row it was placed at.
                 let placement = if w.text { place_at(&w.placement, row) } else { w.placement.clone() };
-                let mut layer = angel_glass::Layer::new(u64::from(w.id), w.z, placement, w.kind.clone());
+                let mut layer = glass_window::Layer::new(u64::from(w.id), w.z, placement, w.kind.clone());
                 layer.opacity = w.opacity;
                 layer.angle = w.angle;
                 layer.height = w.height;
@@ -462,7 +462,7 @@ impl Expansion {
         self.progress
     }
     #[cfg(test)]
-    pub fn scene(&self, program_id: u32) -> Option<&angel_glass::scene::Scene> {
+    pub fn scene(&self, program_id: u32) -> Option<&glass_window::scene::Scene> {
         self.scenes.iter().find(|s| s.program_id == program_id).map(|s| &s.scene)
     }
     #[cfg(test)]
@@ -483,7 +483,7 @@ impl Expansion {
     }
 
     /// Asset meshes the window has not been handed yet.
-    pub fn take_mesh_uploads(&mut self) -> Vec<(u32, Arc<angel_glass::scene::MeshData>)> {
+    pub fn take_mesh_uploads(&mut self) -> Vec<(u32, Arc<glass_window::scene::MeshData>)> {
         std::mem::take(&mut self.uploads)
     }
 
@@ -687,34 +687,34 @@ impl Expansion {
 /// left for history, or were cleared away.
 fn cells_col(w: &Wanted) -> f32 {
     match w.placement {
-        angel_glass::Placement::Cells(c) => c[0],
+        glass_window::Placement::Cells(c) => c[0],
         _ => 0.0,
     }
 }
 
 fn set_cells_col(w: &mut Wanted, column: f32) {
-    if let angel_glass::Placement::Cells(c) = &mut w.placement {
+    if let glass_window::Placement::Cells(c) = &mut w.placement {
         c[0] = column;
     }
 }
 
 fn cells_size(w: &Wanted) -> (f32, f32) {
     match w.placement {
-        angel_glass::Placement::Cells(c) => (c[2], c[3]),
+        glass_window::Placement::Cells(c) => (c[2], c[3]),
         _ => (1.0, 1.0),
     }
 }
 
 fn set_cells_size(w: &mut Wanted, width: f32, height: f32) {
-    if let angel_glass::Placement::Cells(c) = &mut w.placement {
+    if let glass_window::Placement::Cells(c) = &mut w.placement {
         c[2] = width;
         c[3] = height;
     }
 }
 
-fn picture_id(kind: &angel_glass::LayerKind) -> Option<u32> {
+fn picture_id(kind: &glass_window::LayerKind) -> Option<u32> {
     match kind {
-        angel_glass::LayerKind::Picture(id) | angel_glass::LayerKind::PicturePart(id, _) => Some(*id),
+        glass_window::LayerKind::Picture(id) | glass_window::LayerKind::PicturePart(id, _) => Some(*id),
         _ => None,
     }
 }
@@ -732,7 +732,7 @@ fn scroll_wanted(
     let (width, height) = cells_size(w);
     let px = picture_id(&w.kind).map(image).unwrap_or((0, 0));
     let source = match w.kind {
-        angel_glass::LayerKind::PicturePart(_, src) => Some(src),
+        glass_window::LayerKind::PicturePart(_, src) => Some(src),
         _ => None,
     };
     let rect = super::motion::Rect {
@@ -764,7 +764,7 @@ fn write_wanted(w: &mut Wanted, rect: &super::motion::Rect) {
     set_cells_size(w, rect.width, rect.height);
     if let Some(src) = rect.source {
         let id = picture_id(&w.kind).unwrap_or(0);
-        w.kind = angel_glass::LayerKind::PicturePart(id, src);
+        w.kind = glass_window::LayerKind::PicturePart(id, src);
     }
 }
 
@@ -773,18 +773,18 @@ fn below(w: &Wanted, scrolled: u64) -> bool {
 }
 
 /// A cells placement against a view row.
-fn place_at(p: &angel_glass::Placement, row: f32) -> angel_glass::Placement {
+fn place_at(p: &glass_window::Placement, row: f32) -> glass_window::Placement {
     match p {
-        angel_glass::Placement::Cells([c, _, w, h]) => angel_glass::Placement::Cells([*c, row, *w, *h]),
+        glass_window::Placement::Cells([c, _, w, h]) => glass_window::Placement::Cells([*c, row, *w, *h]),
         other => other.clone(),
     }
 }
 
 /// A placement's height in cells, for the visibility test.
-fn rect_h(p: &angel_glass::Placement) -> f32 {
+fn rect_h(p: &glass_window::Placement) -> f32 {
     match p {
-        angel_glass::Placement::Cells([_, _, _, h]) => *h,
-        angel_glass::Placement::Pixels(_) => f32::from(u16::MAX),
+        glass_window::Placement::Cells([_, _, _, h]) => *h,
+        glass_window::Placement::Pixels(_) => f32::from(u16::MAX),
     }
 }
 
@@ -1110,9 +1110,9 @@ fn wanted_layer(keys: &Keys, canvas: &mut dyn Canvas) -> Result<Wanted, Bad> {
     let additive = keys.flag("add")?.unwrap_or(false);
     let flicker = keys.f32("fl")?.unwrap_or(0.0).clamp(0.0, 1.0);
     let stand = match keys.get("stand") {
-        None | Some("floor") => angel_glass::Stand::Floor,
-        Some("up") => angel_glass::Stand::Upright(foot_of(keys)?),
-        Some("screen") => angel_glass::Stand::Screen,
+        None | Some("floor") => glass_window::Stand::Floor,
+        Some("up") => glass_window::Stand::Upright(foot_of(keys)?),
+        Some("screen") => glass_window::Stand::Screen,
         Some(other) => {
             return Err(Bad("EINVAL".into(), format!("stand={other} is not floor, up or screen")))
         }
@@ -1158,17 +1158,17 @@ fn foot_of(keys: &Keys) -> Result<[f32; 2], Bad> {
 /// on, exactly as the intake's own adapters pin theirs. The last field
 /// is the whole row `at=` named, which the anchor line took.
 #[allow(clippy::type_complexity)]
-fn placement_of(keys: &Keys, canvas: &mut dyn Canvas) -> Result<(angel_glass::Placement, bool, u64, bool, f32), Bad> {
+fn placement_of(keys: &Keys, canvas: &mut dyn Canvas) -> Result<(glass_window::Placement, bool, u64, bool, f32), Bad> {
     if let Some(v) = keys.get("px") {
         let quad = list4(Some(v), "px")?;
-        return Ok((angel_glass::Placement::Pixels(quad), false, 0, false, 0.0));
+        return Ok((glass_window::Placement::Pixels(quad), false, 0, false, 0.0));
     }
     let Some(v) = keys.get("at") else {
         return Err(Bad("EINVAL".into(), "layer needs at= or px=".into()));
     };
     let quad = list4(Some(v), "at")?;
     if keys.get("anchor").is_some_and(|v| v == "window") {
-        return Ok((angel_glass::Placement::Cells(quad), false, 0, false, 0.0));
+        return Ok((glass_window::Placement::Cells(quad), false, 0, false, 0.0));
     }
     let (cursor_row, _column) = canvas.cursor();
     let alternate = canvas.alternate();
@@ -1178,19 +1178,19 @@ fn placement_of(keys: &Keys, canvas: &mut dyn Canvas) -> Result<(angel_glass::Pl
     let line = scrolled.saturating_add(u64::from(cursor_row)).saturating_add(quad[1] as u64);
     let y0 = (quad[1] as u64) as f32;
     let quad = [quad[0], 0.0, quad[2], quad[3]];
-    Ok((angel_glass::Placement::Cells(quad), true, line, alternate, y0))
+    Ok((glass_window::Placement::Cells(quad), true, line, alternate, y0))
 }
 
 /// A record's kind: every kind the stage draws.
-fn kind_of(keys: &Keys, canvas: &mut dyn Canvas) -> Result<angel_glass::LayerKind, Bad> {
+fn kind_of(keys: &Keys, canvas: &mut dyn Canvas) -> Result<glass_window::LayerKind, Bad> {
     Ok(match keys.get("k").unwrap_or("solid") {
-        "solid" => angel_glass::LayerKind::Solid(rgba_of(keys)?),
+        "solid" => glass_window::LayerKind::Solid(rgba_of(keys)?),
         "picture" => {
             let id = keys.u32("p")?.ok_or_else(|| Bad("EINVAL".into(), "picture needs p=".into()))?;
             let gpu = canvas
                 .gpu_of(ID_BASE + id)
                 .ok_or_else(|| Bad("EINVAL".into(), format!("no picture {id} was uploaded")))?;
-            angel_glass::LayerKind::Picture(gpu)
+            glass_window::LayerKind::Picture(gpu)
         }
         "part" => {
             let id = keys.u32("p")?.ok_or_else(|| Bad("EINVAL".into(), "part needs p=".into()))?;
@@ -1198,10 +1198,10 @@ fn kind_of(keys: &Keys, canvas: &mut dyn Canvas) -> Result<angel_glass::LayerKin
                 .gpu_of(ID_BASE + id)
                 .ok_or_else(|| Bad("EINVAL".into(), format!("no picture {id} was uploaded")))?;
             let quad = keys.quad("src")?.ok_or_else(|| Bad("EINVAL".into(), "part needs src=".into()))?;
-            angel_glass::LayerKind::PicturePart(gpu, quad)
+            glass_window::LayerKind::PicturePart(gpu, quad)
         }
-        "glow" => angel_glass::LayerKind::Glow(rgba_of(keys)?),
-        "particles" => angel_glass::LayerKind::Particles(particles_of(keys)),
+        "glow" => glass_window::LayerKind::Glow(rgba_of(keys)?),
+        "particles" => glass_window::LayerKind::Particles(particles_of(keys)),
         "prim" => {
             let shape = keys.u32("shape")?.unwrap_or(0);
             if shape > 6 {
@@ -1209,7 +1209,7 @@ fn kind_of(keys: &Keys, canvas: &mut dyn Canvas) -> Result<angel_glass::LayerKin
             }
             let speed = keys.f32("speed")?.unwrap_or(1.0);
             let phase = keys.f32("phase")?.unwrap_or(0.0);
-            angel_glass::LayerKind::Primitive { shape, color: rgba_of(keys)?, phase, speed }
+            glass_window::LayerKind::Primitive { shape, color: rgba_of(keys)?, phase, speed }
         }
         kind @ ("ring" | "line") => {
             let width = keys.f32("lw")?.unwrap_or(1.5);
@@ -1217,11 +1217,11 @@ fn kind_of(keys: &Keys, canvas: &mut dyn Canvas) -> Result<angel_glass::LayerKin
             if !(width.is_finite() && glow.is_finite()) {
                 return Err(Bad("EINVAL".into(), "lw and glow are numbers".into()));
             }
-            angel_glass::LayerKind::Stroke(angel_glass::Stroke {
-                shape: if kind == "ring" { angel_glass::StrokeShape::Ring } else { angel_glass::StrokeShape::Line },
+            glass_window::LayerKind::Stroke(glass_window::Stroke {
+                shape: if kind == "ring" { glass_window::StrokeShape::Ring } else { glass_window::StrokeShape::Line },
                 color: rgba_of(keys)?,
-                width: width.clamp(0.25, angel_glass::MAX_STROKE_PX),
-                glow: glow.clamp(0.0, angel_glass::MAX_STROKE_PX),
+                width: width.clamp(0.25, glass_window::MAX_STROKE_PX),
+                glow: glow.clamp(0.0, glass_window::MAX_STROKE_PX),
             })
         }
         other => return Err(Bad("EINVAL".into(), format!("k={other} is not a kind"))),
@@ -1229,8 +1229,8 @@ fn kind_of(keys: &Keys, canvas: &mut dyn Canvas) -> Result<angel_glass::LayerKin
 }
 
 /// A particle emitter, with the stage's own caps.
-fn particles_of(keys: &Keys) -> angel_glass::Particles {
-    angel_glass::Particles {
+fn particles_of(keys: &Keys) -> glass_window::Particles {
+    glass_window::Particles {
         color: rgba_of(keys).unwrap_or([1.0, 1.0, 1.0, 1.0]),
         count: keys.u32("n").unwrap_or(None).unwrap_or(64).min(u32::from(MAX_MOTES)) as u16,
         size: keys.f32("size").unwrap_or(None).unwrap_or(3.0).clamp(0.5, 64.0),
@@ -1323,10 +1323,10 @@ fn size_pair(keys: &Keys, op: &str) -> Result<(u32, u32), Bad> {
     super::glass_scene::pixel_size(width, height).map_err(wire_err)
 }
 
-fn fit_of(keys: &Keys) -> Result<angel_glass::Fit, Bad> {
+fn fit_of(keys: &Keys) -> Result<glass_window::Fit, Bad> {
     match keys.get("fit") {
-        None | Some("contain") => Ok(angel_glass::Fit::Contain),
-        Some("width") => Ok(angel_glass::Fit::Width),
+        None | Some("contain") => Ok(glass_window::Fit::Contain),
+        Some("width") => Ok(glass_window::Fit::Width),
         Some(other) => Err(Bad("EINVAL".into(), format!("fit={other} is not contain or width"))),
     }
 }
@@ -1420,10 +1420,10 @@ fn scene(keys: &Keys, payload: &str, canvas: &mut dyn Canvas) -> Result<String, 
 /// Give a wire's inline meshes their window ids.
 fn assign_meshes(
     state: &mut Expansion,
-    scene: &mut angel_glass::scene::Scene,
-    inline: Vec<angel_glass::scene::MeshData>,
-) -> Vec<(u32, angel_glass::scene::MeshData)> {
-    use angel_glass::scene::MeshRef;
+    scene: &mut glass_window::scene::Scene,
+    inline: Vec<glass_window::scene::MeshData>,
+) -> Vec<(u32, glass_window::scene::MeshData)> {
+    use glass_window::scene::MeshRef;
     let mut meshes = Vec::new();
     for node in &mut scene.nodes {
         if let Some(MeshRef::Uploaded(index)) = node.mesh {
@@ -1444,7 +1444,7 @@ fn assign_meshes(
 /// nodes, the node's colour over every material of it.
 fn hang_assets(
     state: &Expansion,
-    scene: &mut angel_glass::scene::Scene,
+    scene: &mut glass_window::scene::Scene,
     gltf: &[super::glass_scene::GltfRef],
 ) -> Result<Vec<Instance>, Bad> {
     let mut instances = Vec::with_capacity(gltf.len());
@@ -1468,7 +1468,7 @@ fn hang_assets(
 }
 
 /// An asset's meshes, to go up to the window.
-fn queue_asset(uploads: &mut Vec<(u32, Arc<angel_glass::scene::MeshData>)>, asset: &glass_gltf::Asset) {
+fn queue_asset(uploads: &mut Vec<(u32, Arc<glass_window::scene::MeshData>)>, asset: &glass_gltf::Asset) {
     for prim in &asset.prims {
         if !uploads.iter().any(|(id, _)| *id == prim.id) {
             uploads.push((prim.id, Arc::clone(&prim.mesh)));
@@ -1488,7 +1488,7 @@ fn scene_wanted(keys: &Keys, canvas: &mut dyn Canvas, window_id: u32) -> Result<
         Bad(code, message.replace("layer needs", "scene needs"))
     })?;
     let positive = match &placement {
-        angel_glass::Placement::Cells([_, _, w, h]) | angel_glass::Placement::Pixels([_, _, w, h]) => {
+        glass_window::Placement::Cells([_, _, w, h]) | glass_window::Placement::Pixels([_, _, w, h]) => {
             *w > 0.0 && *h > 0.0
         }
     };
@@ -1508,9 +1508,9 @@ fn scene_wanted(keys: &Keys, canvas: &mut dyn Canvas, window_id: u32) -> Result<
         breathe: 0.0,
         additive: false,
         flicker: 0.0,
-        stand: angel_glass::Stand::Floor,
+        stand: glass_window::Stand::Floor,
         placement,
-        kind: angel_glass::LayerKind::Picture(window_id),
+        kind: glass_window::LayerKind::Picture(window_id),
         text,
         line,
         alternate,
@@ -1608,7 +1608,7 @@ fn chart(keys: &Keys, payload: &str, canvas: &mut dyn Canvas) -> Result<String, 
     Ok(String::new())
 }
 
-fn chart_marks(payload: &str, count: u32) -> Result<Vec<angel_glass::Mark>, Bad> {
+fn chart_marks(payload: &str, count: u32) -> Result<Vec<glass_window::Mark>, Bad> {
     let decoded = base64(payload.as_bytes())
         .ok_or_else(|| Bad("EBADF".into(), "payload is not base64".into()))?;
     if decoded.len() > GROUP_BYTES {
@@ -1645,7 +1645,7 @@ fn chart_marks(payload: &str, count: u32) -> Result<Vec<angel_glass::Mark>, Bad>
             .get("t")
             .map(|t| t.split('|').map(str::to_string).collect())
             .unwrap_or_default();
-        marks.push(angel_glass::Mark { rect: [x, y, w, h], anchor, text });
+        marks.push(glass_window::Mark { rect: [x, y, w, h], anchor, text });
     }
     if marks.len() != count as usize {
         return Err(Bad("EINVAL".into(), format!("payload holds {} records, n= said {count}", marks.len())));
@@ -1691,7 +1691,7 @@ fn show_pictures(wired: &mut super::glass_scene::Wired, canvas: &mut dyn Canvas)
             .gpu_of(ID_BASE + id)
             .ok_or_else(|| Bad("EINVAL".into(), format!("no picture {id} was uploaded")))?;
         if let Some(node) = wired.scene.nodes.get_mut(index) {
-            node.material.source = angel_glass::scene::TextureSource::Picture(gpu);
+            node.material.source = glass_window::scene::TextureSource::Picture(gpu);
             node.material.sampling = sampling;
         }
     }
@@ -1844,7 +1844,7 @@ fn load_asset(keys: &Keys, data: &[u8], canvas: &mut dyn Canvas) -> Result<Strin
     }
     for m in &mut asset.materials {
         if let Some(Some(g)) = m.image.and_then(|i| gpu.get(i)) {
-            m.material.source = angel_glass::scene::TextureSource::Picture(*g);
+            m.material.source = glass_window::scene::TextureSource::Picture(*g);
         }
     }
     let seconds: Vec<String> = asset.clips.iter().map(|c| format_seek(c.duration)).collect();
@@ -1980,7 +1980,7 @@ fn tween_tracks(state: &Expansion, keys: &Keys, target: Target) -> Result<Vec<Tr
                 .find(|w| w.id == ID_BASE + id)
                 .or_else(|| state.scenes.iter().find(|s| s.program_id == id).map(|s| &s.wanted))
                 .ok_or_else(|| Bad("EINVAL".into(), format!("no layer {id}")))?;
-            let pixels = matches!(w.placement, angel_glass::Placement::Pixels(_));
+            let pixels = matches!(w.placement, glass_window::Placement::Pixels(_));
             if let Some(v) = keys.get("at") {
                 if pixels {
                     return Err(Bad("EINVAL".into(), format!("layer {id} is placed with px=; tween px=")));
@@ -2006,7 +2006,7 @@ fn tween_tracks(state: &Expansion, keys: &Keys, target: Target) -> Result<Vec<Tr
                 tracks.push(Track::new(Prop::Color, Value::V4(rgba_of(keys)?)));
             }
             if let Some(size) = keys.f32("size")? {
-                if !matches!(w.kind, angel_glass::LayerKind::Particles(_)) {
+                if !matches!(w.kind, glass_window::LayerKind::Particles(_)) {
                     return Err(Bad("EINVAL".into(), format!("size= is for particles; layer {id} is not")));
                 }
                 if !(0.5..=64.0).contains(&size) {
@@ -2033,7 +2033,7 @@ fn tween_tracks(state: &Expansion, keys: &Keys, target: Target) -> Result<Vec<Tr
                 if n.iter().all(|v| *v == 0.0) {
                     return Err(Bad("EINVAL".into(), "rot= must not be zero".into()));
                 }
-                let q = angel_glass::scene::quat_normalize([n[0], n[1], n[2], n[3]]);
+                let q = glass_window::scene::quat_normalize([n[0], n[1], n[2], n[3]]);
                 tracks.push(Track::new(Prop::NodeRot, Value::Q(q)));
             }
             if let Some(v) = keys.get("scale") {
@@ -2217,11 +2217,11 @@ fn play(keys: &Keys, canvas: &mut dyn Canvas) -> Result<String, Bad> {
 }
 
 /// A layer kind's colour, for the ones that have one.
-fn layer_color(kind: &angel_glass::LayerKind) -> Option<[f32; 4]> {
+fn layer_color(kind: &glass_window::LayerKind) -> Option<[f32; 4]> {
     match kind {
-        angel_glass::LayerKind::Solid(c) | angel_glass::LayerKind::Glow(c) => Some(*c),
-        angel_glass::LayerKind::Primitive { color, .. } => Some(*color),
-        angel_glass::LayerKind::Particles(p) => Some(p.color),
+        glass_window::LayerKind::Solid(c) | glass_window::LayerKind::Glow(c) => Some(*c),
+        glass_window::LayerKind::Primitive { color, .. } => Some(*color),
+        glass_window::LayerKind::Particles(p) => Some(p.color),
         _ => None,
     }
 }
@@ -2258,8 +2258,8 @@ impl glass_tween::Targets for Bind<'_> {
                 let w = self.layer(id)?;
                 Some(match prop {
                     Prop::Rect => match w.placement {
-                        angel_glass::Placement::Cells(c) if w.text => Value::V4([c[0], w.y0 + w.row_off, c[2], c[3]]),
-                        angel_glass::Placement::Cells(c) | angel_glass::Placement::Pixels(c) => Value::V4(c),
+                        glass_window::Placement::Cells(c) if w.text => Value::V4([c[0], w.y0 + w.row_off, c[2], c[3]]),
+                        glass_window::Placement::Cells(c) | glass_window::Placement::Pixels(c) => Value::V4(c),
                     },
                     Prop::Opacity => Value::F(w.opacity),
                     Prop::Angle => Value::F(w.angle),
@@ -2267,7 +2267,7 @@ impl glass_tween::Targets for Bind<'_> {
                     Prop::Lift => Value::F(w.height),
                     Prop::Color => Value::V4(layer_color(&w.kind)?),
                     Prop::Size => match &w.kind {
-                        angel_glass::LayerKind::Particles(p) => Value::F(p.size),
+                        glass_window::LayerKind::Particles(p) => Value::F(p.size),
                         _ => return None,
                     },
                     _ => return None,
@@ -2304,13 +2304,13 @@ impl glass_tween::Targets for Bind<'_> {
                 let Some(w) = self.layer(id) else { return false };
                 match (prop, value) {
                     (Prop::Rect, Value::V4(r)) => match &mut w.placement {
-                        angel_glass::Placement::Cells(c) if w.text => {
+                        glass_window::Placement::Cells(c) if w.text => {
                             c[0] = r[0];
                             c[2] = r[2].max(0.0);
                             c[3] = r[3].max(0.0);
                             w.row_off = r[1] - w.y0;
                         }
-                        angel_glass::Placement::Cells(c) | angel_glass::Placement::Pixels(c) => {
+                        glass_window::Placement::Cells(c) | glass_window::Placement::Pixels(c) => {
                             *c = [r[0], r[1], r[2].max(0.0), r[3].max(0.0)];
                         }
                     },
@@ -2321,14 +2321,14 @@ impl glass_tween::Targets for Bind<'_> {
                     (Prop::Color, Value::V4(c)) => {
                         let c = c.map(|v| v.clamp(0.0, 1.0));
                         match &mut w.kind {
-                            angel_glass::LayerKind::Solid(k) | angel_glass::LayerKind::Glow(k) => *k = c,
-                            angel_glass::LayerKind::Primitive { color, .. } => *color = c,
-                            angel_glass::LayerKind::Particles(p) => p.color = c,
+                            glass_window::LayerKind::Solid(k) | glass_window::LayerKind::Glow(k) => *k = c,
+                            glass_window::LayerKind::Primitive { color, .. } => *color = c,
+                            glass_window::LayerKind::Particles(p) => p.color = c,
                             _ => return false,
                         }
                     }
                     (Prop::Size, Value::F(v)) => match &mut w.kind {
-                        angel_glass::LayerKind::Particles(p) => p.size = v.clamp(0.5, 64.0),
+                        glass_window::LayerKind::Particles(p) => p.size = v.clamp(0.5, 64.0),
                         _ => return false,
                     },
                     _ => return false,
@@ -2345,11 +2345,11 @@ impl glass_tween::Targets for Bind<'_> {
                     (Prop::NodeScale, Value::V3(v)) => n.transform.scale = v,
                     (Prop::NodeColor, Value::V4(c)) => {
                         n.material.tint = c.map(|v| v.clamp(0.0, 1.0));
-                        if n.material.source == angel_glass::scene::TextureSource::None {
+                        if n.material.source == glass_window::scene::TextureSource::None {
                             n.material.alpha = if n.material.tint[3] < 1.0 {
-                                angel_glass::scene::AlphaMode::Blend
+                                glass_window::scene::AlphaMode::Blend
                             } else {
-                                angel_glass::scene::AlphaMode::Opaque
+                                glass_window::scene::AlphaMode::Opaque
                             };
                         }
                     }
@@ -2365,8 +2365,8 @@ impl glass_tween::Targets for Bind<'_> {
                     for face in s.scene.nodes[at].face_materials.iter_mut().take(6) {
                         face.tint = host.tint;
                         face.emissive = host.emissive;
-                        if face.tint[3] < 1.0 && face.alpha == angel_glass::scene::AlphaMode::Opaque {
-                            face.alpha = angel_glass::scene::AlphaMode::Blend;
+                        if face.tint[3] < 1.0 && face.alpha == glass_window::scene::AlphaMode::Opaque {
+                            face.alpha = glass_window::scene::AlphaMode::Blend;
                         }
                     }
                     for inst in s.instances.iter().filter(|i| i.host == node) {
@@ -2384,7 +2384,7 @@ impl glass_tween::Targets for Bind<'_> {
                     (Prop::Fov, Value::F(f)) => {
                         let f = f.clamp(1e-3, std::f32::consts::PI - 1e-3);
                         s.view.fov = Some(f);
-                        if let angel_glass::scene::Projection::Perspective { fov_y, .. } = &mut s.scene.camera.projection {
+                        if let glass_window::scene::Projection::Perspective { fov_y, .. } = &mut s.scene.camera.projection {
                             *fov_y = f;
                         }
                     }

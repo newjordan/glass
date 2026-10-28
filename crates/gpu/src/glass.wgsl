@@ -165,7 +165,7 @@ fn object_point(p: vec3<f32>, phase: f32) -> vec3<f32> {
         sin(tilt) * q.y + cos(tilt) * q.z);
 }
 
-// Keep paired with angel_stage::primitive::distance (the quad-only hosts' copy).
+// Keep paired with glass_stage::primitive::distance (the quad-only hosts' copy).
 fn object_distance(p: vec3<f32>, shape: u32, phase: f32) -> f32 {
     let q = object_point(p, phase);
     let r = length(q.xz);
@@ -225,7 +225,7 @@ fn solid_object(in: Varyings) -> vec4<f32> {
 
 // A ring or a line by its distance: a sharp core the stroke's width, and a
 // glow round it falling off as a gaussian. The pad matches
-// angel_stage::stroke_pad: half the width, three glows, a pixel.
+// glass_stage::stroke_pad: half the width, three glows, a pixel.
 fn stroke(in: Varyings) -> vec4<f32> {
     let half_width = in.surface.x;
     let glow = in.surface.y;

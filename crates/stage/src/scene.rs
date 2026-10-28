@@ -1,7 +1,7 @@
 //! The 3D scene (docs/GLASS_CORE.md, decisions 3 and 4): nodes in a tree, each
 //! with a transform and, perhaps, a mesh and a material, seen by a camera.
 //! Plain data and the small maths it needs, no GPU types, so the window and
-//! the browser describe a scene the same way and `angel-gpu` draws it.
+//! the browser describe a scene the same way and `glass-gpu` draws it.
 //!
 //! Conventions, which every host shares:
 //! - Right-handed, +Y up. A camera looks down its own -Z, so a node at

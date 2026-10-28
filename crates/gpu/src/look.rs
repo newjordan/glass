@@ -1,5 +1,5 @@
 //! The world's look on the GPU (docs/GLASS_CORE.md, "The world's look"): a
-//! scene with an `angel_stage::look::Look` is drawn at the look's internal
+//! scene with an `glass_stage::look::Look` is drawn at the look's internal
 //! size, then a post pass puts every pixel on its ramp.
 //!
 //! The scene's own draw (`scene.rs`) goes into two targets at once through the
@@ -15,7 +15,7 @@
 //! shown bigger than it is) and a whole-pixel enlargement when the output is
 //! a bigger view.
 //!
-//! The maths is `Look::quantize` in angel-stage, line for line; the uniform
+//! The maths is `Look::quantize` in glass-stage, line for line; the uniform
 //! below is what the shader is handed of it.
 //!
 //! A look that lights its scene itself (`Look::lights`: a sun, lamps, zones)
@@ -27,7 +27,7 @@
 
 use std::num::NonZeroU64;
 
-use angel_stage::look::{Look, unit_rgb};
+use glass_stage::look::{Look, unit_rgb};
 use bytemuck::{Pod, Zeroable};
 
 /// The mask's format: the first 8-bit channel is 1 where an accent was
@@ -139,7 +139,7 @@ pub(crate) fn look_uniform(look: &Look, internal: (u32, u32), output: (u32, u32)
 /// the length of how fast `w` grows. For a stage camera that is how far up
 /// the floor from the eye a point is; for a perspective one, its depth in
 /// view. None when the matrix has no depth.
-pub(crate) fn depth_row(view_proj: &angel_stage::scene::Mat4) -> Option<[f32; 4]> {
+pub(crate) fn depth_row(view_proj: &glass_stage::scene::Mat4) -> Option<[f32; 4]> {
     let row = [view_proj[0][3], view_proj[1][3], view_proj[2][3], view_proj[3][3]];
     let length = (row[0] * row[0] + row[1] * row[1] + row[2] * row[2]).sqrt();
     (length.is_finite() && length > 1e-12).then(|| row.map(|v| v / length))
@@ -580,7 +580,7 @@ impl LookState {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use angel_stage::look::{Dither, Fog};
+    use glass_stage::look::{Dither, Fog};
 
     fn look() -> Look {
         let mut look = Look::new(vec![[0x1e, 0x24, 0x31], [0x44, 0x4e, 0x6f], [0x8a, 0x93, 0xc7]]);
@@ -640,13 +640,13 @@ mod tests {
 
     #[test]
     fn the_cards_and_the_depth_of_field_go_to_the_shaders() {
-        use angel_stage::look::{Cards, Dof, Sun};
+        use glass_stage::look::{Cards, Dof, Sun};
         let mut l = look();
         l.sun = Some(Sun { toward: [0.0, 1.0, 0.0], strength: 1.0, ambient: 0.2, shadow: None, rise: 0.0 });
         l.cards = Some(Cards::ROOM);
         l.dof = Some(Dof::room(vec![[0.0, 0.0, 100.0], [0.0, 0.0, 160.0]]));
         // A stage camera's depth row, before it is made a unit: w = 2 - z / 450.
-        let m: angel_stage::scene::Mat4 = [[1.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0.0], [0.0, 0.0, 1.0, -1.0 / 450.0], [0.0, 0.0, 0.0, 2.0]];
+        let m: glass_stage::scene::Mat4 = [[1.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0.0], [0.0, 0.0, 1.0, -1.0 / 450.0], [0.0, 0.0, 0.0, 2.0]];
         let row = depth_row(&m).unwrap();
         assert!((row[2] + 1.0).abs() < 1e-6 && (row[3] - 900.0).abs() < 1e-3, "{row:?}");
         let u = scene_look_uniform(&l, [0.0; 3], Some(row));
@@ -664,7 +664,7 @@ mod tests {
 
     #[test]
     fn a_look_that_lights_goes_to_the_mesh_shader_whole() {
-        use angel_stage::look::{Lamp, Reveal, Shadow, Sun, Zone};
+        use glass_stage::look::{Lamp, Reveal, Shadow, Sun, Zone};
         let mut l = look();
         assert_eq!(scene_look_uniform(&l, [0.0; 3], None).eye[3], 0.0, "a plain look is placed afterwards");
         l.sun = Some(Sun { toward: [0.0, 2.0, 0.0], strength: 0.8, ambient: 0.3, shadow: Some(Shadow { focus: [0.0; 3], reach: 50.0 }), rise: 30.0 });

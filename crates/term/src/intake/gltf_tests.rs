@@ -11,7 +11,7 @@ mod model;
 use super::glass_gltf::*;
 use super::testing::FakeEngine;
 use super::*;
-use angel_glass::scene::{mat_point, AlphaMode, Camera, MeshRef, Scene, TextureSource, Transform};
+use glass_window::scene::{mat_point, AlphaMode, Camera, MeshRef, Scene, TextureSource, Transform};
 use glb::Gltf;
 
 /// Base64, as a program sends its payloads.
@@ -97,7 +97,7 @@ fn a_base_colour_texture_is_decoded_and_its_uv_set_taken() {
     assert_eq!(&loaded.images[0].rgba[..4], &[0, 0, 255, 255]);
     let m = &loaded.asset.materials[0];
     assert_eq!(m.image, Some(0));
-    assert_eq!(m.material.sampling, angel_glass::scene::Sampling::Nearest);
+    assert_eq!(m.material.sampling, glass_window::scene::Sampling::Nearest);
     assert_eq!(m.material.alpha, AlphaMode::Blend);
     assert!(m.material.double_sided);
     assert_eq!(m.pbr.base_texture, Some((tex, 0)));
@@ -106,12 +106,12 @@ fn a_base_colour_texture_is_decoded_and_its_uv_set_taken() {
 #[test]
 fn materials_map_metallic_roughness_and_emissive_onto_the_lit_path() {
     let shiny = Pbr { base: [0.8, 0.6, 0.4, 1.0], metallic: 1.0, roughness: 0.0, ..Default::default() };
-    let m = lit_material(&shiny, angel_glass::scene::Sampling::Linear, false);
+    let m = lit_material(&shiny, glass_window::scene::Sampling::Linear, false);
     assert!(near(m.tint[0], 0.4) && near(m.tint[1], 0.3) && near(m.tint[2], 0.2), "a smooth metal is darkened by half: {:?}", m.tint);
     let rough = Pbr { base: [0.8, 0.6, 0.4, 1.0], metallic: 1.0, roughness: 1.0, ..Default::default() };
-    assert_eq!(lit_material(&rough, angel_glass::scene::Sampling::Linear, false).tint, [0.8, 0.6, 0.4, 1.0]);
+    assert_eq!(lit_material(&rough, glass_window::scene::Sampling::Linear, false).tint, [0.8, 0.6, 0.4, 1.0]);
     let glow = Pbr { base: [0.0, 0.0, 0.0, 1.0], emissive: [1.0, 0.5, 0.0], ..Default::default() };
-    let m = lit_material(&glow, angel_glass::scene::Sampling::Linear, true);
+    let m = lit_material(&glow, glass_window::scene::Sampling::Linear, true);
     assert_eq!(m.emissive, 1.0);
     assert_eq!(m.tint, [1.0, 0.5, 0.0, 1.0], "the emissive colour is what shows");
     assert_eq!(m.alpha, AlphaMode::Blend);
@@ -197,7 +197,7 @@ fn the_tree_places_nodes_by_hand_computed_matrices() {
     g.add_scene(&[parent]);
     let asset = std::sync::Arc::new(load(&g.glb()).expect("tree").asset);
     let mut scene = Scene::new(Camera::default());
-    scene.nodes.push(angel_glass::scene::Node::empty(7));
+    scene.nodes.push(glass_window::scene::Node::empty(7));
     scene.nodes[0].transform = Transform::from_translation([0.0, 0.0, -5.0]);
     let inst = instantiate(&asset, 1, 0, 7, 0, 100, &mut scene.nodes).expect("hang");
     let worlds = scene.world_matrices();
@@ -490,7 +490,7 @@ fn caps_on_vertices_primitives_and_keys_hold() {
     // count alone.
     let mut g = Gltf::default();
     g.view(&[0u8; 12]);
-    g.accessor(format!(r#"{{"bufferView":0,"componentType":5126,"count":{},"type":"VEC3"}}"#, angel_glass::scene::MAX_MESH_VERTICES + 1));
+    g.accessor(format!(r#"{{"bufferView":0,"componentType":5126,"count":{},"type":"VEC3"}}"#, glass_window::scene::MAX_MESH_VERTICES + 1));
     let mesh = g.mesh(&[("POSITION", 0)], None, None);
     g.node(format!(r#"{{"mesh":{mesh}}}"#));
     let (c, m) = code(load(&g.glb()));
@@ -584,7 +584,7 @@ pub(super) struct Rig {
 
 impl Rig {
     pub(super) fn new() -> Self {
-        let mut intake = Intake::new(angel_glass::LAYER_PICTURES);
+        let mut intake = Intake::new(glass_window::LAYER_PICTURES);
         intake.set_cell((8, 16));
         Self { intake, engine: FakeEngine::new(), splitter: Splitter::default() }
     }
@@ -641,7 +641,7 @@ fn an_asset_goes_up_in_pieces_and_answers_with_what_it_holds() {
     assert_eq!(drawn.material.tint[3], 0.5);
     assert_eq!(drawn.material.alpha, AlphaMode::Blend);
     let Some(MeshRef::Uploaded(mesh_id)) = drawn.mesh else { panic!("an uploaded mesh") };
-    assert!(matches!(drawn.material.source, angel_glass::scene::TextureSource::Picture(_)), "the texture went in as a picture");
+    assert!(matches!(drawn.material.source, glass_window::scene::TextureSource::Picture(_)), "the texture went in as a picture");
     let uploads = rig.intake.expansion.take_mesh_uploads();
     assert_eq!(uploads.len(), 1);
     assert_eq!(uploads[0].0, mesh_id);
@@ -667,9 +667,9 @@ fn a_node_shows_a_program_picture_on_its_mesh() {
     assert!(reply.contains("r=3;OK"), "{reply}");
     let scene = rig.intake.expansion.scene(9).expect("scene");
     let TextureSource::Picture(first) = scene.nodes[0].material.source else { panic!("a picture on the cube") };
-    assert_eq!(scene.nodes[0].material.sampling, angel_glass::scene::Sampling::Linear);
+    assert_eq!(scene.nodes[0].material.sampling, glass_window::scene::Sampling::Linear);
     assert_eq!(scene.nodes[0].material.tint[3], 0.5);
-    assert_eq!(scene.nodes[1].material.sampling, angel_glass::scene::Sampling::Nearest);
+    assert_eq!(scene.nodes[1].material.sampling, glass_window::scene::Sampling::Nearest);
     // The same id sent again (a video's next frame) still shows on the
     // next scene sent.
     assert!(rig.send("picture;id=4;f=24;s=1;v=1;r=4;AAAA").contains("r=4;OK"));
@@ -683,7 +683,7 @@ fn a_node_shows_a_program_picture_on_its_mesh() {
     }
 }
 
-fn scene_worlds(rig: &Rig, id: u32) -> Vec<Option<angel_glass::scene::Mat4>> {
+fn scene_worlds(rig: &Rig, id: u32) -> Vec<Option<glass_window::scene::Mat4>> {
     rig.intake.expansion.scene(id).expect("scene").world_matrices()
 }
 
@@ -808,10 +808,10 @@ fn an_asset_from_a_path_follows_the_file_medium_rules() {
 const MIXAMO: &str = "/work/frosty40/glass-assets/mixamo";
 
 /// The skinned vertices of every skinned node of scene `id`: each node's
-/// mesh's positions through its joints (angel_stage's own maths, which the
+/// mesh's positions through its joints (glass_stage's own maths, which the
 /// mesh shader mirrors).
-fn skinned_points(rig: &Rig, id: u32, uploads: &[(u32, std::sync::Arc<angel_glass::scene::MeshData>)]) -> Vec<[f32; 3]> {
-    use angel_glass::scene::{mat_point, skin_matrix};
+fn skinned_points(rig: &Rig, id: u32, uploads: &[(u32, std::sync::Arc<glass_window::scene::MeshData>)]) -> Vec<[f32; 3]> {
+    use glass_window::scene::{mat_point, skin_matrix};
     let scene = rig.intake.expansion.scene(id).expect("scene");
     let worlds = scene.world_matrices();
     let mut out = Vec::new();
@@ -999,7 +999,7 @@ fn a_skin_is_read_with_its_joints_weights_and_inverse_bind_matrices() {
         let a = &loaded.asset;
         assert_eq!(a.skins.len(), 1);
         assert_eq!(a.skins[0].joints, vec![0, 1]);
-        assert_eq!(a.skins[0].inverse_bind[0], angel_glass::scene::IDENTITY_MATRIX);
+        assert_eq!(a.skins[0].inverse_bind[0], glass_window::scene::IDENTITY_MATRIX);
         assert_eq!(a.skins[0].inverse_bind[1][3], [0.0, -1.0, 0.0, 1.0], "column-major, as glTF keeps them");
         assert_eq!(a.nodes[2].skin, Some(0));
         let mesh = &a.prims[0].mesh;
@@ -1011,7 +1011,7 @@ fn a_skin_is_read_with_its_joints_weights_and_inverse_bind_matrices() {
     let mut g = skinned_file(false);
     g.extra = vec![r#""skins":[{"joints":[0,1]}]"#.into()];
     let a = load(&g.glb()).expect("loads").asset;
-    assert!(a.skins[0].inverse_bind.iter().all(|m| *m == angel_glass::scene::IDENTITY_MATRIX));
+    assert!(a.skins[0].inverse_bind.iter().all(|m| *m == glass_window::scene::IDENTITY_MATRIX));
 }
 
 /// The triangle's three points in the world, through its skin.
@@ -1024,7 +1024,7 @@ fn bent(rig: &Rig) -> Vec<[f32; 3]> {
     let points = [[1.0, 1.0, 0.0], [-1.0, 1.0, 0.0], [0.0, 2.0, 0.0]];
     let joints = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 0]];
     let weights = [[1.0, 0.0, 0.0, 0.0], [0.5, 0.5, 0.0, 0.0], [1.0, 0.0, 0.0, 0.0]];
-    (0..3).map(|k| mat_point(&angel_glass::scene::skin_matrix(&palette, joints[k], weights[k], &world), points[k])).collect()
+    (0..3).map(|k| mat_point(&glass_window::scene::skin_matrix(&palette, joints[k], weights[k], &world), points[k])).collect()
 }
 
 #[test]
@@ -1137,7 +1137,7 @@ fn faces_show_uploaded_pictures_and_a_missing_one_is_refused_by_name() {
     let round = &scene.nodes[0];
     assert_eq!(round.mesh, Some(MeshRef::RoundCube { radius: 200, segments: 4 }));
     assert_eq!(round.face_materials.len(), 7, "six faces and the edge");
-    let picture = |m: &angel_glass::scene::Material| match m.source {
+    let picture = |m: &glass_window::scene::Material| match m.source {
         TextureSource::Picture(id) => Some(id),
         TextureSource::None => None,
     };
@@ -1146,7 +1146,7 @@ fn faces_show_uploaded_pictures_and_a_missing_one_is_refused_by_name() {
     assert_eq!(picture(&round.face_materials[3]), Some(four), "the same picture on two faces");
     assert_eq!(picture(&round.face_materials[1]), None, "null: the node's own");
     assert!(round.face_materials[..6].iter().all(|m| m.tint == [1.0, 0.5, 0.5, 1.0]), "tinted by the node's colour");
-    assert!(round.face_materials[..6].iter().filter(|m| picture(m).is_some()).all(|m| m.sampling == angel_glass::scene::Sampling::Linear));
+    assert!(round.face_materials[..6].iter().filter(|m| picture(m).is_some()).all(|m| m.sampling == glass_window::scene::Sampling::Linear));
     assert_eq!((round.face_materials[6].tint, round.face_materials[6].glow), ([0.0, 1.0, 1.0, 1.0], 0.9));
     let cube = &scene.nodes[1];
     assert_eq!(cube.face_materials.len(), 6);

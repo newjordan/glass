@@ -1,5 +1,5 @@
 [package]
-name = "angel-stage"
+name = "glass-stage"
 version = "0.1.0"
 description = "A game's scene as layers, and a 3D scene of nodes, meshes and materials: what the window (crates/glass) and the browser both draw (docs/RENDER_FOUNDATION.md, docs/GLASS_CORE.md)"
 edition.workspace = true

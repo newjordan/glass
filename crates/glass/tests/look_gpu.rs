@@ -3,16 +3,16 @@
 //! on the ramp by the Bayer threshold, accents are kept, the distance fades
 //! into the fog, and the result is enlarged by nearest. No window, no
 //! surface. Where the machine has no adapter each test says so and passes.
-//! `cargo test -p angel-glass --test look_gpu -- --nocapture` prints the
+//! `cargo test -p glass-window --test look_gpu -- --nocapture` prints the
 //! pixel facts.
 
 use std::collections::HashSet;
 use std::sync::{Arc, Mutex};
 
-use angel_gpu::{Core, Frame};
-use angel_stage::look::{Dither, Fog, Look, bayer_threshold, luminance, unit_rgb};
-use angel_stage::scene::{Camera, Material, MeshData, MeshRef, Node, Projection, Scene, Transform};
-use angel_stage::{Layer, LayerKind, Placement};
+use glass_gpu::{Core, Frame};
+use glass_stage::look::{Dither, Fog, Look, bayer_threshold, luminance, unit_rgb};
+use glass_stage::scene::{Camera, Material, MeshData, MeshRef, Node, Projection, Scene, Transform};
+use glass_stage::{Layer, LayerKind, Placement};
 
 /// The ramp the tests use: even channels, so the midpoint of two entries is
 /// an exact 8-bit colour.

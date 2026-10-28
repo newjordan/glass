@@ -8,8 +8,8 @@
 //! by the camera, what moves, the screen's marks. Their pictures go up with
 //! `Host::upload_picture`; the still art only when it changes.
 
-use angel_stage::scene::{Camera, Node, Props, Scene, stage_camera};
-use angel_stage::{Layer, LayerKind, Placement, Stand, Tilt};
+use glass_stage::scene::{Camera, Node, Props, Scene, stage_camera};
+use glass_stage::{Layer, LayerKind, Placement, Stand, Tilt};
 use bytemuck::Zeroable;
 
 use crate::Core;
@@ -36,13 +36,13 @@ pub struct Stage {
     /// above; with no `enter` it simply replaces it.
     pub scene: u64,
     pub enter: Option<[f32; 2]>,
-    /// How far the floor tips away from the camera (`angel_stage::Frame::tilt`).
+    /// How far the floor tips away from the camera (`glass_stage::Frame::tilt`).
     pub tilt: f32,
-    /// 3D things between the layers (`angel_stage::scene::Props`): seen by
+    /// 3D things between the layers (`glass_stage::scene::Props`): seen by
     /// the camera the tilt gives, drawn into a picture of their own at the
     /// props' grain and laid over `props.at` layers.
     pub props: Option<Props>,
-    /// How hard the world was just hit, 0 to 1 (`angel_stage::Frame::
+    /// How hard the world was just hit, 0 to 1 (`glass_stage::Frame::
     /// impact`): the post pass splits its colours and lifts its light by it.
     pub impact: f32,
 }
@@ -492,7 +492,7 @@ impl Core {
         camera: Camera,
         nodes: Vec<Node>,
         depth: DepthUse<'_>,
-        cards: Option<&angel_stage::look::Look>,
+        cards: Option<&glass_stage::look::Look>,
     ) -> (Vec<Node>, Option<Layer>) {
         if nodes.is_empty() {
             self.drop_targets(&[picture]);

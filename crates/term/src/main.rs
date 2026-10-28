@@ -112,7 +112,7 @@ fn opens_outside(url: &str) -> bool {
 }
 
 fn main() {
-    angel_glass::startup::mark("main");
+    glass_window::startup::mark("main");
     let args = match parse_args() {
         Ok(args) => args,
         Err(message) => {
@@ -120,7 +120,7 @@ fn main() {
             std::process::exit(2);
         }
     };
-    let mut options = angel_glass::Options::from_environment();
+    let mut options = glass_window::Options::from_environment();
     options.app_id = args.class.clone().unwrap_or_else(|| "glass".into());
     options.title = args.title.clone().unwrap_or_else(|| match args.command.first() {
         Some(program) => program.clone(),
@@ -130,8 +130,8 @@ fn main() {
     // SAFETY: nothing else runs yet; the window and its threads start below.
     unsafe { std::env::set_var("ANGEL_GLASS_TRANSITION", "0") };
     let palette = options.palette.clone();
-    angel_glass::startup::mark("options");
-    match angel_glass::run(options, move |host| run(host, args, palette)) {
+    glass_window::startup::mark("options");
+    match glass_window::run(options, move |host| run(host, args, palette)) {
         Ok(code) => std::process::exit(code),
         Err(error) => {
             eprintln!("glass: {error}");
@@ -142,7 +142,7 @@ fn main() {
 
 /// The terminal's life, on the thread glass gives it: until the program
 /// exits or the window closes. Returns the exit code.
-fn run(host: angel_glass::Host, args: Args, palette: angel_glass::Palette) -> i32 {
+fn run(host: glass_window::Host, args: Args, palette: glass_window::Palette) -> i32 {
     let grid = host.grid_size();
     let (tx, rx) = mpsc::channel();
     let focused = Arc::new(AtomicBool::new(true));
@@ -320,18 +320,18 @@ fn output_due(since: Duration, last_draw: Duration) -> Duration {
 /// One frame: the cursor's look (the shape and colour the program asked
 /// for) goes to the backend first, then the cells are drawn.
 fn draw(
-    terminal: &mut Terminal<angel_glass::GlassBackend>,
+    terminal: &mut Terminal<glass_window::GlassBackend>,
     session: &Session,
     ui: &Ui,
-    host: &angel_glass::Host,
+    host: &glass_window::Host,
     show_cursor: bool,
 ) {
-    let style = angel_glass::CursorStyle {
+    let style = glass_window::CursorStyle {
         kind: match session.cursor_shape() {
-            view::CursorLook::Block => angel_glass::CursorKind::Block,
-            view::CursorLook::Underline => angel_glass::CursorKind::Underline,
-            view::CursorLook::Beam => angel_glass::CursorKind::Bar,
-            view::CursorLook::Hidden => angel_glass::CursorKind::Block,
+            view::CursorLook::Block => glass_window::CursorKind::Block,
+            view::CursorLook::Underline => glass_window::CursorKind::Underline,
+            view::CursorLook::Beam => glass_window::CursorKind::Bar,
+            view::CursorLook::Hidden => glass_window::CursorKind::Block,
         },
         color: session.cursor_color(),
     };
@@ -396,7 +396,7 @@ fn shortcut_of(key: &KeyEvent, rows: u16, alternate_screen: bool) -> Option<Shor
 
 impl Ui {
     /// Returns whether the screen needs drawing again.
-    fn input(&mut self, event: Event, session: &mut Session, host: &angel_glass::Host, focused: &AtomicBool) -> bool {
+    fn input(&mut self, event: Event, session: &mut Session, host: &glass_window::Host, focused: &AtomicBool) -> bool {
         match event {
             Event::Key(key) => {
                 // The window's own shortcuts act on press and repeat only;
@@ -453,7 +453,7 @@ impl Ui {
         rows: u16,
         alternate_screen: bool,
         session: &mut Session,
-        host: &angel_glass::Host,
+        host: &glass_window::Host,
     ) -> Option<bool> {
         match shortcut_of(key, rows, alternate_screen) {
             None => None,

@@ -23,8 +23,8 @@
 
 use std::f32::consts::PI;
 
-use angel_stage::look::{Dither, Fog, Lamp, Look, Reveal, Shadow, Sun, Zone, smoothstep};
-use angel_stage::scene::{
+use glass_stage::look::{Dither, Fog, Lamp, Look, Reveal, Shadow, Sun, Zone, smoothstep};
+use glass_stage::scene::{
     AlphaMode, Camera, Material, MeshData, MeshRef, Node, Projection, Role, Sampling, Scene, TextureSource,
     Transform, quat_axis_angle, quat_mul,
 };
@@ -1213,7 +1213,7 @@ mod tests {
         assert!(l.lights());
         assert_eq!(l.zones.len(), 2);
         for ramp in [MEADOW, RIVER, SLATE, EMBER] {
-            let levels: Vec<f32> = ramp.iter().map(|&c| angel_stage::look::luminance(angel_stage::look::unit_rgb(c))).collect();
+            let levels: Vec<f32> = ramp.iter().map(|&c| glass_stage::look::luminance(glass_stage::look::unit_rgb(c))).collect();
             assert!(levels.windows(2).all(|w| w[0] < w[1]), "{levels:?}");
         }
     }

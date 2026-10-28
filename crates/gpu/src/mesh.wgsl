@@ -1,4 +1,4 @@
-// The mesh pipeline: a 3D scene's triangles (angel-stage's `scene`).
+// The mesh pipeline: a 3D scene's triangles (glass-stage's `scene`).
 // texture x vertex colour x tint, shaded by one fixed light when the material
 // is lit, out premultiplied to match the target's blend (One,
 // OneMinusSrcAlpha). One draw is one range of one mesh with one material; its
@@ -30,14 +30,14 @@ struct Draw {
     // surface's patch's rectangle in group 2's picture: x, y, and
     // width * 256 + height, in pixels.
     light: vec4<f32>,
-    // World to the projector's clip space (angel_stage::scene::Projector).
+    // World to the projector's clip space (glass_stage::scene::Projector).
     projector: mat4x4<f32>,
-    // A projected surface the projector does not see (angel_stage::scene::
+    // A projected surface the projector does not see (glass_stage::scene::
     // Patch): xyz where the patch's corner lies in the world, w the world's
     // size of a pixel of it; w 0 when there is none, and the surface is its
     // tint. (`patch` is a word WGSL keeps.)
     unseen: vec4<f32>,
-    // The finish (angel_stage::scene::Material): x chrome, y liquid, z the
+    // The finish (glass_stage::scene::Material): x chrome, y liquid, z the
     // scene's clock in seconds, w glow; each 0..1 but the clock.
     finish: vec4<f32>,
     // x: the mesh's radius in the world, what liquid is sized by; y: 1 when
@@ -52,18 +52,18 @@ struct Draw {
     skin: vec4<u32>,
 };
 
-// The one light every scene has (angel_stage::scene::KEY_LIGHT and
+// The one light every scene has (glass_stage::scene::KEY_LIGHT and
 // AMBIENT_LIGHT): the direction toward it, and the least a face gets.
 const KEY_LIGHT: vec3<f32> = vec3<f32>(-0.47, 0.7, 0.54);
 const AMBIENT: f32 = 0.42;
 
 // How a projected surface the projector does not see is shaded by the way
-// it faces (angel_stage::scene::FACE_SHADES): a top, a front, a side.
+// it faces (glass_stage::scene::FACE_SHADES): a top, a front, a side.
 const FACE_TOP: f32 = 1.0;
 const FACE_FRONT: f32 = 0.86;
 const FACE_SIDE: f32 = 0.74;
 // How much more edge-on than the camera the projector may see a surface and
-// still cast on it (angel_stage::scene::GRAZING).
+// still cast on it (glass_stage::scene::GRAZING).
 const GRAZING: f32 = 0.5;
 
 @group(0) @binding(0) var<uniform> draw: Draw;
@@ -72,7 +72,7 @@ const GRAZING: f32 = 0.5;
 // The patch a projected surface is where its projector does not see it.
 @group(2) @binding(0) var patch_picture: texture_2d<f32>;
 @group(2) @binding(1) var patch_sampler: sampler;
-// A skinned draw's joint matrices (angel_stage::scene::skin_matrices), its
+// A skinned draw's joint matrices (glass_stage::scene::skin_matrices), its
 // slice of the palettes at a dynamic offset. Binding 3: group 3's others
 // are a look's, in other pipelines.
 @group(3) @binding(3) var<uniform> palette: array<mat4x4<f32>, 256>;
@@ -115,7 +115,7 @@ struct SkinnedVertex {
 
 // A skinned mesh: placed by its joints' matrices blended by its weights
 // (linear blend skinning, the weights scaled to sum to 1; a joint past the
-// palette pulls nothing), as angel_stage::scene::skin_matrix does it; a
+// palette pulls nothing), as glass_stage::scene::skin_matrix does it; a
 // vertex nothing pulls stays with its node.
 @vertex
 fn vs_skinned(v: SkinnedVertex) -> Varyings {
@@ -503,7 +503,7 @@ fn fs_main(in: Varyings, @builtin(front_facing) front: bool) -> @location(0) vec
     return texel * vec4<f32>(rgb * m.a, m.a);
 }
 
-// A scene's look (angel_stage::look::Look), by the pipelines that draw into
+// A scene's look (glass_stage::look::Look), by the pipelines that draw into
 // the internal targets: group 3 holds what is the same for the whole scene.
 // The fog is by distance from the eye.
 struct SceneLook {
@@ -975,7 +975,7 @@ fn lit_look(in: Varyings, front: bool, base: vec3<f32>, fog: f32) -> LookOut {
 // brightness, and a lamp behind it lights its outline. Its pixels
 // keep their own colours: the light multiplies them, never puts them on a
 // ramp. An accent card and a pixel stored a step under opaque (a signal
-// ink, angel_stage::look::UNLIT_ALPHA) stay as drawn.
+// ink, glass_stage::look::UNLIT_ALPHA) stay as drawn.
 const CARD_REFERENCE: f32 = 0.5;
 
 @fragment

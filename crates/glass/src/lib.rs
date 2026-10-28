@@ -49,13 +49,13 @@ pub use backend::GlassBackend;
 pub use config::{BrailleStyle, Options, Palette};
 pub use font::render_page;
 pub use layer::{LAYER_PICTURES, Layer, LayerKind, MAX_STROKE_PX, Particles, Placement, Stand, Stroke, StrokeShape, Tilt};
-pub use angel_gpu::Stage;
+pub use glass_gpu::Stage;
 /// The renderer core and its wgpu, for a test elsewhere that draws a scene
 /// offscreen on a device of its own (the cockpit's Heartglass test).
-pub use angel_gpu as gpu;
+pub use glass_gpu as gpu;
 pub use wgpu;
-/// The 3D scene description (`angel-stage`'s), for `Host::set_scene`.
-pub use angel_stage::scene;
+/// The 3D scene description (`glass-stage`'s), for `Host::set_scene`.
+pub use glass_stage::scene;
 pub use showcase::{Fit, Herald, Livery, MODEL_ROOT, Mark, SHOWCASE_PICTURE, Showing};
 pub use window::run;
 

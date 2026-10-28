@@ -1,4 +1,4 @@
-//! Headless check for the page raster service (`angel_glass::page`):
+//! Headless check for the page raster service (`glass_window::page`):
 //! how long a document page takes to rasterize, cold (glyphs scaled)
 //! and warm (memoized, the scroll case).
 //!
@@ -6,7 +6,7 @@
 
 use std::time::Instant;
 
-use angel_glass::page::{Pager, PLAIN};
+use glass_window::page::{Pager, PLAIN};
 
 fn env<T: std::str::FromStr>(key: &str, default: T) -> T {
     std::env::var(key).ok().and_then(|v| v.parse().ok()).unwrap_or(default)

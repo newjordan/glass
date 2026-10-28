@@ -1165,7 +1165,7 @@ fn window_loop_advances_an_icat_animation() {
             cell_px: (8, 16),
         },
     );
-    let mut intake = Intake::new(angel_glass::LAYER_PICTURES);
+    let mut intake = Intake::new(glass_window::LAYER_PICTURES);
     intake.set_cell((8, 16));
     let mut splitter = Splitter::default();
     let mut seen: std::collections::HashMap<u32, [u8; 3]> = std::collections::HashMap::new();
@@ -1200,7 +1200,7 @@ fn window_loop_advances_an_icat_animation() {
     }
     // The reader can pump the whole animation before the window loop's
     // clock starts: spawn happens, icat writes, then the loop touches.
-    let mut early = Intake::new(angel_glass::LAYER_PICTURES);
+    let mut early = Intake::new(glass_window::LAYER_PICTURES);
     early.set_cell((8, 16));
     let mut early_engine = Engine::new(
         24,
@@ -1238,7 +1238,7 @@ fn window_loop_advances_an_icat_animation() {
     assert_eq!(shown, expected, "describe must cycle 1, 2, 3 at 500 ms");
     // Frames that arrive while loading, after the held gap has elapsed,
     // become current. Starting the run must still cycle from there.
-    let mut slow = Intake::new(angel_glass::LAYER_PICTURES);
+    let mut slow = Intake::new(glass_window::LAYER_PICTURES);
     slow.set_cell((8, 16));
     let mut slow_engine = Engine::new(
         24,
@@ -1346,7 +1346,7 @@ fn icat_animation_controls_are_silent_on_success() {
             cell_px: (8, 16),
         },
     );
-    let mut intake = Intake::new(angel_glass::LAYER_PICTURES);
+    let mut intake = Intake::new(glass_window::LAYER_PICTURES);
     intake.set_cell((8, 16));
     let mut splitter = Splitter::default();
     let mut replies = Vec::new();

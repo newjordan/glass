@@ -25,7 +25,7 @@ fn b64(data: &[u8]) -> String {
 /// Feed one `glass;` sequence to a fresh intake, and return the intake,
 /// the engine and the replies it earned.
 fn glass(input: &[u8]) -> (Intake, FakeEngine, Vec<u8>) {
-    let mut intake = Intake::new(angel_glass::LAYER_PICTURES);
+    let mut intake = Intake::new(glass_window::LAYER_PICTURES);
     intake.set_cell((8, 16));
     let mut engine = FakeEngine::new();
     let mut pieces = Vec::new();
@@ -162,8 +162,8 @@ fn a_layer_covers_every_field() {
     assert_eq!(l.breathe, 2.0);
     assert!(l.additive);
     assert_eq!(l.flicker, 0.25);
-    assert_eq!(l.placement, angel_glass::Placement::Cells([2.0, 1.0, 4.0, 2.0]));
-    assert_eq!(l.kind, angel_glass::LayerKind::Glow([0x88, 0x44, 0xcc, 0xff].map(|b| f32::from(b as u8) / 255.0)));
+    assert_eq!(l.placement, glass_window::Placement::Cells([2.0, 1.0, 4.0, 2.0]));
+    assert_eq!(l.kind, glass_window::LayerKind::Glow([0x88, 0x44, 0xcc, 0xff].map(|b| f32::from(b as u8) / 255.0)));
 }
 
 #[test]
@@ -174,23 +174,23 @@ fn rings_and_lines_are_strokes_with_their_width_and_glow() {
         apc("layer;id=3;k=ring;lw=9999;glow=-1;px=0,0,10,10").as_slice(),
     ].concat());
     let layers = intake.expansion.frame(0, 24, false);
-    let strokes: Vec<&angel_glass::Stroke> = layers
+    let strokes: Vec<&glass_window::Stroke> = layers
         .iter()
         .filter_map(|l| match &l.kind {
-            angel_glass::LayerKind::Stroke(s) => Some(s),
+            glass_window::LayerKind::Stroke(s) => Some(s),
             _ => None,
         })
         .collect();
     assert_eq!(strokes.len(), 3);
-    assert_eq!(strokes[0].shape, angel_glass::StrokeShape::Ring);
+    assert_eq!(strokes[0].shape, glass_window::StrokeShape::Ring);
     assert_eq!((strokes[0].width, strokes[0].glow), (2.5, 7.0));
     assert!(layers[0].additive);
-    assert_eq!(strokes[1].shape, angel_glass::StrokeShape::Line);
+    assert_eq!(strokes[1].shape, glass_window::StrokeShape::Line);
     // The defaults: a stroke a pixel and a half wide, with no glow.
     assert_eq!((strokes[1].width, strokes[1].glow), (1.5, 0.0));
     assert_eq!(layers[1].angle, 0.5);
     // Out of range is held to the range, as the other sizes are.
-    assert_eq!((strokes[2].width, strokes[2].glow), (angel_glass::MAX_STROKE_PX, 0.0));
+    assert_eq!((strokes[2].width, strokes[2].glow), (glass_window::MAX_STROKE_PX, 0.0));
 }
 
 #[test]
@@ -209,13 +209,13 @@ fn every_kind_is_reached() {
     let kinds: Vec<&str> = layers
         .iter()
         .map(|l| match &l.kind {
-            angel_glass::LayerKind::Solid(_) => "solid",
-            angel_glass::LayerKind::Picture(_) => "picture",
-            angel_glass::LayerKind::PicturePart(_, _) => "part",
-            angel_glass::LayerKind::Glow(_) => "glow",
-            angel_glass::LayerKind::Particles(_) => "particles",
-            angel_glass::LayerKind::Primitive { .. } => "prim",
-            angel_glass::LayerKind::Stroke(_) => "stroke",
+            glass_window::LayerKind::Solid(_) => "solid",
+            glass_window::LayerKind::Picture(_) => "picture",
+            glass_window::LayerKind::PicturePart(_, _) => "part",
+            glass_window::LayerKind::Glow(_) => "glow",
+            glass_window::LayerKind::Particles(_) => "particles",
+            glass_window::LayerKind::Primitive { .. } => "prim",
+            glass_window::LayerKind::Stroke(_) => "stroke",
         })
         .collect();
     assert_eq!(kinds, vec!["solid", "glow", "particles", "prim", "picture", "part"]);
@@ -223,7 +223,7 @@ fn every_kind_is_reached() {
 
 #[test]
 fn px_pins_to_the_window_and_at_scrolls_with_the_text() {
-    let mut intake = Intake::new(angel_glass::LAYER_PICTURES);
+    let mut intake = Intake::new(glass_window::LAYER_PICTURES);
     intake.set_cell((8, 16));
     let mut engine = FakeEngine::new();
     intake.handle(Media::Glass(b"glass;layer;id=1;k=solid;c=ff0000;at=0,0,2,8".to_vec()), &mut engine);
@@ -231,13 +231,13 @@ fn px_pins_to_the_window_and_at_scrolls_with_the_text() {
     // The text-anchored layer moves with the view; the pinned one never.
     let top0 = intake.expansion.frame(0, 24, false);
     let top5 = intake.expansion.frame(5, 24, false);
-    let find = |layers: &Vec<angel_glass::Layer>, id: u32| {
+    let find = |layers: &Vec<glass_window::Layer>, id: u32| {
         layers.iter().find(|l| l.id == u64::from(glass_dialect::ID_BASE + id)).cloned().unwrap()
     };
-    assert_eq!(find(&top0, 1).placement, angel_glass::Placement::Cells([0.0, 0.0, 2.0, 8.0]));
-    assert_eq!(find(&top5, 1).placement, angel_glass::Placement::Cells([0.0, -5.0, 2.0, 8.0]));
-    assert_eq!(find(&top0, 2).placement, angel_glass::Placement::Pixels([10.0, 20.0, 30.0, 40.0]));
-    assert_eq!(find(&top5, 2).placement, angel_glass::Placement::Pixels([10.0, 20.0, 30.0, 40.0]));
+    assert_eq!(find(&top0, 1).placement, glass_window::Placement::Cells([0.0, 0.0, 2.0, 8.0]));
+    assert_eq!(find(&top5, 1).placement, glass_window::Placement::Cells([0.0, -5.0, 2.0, 8.0]));
+    assert_eq!(find(&top0, 2).placement, glass_window::Placement::Pixels([10.0, 20.0, 30.0, 40.0]));
+    assert_eq!(find(&top5, 2).placement, glass_window::Placement::Pixels([10.0, 20.0, 30.0, 40.0]));
 }
 
 #[test]
@@ -247,14 +247,14 @@ fn anchor_window_keeps_its_own_row_wherever_the_view_is() {
     let record = "layer;id=2;k=glow;c=00ff00;anchor=window;at=4,12.25,6,3";
     feed(&mut intake, &mut engine, &format!("group;g=1;n=1;{}", b64(record.as_bytes())));
     feed(&mut intake, &mut engine, &format!("scene;id=3;at=1,9,10,8;s=64;v=48;anchor=window;{}", cube_scene()));
-    let find = |layers: &Vec<angel_glass::Layer>, id: u32| {
+    let find = |layers: &Vec<glass_window::Layer>, id: u32| {
         layers.iter().find(|l| l.id == u64::from(glass_dialect::ID_BASE + id)).cloned().unwrap()
     };
     for top in [0, 5, 40] {
         let layers = intake.expansion.frame(top, 24, false);
-        assert_eq!(find(&layers, 1).placement, angel_glass::Placement::Cells([3.0, 7.5, 2.0, 8.0]), "top {top}");
-        assert_eq!(find(&layers, 2).placement, angel_glass::Placement::Cells([4.0, 12.25, 6.0, 3.0]), "top {top}");
-        assert_eq!(find(&layers, 3).placement, angel_glass::Placement::Cells([1.0, 9.0, 10.0, 8.0]), "top {top}");
+        assert_eq!(find(&layers, 1).placement, glass_window::Placement::Cells([3.0, 7.5, 2.0, 8.0]), "top {top}");
+        assert_eq!(find(&layers, 2).placement, glass_window::Placement::Cells([4.0, 12.25, 6.0, 3.0]), "top {top}");
+        assert_eq!(find(&layers, 3).placement, glass_window::Placement::Cells([1.0, 9.0, 10.0, 8.0]), "top {top}");
     }
 }
 
@@ -262,7 +262,7 @@ fn anchor_window_keeps_its_own_row_wherever_the_view_is() {
 
 #[test]
 fn a_chunked_picture_assembles_under_its_first_chunk_keys() {
-    let mut intake = Intake::new(angel_glass::LAYER_PICTURES);
+    let mut intake = Intake::new(glass_window::LAYER_PICTURES);
     let mut engine = FakeEngine::new();
     intake.handle(
         Media::Glass(format!("glass;picture;id=9;f=24;s=2;v=1;m=1;r=3;{}", b64(b"\xff\x00\x00\x00\xff")).into_bytes()),
@@ -328,7 +328,7 @@ fn a_group_past_the_layer_cap_is_refused() {
 fn remove_takes_one_layer_a_range_a_group_or_all() {
     let mk = |id: u32| apc(&format!("layer;id={id};k=solid;c=ff0000;at=0,0,1,1"));
     let group = b64(b"layer;id=50;k=solid;c=00ff00;at=0,0,1,1");
-    let mut intake = Intake::new(angel_glass::LAYER_PICTURES);
+    let mut intake = Intake::new(glass_window::LAYER_PICTURES);
     let mut engine = FakeEngine::new();
     for m in [mk(1), mk(2), mk(3), mk(4), apc(&format!("group;g=9;n=1;{group}"))] {
         intake.handle(Media::Glass(m[2..m.len() - 2].to_vec()), &mut engine);
@@ -348,7 +348,7 @@ fn remove_takes_one_layer_a_range_a_group_or_all() {
 
 #[test]
 fn the_showcase_opens_on_an_uploaded_picture_and_closes() {
-    let mut intake = Intake::new(angel_glass::LAYER_PICTURES);
+    let mut intake = Intake::new(glass_window::LAYER_PICTURES);
     let mut engine = FakeEngine::new();
     let (_, w, h) = ((), 2u32, 1u32);
     intake.handle(
@@ -374,7 +374,7 @@ fn the_showcase_opens_on_an_uploaded_picture_and_closes() {
 
 #[test]
 fn text_anchored_layers_leave_with_their_text() {
-    let mut intake = Intake::new(angel_glass::LAYER_PICTURES);
+    let mut intake = Intake::new(glass_window::LAYER_PICTURES);
     let mut engine = FakeEngine::new();
     engine.scrolled = 5;
     intake.handle(Media::Glass(b"glass;layer;id=1;k=solid;c=ff0000;at=0,0,1,1".to_vec()), &mut engine);
@@ -393,7 +393,7 @@ fn text_anchored_layers_leave_with_their_text() {
 
 #[test]
 fn alternate_screen_layers_go_when_it_is_left() {
-    let mut intake = Intake::new(angel_glass::LAYER_PICTURES);
+    let mut intake = Intake::new(glass_window::LAYER_PICTURES);
     let mut engine = FakeEngine::new();
     engine.alternate = true;
     intake.handle(Media::Glass(b"glass;layer;id=1;k=solid;c=ff0000;at=0,0,1,1".to_vec()), &mut engine);
@@ -404,7 +404,7 @@ fn alternate_screen_layers_go_when_it_is_left() {
 
 #[test]
 fn ris_removes_everything_the_dialect_made() {
-    let mut intake = Intake::new(angel_glass::LAYER_PICTURES);
+    let mut intake = Intake::new(glass_window::LAYER_PICTURES);
     let mut engine = FakeEngine::new();
     intake.handle(Media::Glass(format!("glass;picture;id=1;f=24;s=1;v=1;{}", b64(&[0xff; 4])).into_bytes()), &mut engine);
     intake.handle(Media::Glass(b"glass;layer;id=1;k=solid;c=ff0000;at=0,0,1,1".to_vec()), &mut engine);
@@ -477,11 +477,11 @@ fn scene_round_trips_and_remove_covers_it() {
     );
     assert_eq!(replies, b"\x1b_glass;r=1;OK;\x1b\\".to_vec());
     let scene = intake.expansion.scene(3).expect("scene stored");
-    assert!(matches!(scene.nodes[0].mesh, Some(angel_glass::scene::MeshRef::Cube)));
+    assert!(matches!(scene.nodes[0].mesh, Some(glass_window::scene::MeshRef::Cube)));
     assert_eq!(scene.camera.transform.translation, [0.0, 0.0, 3.0]);
     assert_eq!(intake.expansion.scene_size(3), Some((64, 48)));
     let layers = intake.expansion.frame(0, 24, false);
-    assert!(layers.iter().any(|l| matches!(l.kind, angel_glass::LayerKind::Picture(_))));
+    assert!(layers.iter().any(|l| matches!(l.kind, glass_window::LayerKind::Picture(_))));
     let replies = feed(&mut intake, &mut engine, "remove;id=3;r=2");
     assert_eq!(replies, b"\x1b_glass;r=2;OK;\x1b\\".to_vec());
     assert!(intake.expansion.scene(3).is_none());

@@ -1,5 +1,5 @@
 // The world's look (docs/GLASS_CORE.md): the post pass of a scene that has an
-// `angel_stage::look::Look`. The scene was drawn at the look's small internal
+// `glass_stage::look::Look`. The scene was drawn at the look's small internal
 // size into a colour texture and an accent mask (mesh.wgsl, `fs_look`); this
 // puts every pixel onto the ramp and writes the result, upscaled by nearest
 // when the output is bigger than the internal size.
@@ -12,7 +12,7 @@
 // other is placed on the ramp by its luminance: between the two entries whose
 // own luminances hold it, the upper one where its place between them is past
 // the Bayer threshold at its internal pixel, the lower where it is not.
-// `Look::quantize` in angel-stage is the same thing on the CPU, and the tests
+// `Look::quantize` in glass-stage is the same thing on the CPU, and the tests
 // hold this to it.
 
 struct Look {
@@ -43,7 +43,7 @@ fn vs_main(@builtin(vertex_index) index: u32) -> @builtin(position) vec4<f32> {
 
 // The Bayer threshold at an internal pixel: strictly between 0 and 1. The
 // coordinates' bits, lowest first, give the value its pairs (x ^ y, y) from
-// the top down (angel_stage::look::bayer_index).
+// the top down (glass_stage::look::bayer_index).
 fn threshold(p: vec2<u32>) -> f32 {
     let bits = look.counts.z;
     if bits == 0u {

@@ -6,8 +6,8 @@
 
 use std::sync::{Arc, Mutex};
 
-use angel_gpu::{Core, Draw, Frame, Instance, Stage};
-use angel_stage::{Layer, LayerKind, Placement, Stand};
+use glass_gpu::{Core, Draw, Frame, Instance, Stage};
+use glass_stage::{Layer, LayerKind, Placement, Stand};
 
 const STAGE: u32 = 0x00FA_57A4;
 /// The stage, in its own pixels, and the window's pixels to one of them.
@@ -65,7 +65,7 @@ impl Gpu {
             rect: [0.0, 0.0, size.0 as f32, size.1 as f32],
             uv: [0.0, 0.0, size.0 as f32, size.1 as f32],
             color: [1.0; 4],
-            kind: angel_gpu::PICTURE,
+            kind: glass_gpu::PICTURE,
             ..bytemuck::Zeroable::zeroed()
         };
         let mut parts = vec![(Draw::Picture { id: STAGE, linear: false }, vec![shown])];

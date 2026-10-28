@@ -761,7 +761,7 @@ mod tests {
         assert_eq!(ids.len(), four.len(), "ids unique across copies");
     }
 
-    /// `BLAST_DUMP=/tmp/blast cargo test -p angel-glass dump_blast_frames`
+    /// `BLAST_DUMP=/tmp/blast cargo test -p glass-window dump_blast_frames`
     /// writes PPM stills of every medium for a human to open.
     #[test]
     fn dump_blast_frames() {

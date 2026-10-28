@@ -13,7 +13,7 @@
 //!
 //! cargo run --release --example proto-bench [frames] [png|raw]
 
-use angel_glass::graphics::{Picture, premultiply_in_place, well_formed};
+use glass_window::graphics::{Picture, premultiply_in_place, well_formed};
 use std::time::Instant;
 
 const STREAMS: [(u32, u32, u32); 4] = [

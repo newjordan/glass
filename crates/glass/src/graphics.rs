@@ -8,11 +8,11 @@
 //! one's share of the picture. No terminal escape codes are involved.
 //!
 //! This module is CPU only: reading picture cells and the cell-to-pixel
-//! maths. The GPU side lives in `angel-gpu`.
+//! maths. The GPU side lives in `glass-gpu`.
 
 use ratatui_core::style::Color;
 
-use angel_stage::marks;
+use glass_stage::marks;
 
 /// The placeholder character a picture cell starts with.
 pub const PLACEHOLDER: char = '\u{10EEEE}';
@@ -90,8 +90,8 @@ fn color_id(color: Color) -> u32 {
 }
 
 /// The picture upload type and the check the GPU holds every upload to are
-/// the renderer core's (`angel-gpu`).
-pub use angel_gpu::{Picture, premultiply_in_place, well_formed};
+/// the renderer core's (`glass-gpu`).
+pub use glass_gpu::{Picture, premultiply_in_place, well_formed};
 
 /// The placement box in cells: `cols`/`rows` when given, otherwise the
 /// picture's size in cells, rounded up.

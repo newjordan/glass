@@ -1,9 +1,9 @@
-//! The monolith (`angel_glass::monolith`) shot offscreen by the GPU core, the
+//! The monolith (`glass_window::monolith`) shot offscreen by the GPU core, the
 //! way the window would draw it: stills from a few places along the walk, or
 //! the whole walk as numbered frames for a film.
 //!
-//! cargo run --release -p angel-glass --example monolith_shots -- <outdir> [--size WxH] [--rows N]
-//! cargo run --release -p angel-glass --example monolith_shots -- <outdir> --walk [--fps N] [--every K]
+//! cargo run --release -p glass-window --example monolith_shots -- <outdir> [--size WxH] [--rows N]
+//! cargo run --release -p glass-window --example monolith_shots -- <outdir> --walk [--fps N] [--every K]
 //!
 //! Stills are `<name>.png`; the walk is `walk-00000.png` on.
 
@@ -11,8 +11,8 @@ use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 use std::sync::Arc;
 
-use angel_glass::monolith::{self, Follow, Walker};
-use angel_gpu::{Core, Picture};
+use glass_window::monolith::{self, Follow, Walker};
+use glass_gpu::{Core, Picture};
 
 fn main() -> ExitCode {
     match run() {
@@ -145,7 +145,7 @@ impl Gpu {
         Ok(Self { core, device, target: None })
     }
 
-    fn shoot(&mut self, scene: &angel_stage::scene::Scene, size: (u32, u32)) -> Vec<u8> {
+    fn shoot(&mut self, scene: &glass_stage::scene::Scene, size: (u32, u32)) -> Vec<u8> {
         if self.target.as_ref().is_none_or(|(s, _)| *s != size) {
             let texture = self.device.create_texture(&wgpu::TextureDescriptor {
                 label: Some("monolith-target"),

@@ -40,14 +40,14 @@ Two words carry the design.
 
 ## The glass side, for adapters to target
 
-- `angel_glass::Host` (crates/glass/src/lib.rs): `upload_picture`,
+- `glass_window::Host` (crates/glass/src/lib.rs): `upload_picture`,
   `set_layer`, `set_layer_group`, `set_layers`, `remove_layer`,
   `set_scene`/`remove_scene`, `set_stage`; the showcase in
   crates/glass/src/showcase.rs (`Host::showcase`, `showcase_frame`).
-- Pictures: `angel_glass::graphics` / `angel_gpu::Picture`
+- Pictures: `glass_window::graphics` / `glass_gpu::Picture`
   (crates/gpu/src/picture.rs). Ids from `LAYER_PICTURES` up belong to
   layers.
-- Layers: `angel_stage::Layer` (crates/stage/src/lib.rs). `z < 0` draws
+- Layers: `glass_stage::Layer` (crates/stage/src/lib.rs). `z < 0` draws
   below the text, `z >= 0` above it (crates/glass/src/render.rs, the
   `below_layers`/`above_layers` split). `Placement::Cells` places by cell
   and allows fractions. Kinds: picture, picture part, solid, glow,
@@ -475,7 +475,7 @@ engine and real key events to the encoder.
   to the parser alone (every cell of history and screen, the cursor, the
   pen, the modes, the counts and the replies) over random streams cut at
   random reads, and feeds of many pieces to feeds of one. The headless
-  bench is `cargo test --release -p angel-glass-term speed -- --ignored
+  bench is `cargo test --release -p glass-term speed -- --ignored
   --nocapture` (`GLASS_BENCH_PTY=1` reads through a real pty, which
   reproduces the windowed numbers).
 - **The read path on the largest cache.** A flood scrolls lines into the
@@ -583,7 +583,7 @@ its corner are measured.
   reflow. Cover rules apply only to in-cell pictures.
 - Comments and docs speak of dialects and intake. No dialect is named as
   the standard the others are measured against.
-- `cargo test -p angel-glass-term` and `cargo clippy -p angel-glass-term`
+- `cargo test -p glass-term` and `cargo clippy -p glass-term`
   stay clean. Every adapter has tests that feed real sequences and check
   what reaches glass.
 - Builds stay in this worktree's `crates/target` (on /work).

@@ -96,67 +96,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "angel-glass"
-version = "0.1.0"
-dependencies = [
- "angel-gpu",
- "angel-stage",
- "bincode",
- "bytemuck",
- "crossterm",
- "flate2",
- "libc",
- "png",
- "pollster",
- "ratatui-core",
- "serde",
- "swash",
- "unicode-width",
- "wayland-backend",
- "wayland-client",
- "wgpu",
- "winit",
-]
-
-[[package]]
-name = "angel-glass-term"
-version = "0.1.0"
-dependencies = [
- "alacritty_terminal",
- "angel-glass",
- "angel-stage",
- "crossterm",
- "cursor-icon",
- "flate2",
- "gltf",
- "image",
- "libc",
- "memchr",
- "png",
- "portable-pty",
- "ratatui-core",
- "serde_json",
- "unicode-width",
-]
-
-[[package]]
-name = "angel-gpu"
-version = "0.1.0"
-dependencies = [
- "angel-stage",
- "bytemuck",
- "serde",
- "wgpu",
-]
-
-[[package]]
-name = "angel-stage"
-version = "0.1.0"
-dependencies = [
- "serde",
-]
-
-[[package]]
 name = "anyhow"
 version = "1.0.104"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -745,6 +684,67 @@ checksum = "ee8cfcc411d9adbbaba82fb72661cc1bcca13e8bba98b364e62b2dba8f960159"
 dependencies = [
  "color_quant",
  "weezl",
+]
+
+[[package]]
+name = "glass-gpu"
+version = "0.1.0"
+dependencies = [
+ "bytemuck",
+ "glass-stage",
+ "serde",
+ "wgpu",
+]
+
+[[package]]
+name = "glass-stage"
+version = "0.1.0"
+dependencies = [
+ "serde",
+]
+
+[[package]]
+name = "glass-term"
+version = "0.1.0"
+dependencies = [
+ "alacritty_terminal",
+ "crossterm",
+ "cursor-icon",
+ "flate2",
+ "glass-stage",
+ "glass-window",
+ "gltf",
+ "image",
+ "libc",
+ "memchr",
+ "png",
+ "portable-pty",
+ "ratatui-core",
+ "serde_json",
+ "unicode-width",
+]
+
+[[package]]
+name = "glass-window"
+version = "0.1.0"
+dependencies = [
+ "bincode",
+ "bytemuck",
+ "crossterm",
+ "flate2",
+ "glass-gpu",
+ "glass-stage",
+ "libc",
+ "png",
+ "pollster",
+ "ratatui-core",
+ "serde",
+ "swash",
+ "unicode-width",
+ "wayland-backend",
+ "wayland-client",
+ "wgpu",
+ "winit",
 ]
 
 [[package]]

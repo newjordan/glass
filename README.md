@@ -28,7 +28,7 @@ The terminal engine underneath is `alacritty_terminal`.
 ## Build
 
 ```sh
-cargo build --release -p angel-glass-term
+cargo build --release -p glass-term
 ```
 
 The binary is `target/release/glass`. It needs a Wayland or X11 desktop with
@@ -51,7 +51,7 @@ desktop's default terminal through a `.desktop` entry with
 Inside a glass window:
 
 ```sh
-cargo run --release -p angel-glass-term --example glass_sampler
+cargo run --release -p glass-term --example glass_sampler
 ```
 
 The sampler walks through each dialect in under two minutes: styled text,
@@ -66,7 +66,7 @@ finale that stacks them. `--scene knot,orrery` plays only those scenes,
 ## Mind's eye
 
 ```sh
-cargo run --release -p angel-glass-term --example glass_mindseye -- --surreal
+cargo run --release -p glass-term --example glass_mindseye -- --surreal
 ```
 
 A 95-second film of sacred geometry, streamed live through the pty as
@@ -99,12 +99,12 @@ is ready. `GLASS_STARTUP_TRACE=1` prints where startup time goes.
 
 ## Layout
 
-- `crates/term`: the terminal (`angel-glass-term`, binary `glass`): the engine,
+- `crates/term`: the terminal (`glass-term`, binary `glass`): the engine,
   the pseudo-terminal, keys, and `src/intake/`, the dialect adapters and the
   picture store.
-- `crates/glass`: the GPU window and its host API (`angel-glass`).
-- `crates/gpu`: rendering (`angel-gpu`).
-- `crates/stage`: layers, scenes and the shared types (`angel-stage`).
+- `crates/glass`: the GPU window and its host API (`glass-window`).
+- `crates/gpu`: rendering (`glass-gpu`).
+- `crates/stage`: layers, scenes and the shared types (`glass-stage`).
 - `docs/GLASS_TERM.md`: the design, and what each part takes in.
 - `docs/GLASS_DIALECT.md`: the reference for glass's own dialect, with
   `printf` examples.

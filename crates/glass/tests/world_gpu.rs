@@ -1,16 +1,16 @@
-//! A room drawn in 3D on a stage (`angel_stage::scene::World`,
+//! A room drawn in 3D on a stage (`glass_stage::scene::World`,
 //! docs/WORLD-3D.md): its blocks and the figures standing among them, drawn
 //! with depth on a real GPU and read back. A figure behind a wall is hidden
 //! by it, one in front is not, and a figure's pixels land where an upright
 //! layer's do. Where the machine has no adapter, each test says so and
-//! passes. `cargo test -p angel-glass --test world_gpu -- --nocapture`
+//! passes. `cargo test -p glass-window --test world_gpu -- --nocapture`
 //! prints what it counted.
 
 use std::sync::{Arc, Mutex};
 
-use angel_gpu::{Core, Draw, Frame, Instance, Picture, Stage};
-use angel_stage::scene::{AlphaMode, Material, MeshRef, Node, Props, Transform, World};
-use angel_stage::{Layer, LayerKind, Placement, Stand};
+use glass_gpu::{Core, Draw, Frame, Instance, Picture, Stage};
+use glass_stage::scene::{AlphaMode, Material, MeshRef, Node, Props, Transform, World};
+use glass_stage::{Layer, LayerKind, Placement, Stand};
 
 struct Gpu {
     core: Core,
@@ -69,7 +69,7 @@ impl Gpu {
             rect: [0.0, 0.0, size.0 as f32, size.1 as f32],
             uv: [0.0, 0.0, size.0 as f32, size.1 as f32],
             color: [1.0; 4],
-            kind: angel_gpu::PICTURE,
+            kind: glass_gpu::PICTURE,
             ..bytemuck::Zeroable::zeroed()
         };
         let mut parts = vec![(Draw::Picture { id, linear: false }, vec![shown])];
@@ -289,7 +289,7 @@ fn the_world_and_its_figures_lie_where_they_were_put_among_the_layers() {
 /// tested against leaving the opening out.
 #[test]
 fn a_lit_worlds_reveal_shows_a_figure_through_the_wall_before_it() {
-    use angel_stage::look::{Look, Reveal, Sun};
+    use glass_stage::look::{Look, Reveal, Sun};
     let Some(mut gpu) = gpu() else {
         println!("no GPU adapter: skipped");
         return;
@@ -326,7 +326,7 @@ fn a_lit_worlds_reveal_shows_a_figure_through_the_wall_before_it() {
 /// `normals` at 0, both halves are lit alike.
 #[test]
 fn a_lit_cards_normal_map_lights_the_side_its_lamp_is_on() {
-    use angel_stage::look::{Cards, Lamp, Look};
+    use glass_stage::look::{Cards, Lamp, Look};
     let Some(mut gpu) = gpu() else {
         println!("no GPU adapter: skipped");
         return;
@@ -335,16 +335,16 @@ fn a_lit_cards_normal_map_lights_the_side_its_lamp_is_on() {
     gpu.pixels(FIGURE, SIDE, SIDE, [120u8, 120, 120, 255].repeat((SIDE * SIDE) as usize));
     // The left half of the card turned left, the right half right.
     let map: Vec<u8> = (0..SIDE * SIDE)
-        .flat_map(|i| angel_stage::normals::encode([if i % SIDE < SIDE / 2 { -0.8 } else { 0.8 }, 0.0, 0.6]))
+        .flat_map(|i| glass_stage::normals::encode([if i % SIDE < SIDE / 2 { -0.8 } else { 0.8 }, 0.0, 0.6]))
         .collect();
-    gpu.pixels(angel_stage::normals::picture_of(FIGURE), SIDE, SIDE, map);
+    gpu.pixels(glass_stage::normals::picture_of(FIGURE), SIDE, SIDE, map);
     let mut shot = |normals: f32, with_map: bool| {
         let mut look = Look::new(vec![[10, 10, 14], [40, 44, 60], [90, 96, 120], [170, 176, 200]]);
         look.metre = 11.0;
         look.lamps = vec![Lamp { at: [70.0, 16.0, 72.0], reach: 40.0, strength: 1.0 }];
         look.cards = Some(Cards { normals, ..Cards::ROOM });
         let mut card = card(1, (96.0, 70.0), (32.0, 32.0), 0.0);
-        card.material.normals = with_map.then(|| angel_stage::normals::picture_of(FIGURE));
+        card.material.normals = with_map.then(|| glass_stage::normals::picture_of(FIGURE));
         let mut ground = ground();
         ground.material = Material::lit([0.3, 0.3, 0.3, 1.0], 0.0);
         let world = World { floor: vec![ground], blocks: Vec::new(), at: 0, figures: vec![card], figures_at: 0, look: Some(look), ..World::default() };

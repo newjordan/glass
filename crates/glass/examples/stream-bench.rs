@@ -16,8 +16,8 @@ use crossterm::event::{Event, KeyCode};
 use ratatui_core::style::Style;
 use ratatui_core::terminal::Terminal;
 
-use angel_glass::graphics::Picture;
-use angel_glass::{LAYER_PICTURES, Layer, LayerKind, Placement};
+use glass_window::graphics::Picture;
+use glass_window::{LAYER_PICTURES, Layer, LayerKind, Placement};
 
 /// (id, w, h, z, cols, rows, row, col): the blast's four streams, as in
 /// the Kitty bench.
@@ -106,7 +106,7 @@ impl Streams {
         }
     }
 
-    fn push(&self, host: &angel_glass::Host, n: usize) {
+    fn push(&self, host: &glass_window::Host, n: usize) {
         let mut layers = Vec::with_capacity(self.specs.len());
         for (i, s) in self.specs.iter().enumerate() {
             let id = LAYER_PICTURES + s.0;
@@ -152,7 +152,7 @@ impl Streams {
 /// Adversarial: `count` fresh 16x16 pictures per frame, ids cycling a
 /// 4096 pool — texture-allocation churn against the upload cache, the
 /// mirror of the Kitty bench's churn mode.
-fn push_churn(host: &angel_glass::Host, img: &[u8], count: usize, seq: &mut u32) {
+fn push_churn(host: &glass_window::Host, img: &[u8], count: usize, seq: &mut u32) {
     let mut layers = Vec::with_capacity(count);
     for k in 0..count {
         let id = LAYER_PICTURES + 1000 + (*seq % 4096);
@@ -177,7 +177,7 @@ fn push_churn(host: &angel_glass::Host, img: &[u8], count: usize, seq: &mut u32)
     host.set_layer_group(GROUP, layers);
 }
 
-fn push_placements(host: &angel_glass::Host, count: usize, n: usize, cols: f32, rows: f32) {
+fn push_placements(host: &glass_window::Host, count: usize, n: usize, cols: f32, rows: f32) {
     let id = LAYER_PICTURES + 21;
     let mut layers = Vec::with_capacity(count);
     let span = (cols - 4.0).max(1.0) as usize;
@@ -198,7 +198,7 @@ fn main() {
     let mode = env("STREAM_BENCH_MODE", "blast4".to_string());
     let seconds = env("STREAM_BENCH_SECONDS", 14u64);
     let fps = env("STREAM_BENCH_FPS", 120u32);
-    let result = angel_glass::run(angel_glass::Options::from_environment(), move |host| {
+    let result = glass_window::run(glass_window::Options::from_environment(), move |host| {
         let mut terminal = Terminal::new(host.backend()).expect("terminal");
         let mut input = host.input_reader().expect("input");
         let streams = match mode.as_str() {

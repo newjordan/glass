@@ -8,10 +8,10 @@
 //! keeps the pictures the host uploads (under a budget), the stages the
 //! host sets (a game's layers, drawn into their own pictures and slid in
 //! when the scene changes), the background image, and the layer compiler
-//! that turns `angel_stage` layers into instances.
+//! that turns `glass_stage` layers into instances.
 //!
 //! Beside the quads is a mesh pipeline with a depth buffer: [`Core::draw_scene`]
-//! draws an `angel_stage::scene::Scene` (nodes with transforms, meshes and
+//! draws an `glass_stage::scene::Scene` (nodes with transforms, meshes and
 //! unlit materials under a camera) into any colour view, and
 //! [`Core::set_scene_target`] draws one into a picture every frame, which a
 //! layer then places like any other. Meshes are built in or uploaded
@@ -266,7 +266,7 @@ impl Core {
     /// flickers or drifts: it needs frames though nothing else changes.
     pub fn stages_animating(&self) -> bool {
         !self.slides.is_empty()
-            || self.stages.values().any(|s| s.layers.iter().any(angel_stage::Layer::animating))
+            || self.stages.values().any(|s| s.layers.iter().any(glass_stage::Layer::animating))
     }
 
     /// A finished frame's buffers, for the next frame to refill. Give them

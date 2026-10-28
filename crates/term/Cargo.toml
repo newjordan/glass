@@ -1,5 +1,5 @@
 [package]
-name = "angel-glass-term"
+name = "glass-term"
 version = "0.1.0"
 description = "Glass as a terminal: any program in angelX's own window, a shell by default"
 edition.workspace = true
@@ -13,12 +13,12 @@ path = "src/main.rs"
 
 [dependencies]
 # The window, its ratatui backend and its input as terminal events.
-angel-glass = { path = "../glass" }
+glass-window = { path = "../glass" }
 # The scene wire maps onto the stage's types, and the stage publishes the
 # placeholder diacritic table the APC graphics dialect uses. serde is on so
 # a scene can be described without this crate pinning the window's layout;
 # the wire itself is the pinned form (src/intake/glass_scene.rs).
-angel-stage = { path = "../stage", features = ["serde"] }
+glass-stage = { path = "../stage", features = ["serde"] }
 serde_json = "1"
 # The same versions glass builds with, so `same Cell` and `Event` are glass's own.
 ratatui-core = { version = "0.1.2", features = ["std", "underline-color"] }

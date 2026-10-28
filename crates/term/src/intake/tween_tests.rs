@@ -343,7 +343,7 @@ fn a_visibility_tween_wakes_only_at_its_end() {
 
 // ------------------------------------------------------------ the wire
 
-fn layer_at(rig: &Rig, id: u64) -> angel_glass::Layer {
+fn layer_at(rig: &Rig, id: u64) -> glass_window::Layer {
     rig.intake
         .expansion
         .frame(0, 24, false)
@@ -352,10 +352,10 @@ fn layer_at(rig: &Rig, id: u64) -> angel_glass::Layer {
         .expect("the layer")
 }
 
-fn cells(layer: &angel_glass::Layer) -> [f32; 4] {
+fn cells(layer: &glass_window::Layer) -> [f32; 4] {
     match layer.placement {
-        angel_glass::Placement::Cells(c) => c,
-        angel_glass::Placement::Pixels(p) => p,
+        glass_window::Placement::Cells(c) => c,
+        glass_window::Placement::Pixels(p) => p,
     }
 }
 
@@ -372,7 +372,7 @@ fn a_layer_tween_moves_it_every_frame_while_the_program_is_silent() {
     let l = layer_at(&rig, 1);
     assert_eq!(cells(&l), [5.0, 2.0, 4.0, 2.0]);
     assert!((l.opacity - 0.75).abs() < 1e-6);
-    let angel_glass::LayerKind::Solid(c) = l.kind else { panic!("solid") };
+    let glass_window::LayerKind::Solid(c) = l.kind else { panic!("solid") };
     assert!((c[0] - 0.5).abs() < 1e-6 && (c[2] - 0.5).abs() < 1e-6, "{c:?}");
     assert_eq!(rig.intake.animation_deadline(), Some(1507), "one display frame on");
     rig.intake.tick_animations(2000);
@@ -415,17 +415,17 @@ fn scene_nodes_and_cameras_tween_through_the_wire() {
     assert!((n.transform.rotation[1] - e.sin()).abs() < 1e-5 && (n.transform.rotation[3] - e.cos()).abs() < 1e-5, "slerped halfway: {:?}", n.transform.rotation);
     assert_eq!(n.transform.scale, [1.5, 1.5, 1.5]);
     assert_eq!(n.material.tint, [0.5, 0.0, 0.5, 0.75]);
-    assert_eq!(n.material.alpha, angel_glass::scene::AlphaMode::Blend);
+    assert_eq!(n.material.alpha, glass_window::scene::AlphaMode::Blend);
     assert!(n.visible, "visibility changes only at the end");
     assert_eq!(scene.camera.transform.translation, [1.5, 0.0, 1.5]);
     rig.intake.tick_animations(1000);
     let scene = rig.intake.expansion.scene(3).unwrap();
     assert!(!scene.nodes[0].visible);
     assert_eq!(scene.camera.transform.translation, [3.0, 0.0, 0.0]);
-    let angel_glass::scene::Projection::Perspective { fov_y, .. } = scene.camera.projection else { panic!("perspective") };
+    let glass_window::scene::Projection::Perspective { fov_y, .. } = scene.camera.projection else { panic!("perspective") };
     assert!((fov_y - 0.4).abs() < 1e-6);
     // From +x looking at the origin, the camera's own -z is the world's -x.
-    let forward = angel_glass::scene::quat_rotate(scene.camera.transform.rotation, [0.0, 0.0, -1.0]);
+    let forward = glass_window::scene::quat_rotate(scene.camera.transform.rotation, [0.0, 0.0, -1.0]);
     assert!((forward[0] + 1.0).abs() < 1e-5 && forward[1].abs() < 1e-5 && forward[2].abs() < 1e-5, "{forward:?}");
 }
 

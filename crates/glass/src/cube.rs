@@ -1,5 +1,5 @@
 //! The cube: a turning, floating cube with a different picture on each of
-//! its six faces, the first scene `angel-gpu` draws in 3D
+//! its six faces, the first scene `glass-gpu` draws in 3D
 //! (`ANGEL_GLASS_DEMO=cube` shows it over the cockpit). Everything is a pure
 //! function of the clock so it can be tested without a window.
 //!
@@ -8,7 +8,7 @@
 //! see. Face `i` carries the number `i + 1`, in the cube's face order (+X,
 //! -X, +Y, -Y, +Z, -Z).
 
-use angel_stage::scene::{
+use glass_stage::scene::{
     Camera, Material, MeshRef, Node, Projection, Sampling, Scene, Transform,
 };
 
@@ -117,7 +117,7 @@ pub fn scene(t: f32) -> Scene {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use angel_stage::scene::TextureSource;
+    use glass_stage::scene::TextureSource;
 
     #[test]
     fn each_face_has_its_own_picture_in_the_cubes_face_order() {

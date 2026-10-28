@@ -2,7 +2,7 @@
 //! reader's path (splitter, pump, engine) with no window, so the parse
 //! path can be timed and profiled on its own. Ignored by default:
 //!
-//! `cargo test --release -p angel-glass-term speed -- --ignored --nocapture`
+//! `cargo test --release -p glass-term speed -- --ignored --nocapture`
 //!
 //! `GLASS_BENCH_SCALE` scales the workloads (1.0 is the harness's own
 //! sizes), `GLASS_BENCH_READ` is the read size the stream is cut into,
@@ -243,7 +243,7 @@ fn speed() {
         // One terminal for every round, as the harness runs each workload
         // three times in one window: after the first, the history is full
         // and scrolling recycles rows rather than allocating them.
-        let (mut e, mut i, mut s) = (engine(ROWS, COLS), Intake::new(angel_glass::LAYER_PICTURES), Splitter::default());
+        let (mut e, mut i, mut s) = (engine(ROWS, COLS), Intake::new(glass_window::LAYER_PICTURES), Splitter::default());
         e.set_fast(env("GLASS_BENCH_SLOW", 0) == 0);
         for _ in 0..rounds {
             feed(&mut e, &mut i, &mut s, b"\x1b[0m\x1b[H\x1b[2J", read);
@@ -372,7 +372,7 @@ fn a_feed_of_many_pieces_matches_one_at_a_time() {
         let (rows, cols) = [(6, 10), (24, 80), (3, 40)][round % 3];
         let run = |batched: bool| {
             let mut e = engine(rows, cols);
-            let (mut i, mut s) = (Intake::new(angel_glass::LAYER_PICTURES), Splitter::default());
+            let (mut i, mut s) = (Intake::new(glass_window::LAYER_PICTURES), Splitter::default());
             i.set_cell((10, 20));
             let mut replies = Vec::new();
             let mut pieces = Vec::new();
@@ -422,7 +422,7 @@ fn plain_runs_match_the_parser() {
         let run = |fast: bool| {
             let mut e = engine(rows, cols);
             e.set_fast(fast);
-            let (mut i, mut s) = (Intake::new(angel_glass::LAYER_PICTURES), Splitter::default());
+            let (mut i, mut s) = (Intake::new(glass_window::LAYER_PICTURES), Splitter::default());
             let mut replies = Vec::new();
             let mut pieces = Vec::new();
             for w in cuts.windows(2) {
@@ -449,7 +449,7 @@ fn paint_speed() {
     use ratatui_core::buffer::Buffer;
     use ratatui_core::layout::Rect;
     let mut e = engine(ROWS, COLS);
-    let (mut i, mut s) = (Intake::new(angel_glass::LAYER_PICTURES), Splitter::default());
+    let (mut i, mut s) = (Intake::new(glass_window::LAYER_PICTURES), Splitter::default());
     let (_, frames) = workloads(0.01, ROWS, COLS).pop().unwrap();
     feed(&mut e, &mut i, &mut s, &frames[..frames.len() - 8], 4095);
     let area = Rect::new(0, 0, COLS as u16, ROWS as u16);

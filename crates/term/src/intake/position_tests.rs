@@ -103,7 +103,7 @@ fn a_text_anchored_layer_moves_with_a_scroll_region() {
     // It was on row 3 (1-based 4). The region is rows 2..6. Scroll up
     // one moves it to row 2.
     let row = match &layers[0].placement {
-        angel_glass::Placement::Cells(cells) => cells[1],
+        glass_window::Placement::Cells(cells) => cells[1],
         other => panic!("expected a cell placement, {other:?}"),
     };
     assert!((row - 2.0).abs() < 0.01, "the layer moved with the region, row {row}");

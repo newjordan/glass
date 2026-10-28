@@ -1,5 +1,5 @@
 [package]
-name = "angel-glass"
+name = "glass-window"
 version = "0.1.0"
 description = "angelX's own window: a GPU compositor where the cockpit's text is one layer (docs/RENDER_FOUNDATION.md)"
 edition.workspace = true
@@ -10,15 +10,15 @@ publish.workspace = true
 [features]
 # Remote glass (docs/REMOTE_GLASS.md): a host with no window whose frames go
 # over a link to windows on other machines, and the window end of that link.
-remote = ["dep:serde", "dep:bincode", "dep:flate2", "dep:libc", "angel-stage/serde", "angel-gpu/serde", "crossterm/serde"]
+remote = ["dep:serde", "dep:bincode", "dep:flate2", "dep:libc", "glass-stage/serde", "glass-gpu/serde", "crossterm/serde"]
 
 [dependencies]
 # What a stage is: layers, motes, pictures (shared with the browser).
-angel-stage = { path = "../stage" }
+glass-stage = { path = "../stage" }
 # The GPU half: pipeline, pictures, stages, atlas, layer compiler. glass makes
 # the device and the window around it. The core picks no wgpu backend, so the
 # dependency below turns on Vulkan and Metal for both.
-angel-gpu = { path = "../gpu" }
+glass-gpu = { path = "../gpu" }
 # The cockpit draws into ratatui's buffer; glass is one more backend for it.
 # `underline-color` matches the cockpit's build, so `Cell` has the same fields.
 ratatui-core = { version = "0.1.2", features = ["std", "underline-color"] }

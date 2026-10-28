@@ -2,7 +2,7 @@
 //! with the pill gliding, a key page, a job running, done, then an
 //! approval. Frames land in ANGEL_CARD_OUT as the timeline plays.
 //! ANGEL_CARD_OUT=/absolute/path cargo run --release --example card_menu
-use angel_glass::card::{Card, Entrance, Knight, TITLE_ROWS};
+use glass_window::card::{Card, Entrance, Knight, TITLE_ROWS};
 use ratatui_core::{
     buffer::Buffer,
     layout::Rect,
@@ -105,10 +105,10 @@ fn main() {
     let out = std::env::var_os("ANGEL_CARD_OUT").map(PathBuf::from).expect("ANGEL_CARD_OUT is required");
     std::fs::create_dir_all(&out).unwrap();
     let every = std::env::var("ANGEL_CARD_EVERY").ok().and_then(|v| v.parse::<f32>().ok()).unwrap_or(0.1);
-    let mut options = angel_glass::Options::from_environment();
+    let mut options = glass_window::Options::from_environment();
     options.columns = 140;
     options.rows = 44;
-    let result = angel_glass::run(options, move |host| {
+    let result = glass_window::run(options, move |host| {
         let mut terminal = Terminal::new(host.backend()).unwrap();
         let list = |cursor: usize, knight: Knight, serial: u64| Page {
             title: "Connect angelX to an AI model",
@@ -178,7 +178,7 @@ fn main() {
             (12.6, None, Entrance::Title),
             (13.4, Some(Page {
                 title: "Allow this command?",
-                lines: vec!["cargo test -p angel-glass", "", "in ~/angelX"],
+                lines: vec!["cargo test -p glass-window", "", "in ~/angelX"],
                 items: vec![("Allow", false), ("Allow for this turn", false), ("Deny", false)],
                 cursor: 0,
                 field: None,
@@ -189,7 +189,7 @@ fn main() {
             }), Entrance::Pop),
             (14.4, Some(Page {
                 title: "Allow this command?",
-                lines: vec!["cargo test -p angel-glass", "", "in ~/angelX"],
+                lines: vec!["cargo test -p glass-window", "", "in ~/angelX"],
                 items: vec![("Allow", false), ("Allow for this turn", false), ("Deny", false)],
                 cursor: 2,
                 field: None,
@@ -231,7 +231,7 @@ fn main() {
                         let line = match yy {
                             1 => "  angelX   ~/angelX                                                   deepseek ▸ v4   think low",
                             3..=30 if yy % 3 == 0 => "  │ reading crates/glass/src/showcase.rs … the panel springs open from the corner he kicked",
-                            3..=30 if yy % 3 == 1 => "  │ ran cargo check -p angel-glass: finished in 41.2 s",
+                            3..=30 if yy % 3 == 1 => "  │ ran cargo check -p glass-window: finished in 41.2 s",
                             _ => "",
                         };
                         b.set_stringn(0, yy, line, usize::from(r.width), ink);

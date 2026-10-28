@@ -2,7 +2,7 @@
 //! blocks drawn on the GPU, offscreen, at the plate's size through the
 //! capture camera, written as PNGs for the art lane and for the checks.
 //!
-//! cargo run -p angel-glass --example set_capture -- <file.set> <outdir> \
+//! cargo run -p glass-window --example set_capture -- <file.set> <outdir> \
 //!     [--plate plate.png] [--sprite <png> <x> <z> <height>]... \
 //!     [--neighbour <file.set> <plate.png>]... [--seam-report] [--swatches]
 //!
@@ -15,7 +15,7 @@
 //! kind the set has, a patch of the plate where the id map is that kind,
 //! the largest clean square there (a few pixels in from the kind's edges,
 //! at most `SWATCH_CELL` a side), at its cell of the picture
-//! (`angel_stage::set::swatch_cell`), the rest clear. A room's blocks its
+//! (`glass_stage::set::swatch_cell`), the rest clear. A room's blocks its
 //! item's set has not are drawn with them (docs/WORLD-3D.md, "Swatches").
 //!
 //! A neighbour is another set (the next chunk over) drawn in the same render
@@ -27,12 +27,12 @@
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
-use angel_gpu::{Core, Picture};
-use angel_stage::scene::{
+use glass_gpu::{Core, Picture};
+use glass_stage::scene::{
     AMBIENT_LIGHT, AlphaMode, KEY_LIGHT, Material, MeshRef, Node, Projection, Scene, Transform, mat_mul,
     quat_axis_angle, quat_rotate,
 };
-use angel_stage::set::{Kind, Mode, SWATCH_ATLAS, SWATCH_CELL, Set, SetCamera, swatch_cell};
+use glass_stage::set::{Kind, Mode, SWATCH_ATLAS, SWATCH_CELL, Set, SetCamera, swatch_cell};
 
 /// The plate's picture id, the first neighbour's, and the first sprite's.
 const PLATE: u32 = 1;
@@ -67,7 +67,7 @@ const DRIFT_DEGREES: f32 = 4.0;
 
 /// A depth step between neighbours larger than this many stage pixels of
 /// floor is an edge (a stage camera's depth runs `1 / 8192` a pixel of
-/// floor, angel_stage::scene `STAGE_DEPTH_PER_PX`).
+/// floor, glass_stage::scene `STAGE_DEPTH_PER_PX`).
 const DEPTH_EDGE_PX: f32 = 4.0;
 
 /// A colour step between neighbours of one kind larger than this (any
@@ -482,7 +482,7 @@ fn seam_report(gpu: &mut Gpu, set: &Set, neighbours: &[Neighbour], projected: &[
 
 /// The capture's camera turned [`DRIFT_DEGREES`] about the vertical through
 /// the floor point at the stage's middle.
-fn drift(set: &Set) -> angel_stage::scene::Mat4 {
+fn drift(set: &Set) -> glass_stage::scene::Mat4 {
     let (w, h) = set.camera.size();
     let middle = match set.camera {
         SetCamera::Room { .. } => [w as f32 / 2.0, 0.0, h as f32 / 2.0],

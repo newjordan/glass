@@ -7,7 +7,7 @@
 //! real-time 3D at about 540 rows, a 4x4 Bayer dither between two neighbouring
 //! colours of one indigo ramp, one warm accent, fog.
 //!
-//! This file is the description and the reference maths. `angel-gpu`'s
+//! This file is the description and the reference maths. `glass-gpu`'s
 //! `look.wgsl` does the same thing per pixel on the GPU, and the functions
 //! here ([`Look::quantize`], [`bayer_threshold`]) are what its tests compare
 //! the pixels read back against. Nothing here panics on bad input: a look that

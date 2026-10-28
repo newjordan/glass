@@ -19,7 +19,7 @@
 use std::borrow::Cow;
 use std::sync::Arc;
 
-use angel_glass::scene::{
+use glass_window::scene::{
     AlphaMode, Mat4, Material, MeshData, Node, Sampling, Skin, Transform, IDENTITY_MATRIX, MAX_JOINTS, MAX_MESH_INDICES,
     MAX_MESH_VERTICES,
 };
@@ -706,7 +706,7 @@ impl<'a> Reader<'a> {
                     if translation.iter().chain(&rotation).chain(&scale).any(|v| !v.is_finite()) {
                         return Err(err("EINVAL", format!("node {i}'s transform is not finite")));
                     }
-                    Transform { translation, rotation: angel_glass::scene::quat_normalize(rotation), scale }
+                    Transform { translation, rotation: glass_window::scene::quat_normalize(rotation), scale }
                 }
             };
             let mut children = Vec::new();
@@ -1253,7 +1253,7 @@ fn quat_from_columns(x: [f32; 3], y: [f32; 3], z: [f32; 3]) -> [f32; 4] {
         let s = (1.0 + m22 - m00 - m11).sqrt() * 2.0;
         [(m02 + m20) / s, (m12 + m21) / s, 0.25 * s, (m10 - m01) / s]
     };
-    angel_glass::scene::quat_normalize(q)
+    glass_window::scene::quat_normalize(q)
 }
 
 // ------------------------------------------------------------- sampling ----
@@ -1309,7 +1309,7 @@ impl Channel {
                     out[c] = h00 * v0[c] + h10 * span * b0[c] + h01 * v1[c] + h11 * span * a1[c];
                 }
                 if rotation {
-                    angel_glass::scene::quat_normalize(out)
+                    glass_window::scene::quat_normalize(out)
                 } else {
                     out[3] = 0.0;
                     out
@@ -1476,7 +1476,7 @@ pub fn instantiate(
         if let [only] = prims
             && let Some(prim) = asset.prims.get(*only)
         {
-            node.mesh = Some(angel_glass::scene::MeshRef::Uploaded(prim.id));
+            node.mesh = Some(glass_window::scene::MeshRef::Uploaded(prim.id));
             node.material = asset.materials.get(prim.material).map_or_else(Material::default, |m| m.material);
             node.skin = skin_of(g.skin, &prim.mesh);
             drawn.push((place, node.material));
@@ -1488,7 +1488,7 @@ pub fn instantiate(
                 let material = asset.materials.get(prim.material).map_or_else(Material::default, |m| m.material);
                 let mut child = Node::new(
                     EXPANDED | PRIM_NODE | (u64::from(instance) << 32) | (prim_nodes & 0xffff_ffff),
-                    angel_glass::scene::MeshRef::Uploaded(prim.id),
+                    glass_window::scene::MeshRef::Uploaded(prim.id),
                     material,
                 );
                 prim_nodes += 1;
