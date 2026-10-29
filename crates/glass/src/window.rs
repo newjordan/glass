@@ -120,9 +120,12 @@ where
     E: FnOnce(crate::GridSize),
 {
     // The GPU, the fonts and the background image get going while the
-    // window system is reached and the window opens.
-    #[allow(unused_mut)]
+    // window system is reached and the window opens. Where winit loads the
+    // window system's libraries with `dlopen` (Wayland, X11), the GPU
+    // waits for the event loop (`Preparing::open_gpu`).
     let mut preparing = crate::render::Preparing::start(&options);
+    #[cfg(target_os = "macos")]
+    preparing.open_gpu();
     #[cfg(target_os = "macos")]
     if let Some(scale) = crate::display::main_scale()
         && let Ok(grid) = preparing.grid_at(&options, scale, options.columns, options.rows)
@@ -135,6 +138,7 @@ where
         .build()
         .map_err(|e| format!("no window system: {e}"))?;
     crate::startup::mark("event loop");
+    preparing.open_gpu();
     let (keys, events) = mpsc::channel();
     let host = Host {
         shared: Arc::new(Shared::default()),
@@ -178,6 +182,8 @@ where
         early_size: (0, 0),
         early_glyphs: crate::early::Glyphs::default(),
         app_due: None,
+        early_due: None,
+        early_bare: false,
     };
     event_loop
         .run_app(&mut glass)
@@ -254,6 +260,13 @@ struct Glass<T> {
     /// With the early frame on show: when the app starts if the
     /// compositor has not given the window another size by then.
     app_due: Option<Instant>,
+    /// With the app just started on the compositor's size: when the
+    /// early frame is drawn at that size if the app has drawn nothing by
+    /// then.
+    early_due: Option<Instant>,
+    /// The early frame on show was drawn without the background image,
+    /// which was still being decoded.
+    early_bare: bool,
 }
 
 /// How long the app waits, after the early frame maps the window, for
@@ -261,6 +274,12 @@ struct Glass<T> {
 /// the size it tiles to a few milliseconds after the map; a floating
 /// window keeps the size it asked for, and nothing comes).
 const SETTLE: Duration = Duration::from_millis(50);
+
+/// How long the early frame at the compositor's size waits for the app's
+/// first frame, so that it is drawn once, with the program's output, not
+/// once without and again with it: a full-screen window is millions of
+/// pixels, some 10 ms to draw at 4K.
+const EARLY_WAIT: Duration = Duration::from_millis(8);
 
 /// `GLASS_STATS=1`: every two seconds, one stderr line with the frames
 /// presented, their render times and the pictures uploaded.
@@ -424,8 +443,11 @@ impl<T: Send + 'static> Glass<T> {
         self.window = Some(window);
         // The GPU takes longest to open. Meanwhile the window shows its
         // background drawn on the CPU, and takes the size the compositor
-        // gives it; the renderer is made once the GPU is open.
-        self.show_early();
+        // gives it; the renderer is made once the GPU is open. This first
+        // one maps the window, and a tiling compositor replaces it with
+        // its own size at once, so it doesn't wait for the background
+        // image.
+        self.show_early(false);
         crate::startup::mark("early frame");
         if self.early.is_some() {
             self.app_due = Some(Instant::now() + SETTLE);
@@ -446,12 +468,15 @@ impl<T: Send + 'static> Glass<T> {
     }
 
     /// Draw the background on the CPU at the window's size, while there
-    /// is no renderer yet.
-    fn show_early(&mut self) {
+    /// is no renderer yet. Without `wait`, a background image still being
+    /// decoded is left out, and the frame is drawn again with it later.
+    fn show_early(&mut self, wait: bool) {
+        self.early_due = None;
         let (Some(window), Some(preparing)) = (&self.window, self.preparing.as_mut()) else {
             return;
         };
-        let (wallpaper, fonts) = preparing.early_parts();
+        let bare = !wait && preparing.wallpaper_pending();
+        let (wallpaper, fonts) = preparing.early_parts(wait);
         let look = crate::early::Look {
             background: self.options.palette.background,
             opacity: self.options.background_opacity,
@@ -482,17 +507,24 @@ impl<T: Send + 'static> Glass<T> {
             self.early = Some(frame);
             let size = window.inner_size();
             self.early_size = (size.width, size.height);
+            self.early_bare = bare;
         }
     }
 
     /// Start the app before the GPU is open, on the grid the window
-    /// holds now as the fonts measure it. True if it started.
+    /// holds now as the fonts measure it. True if it started. The early
+    /// frame is drawn again, with the app's first frame, if it was drawn
+    /// at another size or without the background image.
     fn start_app_early(&mut self) -> Result<bool, String> {
         self.app_due = None;
         if self.app.is_none() || self.renderer.is_some() {
             return Ok(false);
         }
         self.early_regrid()?;
+        let size = self.window.as_ref().map(|window| window.inner_size());
+        if self.early_bare || size.is_some_and(|size| (size.width, size.height) != self.early_size) {
+            self.early_due = Some(Instant::now() + EARLY_WAIT);
+        }
         crate::startup::mark("app before the GPU");
         self.start_app()?;
         Ok(true)
@@ -1077,7 +1109,8 @@ impl<T: Send + 'static> ApplicationHandler<UserEvent> for Glass<T> {
         }
     }
 
-    /// With the early frame up, wake when the app is due to start.
+    /// With the early frame up, wake when the app is due to start, and
+    /// when the early frame at the compositor's size is due.
     fn about_to_wait(&mut self, event_loop: &ActiveEventLoop) {
         // The compositor gave no other size in time: the app starts on
         // the one the window has.
@@ -1091,9 +1124,23 @@ impl<T: Send + 'static> ApplicationHandler<UserEvent> for Glass<T> {
                 event_loop.exit();
                 return;
             }
-            if self.animation_due.is_none() {
-                event_loop.set_control_flow(winit::event_loop::ControlFlow::Wait);
+        }
+        // The app started on the compositor's size and has drawn nothing
+        // yet: the background at that size, alone.
+        if self.renderer.is_some() || self.early.is_none() {
+            self.early_due = None;
+        }
+        if let Some(due) = self.early_due {
+            if Instant::now() < due {
+                event_loop.set_control_flow(winit::event_loop::ControlFlow::WaitUntil(due));
+                return;
             }
+            self.show_early(true);
+        }
+        // Neither is due (the app's own frame may have drawn the early
+        // frame first): wait for events, unless an animation is timed.
+        if self.animation_due.is_none() {
+            event_loop.set_control_flow(winit::event_loop::ControlFlow::Wait);
         }
     }
 
@@ -1121,7 +1168,7 @@ impl<T: Send + 'static> ApplicationHandler<UserEvent> for Glass<T> {
                     fresh
                 };
                 if fresh {
-                    self.show_early();
+                    self.show_early(true);
                 }
             }
             UserEvent::Frame => self.draw(false),
@@ -1208,11 +1255,13 @@ impl<T: Send + 'static> ApplicationHandler<UserEvent> for Glass<T> {
                 if let Some(renderer) = self.renderer.as_mut() {
                     renderer.resize(size.width, size.height);
                 } else if self.early.is_some() && (size.width, size.height) != self.early_size {
-                    // Before the GPU is open: the background again at the
-                    // new size, and the grid for it. The first new size
-                    // after the early frame mapped the window is the
-                    // compositor's own, and the app starts on it.
-                    self.show_early();
+                    // Before the GPU is open: the grid for the new size, and
+                    // the background again at it. The first new size after
+                    // the early frame mapped the window is the compositor's
+                    // own: the app starts on it at once, and the background
+                    // is drawn with the app's first frame over it, or alone
+                    // if that frame is slow to come (`EARLY_WAIT`). A later
+                    // size is drawn at once.
                     let started = self.start_app_early().and_then(|started| {
                         if !started {
                             self.early_regrid()?;
@@ -1220,10 +1269,8 @@ impl<T: Send + 'static> ApplicationHandler<UserEvent> for Glass<T> {
                         Ok(started)
                     });
                     match started {
-                        Ok(true) if self.animation_due.is_none() => {
-                            event_loop.set_control_flow(winit::event_loop::ControlFlow::Wait);
-                        }
-                        Ok(_) => {}
+                        Ok(true) => {}
+                        Ok(false) => self.show_early(true),
                         Err(error) => {
                             self.error = Some(error);
                             event_loop.exit();

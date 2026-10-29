@@ -159,6 +159,9 @@ pub struct Preparing {
     gpu: Ready<Result<Gpu, String>>,
     /// Said once the GPU piece is done (`when_gpu_ready`).
     gpu_done: Arc<Signal>,
+    /// Held until the GPU may be opened ([`Self::open_gpu`]); its thread
+    /// starts once this goes.
+    gpu_go: Option<std::sync::mpsc::Sender<()>>,
     fonts: Option<Ready<Result<Fonts, String>>>,
     /// The fonts once sized for the window, with the scale they were sized for.
     sized: Option<(Fonts, f32)>,
@@ -239,6 +242,14 @@ impl<T: Send + 'static> Ready<T> {
             Self::Thread(_) => None,
         }
     }
+
+    /// Whether the piece is done, so that `get` would not wait for it.
+    fn is_done(&self) -> bool {
+        match self {
+            Self::Thread(thread) => thread.is_finished(),
+            Self::Done(_) => true,
+        }
+    }
 }
 
 impl Preparing {
@@ -247,7 +258,15 @@ impl Preparing {
     pub fn start(options: &Options) -> Self {
         let gpu_done = Arc::new(Signal::default());
         let signal = Arc::clone(&gpu_done);
+        let (gpu_go, go) = std::sync::mpsc::channel::<()>();
         let gpu = Ready::start("gpu-open", move || {
+            // Until `open_gpu`: the driver is loaded with `dlopen`, and
+            // glibc lets one `dlopen` run at a time, so loading it (tens of
+            // milliseconds for NVIDIA's) held up the window system's
+            // libraries, which winit loads the same way. The wait is
+            // capped, since without a thread this runs here, in `start`,
+            // before anything could let it go.
+            let _ = go.recv_timeout(std::time::Duration::from_millis(100));
             let instance = wgpu::Instance::default();
             crate::startup::mark("instance");
             let gpu = Gpu::open(instance, None);
@@ -266,7 +285,13 @@ impl Preparing {
             crate::startup::mark("wallpaper decoded");
             image
         });
-        Self { gpu, gpu_done, fonts: Some(fonts), sized: None, wallpaper }
+        Self { gpu, gpu_done, gpu_go: Some(gpu_go), fonts: Some(fonts), sized: None, wallpaper }
+    }
+
+    /// Let the GPU be opened. Until then its thread waits, so that the
+    /// window system's libraries load first.
+    pub fn open_gpu(&mut self) {
+        self.gpu_go = None;
     }
 
     /// Have `wake` called, from the GPU's thread, once the GPU is open.
@@ -320,9 +345,15 @@ impl Preparing {
 
     /// The background image, once decoded, still here for the renderer;
     /// and the fonts, if sized already, to draw the early frames' text.
-    pub fn early_parts(&mut self) -> (Option<&crate::wallpaper::Wallpaper>, Option<&mut Fonts>) {
-        let wallpaper = self.wallpaper.get().and_then(Option::as_ref);
-        (wallpaper, self.sized.as_mut().map(|(fonts, _)| fonts))
+    /// Without `wait`, an image still being decoded is left out.
+    pub fn early_parts(&mut self, wait: bool) -> (Option<&crate::wallpaper::Wallpaper>, Option<&mut Fonts>) {
+        let wallpaper = if wait || self.wallpaper.is_done() { self.wallpaper.get() } else { None };
+        (wallpaper.and_then(Option::as_ref), self.sized.as_mut().map(|(fonts, _)| fonts))
+    }
+
+    /// Whether the background image is still being decoded.
+    pub fn wallpaper_pending(&self) -> bool {
+        !self.wallpaper.is_done()
     }
 
     /// The fonts, sized for `scale`.
