@@ -6,10 +6,13 @@
 # but only once every window the run opened has closed: a window still on
 # it when it goes would move to a real monitor.
 #
-# CAP names the headless output (GLASSCAP by default).
+# CAP names the headless output (GLASSCAP by default), RES its size
+# (1920x1080 by default).
 
 CAP=${CAP:-GLASSCAP}
+RES=${RES:-1920x1080}
 WS=
+BENCH_DIR=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
 # The workspace the headless output opens on. Without a rule naming one,
 # Hyprland hands a new output a workspace of its choosing, and that has
 # been the one a real monitor was showing, windows and all. A workspace and
@@ -34,6 +37,15 @@ term_cmd() {
     # A second glass binary, to compare two builds in one run.
     glass-alt) echo "${GLASS_ALT:?GLASS_ALT names a second glass binary} --class $class -e $*" ;;
     kitty) echo "${KITTY:-kitty} --class $class $*" ;;
+    # foot with its own default of a render thread per CPU: Omarchy's
+    # foot.ini sets workers=0, which renders on one thread.
+    foot) echo "${FOOT:-foot} -o main.workers=$(nproc) -o main.pad=20x14 --app-id $class $*" ;;
+    alacritty) echo "${ALACRITTY:-alacritty} -o window.padding.x=20 --class $class -e $*" ;;
+    # A process of its own for each launch, not a window of a running one.
+    ghostty) echo "${GHOSTTY:-ghostty} --gtk-single-instance=false --window-padding-x=17 --adjust-cell-height=1 --class=$class -e $*" ;;
+    # WezTerm has no configuration here; linux/wezterm.lua gives it the
+    # font, size and padding the others have, and no tab bar.
+    wezterm) echo "${WEZTERM:-wezterm} --config-file $BENCH_DIR/linux/wezterm.lua start --always-new-process --class $class -- $*" ;;
     *)
       echo "lib.sh: no launch line for terminal '$name'; add one to term_cmd" >&2
       return 1
@@ -46,6 +58,8 @@ term_cmd() {
 headless_up() {
   hyprctl eval "_G.glass_bench_ws = hl.workspace_rule({ workspace = \"$BENCH_WS\", monitor = \"$CAP\", default = true })" >/dev/null
   hyprctl output create headless "$CAP" >/dev/null
+  sleep 0.5
+  hyprctl eval "hl.monitor({ output = \"$CAP\", mode = \"$RES\", position = \"auto\", scale = 1 })" >/dev/null
   sleep 1
   WS=$(hyprctl monitors -j | CAP=$CAP python3 -c '
 import json, os, sys
@@ -104,6 +118,7 @@ headless_down() {
     fi
   fi
   hyprctl output remove "$CAP" >/dev/null
+  hyprctl eval "hl.monitor({ output = \"$CAP\", mode = \"preferred\", position = \"auto\", scale = 1 })" >/dev/null
   rule_off
   WS=
 }

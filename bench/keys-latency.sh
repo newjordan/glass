@@ -1,19 +1,24 @@
 #!/bin/bash
-# Key-to-pty latency for one glass binary, mirroring bench/run-misc.sh's
+# Key-to-pty latency for one terminal, mirroring bench/run-misc.sh's
 # key section: a window on the headless output, 40 keys sent through
 # Hyprland's send_shortcut, keys.py logging each read.
 #
-#   GLASS  the glass binary (required)
+#   TERMINAL  the terminal, as lib.sh's term_cmd names it (default glass)
+#   GLASS  the glass binary (required for glass)
 #   N      keys to send (default 40)
 #   CAP    headless output name (default KEYCAP; must already exist)
-#   TAG    label in the output line (default the binary's basename)
+#   TAG    label in the output line (default the binary's basename for
+#          glass, else the terminal's name)
 #   LOAD   if set, `yes` floods the pty while keys are sent
 set -u
 B=$(dirname "$(readlink -f "$0")")
-GLASS=${GLASS:?GLASS names the glass binary}
+TERMINAL=${TERMINAL:-glass}
+[ "$TERMINAL" = glass ] && GLASS=${GLASS:?GLASS names the glass binary}
 N=${N:-40}
 CAP=${CAP:-KEYCAP}
-TAG=${TAG:-$(basename "$GLASS")}
+# For term_cmd; the script's own workspace and run_windows below replace lib.sh's.
+. "$B/lib.sh"
+TAG=${TAG:-$([ "$TERMINAL" = glass ] && basename "$GLASS" || echo "$TERMINAL")}
 WS=$(hyprctl monitors -j | CAP=$CAP python3 -c '
 import json, os, sys
 ids = [m["activeWorkspace"]["id"] for m in json.load(sys.stdin) if m["name"] == os.environ["CAP"]]
@@ -58,9 +63,9 @@ else
 fi
 OUTRD=""; ERRRD=""
 [ -n "$ERR" ] && { OUTRD="> ${TMPDIR:-/tmp}/out-$TAG-$$.log"; ERRRD="2> $ERR"; }
-hyprctl eval "hl.dispatch(hl.dsp.exec_cmd([[$ENVV $GLASS --class bench-keys -e $CMD $OUTRD $ERRRD]], { workspace = \"$WS silent\" }))" >/dev/null
+hyprctl eval "hl.dispatch(hl.dsp.exec_cmd([[$ENVV $(term_cmd "$TERMINAL" bench.keys "$CMD") $OUTRD $ERRRD]], { workspace = \"$WS silent\" }))" >/dev/null
 sleep 3
-read -r pid addr < <(run_windows | awk '$2=="bench-keys" {print $1, $3; exit}')
+read -r pid addr < <(run_windows | awk '$2=="bench.keys" {print $1, $3; exit}')
 [ -n "$addr" ] || { echo "no window" >&2; exit 1; }
 : > "$SENT"
 for i in $(seq "$N"); do

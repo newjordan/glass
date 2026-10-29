@@ -21,8 +21,8 @@ OUT=$(readlink -f "$OUT")
 TMP=$(mktemp -d "${TMPDIR:-/tmp}/glass-bench-misc.XXXXXX")
 headless_up
 trap 'headless_down; rm -rf "$TMP"' EXIT
-# The pid and address of the window of class bench-<terminal>.
-winfo() { run_windows | awk -v c="bench-$1" '$2==c {print $1, $3; exit}'; }
+# The pid and address of the window of class bench.<terminal>.
+winfo() { run_windows | awk -v c="bench.$1" '$2==c {print $1, $3; exit}'; }
 cpu() { awk '{print $14+$15}' "/proc/$1/stat"; }
 for t in ${TERMS:-glass kitty}; do
   # Startup: launch until the program inside is running.
@@ -31,14 +31,14 @@ for t in ${TERMS:-glass kitty}; do
     f=$TMP/start-$t
     rm -f "$f"
     t0=$(date +%s%N)
-    launch "$(term_cmd "$t" "bench-$t" "sh -c 'date +%s%N > $f'")" || exit 1
+    launch "$(term_cmd "$t" "bench.$t" "sh -c 'date +%s%N > $f'")" || exit 1
     for j in $(seq 400); do [ -s "$f" ] && break; sleep 0.005; done
     [ -s "$f" ] && ds+=($(( ($(cat "$f") - t0) / 1000000 )))
     sleep 1.5
   done
   echo "$t startup_ms ${ds[*]}"
   # Idle window: memory, VRAM, CPU over 10 s.
-  launch "$(term_cmd "$t" "bench-$t" "sleep 40")"
+  launch "$(term_cmd "$t" "bench.$t" "sleep 40")"
   sleep 5
   read -r pid addr < <(winfo "$t")
   rss=$(awk '/VmRSS/{print $2}' "/proc/$pid/status")
@@ -55,7 +55,7 @@ for t in ${TERMS:-glass kitty}; do
   log=$OUT/keys-$t.log
   sent=$OUT/sent-$t.log
   rm -f "$log"
-  launch "$(term_cmd "$t" "bench-$t" python3 -I "$B/keys.py" "$log")"
+  launch "$(term_cmd "$t" "bench.$t" python3 -I "$B/keys.py" "$log")"
   sleep 3
   read -r pid addr < <(winfo "$t")
   : > "$sent"

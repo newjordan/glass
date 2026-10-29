@@ -34,7 +34,7 @@
 # frame timestamps sit against Hyprland's own presentation times. It runs
 # before and after the terminal runs.
 #
-# Windows get one window rule, matched to class ^bench-vis-.*$ only: no
+# Windows get one window rule, matched to class ^bench-vis\..*$ only: no
 # open animation (a fade would delay the marker reaching full colour) and
 # opacity 1. It and the headless monitor rule are undone at the end.
 #
@@ -43,10 +43,11 @@
 # capture on ("cap") is followed by one with viscap stopped ("nocap"), which
 # gives (a) and (b) only; compare the two to see what the capture costs.
 #
-# Env: TERMS (glass kitty), RUNS (12), HZ (240), CAP (VISCAP), MODES
+# Env: TERMS (glass kitty), RUNS (12), HZ (240), RES (1920x1080), CAP (VISCAP), MODES
 # ("cap nocap"; "cap" alone skips the control), OUT (results JSON, default
 # bench/results/local/visible-<date>.json). The terminals take turns run by run,
-# alternating which goes first. "kitty-noconf" is kitty --config NONE.
+# alternating which goes first. "kitty-noconf" is kitty --config NONE; any
+# other terminal is opened with lib.sh's term_cmd.
 # GLASS and KITTY name the binaries (glass and kitty from PATH). The session
 # directory goes under $TMPDIR (/tmp) and is kept; it is small.
 # Needs cc, wayland-scanner, wayland-protocols and libwayland-client to build
@@ -54,6 +55,8 @@
 set -u
 B=$(dirname "$(readlink -f "$0")")
 CAP=${CAP:-VISCAP}; HZ=${HZ:-240}; RUNS=${RUNS:-12}; TERMS=${TERMS:-glass kitty}; MODES=${MODES:-cap nocap}
+# For term_cmd; the script's own launch and cleanup below replace lib.sh's.
+. "$B/lib.sh"
 OUT=${OUT:-$B/results/local/visible-$(date +%Y%m%d).json}; mkdir -p "$(dirname "$OUT")"
 W=$(mktemp -d "${TMPDIR:-/tmp}/glass-bench-visible-$(date +%Y%m%d-%H%M%S).XXXX")
 SOCK=${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/hypr/${HYPRLAND_INSTANCE_SIGNATURE:-}/.socket2.sock
@@ -68,7 +71,7 @@ cc -O2 -I$W -o $W/viscap $B/visible/viscap.c $W/wlr-screencopy-unstable-v1.c -lw
 cc -O2 -I$W -o $W/calclient $B/visible/calclient.c $W/xdg-shell.c $W/presentation-time.c -lwayland-client || exit 1
 
 PIDS=""
-mine() { hyprctl clients -j | python3 -c 'import json,sys; print(" ".join(str(c["pid"]) for c in json.load(sys.stdin) if c["class"].startswith("bench-vis-")))'; }
+mine() { hyprctl clients -j | python3 -c 'import json,sys; print(" ".join(str(c["pid"]) for c in json.load(sys.stdin) if c["class"].startswith("bench-vis.")))'; }
 cleanup() {
   # Close our windows first, so nothing moves onto a real monitor.
   for k in $(seq 40); do p=$(mine); [ -z "$p" ] && break; kill $p 2>/dev/null; sleep 0.25; done
@@ -88,7 +91,7 @@ trap cleanup EXIT
 VWS=${BENCH_WS:-$((1000 + $$ % 9000))}
 hyprctl eval "_G.bench_vis_ws = hl.workspace_rule({ workspace = \"$VWS\", monitor = \"$CAP\", default = true })" >/dev/null
 hyprctl output create headless $CAP >/dev/null; sleep 0.5
-hyprctl eval "hl.monitor({ output = \"$CAP\", mode = \"1920x1080@$HZ\", position = \"auto\", scale = 1 })" >/dev/null; sleep 1
+hyprctl eval "hl.monitor({ output = \"$CAP\", mode = \"$RES@$HZ\", position = \"auto\", scale = 1 })" >/dev/null; sleep 1
 read WS MW MH MHZ < <(hyprctl monitors -j | CAP=$CAP python3 -c 'import json,os,sys
 m=[m for m in json.load(sys.stdin) if m["name"]==os.environ["CAP"]]
 print(*(m and [m[0]["activeWorkspace"]["id"], m[0]["width"], m[0]["height"], m[0]["refreshRate"]] or [""]))')
@@ -102,7 +105,7 @@ if hyprctl clients -j | WS=$WS python3 -c 'import json,os,sys; sys.exit(0 if any
   exit 1
 fi
 echo "output $CAP ${MW}x${MH}@$MHZ workspace $WS; session $W"
-hyprctl eval '_G.bench_vis_rule = hl.window_rule({ name = "bench-vis", match = { class = "^bench-vis-.*$" }, no_anim = true, tag = "-default-opacity", opacity = "1 1" })' >/dev/null
+hyprctl eval '_G.bench_vis_rule = hl.window_rule({ name = "bench-vis", match = { class = "^bench-vis\\..*$" }, no_anim = true, tag = "-default-opacity", opacity = "1 1" })' >/dev/null
 
 # The headless output's workspace, read again before every launch: another
 # output appearing can take a workspace back (Hyprland returns workspaces to
@@ -111,14 +114,18 @@ capws() { hyprctl monitors -j | CAP=$CAP python3 -c 'import json,os,sys; print(*
 target() { WS=$(capws); [ -n "$WS" ] || { echo "headless output $CAP is gone" >&2; exit 1; }; echo $WS > $W/expect; }
 check() { [ -s $W/misplaced ] && { echo "a window left $CAP; stopping:" >&2; cat $W/misplaced >&2; exit 1; }; return 0; }
 launch() { hyprctl eval "hl.dispatch(hl.dsp.exec_cmd([[$1]], { workspace = \"$WS silent\" }))" >/dev/null; }
-# The program: note the time, paint the marker, hold it.
-prog() { echo "sh -c 't=\$EPOCHREALTIME; printf \"\\033[?25l\\033[48;2;255;0;255m\\033[2J\"; echo \$t > $1; sleep 2'"; }
+# The program: note the time, paint the marker, hold it. foot, Alacritty
+# and WezTerm start it at 80x24 and resize once the window is tiled, and
+# the cells a resize adds are blank, so it paints again on SIGWINCH (the
+# sleep runs in the background, since a trap waits for a foreground one).
+prog() { echo "sh -c 't=\$EPOCHREALTIME; m() { printf \"\\033[?25l\\033[48;2;255;0;255m\\033[2J\"; }; trap m WINCH; m; echo \$t > $1; sleep 2 & while ! wait \$!; do kill -0 \$! 2>/dev/null || break; done'"; }
 cmd() { case $1 in
-  glass) echo "GLASS_STARTUP_TRACE=1 ${GLASS:-glass} --class bench-vis-glass -e $2 2>$3";;
-  kitty) echo "${KITTY:-kitty} --class bench-vis-kitty $2 2>$3";;
-  kitty-noconf) echo "${KITTY:-kitty} --config NONE --class bench-vis-kitty-noconf $2 2>$3";;
+  glass) echo "GLASS_STARTUP_TRACE=1 ${GLASS:-glass} --class bench-vis.glass -e $2 2>$3";;
+  kitty) echo "${KITTY:-kitty} --class bench-vis.kitty $2 2>$3";;
+  kitty-noconf) echo "${KITTY:-kitty} --config NONE --class bench-vis.kitty-noconf $2 2>$3";;
   # A second glass build, to compare two in one run.
-  glass-alt) echo "GLASS_STARTUP_TRACE=1 ${GLASS_ALT:?GLASS_ALT names a second glass binary} --class bench-vis-glass-alt -e $2 2>$3";;
+  glass-alt) echo "GLASS_STARTUP_TRACE=1 ${GLASS_ALT:?GLASS_ALT names a second glass binary} --class bench-vis.glass-alt -e $2 2>$3";;
+  *) echo "$(term_cmd $1 bench-vis.$1 "$2") 2>$3";;
 esac; }
 
 nvidia-smi --query-gpu=timestamp,utilization.gpu,memory.used --format=csv,noheader -lms 500 > $W/gpu.csv 2>/dev/null & PIDS+=" $!"
@@ -142,7 +149,7 @@ def kill_misplaced(why):
     except Exception:
         mons, cl = {}, []
     for c in cl:
-        if c.get("class", "").startswith("bench-vis-") and (mons.get(c.get("monitor")) != cap or str(c["workspace"]["name"]) != expect()):
+        if c.get("class", "").startswith("bench-vis.") and (mons.get(c.get("monitor")) != cap or str(c["workspace"]["name"]) != expect()):
             try: os.kill(c["pid"], 9)
             except OSError: pass
     with open(W + "/misplaced", "a") as f: f.write("%d %s\n" % (time.time_ns(), why))
@@ -157,7 +164,7 @@ while True:
             f = data.split(",", 3)
             if len(f) >= 3:
                 out.write("%d openwindow %s %s\n" % (t, f[2], f[1])); out.flush()
-                if f[2].startswith("bench-vis-") and f[1] != expect(): kill_misplaced("%s opened on workspace %s" % (f[2], f[1]))
+                if f[2].startswith("bench-vis.") and f[1] != expect(): kill_misplaced("%s opened on workspace %s" % (f[2], f[1]))
         elif ev in ("moveworkspacev2", "monitoraddedv2", "monitorremovedv2", "createworkspacev2", "destroyworkspacev2"):
             out.write("%d %s %s\n" % (t, ev, data)); out.flush()
             if ev == "moveworkspacev2":
@@ -167,7 +174,7 @@ while True:
 sleep 1
 
 gone() { for k in $(seq 40); do [ -z "$(mine)" ] && return; sleep 0.25; done; kill $(mine) 2>/dev/null; sleep 0.5; }
-calibrate() { target; launch "$W/calclient bench-vis-cal 30 > $W/cal-$1.txt 2>&1"; sleep 1; for k in $(seq 60); do [ -z "$(mine)" ] && break; sleep 0.25; done; gone; sleep 0.5; }
+calibrate() { target; launch "$W/calclient bench-vis.cal 30 > $W/cal-$1.txt 2>&1"; sleep 1; for k in $(seq 60); do [ -z "$(mine)" ] && break; sleep 0.25; done; gone; sleep 0.5; }
 
 calibrate pre; check
 : > $W/runs.txt

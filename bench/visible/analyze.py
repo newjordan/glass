@@ -82,7 +82,7 @@ for l in open(os.path.join(D, "runs.txt")):
     if os.path.exists(sf) and os.path.getsize(sf):
         r["a_program_ms"] = round((int(round(float(open(sf).read().strip()) * 1e6)) * 1000 - t0) / 1e6, 2)
     # (b) Hyprland's openwindow event
-    ev = next(((t, w) for t, c, w in events if c == "bench-vis-" + term and t >= t0), None)
+    ev = next(((t, w) for t, c, w in events if c == "bench-vis." + term and t >= t0), None)
     if ev:
         r["b_openwindow_ms"] = round((ev[0] - t0) / 1e6, 2)
         if ev[1] != ws:

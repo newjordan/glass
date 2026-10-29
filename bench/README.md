@@ -15,7 +15,7 @@ please send the numbers whatever they say.
 | `run-startup.sh` | Launches each terminal in turn and times (a) launch until the program inside is running (it writes the time) and (b) launch until the window is on screen (Hyprland's `openwindow` event, sent when the window's first buffer arrives). Prints every launch and the medians. |
 | `run-misc.sh` | For each terminal: eight quick startups (a); an idle window's memory, threads, VRAM (`nvidia-smi`) and CPU over 10 s; and key latency, 40 keys sent through Hyprland until `keys.py` reads them. |
 | `keys.py` | Runs inside the terminal: logs the time of every key it reads, until `q`. |
-| `keys-latency.sh` | Key to pty for one glass build: a window on the headless output `CAP` (which must exist), `N` keys sent through Hyprland, `keys.py` logging each read; `LOAD=yes` floods the pty with `yes` for the window's whole life, since a lock held through a flood only shows then. Prints the median and p90. |
+| `keys-latency.sh` | Key to pty for one terminal (`TERMINAL`, glass by default, any `term_cmd` knows): a window on the headless output `CAP` (which must exist), `N` keys sent through Hyprland, `keys.py` logging each read; `LOAD=yes` floods the pty with `yes` for the window's whole life, since a lock held through a flood only shows then. Prints the median and p90. |
 | `keys-ab.sh` | `keys-latency.sh` for two builds (`GLASS`, `GLASS_ALT`), taking turns for `ROUNDS`. |
 | `keys-screen.sh` | Key to screen: the program paints the screen red on each key, and `visible/viscap.c` watches a patch of the headless output (240 Hz) for it. |
 | `vis-grid.sh` | Prints the mean colour of a grid of patches of the headless output, to find where a colour lands when `keys-screen.sh` sees nothing. |
@@ -100,10 +100,11 @@ the CPU's cache; see [docs/PERFORMANCE.md](../docs/PERFORMANCE.md).
 
 ## Add another terminal
 
-Add a line to `term_cmd` in `lib.sh`. It gets a name, a window class and a
-command, and must print the command line that opens the terminal with that
-class (its Wayland app id) running the command as its child, closing when
-the command exits. For example, for foot:
+`term_cmd` in `lib.sh` knows glass, kitty, foot, Alacritty, Ghostty and
+WezTerm. To add another, add a line to it. It gets a name, a window class
+and a command, and must print the command line that opens the terminal with
+that class (its Wayland app id) running the command as its child, closing
+when the command exits. For example, for foot:
 
 ```sh
     foot) echo "foot --app-id $class $*" ;;
@@ -111,6 +112,22 @@ the command exits. For example, for foot:
 
 Then `TERMS="glass foot" ROUNDS="1 2 3 4 5" bench/run-tput.sh`, and the same
 `TERMS` for the other scripts.
+
+The classes have a dot in them (`bench.foot`), since Ghostty takes its class
+as a GTK application id and ignores one without a dot.
+
+Check the grid first: every `tput-*.json` records it, and terminals are
+compared only at the same one. With the same font and padding, foot,
+Alacritty, Ghostty and WezTerm come out a column or a row larger than glass
+and kitty (154×39 on a 1920×1080 output), so their lines in `term_cmd` widen
+the padding by a few pixels to match. `linux/wezterm.lua` gives WezTerm,
+which has no configuration on the measured machine, the font, size and
+padding the others have, and no tab bar.
+
+foot, Alacritty and WezTerm start the program at 80×24 and resize once the
+window is tiled, so `tput.py` waits for a size that holds for a second
+before it builds the workloads, and `run-visible.sh`'s program paints its
+marker again on `SIGWINCH`.
 
 `tput.py` reads the terminal's CPU time from its parent process. A terminal
 that starts commands through a helper process gets the helper's CPU time

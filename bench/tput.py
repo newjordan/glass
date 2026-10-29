@@ -10,7 +10,14 @@ import json, os, random, sys, termios, time, tty
 
 out = sys.argv[1]
 fd_in, fd_out = sys.stdin.fileno(), sys.stdout.fileno()
-cols, rows = os.get_terminal_size()
+# foot, Alacritty and WezTerm start the program at 80x24 and resize once the
+# window is tiled, so the workloads wait for a size that holds for a second.
+size, held = os.get_terminal_size(), 0
+while held < 20:
+    time.sleep(0.05)
+    now = os.get_terminal_size()
+    held, size = (held + 1 if now == size else 0), now
+cols, rows = size
 tpid = int(os.environ.get("BENCH_TERM_PID") or os.environ.get("KITTY_PID") or os.getppid())
 
 def cpu(pid):

@@ -1,6 +1,6 @@
 // calclient: a known-timed stimulus for calibrating viscap.
 //
-// Opens one xdg_toplevel (app_id from argv, default bench-vis-cal), shows it
+// Opens one xdg_toplevel (app_id from argv, default bench-vis.cal), shows it
 // grey, then N times, at random moments 150-260 ms apart, switches the whole
 // window between the marker colour (255,0,255) and grey. For every switch it
 // records the CLOCK_MONOTONIC time just before wl_surface.commit and asks the
@@ -112,7 +112,7 @@ static void pump(struct wl_display *dpy, int ms) {
 }
 
 int main(int argc, char **argv) {
-    const char *app_id = argc > 1 ? argv[1] : "bench-vis-cal";
+    const char *app_id = argc > 1 ? argv[1] : "bench-vis.cal";
     int n = argc > 2 ? atoi(argv[2]) : 20;
     struct wl_display *dpy = wl_display_connect(NULL);
     if (!dpy) { fprintf(stderr, "calclient: no Wayland display\n"); return 1; }
