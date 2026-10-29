@@ -49,7 +49,11 @@ memchr = "2"
 # The allocator. The system's is slow at the many small allocations and
 # frees a flood of text makes (a combining accent costs a cell two of
 # each), on macOS most of all: wide text there went from 230 to 252 MB/s.
-mimalloc = { version = "0.1", default-features = false }
+# `no_thp`: mimalloc otherwise asks Linux for huge pages on what it maps
+# (MADV_HUGEPAGE), and on a machine whose memory is fragmented, touching
+# such a mapping first makes the kernel compact memory there and then. At
+# startup that stalled the early frame's buffer by up to a quarter second.
+mimalloc = { version = "0.1", default-features = false, features = ["no_thp"] }
 
 [dev-dependencies]
 # In-test PNG encoding, so adapter tests feed real picture bytes.
