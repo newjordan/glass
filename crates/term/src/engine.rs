@@ -539,6 +539,7 @@ impl Engine {
                 primary: scrolled,
                 fast: *fast,
                 mark: mark.take(),
+                preceding: None,
             };
             feed(processor, &mut watch, mirror, chunk, *fast);
             *mark = watch.mark.take();
@@ -717,6 +718,7 @@ impl Engine {
                 primary: scrolled,
                 fast: self.fast,
                 mark: None,
+                preceding: None,
             };
             // The wrapper paces itself while the whole buffered frame is
             // applied: it folds the sentinel after every few hundred
@@ -1361,6 +1363,10 @@ struct Watch<'a> {
     /// Whether characters may be written straight into their cells
     /// (`print_plain`); off only for the tests that hold it to `Term`.
     fast: bool,
+    /// The character a REP (`CSI Ps b`) repeats: what glass's own print
+    /// lanes last wrote, kept as the parser's `preceding_char` is, so a
+    /// REP taken by the lane repeats what the stream actually printed.
+    preceding: Option<char>,
     /// The engine's `mark`, for the chunk.
     mark: Option<(char, Arc<CellExtra>)>,
 }
@@ -1396,6 +1402,7 @@ impl Watch<'_> {
             primary: scrolled,
             fast: engine.fast,
             mark: None,
+            preceding: None,
         }
     }
 
@@ -1516,6 +1523,7 @@ impl Watch<'_> {
         if cell.flags.intersects(CellFlags::WIDE_CHAR | CellFlags::WIDE_CHAR_SPACER) {
             return false;
         }
+        self.preceding = Some(c);
         cell.c = c;
         cell.fg = fg;
         cell.bg = bg;
@@ -1566,6 +1574,7 @@ impl Watch<'_> {
             return false;
         }
         let cell = &mut row[Column(column)];
+        self.preceding = Some(c);
         cell.c = c;
         cell.fg = fg;
         cell.bg = bg;
@@ -1661,17 +1670,28 @@ impl Watch<'_> {
                     cell.c = char::from(b);
                     written += 1;
                 },
-                _ => for (cell, &b) in cells.iter_mut().zip(&run[taken..taken + n]) {
-                    if cell.flags.intersects(CellFlags::WIDE_CHAR | CellFlags::WIDE_CHAR_SPACER) {
-                        break;
+                _ => {
+                    // The REP character is what this loop last wrote, set
+                    // once after the loop rather than per cell: the lane's
+                    // writes are prints the parser never sees, so `input`
+                    // cannot track them itself.
+                    let mut last = None;
+                    for (cell, &b) in cells.iter_mut().zip(&run[taken..taken + n]) {
+                        if cell.flags.intersects(CellFlags::WIDE_CHAR | CellFlags::WIDE_CHAR_SPACER) {
+                            break;
+                        }
+                        cell.fg = fg;
+                        cell.bg = bg;
+                        cell.flags = flags;
+                        cell.extra = None;
+                        cell.c = char::from(b);
+                        last = Some(b);
+                        written += 1;
                     }
-                    cell.fg = fg;
-                    cell.bg = bg;
-                    cell.flags = flags;
-                    cell.extra = None;
-                    cell.c = char::from(b);
-                    written += 1;
-                },
+                    if written > 0 {
+                        self.preceding = last.map(char::from);
+                    }
+                }
             }
             if written > 0 {
                 let end = column + written;
@@ -2091,8 +2111,10 @@ impl alacritty_terminal::vte::ansi::Handler for Watch<'_> {
         // Anywhere else this is a column compare and the character itself.
         // The sentinel is read at chunk boundaries, not per character.
         if self.print_plain(c) {
+            self.preceding = Some(c);
             return;
         }
+        self.preceding = Some(c);
         let mut emitted = false;
         if self.term.mode().contains(TermMode::LINE_WRAP) {
             let cursor = &self.term.grid().cursor;
@@ -2624,6 +2646,9 @@ fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, c
             let run = &chunk[ground..end];
             let probe = crate::engine::probes::get();
             let t_run = timers::on().then(Instant::now);
+            // The run applies whole: glass tracks the REP character itself
+            // (set at `input`, the funnel every printed character takes),
+            // so nothing needs the machine to see the last character.
             let took = if probe >= 100 {
                 if run.is_ascii() { run.len() - 1 } else { run.len() }
             } else if run.is_ascii() {
@@ -2793,6 +2818,7 @@ struct Simple {
     params: [u16; LANE_PARAMS],
     count: usize,
     goto: bool,
+    rep: bool,
 }
 
 /// The sequence at the start of `rest` (which starts with ESC) and its
@@ -2815,7 +2841,13 @@ fn simple(rest: &[u8]) -> Option<(usize, Simple)> {
             }
             b'm' | b'H' | b'f' => {
                 params[count] = value;
-                return Some((at + 1, Simple { params, count: count + 1, goto: b != b'm' }));
+                return Some((at + 1, Simple { params, count: count + 1, goto: b != b'm', rep: false }));
+            }
+            b'b' => {
+                // REP: repeat the preceding character this many times
+                // (a missing or zero parameter is one, as vte reads it).
+                params[count] = value;
+                return Some((at + 1, Simple { params, count: count + 1, goto: false, rep: true }));
             }
             _ => return None,
         }
@@ -2867,7 +2899,19 @@ fn lane(
         return None;
     }
     let params = &simple.params[..simple.count];
-    if simple.goto {
+    if simple.rep {
+        // REP repeats the preceding printed character. Glass's lanes
+        // track it as the parser's `preceding_char` is, and repeat by
+        // the same `input` calls the parser's REP makes, so a REP the
+        // lane takes lands exactly where the parser's would.
+        let n = params.first().copied().filter(|&v| v != 0).unwrap_or(1);
+        let Some(c) = watch.preceding else {
+            return Some(len);
+        };
+        for _ in 0..n {
+            alacritty_terminal::vte::ansi::Handler::input(watch, c);
+        }
+    } else if simple.goto {
         // vte's CUP: a missing or zero parameter is 1.
         let or_one = |p: Option<&u16>| p.copied().filter(|&v| v != 0).unwrap_or(1);
         let (line, column) = (or_one(params.first()), or_one(params.get(1)));

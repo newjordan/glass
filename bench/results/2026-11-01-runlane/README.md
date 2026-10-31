@@ -61,3 +61,20 @@ work.
 ## Baselines after the dust settled (same machine, quiet)
 
 - ascii 547-564 MB/s, scroll_region 497-500 MB/s (scale 1.0)
+
+## The REP un-holding: groundwork landed, final step blocked (open)
+
+Glass's lanes now track the REP character themselves (set in
+`Handler::input`, the funnel every printed character takes, and in
+`print_run`'s loop tail for its own writes), and the escape lane takes
+`CSI Ps b` (`simple()` grew `rep`), repeating by the same `input` calls
+vte's REP makes. Both equivalence tests green.
+
+Applying runs whole (dropping the held char, so the gap advance carries
+only `\r\n`) diverged on `plain_runs_match_the_parser` round 90
+(Rng 41) and `a_feed_of_many_pieces` — the fast path wrote the run's
+last character where the parser's path leaves a different state. The
+minimal divergent stream is not yet shrunk; repro is the two tests at
+HEAD~ (run-whole patch in the loop log). This is the open blocker for
+collecting the 43% per-call vte-advance share: the budget says the win
+is there, the un-holding is the mechanism, and the shrinker is next.
