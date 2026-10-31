@@ -45,3 +45,19 @@ problems; the lane itself stores at 0.63 ns/B.
 
 - `ladder.txt` — the corrected probe ladder, interleaved
 - `timers.txt` — the parse-timer decomposition, ascii + ascii_lf
+
+## Probe 6: routing the gap through the lane — also a loss
+
+The gap's printables sent through `print_run` (deliberately breaking
+REP) measured 456-526 MB/s against the shipped 513-562: the lane's
+entry scaffolding (~102 ns amortized over 137 cells) cannot beat a
+1-3-byte advance call on a 1-3-byte slice. The lane wins by
+amortization; a gap has nothing to amortize. Removed after measurement;
+the 43% vte-advance share is a per-call cost the segment-per-wrap
+design pays structurally, and the honest fixes are call-count reducers
+(longer effective segments or a cheaper per-call entry), not byte-rate
+work.
+
+## Baselines after the dust settled (same machine, quiet)
+
+- ascii 547-564 MB/s, scroll_region 497-500 MB/s (scale 1.0)
