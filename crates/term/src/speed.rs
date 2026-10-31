@@ -151,11 +151,22 @@ pub(crate) fn engine(rows: usize, cols: usize) -> Engine {
 /// bytes: split, then pump. Returns the replies, so nothing is optimized
 /// away.
 pub(crate) fn feed(engine: &mut Engine, intake: &mut Intake, splitter: &mut Splitter, stream: &[u8], read: usize) -> usize {
+    // GLASS_BENCH_STAGE brackets the reader thread's stages, so the
+    // throughput bench can say which one a workload's time went to:
+    // 0 both (the reader's real path), 1 split only, 2 pump only.
+    let stage = env("GLASS_BENCH_STAGE", 0);
     let mut replies = 0;
     let mut pieces = Vec::new();
     for chunk in stream.chunks(read.max(1)) {
         pieces.clear();
         splitter.split(chunk, &mut pieces);
+        if stage == 1 {
+            continue;
+        }
+        if stage == 2 {
+            replies += pieces.len();
+            continue;
+        }
         replies += pump(engine, intake, &pieces).replies.len();
     }
     replies
@@ -266,6 +277,23 @@ fn speed() {
             };
             best = best.min(t.elapsed().as_secs_f64());
             best_cpu = best_cpu.min(used);
+        }
+        // What the engine's two apply paths took, when a census asked for
+        // it: the run lanes' writes against the byte-at-a-time parser's.
+        if env("GLASS_BENCH_COUNTERS", 0) == 1 {
+            // The counters are cumulative across rounds; each round's own
+            // take is the difference from the last print.
+            let lane = crate::engine::counters::LANE_RUN_BYTES.swap(0, std::sync::atomic::Ordering::Relaxed) / rounds as u64;
+            let vte = crate::engine::counters::VTE_BYTES.swap(0, std::sync::atomic::Ordering::Relaxed) / rounds as u64;
+            eprintln!(
+                "{:>14}: lanes {:6.1}%  vte {:6.1}%  ({} + {} of {} bytes)",
+                name,
+                100.0 * lane as f64 / stream.len() as f64,
+                100.0 * vte as f64 / stream.len() as f64,
+                lane,
+                vte,
+                stream.len()
+            );
         }
         eprintln!(
             "{name:>14}: {:7.1} MB/s  {:7.1} MB/cpu-s  ({} bytes, read {read})",

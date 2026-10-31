@@ -41,7 +41,18 @@ use crate::keys::{MouseProtocolEncoding, MouseProtocolMode};
 use crate::view::CursorLook;
 
 /// Lines kept above the screen.
-const SCROLLBACK: usize = 10_000;
+/// The scrollback history's size, in lines. `GLASS_SCROLLBACK` overrides
+/// it (benchmarks vary it without a rebuild); the default is the shipped
+/// ten thousand lines.
+fn scrollback_lines() -> usize {
+    static LINES: std::sync::OnceLock<usize> = std::sync::OnceLock::new();
+    *LINES.get_or_init(|| {
+        std::env::var("GLASS_SCROLLBACK")
+            .ok()
+            .and_then(|v| v.parse().ok())
+            .unwrap_or(10_000)
+    })
+}
 /// Bytes fed to `Term` between reads of the scroll-count sentinel, so a
 /// single feed cannot scroll the sentinel out of a full history before it
 /// is read.
@@ -160,7 +171,7 @@ fn simulated_after(
     // Lines that do not fit on the screen stay in history, as a width
     // change of the primary grid does. Only a history past the cap is
     // dropped, oldest first.
-    let cap = screen.saturating_add(SCROLLBACK);
+    let cap = screen.saturating_add(scrollback_lines());
     if lines.len() > cap {
         let extra = lines.len() - cap;
         lines.drain(0..extra);
@@ -351,7 +362,7 @@ impl Engine {
         let info = Arc::new(Mutex::new(info));
         let _ = &tx;
         let config = Config {
-            scrolling_history: SCROLLBACK,
+            scrolling_history: scrollback_lines(),
             // The CSI u keyboard dialect is tracked by `Term`'s mode bits;
             // glass encodes the keys itself in `keys`.
             kitty_keyboard: true,
@@ -2512,6 +2523,7 @@ const RUN_MIN: usize = 24;
 /// and cursor moves that full-screen programs write between their
 /// characters skip the parser too ([`lane`]). Everything else, and every
 /// byte when `fast` is off, goes through the parser.
+use std::sync::atomic::Ordering;
 fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, chunk: &[u8], fast: bool) {
     if !fast {
         mirror.follow(chunk);
@@ -2559,7 +2571,9 @@ fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, c
                 continue;
             }
             let run = &chunk[ground..end];
-            fed += if run.is_ascii() { watch.print_run(&run[..run.len() - 1]) } else { watch.print_utf8(run) };
+            let took = if run.is_ascii() { watch.print_run(&run[..run.len() - 1]) } else { watch.print_utf8(run) };
+            counters::LANE_RUN_BYTES.fetch_add(took as u64, Ordering::Relaxed);
+            fed += took;
         }
         if esc < chunk.len() {
             let after_lane = lane_end == Some(fed);
@@ -2574,8 +2588,19 @@ fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, c
     mirror.catch_up(chunk, known, chunk.len());
     mirror.high_at_start = mirror.high;
     if fed < chunk.len() {
+        let rest = chunk.len() - fed;
+        counters::VTE_BYTES.fetch_add(rest as u64, Ordering::Relaxed);
         processor.advance(watch, &chunk[fed..]);
     }
+}
+
+/// Where the bytes a chunk applied went, while a census is on: the run
+/// lanes' writes and the byte-at-a-time parser's. Together with the
+/// chunk total they say what a stream's time is made of.
+pub(crate) mod counters {
+    use std::sync::atomic::AtomicU64;
+    pub static LANE_RUN_BYTES: AtomicU64 = AtomicU64::new(0);
+    pub static VTE_BYTES: AtomicU64 = AtomicU64::new(0);
 }
 
 /// The most parameters a sequence the lane takes may have: well under
@@ -3444,7 +3469,7 @@ mod tests {
         // reaches it.
         let (tx, _rx) = std::sync::mpsc::channel();
         let mut bare = Term::new(
-            Config { scrolling_history: SCROLLBACK, kitty_keyboard: true, ..Config::default() },
+            Config { scrolling_history: scrollback_lines(), kitty_keyboard: true, ..Config::default() },
             &Size { columns: 10, lines: 4 },
             Listener { tx },
         );
