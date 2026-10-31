@@ -266,6 +266,9 @@ fn speed() {
         // and scrolling recycles rows rather than allocating them.
         let (mut e, mut i, mut s) = (engine(ROWS, COLS), Intake::new(glass_window::LAYER_PICTURES), Splitter::default());
         e.set_fast(env("GLASS_BENCH_SLOW", 0) == 0);
+        if env("GLASS_BENCH_COUNTERS", 0) == 1 {
+            crate::engine::counters::start();
+        }
         for _ in 0..rounds {
             feed(&mut e, &mut i, &mut s, b"\x1b[0m\x1b[H\x1b[2J", read);
             let (t, c) = (Instant::now(), cpu_seconds());
@@ -281,10 +284,10 @@ fn speed() {
         // What the engine's two apply paths took, when a census asked for
         // it: the run lanes' writes against the byte-at-a-time parser's.
         if env("GLASS_BENCH_COUNTERS", 0) == 1 {
-            // The counters are cumulative across rounds; each round's own
-            // take is the difference from the last print.
-            let lane = crate::engine::counters::LANE_RUN_BYTES.swap(0, std::sync::atomic::Ordering::Relaxed) / rounds as u64;
-            let vte = crate::engine::counters::VTE_BYTES.swap(0, std::sync::atomic::Ordering::Relaxed) / rounds as u64;
+            // One round's own take: the counters started clear this
+            // workload and stop here.
+            let (lane, vte) = crate::engine::counters::stop();
+            let (lane, vte) = (lane / rounds as u64, vte / rounds as u64);
             eprintln!(
                 "{:>14}: lanes {:6.1}%  vte {:6.1}%  ({} + {} of {} bytes)",
                 name,

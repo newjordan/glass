@@ -2572,7 +2572,9 @@ fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, c
             }
             let run = &chunk[ground..end];
             let took = if run.is_ascii() { watch.print_run(&run[..run.len() - 1]) } else { watch.print_utf8(run) };
-            counters::LANE_RUN_BYTES.fetch_add(took as u64, Ordering::Relaxed);
+            if counters::counting() {
+                counters::LANE_RUN_BYTES.fetch_add(took as u64, Ordering::Relaxed);
+            }
             fed += took;
         }
         if esc < chunk.len() {
@@ -2588,19 +2590,37 @@ fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, c
     mirror.catch_up(chunk, known, chunk.len());
     mirror.high_at_start = mirror.high;
     if fed < chunk.len() {
-        let rest = chunk.len() - fed;
-        counters::VTE_BYTES.fetch_add(rest as u64, Ordering::Relaxed);
+        if counters::counting() {
+            counters::VTE_BYTES.fetch_add((chunk.len() - fed) as u64, Ordering::Relaxed);
+        }
         processor.advance(watch, &chunk[fed..]);
     }
 }
 
 /// Where the bytes a chunk applied went, while a census is on: the run
 /// lanes' writes and the byte-at-a-time parser's. Together with the
-/// chunk total they say what a stream's time is made of.
+/// chunk total they say what a stream's time is made of. Counting is
+/// off until [`counters::start`] says otherwise, so the parse path
+/// pays nothing when no one asks.
 pub(crate) mod counters {
-    use std::sync::atomic::AtomicU64;
+    use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
     pub static LANE_RUN_BYTES: AtomicU64 = AtomicU64::new(0);
     pub static VTE_BYTES: AtomicU64 = AtomicU64::new(0);
+    static COUNTING: AtomicBool = AtomicBool::new(false);
+    /// Count where applied bytes go, from now until [`counters::stop`].
+    pub fn start() {
+        LANE_RUN_BYTES.store(0, Ordering::Relaxed);
+        VTE_BYTES.store(0, Ordering::Relaxed);
+        COUNTING.store(true, Ordering::Relaxed);
+    }
+    /// Stop counting, returning what was counted.
+    pub fn stop() -> (u64, u64) {
+        COUNTING.store(false, Ordering::Relaxed);
+        (LANE_RUN_BYTES.swap(0, Ordering::Relaxed), VTE_BYTES.swap(0, Ordering::Relaxed))
+    }
+    pub(super) fn counting() -> bool {
+        COUNTING.load(Ordering::Relaxed)
+    }
 }
 
 /// The most parameters a sequence the lane takes may have: well under
