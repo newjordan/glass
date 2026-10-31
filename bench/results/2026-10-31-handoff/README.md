@@ -24,10 +24,16 @@ went. This session measured it.
 ## Findings
 
 - engine mutex: 74,762 takes, **14 ms** total wait
-- reader hand-off (mpsc): 74,762 waits, **1,220 ms** — 87x the engine lock
+- reader hand-off (mpsc): 74,762 waits, 1,220 ms raw — but the histogram
+  decomposes it: ~1.19 s is the handful of parks while **nothing flows**
+  (startup, between workloads), and the flood-paced shoulder (waits
+  under ~0.5 s) is **~63 ms over ~450 ms of flooding**. The idle park
+  belongs to quiet, not to the flood; the writeup's first draft counted
+  it, wrongly, as stall.
 - writer, lock-handoff politeness: negligible
 - 94% of hand-offs broke on FIONREAD saying the pty was empty, averaging
-  1.1 reads and 4.9 KB each
+  1.1 reads and 4.9 KB each — 74,762 futex round trips where the pty's
+  own block cadence said more was coming
 - A standalone C probe (`/tmp/pty-pace.c`, same box) shows the raw pty
   delivers a flood in **11.9 KB average reads**: the tty layer copies in
   blocks microseconds apart, and FIONREAD between blocks reads empty.
@@ -45,7 +51,17 @@ block before going on. Hand-offs: 74,762 -> 24,334; average 4.9 KB ->
 
 Interleaved A/B (glass vs glass-alt, 4 rounds, order rotating, this
 machine): ascii median 504.1 -> 542.0 MB/s (+7.5%); the other five
-workloads flat within noise. Key latency: median 2.04 ms over 40 keys,
+workloads flat within noise. The post-fix flood-paced shoulder is
+~49 ms (from ~63 ms).
+
+## What the fix did NOT move, and what that means
+
+scroll_region (475 MB/s, parse CPU 0.05 s over 0.105 s of flooding):
+its own census run shows 90% full hand-offs and only ~9 ms of
+flood-paced hand-off wait. Its stall is not the hand-off. With
+ghostty near 1100 on the same workload, the remaining lever is
+compute inside the parse (the scroll/history copy path), which is the
+8B-cell architecture question the width-cache ceiling probe framed. Key latency: median 2.04 ms over 40 keys,
 unchanged from the published baseline. Suite: 364 passed, 0 failed.
 
 ## Raw
