@@ -615,6 +615,7 @@ fn let_waiters_in(wanted: &AtomicBool) {
     if !wanted.load(Ordering::Acquire) {
         return;
     }
+    let began = crate::census::on().then(std::time::Instant::now);
     let deadline = std::time::Instant::now() + LOCK_HANDOFF;
     let mut spun = 0u32;
     while wanted.load(Ordering::Acquire) && std::time::Instant::now() < deadline {
@@ -628,6 +629,9 @@ fn let_waiters_in(wanted: &AtomicBool) {
         } else {
             std::thread::yield_now();
         }
+    }
+    if let Some(began) = began {
+        crate::census::record("let-waiters", began);
     }
 }
 
@@ -767,7 +771,11 @@ impl Session {
                             let mut pieces = Vec::new();
                             lock(&splitter).split(piece, &mut pieces);
                             let _wait = glass_window::keytrace::Wait::for_lock("engine");
+                            let began = crate::census::on().then(std::time::Instant::now);
                             let mut engine = lock(&engine);
+                            if let Some(began) = began {
+                                crate::census::record("engine", began);
+                            }
                             let mut intake = lock(&intake);
                             let pumped = pump(&mut engine, &mut intake, &pieces);
                             // Copy what a key needs out while the lock is
@@ -779,7 +787,11 @@ impl Session {
 
                         let_waiters_in(&engine_wanted);
                         if !pumped.replies.is_empty() {
+                            let began = crate::census::on().then(std::time::Instant::now);
                             let mut writer = lock(&writer);
+                            if let Some(began) = began {
+                                crate::census::record("writer", began);
+                            }
                             let _ = writer.write_all(&pumped.replies);
                             let _ = writer.flush();
                         }

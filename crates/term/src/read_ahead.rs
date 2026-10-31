@@ -50,6 +50,8 @@ impl ReadAhead {
             while let Ok(mut buf) = empty_rx.recv() {
                 let mut filled = 0;
                 let mut ended = false;
+                let mut sysreads = 0u32;
+                let census = crate::census::on();
                 loop {
                     match reader.read(&mut buf[filled..]) {
                         Ok(0) => ended = true,
@@ -57,9 +59,13 @@ impl ReadAhead {
                         Err(e) if e.kind() == io::ErrorKind::Interrupted => continue,
                         Err(_) => ended = true,
                     }
+                    sysreads += 1;
                     if ended || CHUNK - filled < PTY_READ || !waiting(fd.as_ref()) {
                         break;
                     }
+                }
+                if census {
+                    crate::census::handoff_shape(filled, sysreads, ended);
                 }
                 if filled > 0 && full_tx.send((buf, filled)).is_err() {
                     return;
@@ -95,8 +101,12 @@ impl Read for ReadAhead {
             if !spent.is_empty() {
                 let _ = self.empty.send(spent);
             }
+            let began = crate::census::on().then(std::time::Instant::now);
             match self.full.recv() {
                 Ok((buf, end)) => {
+                    if let Some(began) = began {
+                        crate::census::record("handoff", began);
+                    }
                     self.end = end.min(buf.len());
                     self.current = buf;
                     self.at = 0;

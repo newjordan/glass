@@ -11,6 +11,7 @@ static ALLOCATOR: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 mod affinity;
 mod blink;
+pub mod census;
 mod engine;
 #[cfg(any(not(target_os = "linux"), test))]
 mod gather;
@@ -118,7 +119,16 @@ fn opens_outside(url: &str) -> bool {
 }
 
 fn main() {
+    census::init();
     glass_window::startup::mark("main");
+    // The lock census prints once, when main's stack unwinds.
+    struct CensusDump;
+    impl Drop for CensusDump {
+        fn drop(&mut self) {
+            census::dump();
+        }
+    }
+    let _census_dump = CensusDump;
     let args = match parse_args() {
         Ok(args) => args,
         Err(message) => {
@@ -149,7 +159,10 @@ fn main() {
         run(host, args, palette, started)
     };
     match glass_window::run_early(options, early, app) {
-        Ok(code) => std::process::exit(code),
+        Ok(code) => {
+            census::dump();
+            std::process::exit(code)
+        }
         Err(error) => {
             eprintln!("glass: {error}");
             std::process::exit(1);
