@@ -11,8 +11,9 @@
 //! that much further ahead of the screen than the pty itself lets it.
 
 use std::io::{self, Read};
+use std::time::{Duration, Instant};
 use std::os::fd::{AsRawFd, OwnedFd};
-use std::sync::mpsc::{self, Receiver, Sender};
+use std::sync::mpsc::{self, Receiver, Sender, TryRecvError};
 
 /// The most one hand-off holds.
 const CHUNK: usize = 16 * 1024;
@@ -21,6 +22,40 @@ const AHEAD: usize = 2;
 /// The most one pty read returns: a hand-off keeps reading only while it
 /// has room for a whole one.
 const PTY_READ: usize = 4096;
+
+/// How long a part-full hand-off waits for the pty's next block before
+/// it is handed on as it stands.
+const TOP_UP: Duration = Duration::from_micros(400);
+
+/// What waiting on the pty said: more bytes are ready, it stayed quiet
+/// to the deadline, or its end came.
+enum Poll {
+    Ready,
+    Quiet,
+    End,
+}
+
+/// Wait for the pty to hold more bytes, up to `limit`.
+fn wait_for_more(fd: Option<&OwnedFd>, limit: Duration) -> Poll {
+    let Some(fd) = fd else { return Poll::Quiet };
+    let mut pfd = libc::pollfd { fd: fd.as_raw_fd(), events: libc::POLLIN, revents: 0 };
+    let millis = limit.as_millis().min(i32::MAX as u128) as libc::c_int;
+    // SAFETY: pfd is one pollfd the call may write; the timeout bounds it.
+    let r = unsafe { libc::poll(&mut pfd as *mut libc::pollfd, 1, millis) };
+    if r < 0 {
+        if std::io::Error::last_os_error().kind() == io::ErrorKind::Interrupted {
+            return Poll::Ready;
+        }
+        return Poll::End;
+    }
+    if r == 0 {
+        return Poll::Quiet;
+    }
+    if pfd.revents & (libc::POLLHUP | libc::POLLERR) != 0 {
+        return Poll::End;
+    }
+    Poll::Ready
+}
 
 /// The parsing side: reads come out of here, in order, exactly as the
 /// pty gave them, and the end of the pty is the end of these.
@@ -60,8 +95,30 @@ impl ReadAhead {
                         Err(_) => ended = true,
                     }
                     sysreads += 1;
-                    if ended || CHUNK - filled < PTY_READ || !waiting(fd.as_ref()) {
+                    if ended || CHUNK - filled < PTY_READ {
                         break;
+                    }
+                    if !waiting(fd.as_ref()) {
+                        // The pty is empty this instant. The tty layer
+                        // copies a flood in blocks a few microseconds
+                        // apart; handing off between them measured 70k
+                        // tiny hand-offs and 1.2 s of the parser's stall
+                        // in one run. Wait for the next block instead,
+                        // but only briefly: a program that has said all
+                        // it means to say must not wait for more.
+                        if filled > 0 {
+                            match wait_for_more(fd.as_ref(), TOP_UP) {
+                                Poll::Ready => continue,
+                                Poll::Quiet => break,
+                                Poll::End => {
+                                    ended = true;
+                                    break;
+                                }
+                            }
+                        }
+                        // Nothing read and nothing waiting: block in the
+                        // read itself, the way a quiet pty always waits.
+                        continue;
                     }
                 }
                 if census {
