@@ -1,0 +1,26 @@
+{
+ "sweep": "SCROLLBACK vs ascii MB/s, rounds=2, GLASS_BENCH_ONLY=ascii,scroll_region",
+ "rows": [
+  [
+   "0",
+   626.2,
+   662.3
+  ],
+  [
+   "2000",
+   585.5,
+   576.2
+  ],
+  [
+   "4000",
+   548.4,
+   576.7
+  ],
+  [
+   "10000",
+   342.2,
+   593.9
+  ]
+ ],
+ "die_full_harness": "bench/results/die-compare/*.json"
+}

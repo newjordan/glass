@@ -243,6 +243,13 @@ fn speed() {
         }
         let mut best = f64::MAX;
         let mut best_cpu = f64::MAX;
+        // The harness's own hot threads are placed on the largest L3
+        // (affinity.rs); this bench runs the same path on the thread it
+        // is given, which the scheduler may put on any die — on a dual-
+        // die part with one stacked cache that is a 2x spread for the
+        // identical command. Place it as the terminal would be, so the
+        // numbers are of the engine, not of where the thread landed.
+        crate::affinity::place_hot_thread();
         // One terminal for every round, as the harness runs each workload
         // three times in one window: after the first, the history is full
         // and scrolling recycles rows rather than allocating them.
