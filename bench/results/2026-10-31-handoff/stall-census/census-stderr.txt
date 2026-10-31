@@ -1,0 +1,2 @@
+GLASS: gpu=NVIDIA GeForce RTX 3090 (Vulkan) present=Mailbox alpha=PreMultiplied cell=12x25
+glass-census engine=24333waits/12ms buckets_us=[24175,1,1,0,0,0,54,94,8,0,0,0,0,0,0,0,0,0,0,0,0] handoff=24333waits/1221ms buckets_us=[22025,63,265,648,987,286,37,13,7,1,0,0,0,0,0,0,0,0,0,0,1] let-waiters=147waits/0ms buckets_us=[146,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] writer=37waits/0ms buckets_us=[37,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] handoffs=24334 avg_bytes=14987 avg_reads=2.4 full=22185 empty_breaks=2148
