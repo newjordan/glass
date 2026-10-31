@@ -455,7 +455,9 @@ impl Engine {
                 // replies leave ahead of this one, and the answer speaks
                 // of the state those bytes left.
                 if pass < i {
+                    let t = std::time::Instant::now();
                     self.apply(&bytes[pass..i]);
+                    timers::record(timers::APPLY, t);
                     self.note_sync();
                 }
                 self.collect();
@@ -473,13 +475,22 @@ impl Engine {
             // next turn of the loop looks at on its own.
             i = memchr::memchr(0x1b, &bytes[i + 1..]).map_or(bytes.len(), |p| i + 1 + p);
         }
+        let t = std::time::Instant::now();
         self.apply(&bytes[pass..i]);
+        timers::record(timers::APPLY, t);
         self.note_sync();
     }
 
     /// Bytes through `Term`, with the scroll count and the store's events
     /// kept as they run.
+    fn apply_timed(&mut self, pass: &[u8]) {
+        let t = std::time::Instant::now();
+        self.apply(pass);
+        timers::record(timers::APPLY, t);
+    }
+
     fn apply(&mut self, pass: &[u8]) {
+
         // The sentinel is planted before the bytes run, so the very first
         // scroll of a session already rotates it.
         if !self.term.mode().contains(TermMode::ALT_SCREEN) && self.term.selection.is_none() {
@@ -1618,16 +1629,49 @@ impl Watch<'_> {
             let n = (columns - column).min(run.len() - taken);
             let cells = &mut grid[point.line][Column(column)..Column(column + n)];
             let mut written = 0;
-            for (cell, &b) in cells.iter_mut().zip(&run[taken..taken + n]) {
-                if cell.flags.intersects(CellFlags::WIDE_CHAR | CellFlags::WIDE_CHAR_SPACER) {
-                    break;
-                }
-                cell.c = char::from(b);
-                cell.fg = fg;
-                cell.bg = bg;
-                cell.flags = flags;
-                cell.extra = None;
-                written += 1;
+            // The run-lane ceiling probes (env-gated; DELIBERATELY
+            // INCORRECT renderings when on — each bounds one suspect in
+            // this loop so the gap's remainder can be attributed; none
+            // of them is a shipping change). Off unless GLASS_RUN_PROBE
+            // is set, and never set by anything but the bench.
+            // The shipped loop stores the pen unconditionally: measured
+            // against a conditional-store variant (probe 2) it wins by
+            // ~15% — the compares cost more than the fire-and-forget
+            // stores they would save. Probe 1 skips the wide test, 2 is
+            // the rejected conditional-pen variant, kept for the record.
+            match crate::engine::probes::get() {
+                1 => for (cell, &b) in cells.iter_mut().zip(&run[taken..taken + n]) {
+                    cell.c = char::from(b);
+                    cell.fg = fg;
+                    cell.bg = bg;
+                    cell.flags = flags;
+                    cell.extra = None;
+                    written += 1;
+                },
+                2 => for (cell, &b) in cells.iter_mut().zip(&run[taken..taken + n]) {
+                    if cell.flags.intersects(CellFlags::WIDE_CHAR | CellFlags::WIDE_CHAR_SPACER) {
+                        break;
+                    }
+                    if cell.fg != fg || cell.bg != bg || cell.flags != flags || cell.extra.is_some() {
+                        cell.fg = fg;
+                        cell.bg = bg;
+                        cell.flags = flags;
+                        cell.extra = None;
+                    }
+                    cell.c = char::from(b);
+                    written += 1;
+                },
+                _ => for (cell, &b) in cells.iter_mut().zip(&run[taken..taken + n]) {
+                    if cell.flags.intersects(CellFlags::WIDE_CHAR | CellFlags::WIDE_CHAR_SPACER) {
+                        break;
+                    }
+                    cell.fg = fg;
+                    cell.bg = bg;
+                    cell.flags = flags;
+                    cell.extra = None;
+                    cell.c = char::from(b);
+                    written += 1;
+                },
             }
             if written > 0 {
                 let end = column + written;
@@ -2564,14 +2608,33 @@ fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, c
                 continue;
             }
             if fed < ground {
-                processor.advance(watch, &chunk[fed..ground]);
+                if crate::engine::probes::get() != 104 {
+                    let t_vte = timers::on().then(Instant::now);
+                    let b = ground - fed;
+                    processor.advance(watch, &chunk[fed..ground]);
+                    if let Some(t) = t_vte {
+                        timers::record_vte(t, b);
+                    }
+                }
                 fed = ground;
             }
             if processor.sync_timeout().sync_timeout().is_some() {
                 continue;
             }
             let run = &chunk[ground..end];
-            let took = if run.is_ascii() { watch.print_run(&run[..run.len() - 1]) } else { watch.print_utf8(run) };
+            let probe = crate::engine::probes::get();
+            let t_run = timers::on().then(Instant::now);
+            let took = if probe >= 100 {
+                if run.is_ascii() { run.len() - 1 } else { run.len() }
+            } else if run.is_ascii() {
+                watch.print_run(&run[..run.len() - 1])
+            } else {
+                watch.print_utf8(run)
+            };
+            if let Some(t) = t_run {
+                timers::record_run(t);
+                timers::RUN_BYTES.fetch_add(run.len() as u64, Ordering::Relaxed);
+            }
             if counters::counting() {
                 counters::LANE_RUN_BYTES.fetch_add(took as u64, Ordering::Relaxed);
             }
@@ -2593,7 +2656,9 @@ fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, c
         if counters::counting() {
             counters::VTE_BYTES.fetch_add((chunk.len() - fed) as u64, Ordering::Relaxed);
         }
-        processor.advance(watch, &chunk[fed..]);
+        if crate::engine::probes::get() != 104 {
+            processor.advance(watch, &chunk[fed..]);
+        }
     }
 }
 
@@ -2602,6 +2667,99 @@ fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, c
 /// chunk total they say what a stream's time is made of. Counting is
 /// off until [`counters::start`] says otherwise, so the parse path
 /// pays nothing when no one asks.
+/// Deliberately-incorrect ceiling probes for the parse path: GLASS_RUN_PROBE
+/// (default 0 = correct behaviour), fixed once at startup. 1-3 bound the
+/// suspects inside `print_run`'s cell loop (see the match there); 4-6 bound
+/// the feed path around it: 4 skips the byte-at-a-time parser between runs,
+/// 5 skips the lane's apply, 6 (written 5, with 4) skips both, leaving the
+/// ESC scan, the mirror and the loop itself. A relaxed load is enough: the
+/// value never changes after init, and init happens before the parse thread.
+/// Wall-time brackets for the parse path, printed once at exit when
+/// GLASS_PARSE_TIMERS=1. Cheap enough to leave in: a relaxed load and,
+/// when off, no clock.
+pub(crate) mod timers {
+    use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
+    use std::time::Instant;
+    pub static ON: AtomicBool = AtomicBool::new(false);
+    pub static APPLY_NS: AtomicU64 = AtomicU64::new(0);
+    pub static APPLY_CALLS: AtomicU64 = AtomicU64::new(0);
+    pub static RUN_NS: AtomicU64 = AtomicU64::new(0);
+    pub static RUN_BYTES: AtomicU64 = AtomicU64::new(0);
+    pub static RUN_CALLS: AtomicU64 = AtomicU64::new(0);
+    pub static VTE_NS: AtomicU64 = AtomicU64::new(0);
+    pub static VTE_CALLS: AtomicU64 = AtomicU64::new(0);
+    pub static C0_BYTES: AtomicU64 = AtomicU64::new(0);
+    pub static VTE_BYTES: AtomicU64 = AtomicU64::new(0);
+    pub static FEED_NS: AtomicU64 = AtomicU64::new(0);
+    pub static FEED_CALLS: AtomicU64 = AtomicU64::new(0);
+    pub const APPLY: usize = 0;
+    pub const FEED: usize = 1;
+    pub fn init() {
+        ON.store(std::env::var_os("GLASS_PARSE_TIMERS").is_some_and(|v| !v.is_empty() && v != "0"), Ordering::Relaxed);
+    }
+    #[inline]
+    pub fn on() -> bool {
+        ON.load(Ordering::Relaxed)
+    }
+    #[inline]
+    pub fn record(_which: usize, t: Instant) {
+        if ON.load(Ordering::Relaxed) {
+            APPLY_NS.fetch_add(t.elapsed().as_nanos() as u64, Ordering::Relaxed);
+            APPLY_CALLS.fetch_add(1, Ordering::Relaxed);
+        }
+    }
+    /// print_run's own wall time, from feed().
+    #[inline]
+    pub fn record_run(t: Instant) {
+        if ON.load(Ordering::Relaxed) {
+            RUN_NS.fetch_add(t.elapsed().as_nanos() as u64, Ordering::Relaxed);
+            RUN_CALLS.fetch_add(1, Ordering::Relaxed);
+        }
+    }
+    /// The byte-at-a-time parser's wall time, from feed().
+    #[inline]
+    pub fn record_vte(t: Instant, bytes: usize) {
+        if ON.load(Ordering::Relaxed) {
+            VTE_NS.fetch_add(t.elapsed().as_nanos() as u64, Ordering::Relaxed);
+            VTE_CALLS.fetch_add(1, Ordering::Relaxed);
+            VTE_BYTES.fetch_add(bytes as u64, Ordering::Relaxed);
+        }
+    }
+    pub fn report() {
+        if !ON.load(Ordering::Relaxed) { return; }
+        eprintln!(
+            "parse-timers: apply {} calls {} ms | print_run {} calls {} ms ({} bytes, avg {}) | vte {} calls {} ms ({} bytes, avg {}) | c0 bypassed {} bytes",
+            APPLY_CALLS.load(Ordering::Relaxed),
+            APPLY_NS.load(Ordering::Relaxed) as f64 / 1e6,
+            RUN_CALLS.load(Ordering::Relaxed),
+            RUN_NS.load(Ordering::Relaxed) as f64 / 1e6,
+            RUN_BYTES.load(Ordering::Relaxed),
+            RUN_BYTES.load(Ordering::Relaxed) / RUN_CALLS.load(Ordering::Relaxed).max(1),
+            VTE_CALLS.load(Ordering::Relaxed),
+            VTE_NS.load(Ordering::Relaxed) as f64 / 1e6,
+            VTE_BYTES.load(Ordering::Relaxed),
+            VTE_BYTES.load(Ordering::Relaxed) / VTE_CALLS.load(Ordering::Relaxed).max(1),
+            C0_BYTES.load(Ordering::Relaxed)
+        );
+    }
+}
+
+pub(crate) mod probes {
+    use std::sync::atomic::{AtomicU8, Ordering};
+    pub static RUN_PROBE: AtomicU8 = AtomicU8::new(0);
+    #[inline(always)]
+    pub fn get() -> u8 {
+        RUN_PROBE.load(Ordering::Relaxed)
+    }
+    /// Called once at startup, before the hot threads exist.
+    pub fn init() {
+        let v = std::env::var_os("GLASS_RUN_PROBE")
+            .and_then(|v| v.to_str().and_then(|v| v.parse().ok()))
+            .unwrap_or(0u8);
+        RUN_PROBE.store(v, Ordering::Relaxed);
+    }
+}
+
 pub(crate) mod counters {
     use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
     pub static LANE_RUN_BYTES: AtomicU64 = AtomicU64::new(0);

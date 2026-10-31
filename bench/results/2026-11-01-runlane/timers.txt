@@ -1,0 +1,5 @@
+         ascii:   434.1 MB/s    435.2 MB/cpu-s  (25165955 bytes, read 4095)
+parse-timers: apply 18441 calls 179.418763 ms | print_run 537630 calls 53.108623 ms (74263650 bytes, avg 138) | vte 475776 calls 80.242938 ms (1543371 bytes, avg 3) | c0 bypassed 0 bytes
+      ascii_lf:   313.9 MB/s    314.8 MB/cpu-s  (25165880 bytes, read 4095)
+parse-timers: apply 36882 calls 414.823835 ms | print_run 1078149 calls 160.192894 ms (148937514 bytes, avg 138) | vte 954078 calls 160.496856 ms (2689476 bytes, avg 2) | c0 bypassed 0 bytes
+parse-timers: apply 49179 calls 669.019009 ms | print_run 1557312 calls 296.614958 ms (196431204 bytes, avg 126) | vte 1420803 calls 235.012752 ms (6046935 bytes, avg 4) | c0 bypassed 0 bytes

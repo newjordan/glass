@@ -67,6 +67,20 @@ pub(crate) fn workloads(scale: f64, rows: usize, cols: usize) -> Vec<(&'static s
         .collect();
     out.push(("ascii", build(size(24), || base[rng.below(base.len())].clone())));
 
+    // Line breaks as a bare \n, the shape logs, hexdump and yes(1) write:
+    // every gap between runs is pure C0, no printable in front of it.
+    let lflines: Vec<Vec<u8>> = (0..400)
+        .map(|i| {
+            let mut s: String = (0..cols - 1).map(|_| print[rng.below(print.len())]).collect();
+            s.push('\n');
+            if i % 7 == 0 {
+                s.push('\r');
+            }
+            s.into_bytes()
+        })
+        .collect();
+    out.push(("ascii_lf", build(size(24), || lflines[rng.below(lflines.len())].clone())));
+
     // As tput.py has them: its "á" is an "a" and a combining accent.
     let uni = ["漢字", "テスト", "🙂", "é", "ñ", "Ж", "αβγ", "a\u{301}", "→", "█", "─"];
     let mut pool: Vec<String> = uni.iter().map(|s| s.to_string()).collect();
@@ -261,6 +275,10 @@ fn speed() {
         // identical command. Place it as the terminal would be, so the
         // numbers are of the engine, not of where the thread landed.
         crate::affinity::place_hot_thread();
+        // The test binary never runs main, so the env-gated parse timers
+        // and ceiling probes arm here when the bench asks for them.
+        crate::engine::timers::init();
+        crate::engine::probes::init();
         // One terminal for every round, as the harness runs each workload
         // three times in one window: after the first, the history is full
         // and scrolling recycles rows rather than allocating them.
@@ -304,6 +322,9 @@ fn speed() {
             stream.len() as f64 / best_cpu / 1e6,
             stream.len()
         );
+        // The parse-path timers, when the bench asked for them, so the
+        // test's own exit (no main Drop) still reports.
+        crate::engine::timers::report();
     }
 }
 

@@ -1,0 +1,12 @@
+=== probe=0 ===
+         ascii:   513.2 MB/s    514.3 MB/cpu-s  (25165955 bytes, read 4095)
+ scroll_region:   474.2 MB/s    475.3 MB/cpu-s  (16777365 bytes, read 4095)
+=== probe=1 ===
+         ascii:   504.8 MB/s    508.5 MB/cpu-s  (25165955 bytes, read 4095)
+ scroll_region:   485.9 MB/s    486.8 MB/cpu-s  (16777365 bytes, read 4095)
+=== probe=2 ===
+         ascii:   437.2 MB/s    438.3 MB/cpu-s  (25165955 bytes, read 4095)
+ scroll_region:   409.2 MB/s    410.0 MB/cpu-s  (16777365 bytes, read 4095)
+=== probe=3 ===
+         ascii:   517.2 MB/s    518.6 MB/cpu-s  (25165955 bytes, read 4095)
+ scroll_region:   471.4 MB/s    472.2 MB/cpu-s  (16777365 bytes, read 4095)

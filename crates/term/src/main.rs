@@ -120,12 +120,15 @@ fn opens_outside(url: &str) -> bool {
 
 fn main() {
     census::init();
+    engine::probes::init();
+    engine::timers::init();
     glass_window::startup::mark("main");
     // The lock census prints once, when main's stack unwinds.
     struct CensusDump;
     impl Drop for CensusDump {
         fn drop(&mut self) {
             census::dump();
+            engine::timers::report();
         }
     }
     let _census_dump = CensusDump;
