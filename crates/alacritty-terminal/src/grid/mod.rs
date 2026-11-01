@@ -325,9 +325,14 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
             }
         } else {
             // Rotate lines without moving anything into history.
-            for i in (region.start.0..region.end.0 - positions as i32).map(Line::from) {
-                self.raw.swap(i, i + positions);
-            }
+            // Changed for glass: a chain of pairwise swaps moves every row in
+            // the region once per position — 35 swaps for the common one-line
+            // scroll in a 37-row region — while a rotation's data movement is
+            // independent of region height. Rotating the region's sub-slice
+            // in one slice operation moves each row exactly once for any
+            // `positions`, and keeps `occ`/`blank` (the lazy-recycle state)
+            // with its row, exactly as a swap does.
+            self.raw.rotate_region(region.start.0, region.end.0, positions);
         }
 
         // Ensure all new lines are fully cleared.
