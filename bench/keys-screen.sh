@@ -85,7 +85,7 @@ for t in ${TERMS:-glass}; do
   if [ -n "${LOAD:-}" ]; then
     CMD="sh -c 'yes | head -c 200000000 > /dev/stdout & exec $CMD'"
   fi
-  launch "$([ $t = glass ] && echo "${GLASS} --class bench-keys -e $CMD" || echo "kitty --class bench-keys $CMD")"
+  launch bench-keys $([ $t = glass ] && echo "${GLASS} --class bench-keys -e $CMD" || echo "kitty --class bench-keys $CMD")
   sleep 3
   read -r pid addr < <(winfo)
   [ -n "$addr" ] || { echo "no window"; exit 1; }

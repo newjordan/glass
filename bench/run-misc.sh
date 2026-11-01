@@ -31,14 +31,14 @@ for t in ${TERMS:-glass kitty}; do
     f=$TMP/start-$t
     rm -f "$f"
     t0=$(date +%s%N)
-    launch "$(term_cmd "$t" "bench.$t" "sh -c 'date +%s%N > $f'")" || exit 1
+    launch "bench.$t" $(term_cmd "$t" "bench.$t" "sh -c 'date +%s%N > $f'") || exit 1
     for j in $(seq 400); do [ -s "$f" ] && break; sleep 0.005; done
     [ -s "$f" ] && ds+=($(( ($(cat "$f") - t0) / 1000000 )))
     sleep 1.5
   done
   echo "$t startup_ms ${ds[*]}"
   # Idle window: memory, VRAM, CPU over 10 s.
-  launch "$(term_cmd "$t" "bench.$t" "sleep 40")"
+  launch "bench.$t" $(term_cmd "$t" "bench.$t" "sleep 40")
   sleep 5
   read -r pid addr < <(winfo "$t")
   rss=$(awk '/VmRSS/{print $2}' "/proc/$pid/status")
@@ -55,7 +55,7 @@ for t in ${TERMS:-glass kitty}; do
   log=$OUT/keys-$t.log
   sent=$OUT/sent-$t.log
   rm -f "$log"
-  launch "$(term_cmd "$t" "bench.$t" python3 -I "$B/keys.py" "$log")"
+  launch "bench.$t" $(term_cmd "$t" "bench.$t" python3 -I "$B/keys.py" "$log")
   sleep 3
   read -r pid addr < <(winfo "$t")
   : > "$sent"

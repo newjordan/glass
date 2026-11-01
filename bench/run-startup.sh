@@ -46,7 +46,7 @@ for i in $(seq "${RUNS:-8}"); do
     t0=$(date +%s%N)
     # The program records when it runs, then stays a moment so the window
     # is mapped whatever order the two happen in.
-    launch "$(term_cmd "$t" "bench.$t" "sh -c 'date +%s%N > $f; sleep 1'")" || exit 1
+    launch "bench.$t" $(term_cmd "$t" "bench.$t" "sh -c 'date +%s%N > $f; sleep 1'") || exit 1
     for j in $(seq 600); do [ -s "$f" ] && grep -q " bench.$t\$" "$EV" && break; sleep 0.005; done
     # A run that missed either is left out, and said so.
     if [ -s "$f" ]; then RA[$t]+="$(( ($(cat "$f") - t0) / 1000000 )) "; else echo "$t run $i: the program never ran" >&2; fi

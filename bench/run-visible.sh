@@ -174,7 +174,7 @@ while True:
 sleep 1
 
 gone() { for k in $(seq 40); do [ -z "$(mine)" ] && return; sleep 0.25; done; kill $(mine) 2>/dev/null; sleep 0.5; }
-calibrate() { target; launch "$W/calclient bench-vis.cal 30 > $W/cal-$1.txt 2>&1"; sleep 1; for k in $(seq 60); do [ -z "$(mine)" ] && break; sleep 0.25; done; gone; sleep 0.5; }
+calibrate() { target; launch bench-vis.cal "$W/calclient bench-vis.cal 30 > $W/cal-$1.txt 2>&1"; sleep 1; for k in $(seq 60); do [ -z "$(mine)" ] && break; sleep 0.25; done; gone; sleep 0.5; }
 
 calibrate pre; check
 : > $W/runs.txt
@@ -189,7 +189,7 @@ for i in $(seq $RUNS); do
       c=$(cmd $t "$(prog $W/start-$i-$t-$mode)" $W/trace-$i-$t-$mode)
       target
       t0=$(date +%s%N)
-      launch "$c"
+      launch "bench-vis.$t" $c
       echo "$i $t $mode $t0 $WS" >> $W/runs.txt
       sleep 2.5; gone; check
       [ $mode = nocap ] && kill -CONT $VISCAP

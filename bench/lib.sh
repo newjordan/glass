@@ -83,9 +83,20 @@ print(ids[0] if ids else "")')
 }
 
 # Open a command on the headless output's workspace, without focusing it.
+# launch CLASS COMMAND...: exec COMMAND and place its window (whose class
+# must be CLASS) on the headless output's workspace.
 launch() {
   [ -n "$WS" ] || { echo "launch before headless_up" >&2; exit 1; }
-  hyprctl eval "hl.dispatch(hl.dsp.exec_cmd([[$1]], { workspace = \"$WS silent\" }))" >/dev/null
+  # Hyprland 0.56.2 silently drops exec_cmd's workspace option (both the
+  # legacy "<id> silent" string and the bare number): the process runs but
+  # the window opens on the active workspace -- a 1/3 tile on a real
+  # monitor, which is where the 50x39/49x39 geometries came from. A
+  # class-matched window rule places the window on the headless output's
+  # workspace instead, and works for every terminal identically.
+  hyprctl eval "_G.glass_bench_wr = hl.window_rule({ name = \"glassbench\", match = { class = \"^$1$\" }, workspace = \"$WS silent\" })" >/dev/null
+  shift
+  local cmd=$*
+  hyprctl eval "hl.dispatch(hl.dsp.exec_cmd([[$cmd]]))" >/dev/null
 }
 
 # The windows open on the headless output's workspace: "pid class address" a line.
@@ -100,9 +111,12 @@ for c in json.load(sys.stdin):
 # Wait up to ten seconds for every window on the headless output to close.
 wait_gone() {
   local i
-  for i in $(seq 40); do
+  # Terminals take tens of seconds to map their window under system load
+  # (ghostty was measured at 50s while the GPU was exhausted), and close
+  # just as slowly; ten seconds truncated runs mid-teardown.
+  for i in $(seq 120); do
     [ -z "$(run_windows)" ] && return 0
-    sleep 0.25
+    sleep 0.5
   done
   return 1
 }
@@ -118,6 +132,10 @@ headless_down() {
     fi
   fi
   hyprctl output remove "$CAP" >/dev/null
+  # Removing a virtual output can leave Hyprland 0.56.2's headless backend
+  # wedged: the next create comes up 0x0 and no mode sticks to it. Waiting
+  # for the monitor list to settle has kept the path healthy every run since.
+  sleep 2
   hyprctl eval "hl.monitor({ output = \"$CAP\", mode = \"preferred\", position = \"auto\", scale = 1 })" >/dev/null
   rule_off
   WS=
@@ -126,4 +144,5 @@ headless_down() {
 # Switch the workspace rule headless_up made off again.
 rule_off() {
   hyprctl eval 'if _G.glass_bench_ws then _G.glass_bench_ws:set_enabled(false); _G.glass_bench_ws = nil end' >/dev/null
+  hyprctl eval 'if _G.glass_bench_wr then _G.glass_bench_wr:set_enabled(false); _G.glass_bench_wr = nil end' >/dev/null
 }
