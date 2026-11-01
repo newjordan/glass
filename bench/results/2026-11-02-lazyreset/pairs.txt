@@ -1,0 +1,28 @@
+# Raw pairs, engine bench (glass-term speed, release, best-of-3/round,
+# interleaved A/B on one binary). A = default path, B = probe env.
+# Probe: GLASS_SKIP_ROW_RESET in {1,2,3} in crates/alacritty-terminal/src/grid/mod.rs.
+
+## =1 skip entirely — ascii (5 pairs)
+A: 522.4 542.2 509.1 495.0 498.2   B: 705.3 759.8 775.9 708.2 647.3
+## =1 — scroll_region (3 pairs)
+A: 489.1 467.2 478.7   B: 706.6 699.9 697.6
+## =1 — tui_frames (3 pairs)
+A: 266.2 270.7 272.6   B: 273.2 261.3 265.7
+## =1 — unicode (3 pairs)
+A: 219.8 222.0 220.4   B: 145.1 143.3 143.0
+## =1 — ascii_lf (3 pairs)
+A: 380.2 369.7 374.0   B: 681.5 649.9 660.5
+
+## =2 skip + clear wide/spacer flags — unicode (3 pairs)
+A: 225.9 207.2 219.4   B: 184.5 194.8 215.0
+## =2 — ascii (2 pairs)
+A: 447.2 514.4         B: 652.8 666.9
+
+## =3 =2 + drop CellExtra — unicode (3 pairs)
+A: 218.8 215.5 223.6   B: 214.2 214.4 217.6
+## =3 — ascii (3 pairs)
+A: 512.8 503.7 508.1   B: 579.4 599.5 566.6
+## =3 — ascii_lf (3 pairs)
+A: 332.7 300.1 334.0   B: 385.2 391.0 316.9
+## =3 — scroll_region (3 pairs)
+A: 465.2 475.5 482.0   B: 535.7 530.3 515.4

@@ -121,6 +121,7 @@ fn opens_outside(url: &str) -> bool {
 fn main() {
     census::init();
     engine::probes::init();
+    alacritty_terminal::grid::probes_init();
     engine::timers::init();
     glass_window::startup::mark("main");
     // The lock census prints once, when main's stack unwinds.

@@ -259,6 +259,10 @@ impl GridCell for Cell {
     }
 
     #[inline]
+    fn strip_stale(&mut self) {
+        self.extra = None;
+    }
+
     fn reset(&mut self, template: &Self) {
         *self = Cell { bg: template.bg, ..Cell::default() };
     }

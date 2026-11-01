@@ -19,6 +19,17 @@ mod tests;
 pub use self::row::Row;
 use self::storage::Storage;
 
+/// Deliberately-incorrect ceiling probe for scroll_up's tail loop; see the
+/// comment there. Set once at startup (GLASS_SKIP_ROW_RESET), read relaxed.
+pub static SKIP_ROW_RESET: std::sync::atomic::AtomicU8 = std::sync::atomic::AtomicU8::new(0);
+
+pub fn probes_init() {
+    let v = std::env::var_os("GLASS_SKIP_ROW_RESET")
+        .and_then(|v| v.to_str().and_then(|v| v.parse().ok()))
+        .unwrap_or(0u8);
+    SKIP_ROW_RESET.store(v, std::sync::atomic::Ordering::Relaxed);
+}
+
 pub trait GridCell: Sized {
     /// Check if the cell contains any content.
     fn is_empty(&self) -> bool;
@@ -28,6 +39,11 @@ pub trait GridCell: Sized {
 
     fn flags(&self) -> &Flags;
     fn flags_mut(&mut self) -> &mut Flags;
+
+    /// Ceiling probe hook (GLASS_SKIP_ROW_RESET=3): drop whatever stale
+    /// per-cell state a full reset would have cleared but a flags-only
+    /// pass does not (Cell's CellExtra). Default: nothing.
+    fn strip_stale(&mut self) {}
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
@@ -301,6 +317,52 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
         }
 
         // Ensure all new lines are fully cleared.
+        if SKIP_ROW_RESET.load(std::sync::atomic::Ordering::Relaxed) != 0 {
+            // Deliberately-incorrect ceiling probe (GLASS_SKIP_ROW_RESET=1):
+            // skips the recycled row's reset entirely. Wrong output (scrolled-in
+            // rows keep their cells; occ stays stale until overwritten), built
+            // only to bound the reset's share of the scroll chain. Not for
+            // shipping; set once at startup, read relaxed on the hot path.
+            //
+            // =2 keeps the skip but still clears the three wide/spacer flag
+            // bits in every cell: it tests whether write_at_cursor's
+            // overwrite-a-fullwidth branch, reading stale flags, is what made
+            // unicode slower under =1.
+            match SKIP_ROW_RESET.load(std::sync::atomic::Ordering::Relaxed) {
+                // =2: clear only the three wide/spacer flag bits in every
+                // cell — tests whether write_at_cursor's overwrite-a-
+                // fullwidth branch, reading stale flags, is what made
+                // unicode slower under =1.
+                2 => {
+                    for i in (region.end.0 - positions as i32..region.end.0).map(Line::from) {
+                        for cell in &mut self.raw[i][Column(0)..] {
+                            cell.flags_mut().remove(
+                                Flags::WIDE_CHAR
+                                    | Flags::WIDE_CHAR_SPACER
+                                    | Flags::LEADING_WIDE_CHAR_SPACER,
+                            );
+                        }
+                    }
+                }
+                // =3: the flags pass plus dropping any stale CellExtra —
+                // tests whether the residual is the Arc drop each
+                // overwrite then pays on a cell reset would have cleared.
+                3 => {
+                    for i in (region.end.0 - positions as i32..region.end.0).map(Line::from) {
+                        for cell in &mut self.raw[i][Column(0)..] {
+                            cell.flags_mut().remove(
+                                Flags::WIDE_CHAR
+                                    | Flags::WIDE_CHAR_SPACER
+                                    | Flags::LEADING_WIDE_CHAR_SPACER,
+                            );
+                            cell.strip_stale();
+                        }
+                    }
+                }
+                _ => {}
+            }
+            return;
+        }
         for i in (region.end.0 - positions as i32..region.end.0).map(Line::from) {
             self.raw[i].reset(&self.cursor.template);
         }

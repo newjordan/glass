@@ -280,6 +280,7 @@ fn speed() {
         // and ceiling probes arm here when the bench asks for them.
         crate::engine::timers::init();
         crate::engine::probes::init();
+        alacritty_terminal::grid::probes_init();
         // One terminal for every round, as the harness runs each workload
         // three times in one window: after the first, the history is full
         // and scrolling recycles rows rather than allocating them.
