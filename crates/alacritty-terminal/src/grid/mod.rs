@@ -515,10 +515,14 @@ impl<T: Clone> Grid<T> {
 
     /// Full-overwrite cell write: replaces the cell at `point` without
     /// materializing the recycled tail past it. The caller must write
-    /// every field (as `write_at_cursor` does).
-    #[inline]
-    pub fn write_cell(&mut self, line: Line, column: Column, cell: T) {
-        self.raw[line].write_cell(column.0, cell);
+    /// every field (as `write_at_cursor` does). Returns the observable
+    /// flags that were under the write.
+    #[inline(always)]
+    pub fn write_cell(&mut self, line: Line, column: Column, cell: T) -> Flags
+    where
+        T: GridCell,
+    {
+        self.raw[line].write_cell(column.0, cell)
     }
 
     /// The observable cell at a point by reference.
@@ -551,7 +555,7 @@ impl<T: Clone> Grid<T> {
     /// The caller must overwrite every cell of the slice in full (the
     /// print-run loop does), and must read the wide-char flags it tests
     /// through `lane_wide_from` rather than the slice's stale bytes.
-    #[inline]
+    #[inline(always)]
     pub fn lane_cells_slice(&mut self, line: Line, column: usize, n: usize) -> (&mut [T], usize)
     where
         T: Clone,

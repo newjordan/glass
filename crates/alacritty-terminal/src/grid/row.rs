@@ -118,7 +118,7 @@ impl<T> Row<T> {
     /// The cell a read at `index` must observe: the lazy blank when this
     /// row is recycled and `index` is past `occ`, the physical cell
     /// otherwise.
-    #[inline]
+    #[inline(always)]
     pub(crate) fn virtual_cell(&self, index: usize) -> &T {
         if let Some(blank) = self.blank.as_ref() {
             if index >= self.occ {
@@ -131,7 +131,7 @@ impl<T> Row<T> {
     /// Make the physical cells valid from `occ` up to `end`, paying one
     /// clone per materialized cell. Rows that are not recycled, or whose
     /// tail is already physical past `end`, pay nothing.
-    #[inline]
+    #[inline(always)]
     pub(crate) fn materialize_to(&mut self, end: usize)
     where
         T: Clone,
@@ -165,7 +165,7 @@ impl<T> Row<T> {
 
     /// The number of leading cells whose physical bytes are valid. Cells
     /// past this are observably the lazy blank when one is set.
-    #[inline]
+    #[inline(always)]
     pub(crate) fn physical_len(&self) -> usize {
         if self.blank.is_some() {
             self.occ.min(self.inner.len())
@@ -399,14 +399,35 @@ impl<T> Row<T> {
     /// only the gap between the physical frontier and `col` needs blanks,
     /// and for a left-to-right writer that gap is always empty. This is
     /// the flood's fast path — one store per cell, no blank fill.
-    #[inline]
-    pub(crate) fn write_cell(&mut self, col: usize, cell: T)
+    ///
+    /// Returns the observable flags the write replaced, so the caller's
+    /// wide-char handling needs no second access. Flags is Copy.
+    #[inline(always)]
+    pub(crate) fn write_cell(&mut self, col: usize, cell: T) -> crate::term::cell::Flags
     where
-        T: Clone,
+        T: GridCell,
     {
-        self.materialize_to(col);
+        // Fast path first: a row that was never recycled, or whose
+        // frontier is already past the write, is a plain store. Flags is
+        // Copy, so the under-flags leave the borrow before the store.
+        let physical_write = match self.blank.as_ref() {
+            None => true,
+            Some(_) => col < self.occ,
+        };
+        let under = if physical_write {
+            self.inner[col].flags()
+        } else {
+            self.virtual_cell(col).flags()
+        };
+        let under = *under;
+        if !physical_write {
+            self.materialize_to(col);
+        }
         self.inner[col] = cell;
-        self.occ = max(self.occ, col + 1);
+        if col + 1 > self.occ {
+            self.occ = col + 1;
+        }
+        under
     }
 
     /// The print-run write lane. The caller overwrites *every* cell of

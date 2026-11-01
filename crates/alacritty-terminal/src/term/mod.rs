@@ -995,15 +995,23 @@ impl<T> Term<T> {
 
         let point = self.grid.cursor.point;
 
-        // The observable flags of the cell under the cursor, read through
-        // the lazy frontier — a recycled row's tail reads as the blank's
-        // flags, never as its stale bytes. Flags is Copy: no cell clone
-        // on this per-character path.
-        let under_flags = self.grid[point.line].virtual_read(point.column.0).flags;
-        let overwrite_wide = under_flags.intersects(Flags::WIDE_CHAR | Flags::WIDE_CHAR_SPACER);
+        // Changed for glass: the cursor cell is assembled off-grid and
+        // committed with ONE full-overwrite access, which also reports
+        // the observable flags it replaced. A lazily recycled row never
+        // materializes its tail for the flood's sequential writes, and
+        // the wide-char handling below needs no second read. The clears
+        // touch only neighbor cells, so running them after the store is
+        // equivalent to upstream's before-the-store order.
+        let under_flags = self.grid.write_cell(point.line, point.column, Cell {
+            c,
+            fg,
+            bg,
+            flags,
+            extra,
+        });
 
         // Clear all related cells when overwriting a fullwidth cell.
-        if overwrite_wide {
+        if under_flags.intersects(Flags::WIDE_CHAR | Flags::WIDE_CHAR_SPACER) {
             // Remove wide char and spacer.
             let wide = under_flags.contains(Flags::WIDE_CHAR);
             if wide && point.column < self.last_column() {
@@ -1028,19 +1036,7 @@ impl<T> Term<T> {
                 );
             }
         }
-
-        // Changed for glass: the cursor cell is assembled off-grid and
-        // committed with one full-overwrite store. A lazily recycled row
-        // never materializes its tail for the flood's sequential writes.
-        self.grid.write_cell(point.line, point.column, Cell {
-            c,
-            fg,
-            bg,
-            flags,
-            extra,
-        });
     }
-
     #[inline]
     fn damage_cursor(&mut self) {
         // The normal cursor coordinates are always in viewport.
