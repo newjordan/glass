@@ -1,0 +1,13 @@
+pair1 ascii A(landed)=699.7 B(skip=1)=696.3
+pair2 ascii A(landed)=702.8 B(skip=1)=715.9
+pair3 ascii A(landed)=700.6 B(skip=1)=714.0
+pair4 ascii A(landed)=658.1 B(skip=1)=727.8
+pair1 ascii_lf A(landed)=431.8 B(skip=1)=542.1
+pair2 ascii_lf A(landed)=444.2 B(skip=1)=595.6
+pair3 ascii_lf A(landed)=438.2 B(skip=1)=636.1
+pair4 ascii_lf A(landed)=432.4 B(skip=1)=638.3
+pair1 scroll_region A(landed)=511.0 B(skip=1)=519.9
+pair2 scroll_region A(landed)=513.1 B(skip=1)=529.3
+pair3 scroll_region A(landed)=507.5 B(skip=1)=523.2
+pair4 scroll_region A(landed)=477.0 B(skip=1)=485.6
+ABDONE

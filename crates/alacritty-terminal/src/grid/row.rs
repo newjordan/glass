@@ -141,6 +141,10 @@ impl<T> Row<T> {
             let stop = end.min(self.inner.len());
             if fill_census::on() {
                 fill_census::note_site(5, stop > start);
+                // The direct callers (lane_cells_slice, the write sites)
+                // have no site id; the width histogram carries their fill
+                // shape, the "other" row of the site census their count.
+                fill_census::note(stop - start);
             }
             let stop = end.min(self.inner.len());
             if stop > start {

@@ -1,0 +1,11 @@
+# GLASS_SKIP_LANE_FILL=3 ceiling probe: fill (A, HEAD behavior) vs skip (B).
+# Same binary, interleaved pairs, scale 0.25, rounds 3, best-of per pair.
+pair1 ascii_lf A(fill)=346.5 B(skip3)=545.3
+pair2 ascii_lf A(fill)=352.7 B(skip3)=523.1
+pair3 ascii_lf A(fill)=423.8 B(skip3)=561.5
+pair4 ascii_lf A(fill)=372.8 B(skip3)=554.3
+pair1 ascii A(fill)=687.7 B(skip3)=664.5
+pair2 ascii A(fill)=657.2 B(skip3)=720.1
+pair3 ascii A(fill)=725.9 B(skip3)=669.4
+pair4 ascii A(fill)=609.7 B(skip3)=608.4
+medians: ascii_lf A=374.0 B=545.8 (+46%); ascii A=670.1 B=665.6 (wash)

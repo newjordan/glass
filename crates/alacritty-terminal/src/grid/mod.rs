@@ -24,11 +24,24 @@ use self::storage::Storage;
 /// comment there. Set once at startup (GLASS_SKIP_ROW_RESET), read relaxed.
 pub static SKIP_ROW_RESET: std::sync::atomic::AtomicU8 = std::sync::atomic::AtomicU8::new(0);
 
+/// Ceiling-probe hook for the run lane's left-edge fill; see the comment
+/// at its call site. Set once at startup, read relaxed on the hot path.
+pub static SKIP_LANE_FILL: std::sync::atomic::AtomicU8 = std::sync::atomic::AtomicU8::new(0);
+
+#[inline(always)]
+pub fn glass_grid_probe_skip_lane_fill() -> u8 {
+    SKIP_LANE_FILL.load(std::sync::atomic::Ordering::Relaxed)
+}
+
 pub fn probes_init() {
     let v = std::env::var_os("GLASS_SKIP_ROW_RESET")
         .and_then(|v| v.to_str().and_then(|v| v.parse().ok()))
         .unwrap_or(0u8);
     SKIP_ROW_RESET.store(v, std::sync::atomic::Ordering::Relaxed);
+    let lane = std::env::var_os("GLASS_SKIP_LANE_FILL")
+        .and_then(|v| v.to_str().and_then(|v| v.parse().ok()))
+        .unwrap_or(0u8);
+    SKIP_LANE_FILL.store(lane, std::sync::atomic::Ordering::Relaxed);
 }
 
 pub trait GridCell: Sized + Clone {
@@ -576,7 +589,23 @@ impl<T: Clone> Grid<T> {
     {
         let row = &mut self.raw[line];
         let blank_from = row.physical_len();
-        row.materialize_to(column);
+        if fill_census::on() {
+            // Site 4 (lane): the run lane's own left-edge materialization.
+            let len = row.len();
+            let start = row.physical_len();
+            fill_census::note_site(4, column.min(len) > start.min(len));
+        }
+        // Deliberately-incorrect ceiling probe (GLASS_RUN_PROBE=3): skip
+        // the left-edge materialization entirely. A lane run that starts
+        // at the far right of a freshly recycled row (LF kept the column,
+        // so the first printable of each bare-\n line lands at the last
+        // column) currently pays ~cols blank clones to overwrite one cell.
+        // Skipping leaves the gap's physical bytes stale for any raw-slice
+        // reader — wrong output, built only to bound that fill's share of
+        // the ascii_lf gap the recycled-row landing left open.
+        if glass_grid_probe_skip_lane_fill() != 3 {
+            row.materialize_to(column);
+        }
         let end = (column + n).min(row.len());
         row.occ = max(row.occ, end);
         let slice = row.lane_slice(column, end);
