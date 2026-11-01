@@ -30,7 +30,7 @@ pub fn probes_init() {
     SKIP_ROW_RESET.store(v, std::sync::atomic::Ordering::Relaxed);
 }
 
-pub trait GridCell: Sized {
+pub trait GridCell: Sized + Clone {
     /// Check if the cell contains any content.
     fn is_empty(&self) -> bool;
 
@@ -257,7 +257,7 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
 
             let range = region.start.0..(region.start + positions).0;
             for line in range.rev().map(Line::from) {
-                self.raw[line].reset(&self.cursor.template);
+                self.raw[line].recycle(&self.cursor.template);
             }
         }
     }
@@ -364,7 +364,7 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
             return;
         }
         for i in (region.end.0 - positions as i32..region.end.0).map(Line::from) {
-            self.raw[i].reset(&self.cursor.template);
+            self.raw[i].recycle(&self.cursor.template);
         }
     }
 
@@ -496,9 +496,21 @@ impl<T> Grid<T> {
     }
 
     #[inline]
-    pub fn cursor_cell(&mut self) -> &mut T {
+    pub fn cursor_cell(&mut self) -> &mut T
+    where
+        T: Clone,
+    {
         let point = self.cursor.point;
-        &mut self[point.line][point.column]
+        self.cell_mut(point.line, point.column)
+    }
+}
+
+impl<T: Clone> Grid<T> {
+    /// Mutable cell access that materializes a lazily recycled row's tail
+    /// up to the requested column before handing out the reference.
+    #[inline]
+    pub fn cell_mut(&mut self, line: Line, column: Column) -> &mut T {
+        &mut self.raw[line][column]
     }
 }
 
@@ -537,10 +549,10 @@ impl<T> Index<Point> for Grid<T> {
     }
 }
 
-impl<T> IndexMut<Point> for Grid<T> {
+impl<T: Clone> IndexMut<Point> for Grid<T> {
     #[inline]
     fn index_mut(&mut self, point: Point) -> &mut T {
-        &mut self[point.line][point.column]
+        self.cell_mut(point.line, point.column)
     }
 }
 

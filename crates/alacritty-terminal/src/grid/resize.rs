@@ -19,6 +19,18 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
         // Use empty template cell for resetting cells due to resize.
         let template = mem::take(&mut self.cursor.template);
 
+        // Changed for glass: reflow splits and joins physical cells, so any
+        // lazily recycled row must be materialized before it can donate or
+        // receive them. Resize is rare; the pass is linear and cold.
+        // `raw` addresses lines from the oldest history line (Line
+        // -(history)) through the bottom of the screen; every row it can
+        // hand reflow is in that range.
+        let first = -(self.history_size() as i32);
+        let last = self.screen_lines() as i32;
+        for i in (first..last).map(Line::from) {
+            self.raw[i].materialize_all();
+        }
+
         match self.lines.cmp(&lines) {
             Ordering::Less => self.grow_lines(lines),
             Ordering::Greater => self.shrink_lines(lines),

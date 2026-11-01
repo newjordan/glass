@@ -2377,7 +2377,10 @@ impl alacritty_terminal::vte::ansi::Handler for Watch<'_> {
                 let mut last = 0;
                 for row in 0..self.term.screen_lines() {
                     let line = &self.term.grid()[Line(row as i32)];
-                    if line.into_iter().any(|cell| !cell.is_empty())
+                    // The observable cells, not `into_iter`'s physical
+                    // bytes: a lazily recycled row's tail is blank to any
+                    // reader, stale bytes to the raw slice.
+                    if line.observable().any(|cell| !cell.is_empty())
                         && row + 1 > last
                     {
                         last = row + 1;

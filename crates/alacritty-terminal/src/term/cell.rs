@@ -289,11 +289,14 @@ impl LineLength for grid::Row<Cell> {
             return Column(self.len());
         }
 
-        for (index, cell) in self[..].iter().rev().enumerate() {
+        // The lazy blank's cells are stale bytes past `occ`; the virtual
+        // cell is blank, so it can only end the scan, never break it.
+        let physical = self.physical_len();
+        for (index, cell) in self.physical_cells().iter().rev().enumerate() {
             if cell.c != ' '
                 || cell.extra.as_ref().map(|extra| extra.zerowidth.is_empty()) == Some(false)
             {
-                length = Column(self.len() - index);
+                length = Column(physical - index);
                 break;
             }
         }
