@@ -437,6 +437,16 @@ impl<T> Row<T> {
     where
         T: Clone,
     {
+        // The sequential-write fast path: col == occ is every glyph of a
+        // left-to-right run on a recycled row. The cell is observably the
+        // blank and the caller overwrites it in full, so no materialization
+        // is needed — the store itself makes the cell physical and occ
+        // moves past it. One predictable branch instead of a materialize_to
+        // call per glyph.
+        if col == self.occ && self.blank.is_some() {
+            self.occ = col + 1;
+            return &mut self.inner[col];
+        }
         self.materialize_to(col);
         self.occ = max(self.occ, col + 1);
         &mut self.inner[col]

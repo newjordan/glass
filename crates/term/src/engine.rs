@@ -1817,14 +1817,16 @@ impl Watch<'_> {
         let mut wrap = false;
         let mut written = 0;
         let row = &mut grid[line];
-        // A run whose left edge is at or past the observable frontier
-        // writes over the lazy blank: no wide flag can be under any cell
-        // of it, so the per-glyph guard is dead work for the whole run.
-        // Only a run overlapping the physical prefix pays the guard.
-        // Non-lazy rows guard every column (usize::MAX); lazy rows
-        // guard only their physical prefix — past the frontier the
-        // observable cell is the blank, which carries no wide flags.
-        let guard_from = row.lazy_frontier().unwrap_or(usize::MAX);
+        // Non-lazy rows guard every column (guard_from = usize::MAX, so
+        // `column < guard_from` always holds); lazy rows guard only their
+        // physical prefix — past the frontier the observable cell is the
+        // blank, which carries no wide flags. A run that starts at or
+        // past the frontier therefore needs no guard at all
+        // (guard_from = 0: `column < guard_from` never holds).
+        let guard_from = match row.lazy_frontier() {
+            Some(frontier) if column >= frontier => 0,
+            other => other.unwrap_or(usize::MAX),
+        };
         while let Some((c, len)) = utf8_at(text, at) {
             if ('\u{7f}'..='\u{9f}').contains(&c) {
                 break;
