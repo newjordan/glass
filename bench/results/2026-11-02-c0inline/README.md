@@ -1,8 +1,8 @@
 # C0-inline: killed by the differential, evidence kept
 
 ## The candidate
-Gaps between run lanes average 3 bytes and cost 43% of apply time as
-per-call vte state-machine walks (HEAD, GLASS_PARSE_TIMERS, ascii:
+Gaps between run lanes average 3 bytes and cost 43% of apply time (per
+the timers, later corrected below: handler work, not state-machine walks) (HEAD, GLASS_PARSE_TIMERS, ascii:
 475,776 advance calls / 3 rounds = 158.6k per round at ~160 ns ≈ 25 ms
 of 59 ms apply). In tput's workloads the gap is CRLF at line ends. In
 vte's ground state CR/LF/VT/FF are pure `execute` actions that never
