@@ -1813,7 +1813,6 @@ impl Watch<'_> {
         let line = grid.cursor.point.line;
         let mut column = grid.cursor.point.column.0;
         let (fg, bg, flags) = (grid.cursor.template.fg, grid.cursor.template.bg, grid.cursor.template.flags);
-        let row = &mut grid[line];
         let underneath = CellFlags::WIDE_CHAR | CellFlags::WIDE_CHAR_SPACER;
         let mut wrap = false;
         let mut written = 0;
@@ -1831,7 +1830,7 @@ impl Watch<'_> {
                     match unicode_width::UnicodeWidthChar::width(last) {
                         Some(width @ 1..=2) => width,
                         Some(0) => {
-                            put_mark(row, column, wrap, last, &mut self.mark);
+                            put_mark(&mut grid[line], column, wrap, last, &mut self.mark);
                             written += 1;
                             held = Some((c, at));
                             at += len;
@@ -1840,21 +1839,29 @@ impl Watch<'_> {
                         _ => break,
                     }
                 };
+                // The wide-char guard reads the OBSERVABLE cell: on a lazily
+                // recycled row that is the blank, and reading it must not
+                // materialize the tail (virtual_read, not IndexMut).
                 if wrap
                     || column + width > columns
-                    || row[Column(column)].flags.intersects(underneath)
-                    || (width == 2 && row[Column(column + 1)].flags.intersects(underneath))
+                    || grid.virtual_read(Point { line, column: Column(column) }).flags.intersects(underneath)
+                    || (width == 2 && grid.virtual_read(Point { line, column: Column(column + 1) }).flags.intersects(underneath))
                 {
                     break;
                 }
-                let cell = &mut row[Column(column)];
-                cell.c = last;
-                cell.fg = fg;
-                cell.bg = bg;
-                cell.flags = if width == 2 { flags | CellFlags::WIDE_CHAR } else { flags };
-                cell.extra = None;
+                // Full-overwrite writes: a recycled row pays no blank fill
+                // for the cell this store itself makes valid (overwrite_cell,
+                // not IndexMut — the -34% unicode regression's cause).
+                {
+                    let cell = grid.overwrite_cell(line, column);
+                    cell.c = last;
+                    cell.fg = fg;
+                    cell.bg = bg;
+                    cell.flags = if width == 2 { flags | CellFlags::WIDE_CHAR } else { flags };
+                    cell.extra = None;
+                }
                 if width == 2 {
-                    let spacer = &mut row[Column(column + 1)];
+                    let spacer = grid.overwrite_cell(line, column + 1);
                     spacer.c = ' ';
                     spacer.fg = fg;
                     spacer.bg = bg;
@@ -1908,21 +1915,26 @@ impl Watch<'_> {
         }
         let line = cursor.point.line;
         let (fg, bg, flags) = (cursor.template.fg, cursor.template.bg, cursor.template.flags);
-        let row = &mut grid[line];
         let underneath = CellFlags::WIDE_CHAR | CellFlags::WIDE_CHAR_SPACER;
-        if row[Column(column)].flags.intersects(underneath)
-            || (width == 2 && row[Column(column + 1)].flags.intersects(underneath))
+        // The wide-char guard reads the observable cell (blank on a lazy
+        // tail, never the stale physical bytes); the writes are full
+        // overwrites through overwrite_cell, which a recycled row pays no
+        // blank fill for.
+        if grid.virtual_read(Point { line, column: Column(column) }).flags.intersects(underneath)
+            || (width == 2 && grid.virtual_read(Point { line, column: Column(column + 1) }).flags.intersects(underneath))
         {
             return false;
         }
-        let cell = &mut row[Column(column)];
-        cell.c = c;
-        cell.fg = fg;
-        cell.bg = bg;
-        cell.flags = if width == 2 { flags | CellFlags::WIDE_CHAR } else { flags };
-        cell.extra = None;
+        {
+            let cell = grid.overwrite_cell(line, column);
+            cell.c = c;
+            cell.fg = fg;
+            cell.bg = bg;
+            cell.flags = if width == 2 { flags | CellFlags::WIDE_CHAR } else { flags };
+            cell.extra = None;
+        }
         if width == 2 {
-            let spacer = &mut row[Column(column + 1)];
+            let spacer = grid.overwrite_cell(line, column + 1);
             spacer.c = ' ';
             spacer.fg = fg;
             spacer.bg = bg;

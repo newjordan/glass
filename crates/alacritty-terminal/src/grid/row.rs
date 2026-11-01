@@ -139,6 +139,10 @@ impl<T> Row<T> {
         if let Some(blank) = self.blank.as_ref() {
             let start = self.occ.min(self.inner.len());
             let stop = end.min(self.inner.len());
+            if fill_census::on() {
+                fill_census::note_site(5, stop > start);
+            }
+            let stop = end.min(self.inner.len());
             if stop > start {
                 let blank = blank.clone();
                 for cell in &mut self.inner[start..stop] {
@@ -394,6 +398,23 @@ impl<T> Row<T> {
         &mut self.inner[column..end]
     }
 
+    /// Full-overwrite single-cell accessor for the UTF-8 print paths
+    /// (`put_row`, `put_plain`): the caller replaces every field of the
+    /// cell, so the stale physical byte never becomes observable and no
+    /// blank fill is paid for a cell the write itself makes valid. Only
+    /// the gap between the physical frontier and `col` — empty for a
+    /// left-to-right writer — is materialized. `occ` moves past the
+    /// write, keeping every reader's blank frontier honest.
+    #[inline(always)]
+    pub(crate) fn overwrite_cell(&mut self, col: usize) -> &mut T
+    where
+        T: Clone,
+    {
+        self.materialize_to(col);
+        self.occ = max(self.occ, col + 1);
+        &mut self.inner[col]
+    }
+
     /// Full-overwrite single-cell write. The caller replaces every field
     /// of the cell, so the stale physical byte never becomes observable:
     /// only the gap between the physical frontier and `col` needs blanks,
@@ -456,6 +477,93 @@ impl<T> Row<T> {
     }
 }
 
+/// Fill census for the lazy recycled-row mechanism (GLASS_FILL_CENSUS=1).
+///
+/// Iteration 12's post-landing census counted fills but could not name the
+/// caller: 2.75M fills on unicode were "all IndexMut", with the site among
+/// input/wrapline/put_plain unmeasured. This census buckets every fill by
+/// width (`end - occ` at fill time) and counts separately the writes that
+/// needed NO fill — the answer falls out arithmetically:
+///
+/// * width 0 notes are materializations that found nothing to do (already
+///   physical) — the caller paid the call, not a fill.
+/// * the width histogram says which IndexMut arm: a `Column` access past the
+///   frontier fills a short gap; `Range`/`RangeFull` arms fill to `end`.
+///
+/// Counters are process-wide atomics gated on a OnceLock env read, so the
+/// production parse path pays one relaxed load when off.
+pub mod fill_census {
+    use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
+
+    pub static ON: AtomicBool = AtomicBool::new(false);
+    pub static NOTES: AtomicU64 = AtomicU64::new(0);
+    pub static CELLS: AtomicU64 = AtomicU64::new(0);
+    /// Fills by width: 0 (already physical), 1, 2, 3-4, 5-8, 9-16, 17+.
+    pub static W: [AtomicU64; 7] = [const { AtomicU64::new(0) }; 7];
+    /// Call-site census: 0=write_cell, 1=IndexMut<Column>, 2=IndexMut<Range*>,
+    /// 3=flags_remove, 4=lane, 5=other (serde/into_iter/explicit).
+    pub static SITE: [AtomicU64; 6] = [const { AtomicU64::new(0) }; 6];
+    pub static SITE_NOTES: [AtomicU64; 6] = [const { AtomicU64::new(0) }; 6];
+
+    pub fn init() {
+        ON.store(
+            std::env::var_os("GLASS_FILL_CENSUS").is_some_and(|v| v == "1"),
+            Ordering::Relaxed,
+        );
+    }
+    #[inline(always)]
+    pub fn on() -> bool {
+        ON.load(Ordering::Relaxed)
+    }
+    #[inline]
+    pub fn note(width: usize) {
+        NOTES.fetch_add(1, Ordering::Relaxed);
+        if width > 0 {
+            CELLS.fetch_add(width as u64, Ordering::Relaxed);
+        }
+        let b = match width {
+            0 => 0,
+            1 => 1,
+            2 => 2,
+            3 | 4 => 3,
+            5..=8 => 4,
+            9..=16 => 5,
+            _ => 6,
+        };
+        W[b].fetch_add(1, Ordering::Relaxed);
+    }
+    /// Attribute a materialize_to caller: `site` indexes SITE, `filled`
+    /// is whether this call actually paid cells.
+    #[inline]
+    pub fn note_site(site: usize, filled: bool) {
+        if filled {
+            SITE_NOTES[site].fetch_add(1, Ordering::Relaxed);
+        } else {
+            SITE[site].fetch_add(1, Ordering::Relaxed);
+        }
+    }
+    pub fn report() {
+        if !ON.load(Ordering::Relaxed) {
+            return;
+        }
+        let w: Vec<u64> = W.iter().map(|c| c.load(Ordering::Relaxed)).collect();
+        eprintln!(
+            "fill-census: notes={} cells={} widths w0(already-physical)={} w1={} w2={} w3-4={} w5-8={} w9-16={} w17+=({} {} {})",
+            NOTES.load(Ordering::Relaxed),
+            CELLS.load(Ordering::Relaxed),
+            w[0], w[1], w[2], w[3], w[4], w[5], w[6],
+            w.iter().sum::<u64>(),
+            w[1] + w[3] + w[4] + w[5] + w[6] // every width > 0
+        );
+        let sites: Vec<u64> = SITE.iter().map(|c| c.load(Ordering::Relaxed)).collect();
+        let notes: Vec<u64> = SITE_NOTES.iter().map(|c| c.load(Ordering::Relaxed)).collect();
+        eprintln!(
+            "fill-sites: write_cell {}|{}  idx_col {}|{}  idx_range {}|{}  flags_remove {}|{}  lane {}|{}  other {}|{}  (no-fill|filled)",
+            sites[0], notes[0], sites[1], notes[1], sites[2], notes[2], sites[3], notes[3], sites[4], notes[4], sites[5], notes[5]
+        );
+    }
+}
+
 impl<'a, T> IntoIterator for &'a Row<T> {
     type IntoIter = slice::Iter<'a, T>;
     type Item = &'a T;
@@ -489,6 +597,9 @@ impl<T> Index<Column> for Row<T> {
 impl<T: Clone> IndexMut<Column> for Row<T> {
     #[inline]
     fn index_mut(&mut self, index: Column) -> &mut T {
+        if fill_census::on() {
+            fill_census::SITE[1].fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        }
         self.materialize_to(*index + 1);
         self.occ = max(self.occ, *index + 1);
         &mut self.inner[index.0]
@@ -507,6 +618,9 @@ impl<T> Index<Range<Column>> for Row<T> {
 impl<T: Clone> IndexMut<Range<Column>> for Row<T> {
     #[inline]
     fn index_mut(&mut self, index: Range<Column>) -> &mut [T] {
+        if fill_census::on() {
+            fill_census::SITE[2].fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        }
         self.materialize_to(*index.end);
         self.occ = max(self.occ, *index.end);
         &mut self.inner[(index.start.0)..(index.end.0)]

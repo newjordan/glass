@@ -17,6 +17,7 @@ mod storage;
 mod tests;
 
 pub use self::row::Row;
+pub use self::row::fill_census;
 use self::storage::Storage;
 
 /// Deliberately-incorrect ceiling probe for scroll_up's tail loop; see the
@@ -544,6 +545,19 @@ impl<T: Clone> Grid<T> {
     #[inline]
     pub fn occ_bump(&mut self, line: Line, column: Column) {
         self.raw[line].occ_bump(column.0);
+    }
+
+    /// Full-overwrite single-cell write for the UTF-8 print paths: the
+    /// caller replaces every field, so a lazily recycled row pays no blank
+    /// fill for the cell being written — only for any gap left of it,
+    /// which a left-to-right writer never has. Mirrors [`Self::lane_cells_slice`]
+    /// for `put_row`/`put_plain`'s per-cell writes.
+    #[inline(always)]
+    pub fn overwrite_cell(&mut self, line: Line, column: usize) -> &mut T
+    where
+        T: Clone,
+    {
+        self.raw[line].overwrite_cell(column)
     }
 
     /// The print-run lane: the raw cell slice for a full-overwrite run

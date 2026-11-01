@@ -281,6 +281,7 @@ fn speed() {
         crate::engine::timers::init();
         crate::engine::probes::init();
         alacritty_terminal::grid::probes_init();
+        alacritty_terminal::grid::fill_census::init();
         // One terminal for every round, as the harness runs each workload
         // three times in one window: after the first, the history is full
         // and scrolling recycles rows rather than allocating them.
@@ -327,6 +328,9 @@ fn speed() {
         // The parse-path timers, when the bench asked for them, so the
         // test's own exit (no main Drop) still reports.
         crate::engine::timers::report();
+        // The lazy-fill census (post-rounds, unlike the in-loop placement
+        // that once read pre-feed zeros).
+        alacritty_terminal::grid::fill_census::report();
     }
 }
 
