@@ -122,9 +122,10 @@ fn ref_test(dir: &Path) {
 
     if grid != term_grid {
         for i in 0..grid.total_lines() {
+            let line = Line(i as i32 - (grid.total_lines() as i32 - grid.screen_lines() as i32));
             for j in 0..grid.columns() {
-                let cell = &term_grid[Line(i as i32)][Column(j)];
-                let original_cell = &grid[Line(i as i32)][Column(j)];
+                let cell = &term_grid[line][Column(j)];
+                let original_cell = &grid[line][Column(j)];
                 if original_cell != cell {
                     println!("[{i}][{j}] {original_cell:?} => {cell:?}",);
                 }
