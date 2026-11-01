@@ -1,0 +1,24 @@
+--- pair 1 base:
+         ascii:   524.3 MB/s    525.5 MB/cpu-s  (25165955 bytes, read 4095)
+      ascii_lf:   377.7 MB/s    378.4 MB/cpu-s  (25165880 bytes, read 4095)
+ scroll_region:   487.5 MB/s    488.4 MB/cpu-s  (16777365 bytes, read 4095)
+--- pair 1 run-whole:
+         ascii:   560.3 MB/s    561.2 MB/cpu-s  (25165955 bytes, read 4095)
+      ascii_lf:   386.9 MB/s    387.4 MB/cpu-s  (25165880 bytes, read 4095)
+ scroll_region:   475.8 MB/s    476.6 MB/cpu-s  (16777365 bytes, read 4095)
+--- pair 2 base:
+         ascii:   519.2 MB/s    520.2 MB/cpu-s  (25165955 bytes, read 4095)
+      ascii_lf:   381.5 MB/s    382.5 MB/cpu-s  (25165880 bytes, read 4095)
+ scroll_region:   495.1 MB/s    496.2 MB/cpu-s  (16777365 bytes, read 4095)
+--- pair 2 run-whole:
+         ascii:   538.9 MB/s    540.1 MB/cpu-s  (25165955 bytes, read 4095)
+      ascii_lf:   385.4 MB/s    386.3 MB/cpu-s  (25165880 bytes, read 4095)
+ scroll_region:   508.3 MB/s    509.2 MB/cpu-s  (16777365 bytes, read 4095)
+--- pair 3 base:
+         ascii:   536.1 MB/s    537.5 MB/cpu-s  (25165955 bytes, read 4095)
+      ascii_lf:   384.4 MB/s    385.5 MB/cpu-s  (25165880 bytes, read 4095)
+ scroll_region:   487.3 MB/s    488.2 MB/cpu-s  (16777365 bytes, read 4095)
+--- pair 3 run-whole:
+         ascii:   529.7 MB/s    530.6 MB/cpu-s  (25165955 bytes, read 4095)
+      ascii_lf:   379.3 MB/s    380.2 MB/cpu-s  (25165880 bytes, read 4095)
+ scroll_region:   482.8 MB/s    483.7 MB/cpu-s  (16777365 bytes, read 4095)

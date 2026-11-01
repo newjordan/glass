@@ -1,0 +1,26 @@
+[package]
+name = "vte"
+version = "0.15.0"
+edition = "2021"
+rust-version = "1.62.1"
+description = "Parser for implementing terminal emulators (vendored: REP preceding-char kept fresh by the host)"
+license = "Apache-2.0 OR MIT"
+publish = false
+
+[features]
+default = ["std"]
+ansi = ["log", "cursor-icon", "bitflags"]
+serde = ["dep:serde"]
+std = ["memchr/std"]
+
+[lib]
+name = "vte"
+path = "src/lib.rs"
+
+[dependencies]
+arrayvec = { version = "0.7.2", default-features = false }
+bitflags = { version = "2.3.3", optional = true, default-features = false }
+cursor-icon = { version = "1.0.0", optional = true, default-features = false }
+log = { version = "0.4.17", optional = true }
+memchr = { version = "2.7.4", default-features = false }
+serde = { version = "1.0.160", optional = true, features = ["derive"] }

@@ -12,6 +12,7 @@ use std::time::Instant;
 
 use crate::engine::{Engine, HostInfo};
 use crate::intake::{Intake, Splitter};
+use crate::intake::Piece;
 use crate::session::pump;
 
 /// The harness's full-screen grid on a 1080p output.
@@ -605,6 +606,238 @@ fn plain_runs_match_the_parser() {
         assert_eq!((fast.0.2, fast.0.3), (slow.0.2, slow.0.3), "history and count, round {round}");
         assert_eq!(fast.1, slow.1, "replies, round {round}");
         assert_eq!((fast.2, fast.3), (slow.2, slow.3), "alternate screen, round {round}");
+    }
+}
+
+/// One pass of `plain_runs_match_the_parser`'s comparison on a given
+/// stream and cuts, returning the first field where fast differs from
+/// slow, or None when they agree. Used by the shrink and debug tests.
+pub(crate) fn plain_runs_first_difference(rows: usize, cols: usize, stream: &[u8], cuts: &[usize]) -> Option<&'static str> {
+    let run = |fast: bool| {
+        let mut e = engine(rows, cols);
+        e.set_fast(fast);
+        let (mut i, mut s) = (Intake::new(glass_window::LAYER_PICTURES), Splitter::default());
+        let mut replies = Vec::new();
+        let mut pieces = Vec::new();
+        for w in cuts.windows(2) {
+            pieces.clear();
+            s.split(&stream[w[0]..w[1]], &mut pieces);
+            replies.extend(pump(&mut e, &mut i, &pieces).replies);
+        }
+        e.settle();
+        (e.grid_state(), replies, e.alt_scrolled(), e.alternate_screen())
+    };
+    let (fast, slow) = (run(true), run(false));
+    if fast.0.0 != slow.0.0 { return Some("cells"); }
+    if fast.0.1 != slow.0.1 { return Some("cursor"); }
+    if (fast.0.2, fast.0.3) != (slow.0.2, slow.0.3) { return Some("history"); }
+    if fast.1 != slow.1 { return Some("replies"); }
+    if (fast.2, fast.3) != (slow.2, slow.3) { return Some("alternate"); }
+    None
+}
+
+/// Shrink the run-whole divergence (GLASS_RUN_WHOLE=1): window deletion
+/// then single-byte delta debugging, printing the minimal stream.
+#[test]
+#[ignore]
+fn shrink_run_whole_divergence() {
+    let mut rng = Rng::new(23);
+    let len = 200 + rng.below(4000);
+    let mut stream: Vec<u8> = random_stream(&mut rng, len);
+    let n = rng.below(20);
+    let mut cuts: Vec<usize> = random_cuts(&mut rng, &stream, n);
+    // plain_runs_match_the_parser cycles these; round 3 is (39,154), the
+    // round that diverges first with GLASS_RUN_WHOLE=1.
+    let (rows, cols) = (39usize, 154usize);
+    let differs = |stream: &[u8], cuts: &[usize]| {
+        plain_runs_first_difference(rows, cols, stream, cuts).is_some()
+    };
+    // Try seeds until one diverges, as plain_runs does round by round.
+    let mut seed = 23u64;
+    let mut attempts = 0;
+    while !differs(&stream, &cuts) {
+        seed += 1;
+        attempts += 1;
+        assert!(attempts < 200, "no divergence found from seed 23");
+        let mut rng = Rng::new(seed);
+        let len = 200 + rng.below(4000);
+        stream = random_stream(&mut rng, len);
+        let n = rng.below(20);
+        cuts = random_cuts(&mut rng, &stream, n);
+    }
+    eprintln!("divergent seed: {seed}");
+    let mut window = stream.len() / 2;
+    while window > 0 {
+        let mut at = 0;
+        while at < stream.len() {
+            let end = (at + window).min(stream.len());
+            let mut trial: Vec<u8> = stream[..at].to_vec();
+            trial.extend_from_slice(&stream[end..]);
+            let trial_cuts: Vec<usize> = cuts.iter()
+                .map(|&c| if c > at { c.saturating_sub(end - at) } else { c })
+                .filter(|&c| c <= trial.len())
+                .collect();
+            if differs(&trial, &trial_cuts) {
+                stream = trial;
+                cuts = trial_cuts;
+            } else {
+                at += window.max(1);
+            }
+        }
+        window /= 2;
+    }
+    eprintln!("minimal stream ({} bytes): {:?}", stream.len(), String::from_utf8_lossy(&stream));
+    loop {
+        let before = stream.len();
+        for i in 0..stream.len() {
+            let mut trial: Vec<u8> = stream[..i].to_vec();
+            trial.extend_from_slice(&stream[i + 1..]);
+            let trial_cuts: Vec<usize> = cuts.iter()
+                .map(|&c| if c > i { c - 1 } else { c })
+                .filter(|&c| c <= trial.len())
+                .collect();
+            if differs(&trial, &trial_cuts) {
+                stream = trial;
+                cuts = trial_cuts;
+                break;
+            }
+        }
+        if stream.len() == before { break; }
+    }
+    eprintln!("delta-minimal stream ({} bytes): {:?}", stream.len(), String::from_utf8_lossy(&stream));
+    eprintln!("cuts: {:?}", cuts);
+}
+
+/// Shrink an escapes_match divergence under run-whole.
+#[test]
+#[ignore]
+fn shrink_escapes_divergence() {
+    let mut rng = Rng::new(41);
+    let len = 200 + rng.below(4000);
+    let mut stream: Vec<u8> = random_painting(&mut rng, len);
+    let n = rng.below(20);
+    let mut cuts: Vec<usize> = random_cuts(&mut rng, &stream, n);
+    fn differs_at(rows: usize, cols: usize, stream: &[u8], cuts: &[usize]) -> bool {
+        let run = |fast: bool| {
+            let mut e = engine(rows, cols);
+            e.set_fast(fast);
+            let (mut i, mut s) = (Intake::new(glass_window::LAYER_PICTURES), Splitter::default());
+            let mut replies = Vec::new();
+            let mut pieces = Vec::new();
+            for w in cuts.windows(2) {
+                pieces.clear();
+                s.split(&stream[w[0]..w[1]], &mut pieces);
+                replies.extend(pump(&mut e, &mut i, &pieces).replies);
+            }
+            e.settle();
+            (e.grid_state(), replies, e.alt_scrolled(), e.alternate_screen())
+        };
+        let (fast, slow) = (run(true), run(false));
+        fast.0.0 != slow.0.0 || fast.0.1 != slow.0.1 || (fast.0.2, fast.0.3) != (slow.0.2, slow.0.3)
+            || fast.1 != slow.1 || (fast.2, fast.3) != (slow.2, slow.3)
+    }
+    // The real test walks one sequential Rng; drive it the same way,
+    // round by round (round 383 diverges under GLASS_RUN_WHOLE=1).
+    let dims = [(6usize, 10usize), (24usize, 80usize), (3usize, 40usize), (39usize, 154usize)];
+    let mut rng = Rng::new(41);
+    let mut rows = 0usize;
+    let mut cols = 0usize;
+    let mut found = false;
+    for round in 0..600 {
+        let len = 200 + rng.below(4000);
+        stream = random_painting(&mut rng, len);
+        let n = rng.below(20);
+        cuts = random_cuts(&mut rng, &stream, n);
+        let (r, c) = dims[round % 4];
+        if differs_at(r, c, &stream, &cuts) {
+            rows = r;
+            cols = c;
+            found = true;
+            eprintln!("divergent round {round} at {rows}x{cols}");
+            break;
+        }
+    }
+    assert!(found, "no divergence in 600 rounds");
+    cuts.sort_unstable();
+    cuts.dedup();
+    let differs = |stream: &[u8], cuts: &[usize]| differs_at(rows, cols, stream, cuts);
+    let mut window = stream.len() / 2;
+    while window > 0 {
+        let mut at = 0;
+        while at < stream.len() {
+            let end = (at + window).min(stream.len());
+            let mut trial: Vec<u8> = stream[..at].to_vec();
+            trial.extend_from_slice(&stream[end..]);
+            let mut trial_cuts: Vec<usize> = cuts.iter()
+                .map(|&c| if c > at { c.saturating_sub(end - at) } else { c })
+                .filter(|&c| c <= trial.len())
+                .collect();
+            trial_cuts.sort_unstable();
+            trial_cuts.dedup();
+            if differs(&trial, &trial_cuts) {
+                stream = trial;
+                cuts = trial_cuts;
+            } else {
+                at += window.max(1);
+            }
+        }
+        window /= 2;
+    }
+    loop {
+        let before = stream.len();
+        for i in 0..stream.len() {
+            let mut trial: Vec<u8> = stream[..i].to_vec();
+            trial.extend_from_slice(&stream[i + 1..]);
+            let mut trial_cuts: Vec<usize> = cuts.iter()
+                .map(|&c| if c > i { c - 1 } else { c })
+                .filter(|&c| c <= trial.len())
+                .collect();
+            trial_cuts.sort_unstable();
+            trial_cuts.dedup();
+            if differs(&trial, &trial_cuts) {
+                stream = trial;
+                cuts = trial_cuts;
+                break;
+            }
+        }
+        if stream.len() == before { break; }
+    }
+    eprintln!("delta-minimal escapes stream ({} bytes): {:?}", stream.len(), String::from_utf8_lossy(&stream));
+    eprintln!("cuts: {:?}", cuts);
+}
+
+/// Dump where the minimal stream diverges, fast vs slow.
+#[test]
+#[ignore]
+fn debug_run_whole() {
+    for (stream, cuts) in [
+        (b"\x1b[fXK\x1b[m\x1b\x1b[b".as_slice(), vec![0, 12]),
+        (b"XK\x1b[m\x1b\x1b[b".as_slice(), vec![0, 9]),
+    ] {
+    let run = |fast: bool| {
+        let mut e = engine(39, 154);
+        e.set_fast(fast);
+        let (mut i, mut s) = (Intake::new(glass_window::LAYER_PICTURES), Splitter::default());
+        let mut pieces = Vec::new();
+        for w in cuts.windows(2) {
+            pieces.clear();
+            s.split(&stream[w[0]..w[1]], &mut pieces);
+            eprintln!("pieces (fast={}): {:?}", fast, pieces.iter().map(|p| match p { Piece::Text(t) => String::from_utf8_lossy(t).to_string(), Piece::Media(_) => "<media>".to_string() }).collect::<Vec<_>>());
+            pump(&mut e, &mut i, &pieces);
+        }
+        e.settle();
+        e.grid_state()
+    };
+    let _ = &cuts;
+    let (fast, slow) = (run(true), run(false));
+    eprintln!("cursor fast={:?} slow={:?}", fast.1, slow.1);
+    for (r, (fr, sr)) in fast.0.iter().zip(slow.0.iter()).enumerate() {
+        if fr != sr {
+            eprintln!("row {} fast={:?}", r, String::from_iter(fr.chars()));
+            eprintln!("row {} slow={:?}", r, String::from_iter(sr.chars()));
+        }
+    }
+    eprintln!("field: {:?}", plain_runs_first_difference(39, 154, stream, &cuts));
     }
 }
 

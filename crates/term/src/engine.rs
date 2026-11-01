@@ -315,6 +315,9 @@ pub struct Engine {
     /// scroll of this screen could move. `None` means the store has said
     /// nothing would move. `Some(u64::MAX)` means the extent is unknown.
     motion_end: Option<u64>,
+    /// The character a REP repeats, carried across chunks: the parser's
+    /// `preceding_char` outlives one read, so the lane's copy must too.
+    preceding_char: Option<char>,
     /// The alternate screen's own scroll count since it was entered: no
     /// sentinel counts it, because its grid keeps no history.
     alt_scrolled: u64,
@@ -392,6 +395,7 @@ impl Engine {
             // Unknown until the store says what a scroll could move. Reporting
             // every scroll is the safe default for a feed that did not ask.
             motion_end: Some(u64::MAX),
+            preceding_char: None,
             alt_scrolled: 0,
             region_top: 0,
             region_bottom: rows.max(1) as i32,
@@ -535,13 +539,14 @@ impl Engine {
                 sentinel_alive: self.sentinel_alive,
                 drained: chunk.len(),
                 motion_end: self.motion_end,
+                preceding: self.preceding_char,
                 primary_snap: None,
                 primary: scrolled,
                 fast: *fast,
                 mark: mark.take(),
-                preceding: None,
             };
             feed(processor, &mut watch, mirror, chunk, *fast);
+            self.preceding_char = watch.preceding;
             *mark = watch.mark.take();
             *alt_scrolled = watch.alt_scrolled;
             *region_top = watch.region_top;
@@ -718,13 +723,14 @@ impl Engine {
                 primary: scrolled,
                 fast: self.fast,
                 mark: None,
-                preceding: None,
+                preceding: self.preceding_char,
             };
             // The wrapper paces itself while the whole buffered frame is
             // applied: it folds the sentinel after every few hundred
             // printed cells, so a large frame cannot scroll it through a
             // full history before it is counted.
             processor.stop_sync(&mut watch);
+            self.preceding_char = watch.preceding;
             self.sentinel_read = watch.sentinel_read;
             self.sentinel_alive = watch.sentinel_alive;
             let primary = if watch.alternate { watch.primary } else { watch.count };
@@ -1761,6 +1767,25 @@ impl Watch<'_> {
             self.fold_sentinel();
             self.drained = 0;
         }
+        // Run-whole: the held character is flushed here (the loop
+        // writes each character as the next is decoded, so the last
+        // would otherwise never be written), the same way the loop
+        // writes one - put_plain where it applies, `input` otherwise.
+        if run_whole() && at == text.len() {
+            if let Some((last, _)) = held {
+                if self.put_plain(last, plain, ascii) {
+                    // `input` keeps the REP character; the lane must too
+                    // when it writes the last character itself.
+                    self.preceding = Some(last);
+                } else {
+                    alacritty_terminal::vte::ansi::Handler::input(self, last);
+                }
+                // put_row updated the cursor for the characters it wrote;
+                // put_plain writes straight into the grid and does the
+                // same, so nothing more is needed here.
+            }
+            return text.len();
+        }
         held.map_or(0, |(_, start)| start)
     }
 
@@ -2649,8 +2674,18 @@ fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, c
             // The run applies whole: glass tracks the REP character itself
             // (set at `input`, the funnel every printed character takes),
             // so nothing needs the machine to see the last character.
+            // Run-whole: the lane applies the whole run, holding no
+            // character for the parser (glass's REP tracking makes that
+            // sound), so the gap between runs carries only C0.
             let took = if probe >= 100 {
                 if run.is_ascii() { run.len() - 1 } else { run.len() }
+            } else if run_whole() {
+                let took = if run.is_ascii() { watch.print_run(run) } else { watch.print_utf8(run) };
+                // The whole run went to the grid: keep vte's REP
+                // character matching the stream, for a REP the parser
+                // itself completes (a sequence split across reads).
+                processor.set_preceding_char(watch.preceding);
+                took
             } else if run.is_ascii() {
                 watch.print_run(&run[..run.len() - 1])
             } else {
@@ -2692,6 +2727,15 @@ fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, c
 /// chunk total they say what a stream's time is made of. Counting is
 /// off until [`counters::start`] says otherwise, so the parse path
 /// pays nothing when no one asks.
+/// The run-whole candidate: when GLASS_RUN_WHOLE=1 the run lane applies
+/// the whole run, holding no character for the parser (glass's REP
+/// tracking makes that sound), so the gap between runs carries only C0.
+/// Off by default while it is measured.
+pub fn run_whole() -> bool {
+    static ON: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+    *ON.get_or_init(|| std::env::var_os("GLASS_RUN_WHOLE").is_some_and(|v| v == "1"))
+}
+
 /// Deliberately-incorrect ceiling probes for the parse path: GLASS_RUN_PROBE
 /// (default 0 = correct behaviour), fixed once at startup. 1-3 bound the
 /// suspects inside `print_run`'s cell loop (see the match there); 4-6 bound
@@ -2890,7 +2934,14 @@ fn lane(
             && text.iter().all(|b| (0x20..=0x7e).contains(b))
             && processor.sync_timeout().sync_timeout().is_none()
         {
-            *fed += watch.print_run(&text[..text.len() - 1]);
+            let n = if run_whole() { text.len() } else { text.len() - 1 };
+            let t = watch.print_run(&text[..n]);
+            // The whole text went to the grid: vte's REP character must
+            // match it, for a REP the parser completes later.
+            if run_whole() {
+                processor.set_preceding_char(watch.preceding);
+            }
+            *fed += t;
         }
         processor.advance(watch, &chunk[*fed..esc]);
         *fed = esc;
