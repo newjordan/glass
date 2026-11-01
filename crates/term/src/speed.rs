@@ -663,6 +663,39 @@ fn trace_c0_inline_case() {
     }
 }
 
+/// Which parts of the 46-byte divergence case are necessary? Feeds the
+/// case and its variants, fast vs slow, and prints which still diverge.
+/// The case: 2026h 'm' 47l LF "Q=c]1337;CurrentDir=/tmp".
+#[test]
+#[ignore]
+fn c0_inline_parts() {
+    let (rows, cols) = (3usize, 40usize);
+    let full: Vec<u8> = b"\x1b[?2026hm\x1b[?47l\nQ=c]1337;CurrentDir=/tmp".to_vec();
+    let cases: Vec<(&str, Vec<u8>)> = vec![
+        ("full", full.clone()),
+        ("no 2026h", b"m\x1b[?47l\nQ=c]1337;CurrentDir=/tmp".to_vec()),
+        ("no 47l", b"\x1b[?2026hm\nQ=c]1337;CurrentDir=/tmp".to_vec()),
+        ("no m", b"\x1b[?2026h\x1b[?47l\nQ=c]1337;CurrentDir=/tmp".to_vec()),
+        ("no run after", b"\x1b[?2026hm\x1b[?47l\n".to_vec()),
+        ("bare", b"\nQ=c]1337;CurrentDir=/tmp".to_vec()),
+    ];
+    for (name, stream) in cases {
+        let one = |fast: bool| {
+            let mut e = engine(rows, cols);
+            e.set_fast(fast);
+            let (mut i, mut sp) = (Intake::new(glass_window::LAYER_PICTURES), Splitter::default());
+            let mut pieces = Vec::new();
+            sp.split(&stream, &mut pieces);
+            pump(&mut e, &mut i, &pieces);
+            e.settle();
+            e.grid_state()
+        };
+        let (f, s) = (one(true), one(false));
+        let diverged = f.0 != s.0 || f.1 != s.1 || (f.2, f.3) != (s.2, s.3);
+        eprintln!("{name:14} -> {}", if diverged { "DIVERGES" } else { "match" });
+    }
+}
+
 /// Shrink the C0-inline divergence (GLASS_C0_INLINE=1): truncate the
 /// round's stream from the front while the divergence stands, then drop
 /// single parts, printing the minimal stream and where the cells first
@@ -695,7 +728,11 @@ fn shrink_c0_inline_divergence() {
         w.dedup();
         plain_runs_first_difference(rows, cols, stream, &w).is_some()
     };
-    assert!(differs(&stream, &cuts_all), "round 274 no longer diverges");
+    // With the sync-open guard (or the candidate reverted) this no longer
+    // diverges: the case stands as the guard's regression test. When the
+    // gap-inline is being retried, flip this to `assert!(differs(...))`
+    // after removing the guard to reproduce the original kill.
+    assert!(!differs(&stream, &cuts_all), "round 274 diverges: the sync-open guard is missing or broken");
     // Front truncation: drop a prefix, keep the divergence.
     let mut start = 0usize;
     let mut step = stream.len() / 2;

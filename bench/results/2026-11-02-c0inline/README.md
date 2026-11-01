@@ -35,3 +35,38 @@ separate processes, or tag each line with the run).
 - The minimal case is deterministic and 46 bytes.
 - Any future gap-inline must preserve ordering across quiet-piece
   joins; the shrinker is now part of the suite for exactly this.
+
+## Update: mechanism pinned, candidate retired with the attribution corrected
+
+The divergence was the **synchronized-update buffer**: with `?2026h`
+open, vte's advance buffers bytes unapplied (the run below the gap is
+skipped for the same reason — see the `sync_timeout` check in `feed`),
+so an immediate C0 applies *ahead* of bytes still held in the sync
+buffer. One guard fixes it exactly:
+
+    processor.sync_timeout().sync_timeout().is_none()
+
+With the guard, `plain_runs_match_the_parser` passes all 400 rounds
+(gate on), the 46-byte case and every single-part variant matches, and
+the full suite is green. Component necessity: ALL five parts of the
+case are jointly required — remove any one (2026h, m, 47l, LF, the
+25-byte run) and it matches.
+
+**The measured verdict, though, retires the candidate**: with the guard
+in and firing (c0 bypassed 309,848 of 359,830 gap bytes on ascii =
+86%), vte time barely moves (25.9 → 25.3 ms) and apply total is flat;
+throughput is a wash within noise across interleaved pairs. Replacing
+the parser's walk with identical handler calls changes nothing — the
+cost was never the state-machine dispatch.
+
+**Attribution corrected**: the "43% vte-advance share" is not
+per-call parser overhead. It is the handler work under the gap —
+`Watch::linefeed`'s sentinel bookkeeping, `note_scroll_up`'s region
+logic, `term.linefeed()`, `warm_next_row`'s prefetch — the same
+per-line work the two-phase row rewrite targets. The remaining call
+count (158,592/round on ascii) is the chunk-tail advances, which no
+gap-inline can touch.
+
+Next lever, precisely: `Watch::linefeed` per CRLF — batch the sentinel
+fold and region checks across a run's linefeeds, or the 8B-cell
+architecture for scroll_region's copy cost.
