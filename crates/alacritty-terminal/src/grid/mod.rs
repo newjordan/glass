@@ -512,6 +512,66 @@ impl<T: Clone> Grid<T> {
     pub fn cell_mut(&mut self, line: Line, column: Column) -> &mut T {
         &mut self.raw[line][column]
     }
+
+    /// Full-overwrite cell write: replaces the cell at `point` without
+    /// materializing the recycled tail past it. The caller must write
+    /// every field (as `write_at_cursor` does).
+    #[inline]
+    pub fn write_cell(&mut self, line: Line, column: Column, cell: T) {
+        self.raw[line].write_cell(column.0, cell);
+    }
+
+    /// The observable cell at a point by reference.
+    #[inline]
+    pub fn virtual_read(&self, point: Point) -> &T {
+        &self[point.line][point.column]
+    }
+
+    /// Clear flag bits on a cell without materializing the row's tail.
+    #[inline]
+    pub fn cell_flags_remove(&mut self, line: Line, column: Column, f: Flags)
+    where
+        T: GridCell,
+    {
+        self.raw[line].flags_remove(column.0, f);
+    }
+
+    /// Record a write past the observable frontier without materializing.
+    #[inline]
+    pub fn occ_bump(&mut self, line: Line, column: Column) {
+        self.raw[line].occ_bump(column.0);
+    }
+
+    /// The print-run lane: the raw cell slice for a full-overwrite run
+    /// write at `column..column+n`. Only the gap between the row's
+    /// physical frontier and the write's left edge is materialized; the
+    /// write range itself never pays a blank fill, and the frontier moves
+    /// to the write's end so observability is preserved.
+    ///
+    /// The caller must overwrite every cell of the slice in full (the
+    /// print-run loop does), and must read the wide-char flags it tests
+    /// through `lane_wide_from` rather than the slice's stale bytes.
+    #[inline]
+    pub fn lane_cells_slice(&mut self, line: Line, column: usize, n: usize) -> (&mut [T], usize)
+    where
+        T: Clone,
+    {
+        let row = &mut self.raw[line];
+        let blank_from = row.physical_len();
+        row.materialize_to(column);
+        let end = (column + n).min(row.len());
+        row.occ = max(row.occ, end);
+        let slice = row.lane_slice(column, end);
+        (slice, blank_from)
+    }
+
+    /// The observable frontier of a row, in columns: cells at or past
+    /// it are blank to every reader. The print-run loop uses this so its
+    /// wide-char guard never trusts stale physical bytes.
+    #[inline]
+    pub fn observable_from(&self, line: Line) -> usize {
+        self.raw[line].physical_len()
+    }
 }
 
 impl<T: PartialEq> PartialEq for Grid<T> {

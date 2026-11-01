@@ -993,33 +993,52 @@ impl<T> Term<T> {
         let flags = self.grid.cursor.template.flags;
         let extra = self.grid.cursor.template.extra.clone();
 
-        let mut cursor_cell = self.grid.cursor_cell();
+        let point = self.grid.cursor.point;
+
+        // The observable flags of the cell under the cursor, read through
+        // the lazy frontier — a recycled row's tail reads as the blank's
+        // flags, never as its stale bytes. Flags is Copy: no cell clone
+        // on this per-character path.
+        let under_flags = self.grid[point.line].virtual_read(point.column.0).flags;
+        let overwrite_wide = under_flags.intersects(Flags::WIDE_CHAR | Flags::WIDE_CHAR_SPACER);
 
         // Clear all related cells when overwriting a fullwidth cell.
-        if cursor_cell.flags.intersects(Flags::WIDE_CHAR | Flags::WIDE_CHAR_SPACER) {
+        if overwrite_wide {
             // Remove wide char and spacer.
-            let wide = cursor_cell.flags.contains(Flags::WIDE_CHAR);
-            let point = self.grid.cursor.point;
+            let wide = under_flags.contains(Flags::WIDE_CHAR);
             if wide && point.column < self.last_column() {
-                self.grid[point.line][point.column + 1].flags.remove(Flags::WIDE_CHAR_SPACER);
+                self.grid.cell_flags_remove(
+                    point.line,
+                    point.column + 1,
+                    Flags::WIDE_CHAR_SPACER,
+                );
             } else if point.column > 0 {
-                self.grid[point.line][point.column - 1].clear_wide();
+                let prev = Column(point.column.0 - 1);
+                self.grid[point.line][prev].clear_wide();
+                self.grid.occ_bump(point.line, prev);
             }
 
             // Remove leading spacers.
             if point.column <= 1 && point.line != self.topmost_line() {
                 let column = self.last_column();
-                self.grid[point.line - 1i32][column].flags.remove(Flags::LEADING_WIDE_CHAR_SPACER);
+                self.grid.cell_flags_remove(
+                    point.line - 1i32,
+                    column,
+                    Flags::LEADING_WIDE_CHAR_SPACER,
+                );
             }
-
-            cursor_cell = self.grid.cursor_cell();
         }
 
-        cursor_cell.c = c;
-        cursor_cell.fg = fg;
-        cursor_cell.bg = bg;
-        cursor_cell.flags = flags;
-        cursor_cell.extra = extra;
+        // Changed for glass: the cursor cell is assembled off-grid and
+        // committed with one full-overwrite store. A lazily recycled row
+        // never materializes its tail for the flood's sequential writes.
+        self.grid.write_cell(point.line, point.column, Cell {
+            c,
+            fg,
+            bg,
+            flags,
+            extra,
+        });
     }
 
     #[inline]

@@ -1642,7 +1642,7 @@ impl Watch<'_> {
             let (fg, bg, flags) = (template.fg, template.bg, template.flags);
             let column = point.column.0.min(columns - 1);
             let n = (columns - column).min(run.len() - taken);
-            let cells = &mut grid[point.line][Column(column)..Column(column + n)];
+            let (cells, blank_from) = grid.lane_cells_slice(point.line, column, n);
             let mut written = 0;
             // The run-lane ceiling probes (env-gated; DELIBERATELY
             // INCORRECT renderings when on — each bounds one suspect in
@@ -1682,8 +1682,13 @@ impl Watch<'_> {
                     // writes are prints the parser never sees, so `input`
                     // cannot track them itself.
                     let mut last = None;
-                    for (cell, &b) in cells.iter_mut().zip(&run[taken..taken + n]) {
-                        if cell.flags.intersects(CellFlags::WIDE_CHAR | CellFlags::WIDE_CHAR_SPACER) {
+                    for (i, (cell, &b)) in cells.iter_mut().zip(&run[taken..taken + n]).enumerate() {
+                        // The wide-char guard reads the observable cell:
+                        // columns past the lazy frontier are blank, and
+                        // their physical bytes are stale — never trust them.
+                        if column + i < blank_from
+                            && cell.flags.intersects(CellFlags::WIDE_CHAR | CellFlags::WIDE_CHAR_SPACER)
+                        {
                             break;
                         }
                         cell.fg = fg;

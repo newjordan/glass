@@ -361,6 +361,54 @@ impl<T> Row<T> {
 }
 
 impl<T> Row<T> {
+    /// The observable cell at `col` by value, for `Copy` cell types: the
+    /// lazy blank when the row is recycled past `occ`, the physical cell
+    /// otherwise. Readers that need the value (not a reference) use this.
+    #[inline]
+    pub(crate) fn virtual_read(&self, col: usize) -> &T {
+        self.virtual_cell(col)
+    }
+
+    /// Clear flag bits on the observable cell at `col`, materializing the
+    /// lazy tail only if that column is past the frontier.
+    #[inline]
+    pub(crate) fn flags_remove(&mut self, col: usize, f: crate::term::cell::Flags)
+    where
+        T: GridCell,
+    {
+        self.materialize_to(col + 1);
+        self.inner[col].flags_mut().remove(f);
+    }
+
+    /// Record that the cell at `col` was written, advancing the observable
+    /// frontier past it without materializing anything.
+    #[inline]
+    pub(crate) fn occ_bump(&mut self, col: usize) {
+        self.occ = max(self.occ, col + 1);
+    }
+
+    /// Raw slice accessor for the print-run lane, bypassing the materializing
+    /// IndexMut impls: the caller has already arranged observability.
+    #[inline]
+    pub(crate) fn lane_slice(&mut self, column: usize, end: usize) -> &mut [T] {
+        &mut self.inner[column..end]
+    }
+
+    /// Full-overwrite single-cell write. The caller replaces every field
+    /// of the cell, so the stale physical byte never becomes observable:
+    /// only the gap between the physical frontier and `col` needs blanks,
+    /// and for a left-to-right writer that gap is always empty. This is
+    /// the flood's fast path — one store per cell, no blank fill.
+    #[inline]
+    pub(crate) fn write_cell(&mut self, col: usize, cell: T)
+    where
+        T: Clone,
+    {
+        self.materialize_to(col);
+        self.inner[col] = cell;
+        self.occ = max(self.occ, col + 1);
+    }
+
     /// The print-run write lane. The caller overwrites *every* cell of
     /// `column..column+n` in full, so only the gap between the physical
     /// frontier and the write's left edge is materialized; the write range
