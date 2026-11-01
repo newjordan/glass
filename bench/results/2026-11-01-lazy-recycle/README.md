@@ -74,3 +74,40 @@ ascii +43% is the largest verified single-lever gain of the campaign (previous
 best: +7.5% hand-off fix, +2.8% run-whole). It converts iteration 11's ceiling
 probes (+39/+77/+46 hazards-off) into a correct, landed mechanism at
 +43/+24/+8 on the flood workloads.
+
+## Post-landing fill census (same day, uncommitted diagnostics — the next lead)
+
+Instrumented builds (FILLS/SLOW_WRITES/FLAG_FILLS/LANE_GAPS/IDX_FILLS atomics,
+printed by the bench after all rounds — an earlier print placed inside the
+rounds loop read pre-feed zeros and every "all-zero" reading from it was
+meaningless; that misdirection cost a stretch of the session and is recorded
+here so it is not repeated):
+
+- unicode: fills=2,751,195 per round; idx_fills=2,818,078 — i.e. EVERY fill
+  comes from IndexMut<Column> on a recycled row, ~0.66 per byte, one 24-byte
+  blank clone per call. This is the -34%.
+- ascii: fills=66,505; also 100% from IndexMut (idx_fills=66,505). The lane
+  contributes zero (lane_gaps=0 everywhere).
+- slow_writes=0, flag_fills=0 on every workload: write_cell's frontier arm
+  and the wide-clear path are fully cold — the lazy mechanism itself is cheap.
+
+Negative results (do not retry without new evidence):
+- put_plain → overwrite_cell (full-overwrite stores, no fill) did NOT reduce
+  idx_fills (5,636,156 across 2 rounds, unchanged) and cost -15% on unicode
+  from per-glyph Cell::default() construction. The 2.8M IndexMut calls are
+  not put_plain's row[Column] writes.
+- IndexMut skip-at-frontier (col==occ → no fill) is INCORRECT: callers do
+  partial mutations (clear_wide, flags_mut, push_zerowidth) and a partial
+  write on stale bytes leaks them; scroll_in_region_up_preserves_history and
+  the escapes differential both caught it. Any fix must be at the write site,
+  not in IndexMut.
+- Storage::swap's 4-qword copy vs slice::swap on 56-byte rows: no measurable
+  difference (unicode 136 both ways) — the 24-byte Row growth is not the cost.
+- HEAD-shaped write_at_cursor (cursor_cell/IndexMut) + lazy rows: unicode
+  still 135 — the write_at_cursor rewrite is not the cost either.
+
+Next probe: instrument IndexMut with the caller's return address (or a
+thread-local tag set by input/wrapline/linefeed/put_plain) to name WHICH of
+the per-CRLF paths makes the 2.8M materializing calls; the answer decides
+whether those sites get write_cell-style full overwrites or a frontier-aware
+partial-write primitive.
