@@ -636,6 +636,127 @@ pub(crate) fn plain_runs_first_difference(rows: usize, cols: usize, stream: &[u8
     None
 }
 
+/// The C0-inline divergence, fed one piece at a time with the trace on:
+/// where in the piece stream the fast path first applies a C0 gap the
+/// parser has not reached.
+#[test]
+#[ignore]
+fn trace_c0_inline_case() {
+    let stream: Vec<u8> = b"\x1b[?2026hm\x1b[?47l\nQ=c]1337;CurrentDir=/tmp".to_vec();
+    let (rows, cols) = (3usize, 40usize);
+    let run = |fast: bool| {
+        let mut e = engine(rows, cols);
+        e.set_fast(fast);
+        let (mut i, mut s) = (Intake::new(glass_window::LAYER_PICTURES), Splitter::default());
+        let mut pieces = Vec::new();
+        s.split(&stream, &mut pieces);
+        eprintln!("split into {} pieces: {:?}", pieces.len(), pieces.iter().map(|p| String::from_utf8_lossy(match p { crate::intake::Piece::Text(t) => t, _ => b"media" })).collect::<Vec<_>>());
+        pump(&mut e, &mut i, &pieces);
+        e.settle();
+        e.grid_state()
+    };
+    let fast = run(true);
+    let slow = run(false);
+    eprintln!("fast cursor {:?} slow cursor {:?}", fast.1, slow.1);
+    for (line, (a, b)) in fast.0.iter().zip(slow.0.iter()).enumerate() {
+        if a != b { eprintln!("DIFF line {line}: fast {a:?} slow {b:?}"); }
+    }
+}
+
+/// Shrink the C0-inline divergence (GLASS_C0_INLINE=1): truncate the
+/// round's stream from the front while the divergence stands, then drop
+/// single parts, printing the minimal stream and where the cells first
+/// differ. Cuts are kept inside the shrunken stream and sorted.
+#[test]
+#[ignore]
+fn shrink_c0_inline_divergence() {
+    // Rebuild round 274's stream: seed 23, round index 274, (3, 40).
+    let round = 274usize;
+    let (rows, cols) = [(6, 10), (24, 80), (3, 40), (39, 154)][round % 4];
+    let mut rng = Rng::new(23);
+    let mut stream = Vec::new();
+    let mut cuts_all: Vec<usize> = Vec::new();
+    for r in 0..=round {
+        let len = 200 + rng.below(4000);
+        let s = random_stream(&mut rng, len);
+        let n = rng.below(20);
+        let c = random_cuts(&mut rng, &s, n);
+        if r == round {
+            stream = s;
+            cuts_all = c;
+        }
+    }
+    let differs = |stream: &[u8], cuts: &[usize]| {
+        let mut w: Vec<usize> = std::iter::once(0)
+            .chain(cuts.iter().copied().filter(|v| *v < stream.len()))
+            .chain(std::iter::once(stream.len()))
+            .collect();
+        w.sort_unstable();
+        w.dedup();
+        plain_runs_first_difference(rows, cols, stream, &w).is_some()
+    };
+    assert!(differs(&stream, &cuts_all), "round 274 no longer diverges");
+    // Front truncation: drop a prefix, keep the divergence.
+    let mut start = 0usize;
+    let mut step = stream.len() / 2;
+    while step > 0 {
+        while start + step < stream.len() && differs(&stream[start + step..], &cuts_all) {
+            start += step;
+        }
+        step /= 2;
+    }
+    // Single-part deletion: drop each random part once if the divergence stands.
+    let mut s2: Vec<u8> = stream[start..].to_vec();
+    let mut i = 0usize;
+    'del: while i < s2.len() {
+        for len in 1..64usize {
+            if i + len > s2.len() { break; }
+            let cand: Vec<u8> = s2[..i].iter().chain(s2[i + len..].iter()).copied().collect();
+            if differs(&cand, &[]) {
+                s2 = cand;
+                continue 'del;
+            }
+        }
+        i += 1;
+    }
+    eprintln!("c0-inline divergence minimal (front {start} dropped): {:?}", String::from_utf8_lossy(&s2));
+    let what = plain_runs_first_difference(rows, cols, &s2, &[0, s2.len()]);
+    eprintln!("first difference: {what:?}");
+    let mut e_fast = engine(rows, cols);
+    e_fast.set_fast(true);
+    let (mut i_f, mut sp_f) = (Intake::new(glass_window::LAYER_PICTURES), Splitter::default());
+    let mut pieces = Vec::new();
+    sp_f.split(&s2, &mut pieces);
+    pump(&mut e_fast, &mut i_f, &pieces);
+    e_fast.settle();
+    let mut e_slow = engine(rows, cols);
+    e_slow.set_fast(false);
+    let (mut i_s, mut sp_s) = (Intake::new(glass_window::LAYER_PICTURES), Splitter::default());
+    let mut pieces2 = Vec::new();
+    sp_s.split(&s2, &mut pieces2);
+    pump(&mut e_slow, &mut i_s, &pieces2);
+    e_slow.settle();
+    let (f, s) = (e_fast.grid_state(), e_slow.grid_state());
+    eprintln!("fast lines {} slow lines {}", f.0.len(), s.0.len());
+    for (line, (a, b)) in f.0.iter().zip(s.0.iter()).enumerate() {
+        if a != b {
+            eprintln!("DIFF line {line}");
+            eprintln!("  fast: {a:?}");
+            eprintln!("  slow: {b:?}");
+        }
+    }
+    for (line, (a, b)) in f.0.iter().zip(s.0.iter()).enumerate() {
+        if a != b {
+            eprintln!("line {line}: fast {a:?}");
+            eprintln!("line {line}: slow {b:?}");
+            break;
+        }
+    }
+    eprintln!("fast history {} slow history {}", f.2, s.2);
+
+    eprintln!("cursor fast {:?} slow {:?}", f.1, s.1);
+}
+
 /// Shrink the run-whole divergence (GLASS_RUN_WHOLE=1): window deletion
 /// then single-byte delta debugging, printing the minimal stream.
 #[test]
