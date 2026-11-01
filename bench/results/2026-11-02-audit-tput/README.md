@@ -68,3 +68,26 @@ apply to tput's \r\n shapes.
 
 - tput-glass-[1-4].json, tput-ghostty-[1-4].json — interleaved, same session,
   glass = target/release/glass @ 080fd04, CAP=GLASSB.
+
+## 5. The ablation: same-session, binary-vs-binary (2026-11-02-audit-ablation/)
+
+The -21% unicode regression claim rested on a cross-session comparison.
+This control interleaves the published pre-campaign binary (glass.0220628,
+"A") against HEAD (glass-alt, "B") in one session, 3 rounds each:
+
+| workload | A: 0220628 | B: HEAD 080fd04 | delta |
+| --- | --- | --- | --- |
+| ascii | 447.0 | 560.8 | **+25%** |
+| unicode | 211.9 | 170.1 | **-19.5%** |
+| truecolor | 253.1 | 233.2 | -7.9% |
+| cursor_motion | 212.2 | 205.6 | -3.1% |
+| scroll_region | 459.4 | 471.1 | +2.5% |
+| tui_frames (fps) | 3409.8 | 3347.0 | -1.8% |
+
+The audit's two headline numbers — ascii +27%, unicode -21% — reproduce
+under the strongest control as +25% / -19.5%. The campaign's terminal-level
+trade is real, not session noise: it bought ascii and scroll and paid
+unicode, truecolor and cursor_motion. Whether that trade is net good is an
+operator call; the evidence for it is now interleaved on both sides.
+
+Suite at HEAD: 364 passed, 0 failed (glass-term, release).
