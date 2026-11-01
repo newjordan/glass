@@ -119,7 +119,30 @@ impl<T> Row<T> {
     /// row is recycled and `index` is past `occ`, the physical cell
     /// otherwise.
     #[inline(always)]
-    pub(crate) fn virtual_cell(&self, index: usize) -> &T {
+    /// The observable frontier of a lazily recycled row: columns at or
+    /// past it are the blank (no wide flags), columns before it are
+    /// physical cells a writer must guard. None when the row is not
+    /// lazy (every column is physical: guard from 0).
+    #[inline(always)]
+    pub fn lazy_frontier(&self) -> Option<usize> {
+        self.blank.as_ref().map(|_| self.occ)
+    }
+
+    /// Whether this row's tail is still observably blank-but-stale (it
+    /// was recycled and has not been fully written since). Writers use
+    /// this to hoist their wide-char guard: a write at or past the
+    /// observable frontier sits on the blank, which carries no wide
+    /// flags, so the per-glyph guard is unnecessary for such a run.
+    #[inline(always)]
+    pub fn is_lazy(&self) -> bool {
+        self.blank.is_some()
+    }
+
+    /// The observable cell at `index` by reference, for readers holding
+    /// the row borrow directly (the UTF-8 print paths): the lazy blank
+    /// when this row is recycled past `occ`, the physical cell otherwise.
+    #[inline(always)]
+    pub fn virtual_cell(&self, index: usize) -> &T {
         if let Some(blank) = self.blank.as_ref() {
             if index >= self.occ {
                 return blank;
@@ -410,7 +433,7 @@ impl<T> Row<T> {
     /// left-to-right writer — is materialized. `occ` moves past the
     /// write, keeping every reader's blank frontier honest.
     #[inline(always)]
-    pub(crate) fn overwrite_cell(&mut self, col: usize) -> &mut T
+    pub fn overwrite_cell(&mut self, col: usize) -> &mut T
     where
         T: Clone,
     {
@@ -466,7 +489,7 @@ impl<T> Row<T> {
     /// stale. A caller that reads flags underneath its write must treat
     /// cells at or past that column as blank, never as stale bytes.
     #[inline]
-    pub(crate) fn lane_cells(&mut self, column: usize, n: usize) -> (&mut [T], usize)
+    pub fn lane_cells(&mut self, column: usize, n: usize) -> (&mut [T], usize)
     where
         T: Clone,
     {

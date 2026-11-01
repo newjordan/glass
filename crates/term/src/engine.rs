@@ -1816,6 +1816,15 @@ impl Watch<'_> {
         let underneath = CellFlags::WIDE_CHAR | CellFlags::WIDE_CHAR_SPACER;
         let mut wrap = false;
         let mut written = 0;
+        let row = &mut grid[line];
+        // A run whose left edge is at or past the observable frontier
+        // writes over the lazy blank: no wide flag can be under any cell
+        // of it, so the per-glyph guard is dead work for the whole run.
+        // Only a run overlapping the physical prefix pays the guard.
+        // Non-lazy rows guard every column (usize::MAX); lazy rows
+        // guard only their physical prefix — past the frontier the
+        // observable cell is the blank, which carries no wide flags.
+        let guard_from = row.lazy_frontier().unwrap_or(usize::MAX);
         while let Some((c, len)) = utf8_at(text, at) {
             if ('\u{7f}'..='\u{9f}').contains(&c) {
                 break;
@@ -1830,7 +1839,7 @@ impl Watch<'_> {
                     match unicode_width::UnicodeWidthChar::width(last) {
                         Some(width @ 1..=2) => width,
                         Some(0) => {
-                            put_mark(&mut grid[line], column, wrap, last, &mut self.mark);
+                            put_mark(row, column, wrap, last, &mut self.mark);
                             written += 1;
                             held = Some((c, at));
                             at += len;
@@ -1841,11 +1850,18 @@ impl Watch<'_> {
                 };
                 // The wide-char guard reads the OBSERVABLE cell: on a lazily
                 // recycled row that is the blank, and reading it must not
-                // materialize the tail (virtual_read, not IndexMut).
+                // materialize the tail (Row::virtual_cell, not IndexMut).
+                // The row is borrowed once for the whole run: the guard and
+                // both writes are Row methods on that borrow, so a wide
+                // glyph pays no grid-storage re-index per access (the
+                // virtual_read/overwrite_cell form paid four Line->ring
+                // divisions per wide glyph — the -19% unicode cost).
                 if wrap
                     || column + width > columns
-                    || grid.virtual_read(Point { line, column: Column(column) }).flags.intersects(underneath)
-                    || (width == 2 && grid.virtual_read(Point { line, column: Column(column + 1) }).flags.intersects(underneath))
+                    || (column < guard_from
+                        && (row.virtual_cell(column).flags.intersects(underneath)
+                            || (width == 2
+                                && row.virtual_cell(column + 1).flags.intersects(underneath))))
                 {
                     break;
                 }
@@ -1853,7 +1869,7 @@ impl Watch<'_> {
                 // for the cell this store itself makes valid (overwrite_cell,
                 // not IndexMut — the -34% unicode regression's cause).
                 {
-                    let cell = grid.overwrite_cell(line, column);
+                    let cell = row.overwrite_cell(column);
                     cell.c = last;
                     cell.fg = fg;
                     cell.bg = bg;
@@ -1861,7 +1877,7 @@ impl Watch<'_> {
                     cell.extra = None;
                 }
                 if width == 2 {
-                    let spacer = grid.overwrite_cell(line, column + 1);
+                    let spacer = row.overwrite_cell(column + 1);
                     spacer.c = ' ';
                     spacer.fg = fg;
                     spacer.bg = bg;
@@ -1916,17 +1932,19 @@ impl Watch<'_> {
         let line = cursor.point.line;
         let (fg, bg, flags) = (cursor.template.fg, cursor.template.bg, cursor.template.flags);
         let underneath = CellFlags::WIDE_CHAR | CellFlags::WIDE_CHAR_SPACER;
+        let row = &mut grid[line];
         // The wide-char guard reads the observable cell (blank on a lazy
         // tail, never the stale physical bytes); the writes are full
         // overwrites through overwrite_cell, which a recycled row pays no
-        // blank fill for.
-        if grid.virtual_read(Point { line, column: Column(column) }).flags.intersects(underneath)
-            || (width == 2 && grid.virtual_read(Point { line, column: Column(column + 1) }).flags.intersects(underneath))
+        // blank fill for. The row is borrowed once: guard and writes are
+        // Row methods on that borrow, not grid-storage re-indexes.
+        if row.virtual_cell(column).flags.intersects(underneath)
+            || (width == 2 && row.virtual_cell(column + 1).flags.intersects(underneath))
         {
             return false;
         }
         {
-            let cell = grid.overwrite_cell(line, column);
+            let cell = row.overwrite_cell(column);
             cell.c = c;
             cell.fg = fg;
             cell.bg = bg;
@@ -1934,7 +1952,7 @@ impl Watch<'_> {
             cell.extra = None;
         }
         if width == 2 {
-            let spacer = grid.overwrite_cell(line, column + 1);
+            let spacer = row.overwrite_cell(column + 1);
             spacer.c = ' ';
             spacer.fg = fg;
             spacer.bg = bg;
