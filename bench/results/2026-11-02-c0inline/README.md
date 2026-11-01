@@ -17,12 +17,18 @@ rounds) diverges deterministically at round 274, cells differ. Shrunk
 
     \x1b[?2026h m \x1b[?47l \n Q=c]1337;CurrentDir=/tmp
 
-Handler trace (GLASS_C0_TRACE) shows the fast path applying the
-linefeed BEFORE the 'm' prints — a genuine reordering, not a rendering
-difference. The mechanism is the interaction of the gap-inline with
-`quiet_run`'s piece joins and the lane's `fed` accounting across them;
-the engine change is reverted (git checkout), the shrinker and the
-trace test stay as the reproduction.
+The handler trace (GLASS_C0_TRACE) was read from interleaved stderr of
+the fast and slow runs, so its apparent ordering ("linefeed before m")
+is NOT evidence — the same trap the repo has documented twice before.
+What is proven: the cell divergence is deterministic (5/5 runs, same
+round, same minimal case), it appears only with GLASS_C0_INLINE=1, and
+the 46-byte case above reproduces it. The mechanism — how the gap
+inline interacts with `quiet_run`'s piece joins, the sync-update hold
+(the case opens ?2026h and never closes it) and the lane's `fed`
+accounting — is NOT pinned down. The engine change is reverted (git
+checkout); the shrinker and the trace test stay as the reproduction.
+Any retry must first de-interleave the trace (run fast and slow in
+separate processes, or tag each line with the run).
 
 ## What stands
 - The 43%/25 ms attribution stands (timers, not the candidate).
