@@ -1012,11 +1012,14 @@ impl<T: Send + 'static> Glass<T> {
         }
     }
 
-    /// Drop the renderer (surface, device) before the window it draws into.
+    /// Drop the renderer (surface, device) before the window it draws into,
+    /// and wait for a GPU still being opened: `ExitProcess` ends the process
+    /// from this callback, so nothing unwinds to drop `preparing` there.
     fn release(&mut self) {
         self.early = None;
         self.renderer = None;
         self.window = None;
+        self.preparing = None;
     }
 
     /// `GLASS_FILM`: the assembly transition at 30 frames a second, as

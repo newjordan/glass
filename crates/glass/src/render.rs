@@ -229,6 +229,13 @@ impl<T: Send + 'static> Ready<T> {
         }
     }
 
+    /// The piece, once done, out of a `Ready` that stays where it is:
+    /// [`Self::wait`] for one held in a struct that cannot be moved out
+    /// of, because the struct has a `Drop`. A second `take` gives `None`.
+    fn take(&mut self) -> Option<T> {
+        std::mem::replace(self, Self::Done(None)).wait()
+    }
+
     /// The piece, once done, left in place for a later `wait`.
     fn get(&mut self) -> Option<&T> {
         if matches!(self, Self::Thread(_)) {
@@ -373,13 +380,32 @@ impl Preparing {
     }
 }
 
+impl Drop for Preparing {
+    /// Wait for the GPU's thread instead of detaching it. [`Host::exit_process`]
+    /// keeps the window's thread from going while it presents; the thread that
+    /// *opens* the GPU wants the same care and had none. A window closed before
+    /// the renderer took the GPU — an app that failed before there was a window,
+    /// a run short enough to finish first — left that thread inside
+    /// `vkCreateInstance`, and the `exit` that followed ran the driver's own
+    /// `atexit` teardown over its head: NVIDIA's answers that by corrupting the
+    /// C heap and aborting. The wait is the driver's instance creation, tens of
+    /// milliseconds, and only on a path already on its way out.
+    ///
+    /// [`Host::exit_process`]: crate::Host::exit_process
+    fn drop(&mut self) {
+        // Nothing is left that would want a turn at `dlopen` first.
+        self.gpu_go = None;
+        self.gpu.take();
+    }
+}
+
 impl Renderer {
     /// The renderer for `window`, from what [`Preparing`] made: the fonts,
     /// sized here for the window's scale, the GPU and the background image.
     pub fn new(window: Arc<Window>, options: &Options, mut preparing: Preparing) -> Result<Self, String> {
         let scale = window.scale_factor() as f32;
         let fonts = preparing.fonts(options, scale)?;
-        let gpu = preparing.gpu.wait().ok_or("the GPU thread failed")??;
+        let gpu = preparing.gpu.take().ok_or("the GPU thread failed")??;
         let surface = gpu
             .instance
             .create_surface(Arc::clone(&window))
@@ -469,7 +495,7 @@ impl Renderer {
         let present_mode = config.present_mode;
         let mut core = Core::new(device.clone(), queue.clone(), view_format, options.text_gamma);
         crate::startup::mark("core");
-        if let Some(image) = preparing.wallpaper.wait().flatten() {
+        if let Some(image) = preparing.wallpaper.take().flatten() {
             core.set_wallpaper(image);
         }
         crate::startup::mark("wallpaper");
