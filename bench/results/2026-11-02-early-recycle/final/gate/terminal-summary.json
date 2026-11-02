@@ -1,0 +1,545 @@
+{
+  "schema": "glass.terminal-pairs/v1",
+  "harness_sha256": {
+    "/work/frosty40/glass-repo/tree/bench/run-tput.sh": "ea9e5385155a77b3feb755a3e661310f2602c32e680110bbea9db8245b4028b2",
+    "/work/frosty40/glass-repo/tree/bench/lib.sh": "a057c54c4b9aa587101d1ee9a3a729f1b73fed1e55f5af56bc4b939e04a62f25",
+    "/work/frosty40/glass-repo/tree/bench/tput.py": "477b0131f1041bda8dd74a64bf8d164d526685bb7fc0c13500b17f897c06542a"
+  },
+  "rounds": 18,
+  "terms": [
+    "glass",
+    "glass-alt",
+    "ghostty"
+  ],
+  "binaries": {
+    "glass": {
+      "path": "/tmp/glass-recycle-final",
+      "sha256": "4ccca5cfc9159dbe2f8224f96103f9cdf23d52425cc752daec291305019d716e"
+    },
+    "glass-alt": {
+      "path": "/tmp/glass-recycle-fresh-control",
+      "sha256": "f9ef54f6a58c260aa1e0a0cb51bc202417fec3fedbe6e46f035d7b93ec118f72"
+    },
+    "ghostty": {
+      "path": "/usr/bin/ghostty",
+      "sha256": "ef28bf3a0f6ead69014da86ab0c9a2ef30fcf3bf297a6a27c4c18dfc80a56a62"
+    }
+  },
+  "orders": [
+    [
+      "glass",
+      "glass-alt",
+      "ghostty"
+    ],
+    [
+      "glass",
+      "ghostty",
+      "glass-alt"
+    ],
+    [
+      "glass-alt",
+      "glass",
+      "ghostty"
+    ],
+    [
+      "glass-alt",
+      "ghostty",
+      "glass"
+    ],
+    [
+      "ghostty",
+      "glass",
+      "glass-alt"
+    ],
+    [
+      "ghostty",
+      "glass-alt",
+      "glass"
+    ],
+    [
+      "glass",
+      "glass-alt",
+      "ghostty"
+    ],
+    [
+      "glass",
+      "ghostty",
+      "glass-alt"
+    ],
+    [
+      "glass-alt",
+      "glass",
+      "ghostty"
+    ],
+    [
+      "glass-alt",
+      "ghostty",
+      "glass"
+    ],
+    [
+      "ghostty",
+      "glass",
+      "glass-alt"
+    ],
+    [
+      "ghostty",
+      "glass-alt",
+      "glass"
+    ],
+    [
+      "glass",
+      "glass-alt",
+      "ghostty"
+    ],
+    [
+      "glass",
+      "ghostty",
+      "glass-alt"
+    ],
+    [
+      "glass-alt",
+      "glass",
+      "ghostty"
+    ],
+    [
+      "glass-alt",
+      "ghostty",
+      "glass"
+    ],
+    [
+      "ghostty",
+      "glass",
+      "glass-alt"
+    ],
+    [
+      "ghostty",
+      "glass-alt",
+      "glass"
+    ]
+  ],
+  "runner_sha256": "ccad00ee160e36304d27f838700162c3d4eb4ac9837fa95d60fded1f6d943540",
+  "experiment_env": {
+    "GLASS": "/tmp/glass-recycle-final",
+    "GLASS_ALT": "/tmp/glass-recycle-fresh-control"
+  },
+  "complete": true,
+  "multiple_testing_corrected": false,
+  "geometry": [
+    [
+      154,
+      39
+    ]
+  ],
+  "comparisons": {
+    "glass-alt": {
+      "ascii": {
+        "median_ratio": 0.9950799059352822,
+        "wins": 9,
+        "losses": 9,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "ratios": [
+          1.6362973760932944,
+          0.7111893293812523,
+          0.8541191381495564,
+          1.5657712545001383,
+          1.3415245737211634,
+          0.8937686603101224,
+          0.655112012538029,
+          1.0422761158818532,
+          1.1115103456820716,
+          0.9698189134808853,
+          1.3592233009708736,
+          1.0658896289248336,
+          1.020340898389679,
+          0.9567922571724853,
+          0.7789423984891407,
+          0.7001988430947216,
+          1.1902512347004508,
+          0.8277373717246188
+        ]
+      },
+      "unicode": {
+        "median_ratio": 1.0086163222201412,
+        "wins": 12,
+        "losses": 6,
+        "ties": 0,
+        "sign_p_two_sided": 0.237884521484375,
+        "ratios": [
+          0.9885098743267505,
+          1.0191059841384282,
+          1.055138784696174,
+          1.0274725274725274,
+          0.9974198304460008,
+          0.982436882546652,
+          0.9661078717201168,
+          1.0030188679245284,
+          1.0288426433004747,
+          1.035914702581369,
+          1.0410600970511386,
+          1.0079336458708978,
+          1.0122655122655124,
+          1.0092989985693848,
+          0.9741935483870968,
+          1.002905920813658,
+          0.9906676238334529,
+          1.0203119332607908
+        ]
+      },
+      "truecolor": {
+        "median_ratio": 1.0117835131780988,
+        "wins": 11,
+        "losses": 7,
+        "ties": 0,
+        "sign_p_two_sided": 0.480682373046875,
+        "ratios": [
+          0.9792263610315186,
+          0.9989204749910041,
+          1.0349521707137601,
+          1.0384757676655567,
+          0.9974811083123426,
+          0.9916119620714806,
+          1.0300413067968457,
+          0.9804983748645721,
+          1.0112481857764875,
+          0.9895720963682128,
+          1.0393320964749537,
+          1.01231884057971,
+          1.0275431509364672,
+          1.0259882869692534,
+          1.0217944061024338,
+          0.9985559566787005,
+          1.001081860800577,
+          1.0145137880986939
+        ]
+      },
+      "cursor_motion": {
+        "median_ratio": 1.009650252315356,
+        "wins": 14,
+        "losses": 2,
+        "ties": 2,
+        "sign_p_two_sided": 0.004180908203125,
+        "ratios": [
+          1.0092670598146587,
+          1.0016757436112276,
+          1.0100334448160535,
+          0.99790004199916,
+          1.0072094995759118,
+          1.01725625539258,
+          1.0132027257240204,
+          1.0047129391602398,
+          1.013507809202195,
+          1.0,
+          1.0519423832387604,
+          1.013801756587202,
+          1.02008547008547,
+          1.0020955574182733,
+          1.0147679324894514,
+          1.0,
+          1.030251384746485,
+          0.9928989139515455
+        ]
+      },
+      "scroll_region": {
+        "median_ratio": 1.0508548242022893,
+        "wins": 15,
+        "losses": 3,
+        "ties": 0,
+        "sign_p_two_sided": 0.007537841796875,
+        "ratios": [
+          0.9892186056063251,
+          0.7803468208092486,
+          1.0252078305175651,
+          1.22857476908687,
+          0.9488731035692362,
+          1.1534939496347978,
+          1.035027842644153,
+          1.1093705224949852,
+          1.0511155040948885,
+          1.079055539623363,
+          1.0332383665717,
+          1.1618519599260773,
+          1.0163904899135445,
+          1.4757491112239716,
+          1.10351305654706,
+          1.353215049704291,
+          1.0473189001552936,
+          1.0505941443096902
+        ]
+      },
+      "tui_frames": {
+        "median_ratio": 1.0112205091330637,
+        "wins": 12,
+        "losses": 6,
+        "ties": 0,
+        "sign_p_two_sided": 0.237884521484375,
+        "ratios": [
+          1.0143805309734515,
+          1.0231702831923501,
+          1.012472487160675,
+          1.0092047128129602,
+          0.9554186299383837,
+          1.0201983106867425,
+          0.9904446894524072,
+          0.9981758482305728,
+          1.0448694372931226,
+          1.0245871559633026,
+          1.0106892738665683,
+          1.0277777777777777,
+          1.0117517443995592,
+          0.9809899569583931,
+          1.005732712289502,
+          0.9873015873015872,
+          1.067842085090073,
+          0.9882268997502676
+        ]
+      }
+    },
+    "ghostty": {
+      "ascii": {
+        "median_ratio": 0.8712405164812104,
+        "wins": 3,
+        "losses": 15,
+        "ties": 0,
+        "sign_p_two_sided": 0.007537841796875,
+        "ratios": [
+          1.3844351258016774,
+          0.8285313477932448,
+          0.8390189243027888,
+          0.9614011222581192,
+          0.9292227529309596,
+          0.8241563055062167,
+          0.70741662518666,
+          1.0506040140778086,
+          0.9073530899160513,
+          0.7732878772686254,
+          0.903462108659632,
+          0.9584001711046947,
+          0.9841053587647594,
+          0.7696014828544949,
+          0.7759382936694573,
+          0.7508965784627314,
+          1.0183722212015434,
+          0.746853649766271
+        ]
+      },
+      "unicode": {
+        "median_ratio": 0.9645766460798446,
+        "wins": 7,
+        "losses": 11,
+        "ties": 0,
+        "sign_p_two_sided": 0.480682373046875,
+        "ratios": [
+          0.9992740471869329,
+          1.040103016924209,
+          0.9159882774340605,
+          1.058490566037736,
+          0.9204081632653062,
+          0.8751629726205997,
+          0.8810235958790297,
+          0.9080970276733858,
+          0.9839385474860336,
+          0.9138613861386138,
+          1.0508666164280331,
+          0.9452147446736557,
+          0.9215106732348113,
+          1.019877123238164,
+          1.0029520295202952,
+          1.0466262319939348,
+          0.9252430439155213,
+          1.0285191956124315
+        ]
+      },
+      "truecolor": {
+        "median_ratio": 1.1664097936384175,
+        "wins": 18,
+        "losses": 0,
+        "ties": 0,
+        "sign_p_two_sided": 7.62939453125e-06,
+        "ratios": [
+          1.170376712328767,
+          1.1615062761506276,
+          1.310810810810811,
+          1.1720250521920668,
+          1.1598326359832636,
+          1.1296219360199418,
+          1.2025427444103465,
+          1.1237582781456954,
+          1.1593178036605656,
+          1.1404890178201408,
+          1.1719665271966528,
+          1.156935817805383,
+          1.1624428749480682,
+          1.1953091684434969,
+          1.2413945278022949,
+          1.1602348993288591,
+          1.226148409893993,
+          1.1827411167512691
+        ]
+      },
+      "cursor_motion": {
+        "median_ratio": 1.123682081488167,
+        "wins": 18,
+        "losses": 0,
+        "ties": 0,
+        "sign_p_two_sided": 7.62939453125e-06,
+        "ratios": [
+          1.1128657686948442,
+          1.0977961432506886,
+          1.1348050728041332,
+          1.0969529085872576,
+          1.130952380952381,
+          1.0881402861098293,
+          1.1426512968299714,
+          1.0896840148698885,
+          1.108494921514312,
+          1.123773937412424,
+          1.1421800947867298,
+          1.1332398316970547,
+          1.1323529411764706,
+          1.1235902255639096,
+          1.114457831325301,
+          1.1356570890249646,
+          1.1389543099387658,
+          1.1081585081585081
+        ]
+      },
+      "scroll_region": {
+        "median_ratio": 0.9997158332910602,
+        "wins": 9,
+        "losses": 9,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "ratios": [
+          0.8259602194787379,
+          0.670179411252395,
+          0.9907567380787838,
+          1.2201579191825358,
+          1.0132983704813636,
+          1.0086749285033365,
+          1.0436515124071726,
+          1.0864359214218897,
+          0.9682622268470342,
+          0.9696761446611116,
+          1.0645792563600782,
+          1.1331941940992316,
+          0.9801980198019801,
+          1.047872340425532,
+          1.0799779371207943,
+          0.954214729370009,
+          0.9879362343817321,
+          0.825647443920285
+        ]
+      },
+      "tui_frames": {
+        "median_ratio": 1.0573682100161095,
+        "wins": 18,
+        "losses": 0,
+        "ties": 0,
+        "sign_p_two_sided": 7.62939453125e-06,
+        "ratios": [
+          1.0512036683225068,
+          1.099170288423548,
+          1.0514285714285714,
+          1.0327807083647327,
+          1.0049561570720549,
+          1.075493612078978,
+          1.043764523625097,
+          1.0277986476333585,
+          1.0826981707317076,
+          1.0595825426944971,
+          1.05909617612978,
+          1.1288639100762745,
+          1.0419818456883512,
+          1.03051996985682,
+          1.0721925133689838,
+          1.0798611111111112,
+          1.1371428571428572,
+          1.055640243902439
+        ]
+      }
+    }
+  },
+  "raw_sha256": {
+    "terminal/tput-glass-1.json": "d639292ddda26b02b63eb7fb64a75ee22fc601081a67962486f8430803ede484",
+    "terminal/tput-glass-2.json": "cc900d455e5340d0564cc6f932bc5775a11a85e60f4b5244cad25432451ba365",
+    "terminal/tput-glass-3.json": "2c730322e88a0fde17e1783c70a6dd9e56b3a1fd912b3deab4e83b914dabd6cc",
+    "terminal/tput-glass-4.json": "6b922ad8cd297684ba4190b9f707c41e3de04716afcea3a59c86620f1a4b2a08",
+    "terminal/tput-glass-5.json": "56068529c17b967ccccb21f337984463aac35e87e5096f1ba125aa9d0748a636",
+    "terminal/tput-glass-6.json": "5f5f04f84694954844606843583128e39393896ed826f2e9583471394ebb1f31",
+    "terminal/tput-glass-7.json": "62dc590494d68a43f8b255a82e1d181e838554bd15908054d8152c78e4596854",
+    "terminal/tput-glass-8.json": "3bcb2bd7497f9dc792c80b3a5219a3dae264eea4c58b71470b1fdc6328e78720",
+    "terminal/tput-glass-9.json": "ae1dbeb2d40ca01c46b3e47ac50abb28fc7b22516794fa813d958586e4f4c3f6",
+    "terminal/tput-glass-10.json": "419ee8f639272daa9a956ceb57325248c00a92eb5724e8c17f7645e5cc417661",
+    "terminal/tput-glass-11.json": "32a8c0be6ca7331eaca2fa118c1792eec8147e4923bd8a90fc05c79349255da2",
+    "terminal/tput-glass-12.json": "f5ce0cabd74719db562195e080560aa339d9c660eff00567f898fd1cb60c812d",
+    "terminal/tput-glass-13.json": "08d138451764c6865b93aa08eb20182385034b7f721de129d2858d3b9521c522",
+    "terminal/tput-glass-14.json": "14d5bb277e7e2f8a53093b5ef2f7f2f5be4a76bb35a862e4c0d57f5bda4db65e",
+    "terminal/tput-glass-15.json": "1a406ccc4b702e7e5ef81b17564510dd31258db436286f10641006cad02651a9",
+    "terminal/tput-glass-16.json": "2398c25b76763ad61e876c2795c9cf286ae57c76178f5762bc442508972a63f9",
+    "terminal/tput-glass-17.json": "0dbae161e3861704ea6b34ad3040bde417a19a3da757d75023c2565a41917572",
+    "terminal/tput-glass-18.json": "cc6d52b5ca811aedfbb94a611c479271980219ee4880c6243f11605cba4e16a8",
+    "terminal/tput-glass-alt-1.json": "1bfeb98474f8c5294c16ef5757c801382cd0b733d79ac6e33785916eddade18c",
+    "terminal/tput-glass-alt-2.json": "ceb5bf90b44264debcd92222f1a82fbe000f11c05895a7f7b8b1ec108c9a418a",
+    "terminal/tput-glass-alt-3.json": "a682e5df1d95eb5597bdd2bf56064156814329d563d6ddaf47d66d68ebfd205c",
+    "terminal/tput-glass-alt-4.json": "eafb7846f170d26b9cc07df3b1add1b63a750639b2c4da8fced2636c61975a59",
+    "terminal/tput-glass-alt-5.json": "5792909c2eb99732d00affd75db4caa1bf29fe806b8aff973e510a858e1295cf",
+    "terminal/tput-glass-alt-6.json": "8e64a1c7fd56c8262ec75b7f5ba634128bd2dfc0c594f82280fb7ba9b8231fb6",
+    "terminal/tput-glass-alt-7.json": "279ab9ab40db89e93ebbdf0fa0629c0127c9c699e17c3b952c689a6f9c1f2744",
+    "terminal/tput-glass-alt-8.json": "b425cf3b182d86afd428f760a5a9682c195f3a8f7cfcccf584d8e480e5f7dff3",
+    "terminal/tput-glass-alt-9.json": "818015200da16a3280f111b9347fb1022a915c72655de584ab259ca3ba31f7a7",
+    "terminal/tput-glass-alt-10.json": "22d3cfcd2a039d8ea6d4d69c9c94054b9b3aab1a26645631d793b6f411b30090",
+    "terminal/tput-glass-alt-11.json": "5951dbd44d2119118cb0ec17f008458a8e0f40217b6aec71550243e8277ee382",
+    "terminal/tput-glass-alt-12.json": "8f77af1d403370e87bfed254703a53b4e7381d61b6b47e82be3a40f67a17422d",
+    "terminal/tput-glass-alt-13.json": "a2b1ebd0e084a360312272f787987d16ed3c62ce9a8f8a84bea982353b624256",
+    "terminal/tput-glass-alt-14.json": "fd4387359469a2f536b7cbb92c83f51a4751a799e6d90ffc47694e31e74db9ae",
+    "terminal/tput-glass-alt-15.json": "a0bd433c2180e10470c587f5157a791b068bd84734601d96a972e44d7ce79640",
+    "terminal/tput-glass-alt-16.json": "2370902e92bb2b0516a5159a4f8cfaffc2f244465e2562a3bc624da2d0639b8a",
+    "terminal/tput-glass-alt-17.json": "7ffa2c919ae89de1f2dbca864d5db1abd9e1c6abbc317feccd29cb5cf83c3a39",
+    "terminal/tput-glass-alt-18.json": "08de90b5681a1ed647d3f3d1e27005d02671dfd39bc581972f557a39306ff909",
+    "terminal/tput-ghostty-1.json": "019950d53933cae400b979bc4c378af4f317a6ba9de645ed7900c3f2a51b889c",
+    "terminal/tput-ghostty-2.json": "b1693fade293a9f51d4af16648e8fb175c1381deae109eb82a1d00f6da69b700",
+    "terminal/tput-ghostty-3.json": "7b2754c5b1b49859355eaad011df6a35d4625d0d269ef3d71809897877cdc3ff",
+    "terminal/tput-ghostty-4.json": "4d12ad2810c8f91c362ef4aef729af6c5bb06907cb030e8d687b97ccc29f9aa0",
+    "terminal/tput-ghostty-5.json": "f9349a753aa0f26b36e9f1f9cfcfcbade7025549a0dc44acc8b5fa26185d26e6",
+    "terminal/tput-ghostty-6.json": "029639668ec6633c3a5bbb25194d45a289377da7f37bc0784dda5b34900a4b02",
+    "terminal/tput-ghostty-7.json": "3592b0cd10763f51349276adfe757194c4617e545e327ea31c4c408fef3a8088",
+    "terminal/tput-ghostty-8.json": "538e9edfdbafbd7f76698d6e0d15befb2ebb725a84abf8402a2a922030f89cd2",
+    "terminal/tput-ghostty-9.json": "b867f5aa19ca80fa2967951004abb6b90efe41fb61f0ebbe99207f96f5911559",
+    "terminal/tput-ghostty-10.json": "2a4bd97d833fa4ce713e9ba427879430237be91ee8c939172ae63c26d3f803d5",
+    "terminal/tput-ghostty-11.json": "84a9ce4ab317d1bf37dfe046662c271b86a13f48716d82d89fecb4ddf2edbe38",
+    "terminal/tput-ghostty-12.json": "32b2826fd1a36d286d644f441b4d1e57ba8cb1a64478005bd6a249c6b729e696",
+    "terminal/tput-ghostty-13.json": "57ba87597825f405145466cb6230978006ae9963fb7bd3f2439229dc321fe0e2",
+    "terminal/tput-ghostty-14.json": "20f8cc3bcee01a853eec587381a723c54f7cc8ef8cf9d318c4eea2fdf4557724",
+    "terminal/tput-ghostty-15.json": "f4868de5f0c97a373ce0cc4a8b45fa944b2483800891e089f2cd72095c05b5f4",
+    "terminal/tput-ghostty-16.json": "358ee18025883e0cd2259d8ab5e875baf4ffd9f78588d76daeb69377b4597b36",
+    "terminal/tput-ghostty-17.json": "eecac397165a6fd8b5f4b3dca341cacdcee7f2bde09affb61d2f617905502cf2",
+    "terminal/tput-ghostty-18.json": "66869031133d19fad3d41195ec28f450515bbe9c32cd6b72b65881a86fd82b2f"
+  },
+  "medians_mb_s": {
+    "glass": {
+      "ascii": 896.6500000000001,
+      "unicode": 277.9,
+      "truecolor": 278.15,
+      "cursor_motion": 239.35,
+      "scroll_region": 1122.6,
+      "tui_frames": 276.5
+    },
+    "glass-alt": {
+      "ascii": 899.65,
+      "unicode": 274.85,
+      "truecolor": 275.6,
+      "cursor_motion": 237.2,
+      "scroll_region": 1046.5,
+      "tui_frames": 272.4
+    },
+    "ghostty": {
+      "ascii": 1057.1999999999998,
+      "unicode": 289.54999999999995,
+      "truecolor": 239.0,
+      "cursor_motion": 214.0,
+      "scroll_region": 1106.7,
+      "tui_frames": 262.05
+    }
+  }
+}

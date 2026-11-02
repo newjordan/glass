@@ -1,0 +1,85 @@
+diff --git i/crates/term/src/engine.rs w/crates/term/src/engine.rs
+index 5b0f466..e5a1b40 100644
+--- i/crates/term/src/engine.rs
++++ w/crates/term/src/engine.rs
+@@ -1819,6 +1819,9 @@ impl Watch<'_> {
+     /// decoded to the parser, which keeps it for REP. Returns how many
+     /// bytes it took.
+     fn print_utf8(&mut self, text: &[u8]) -> usize {
++        if run_whole() {
++            return self.print_utf8_direct(text);
++        }
+         // What holds for every character of the run is checked once: the
+         // pen, the charsets, insert mode and in-cell pictures do not change
+         // inside it, whatever `input` does with a character.
+@@ -1834,7 +1837,7 @@ impl Watch<'_> {
+             // As many as fit go into the cursor's row at once; this loop
+             // takes the one that stopped them.
+             if plain {
+-                (at, held) = self.put_row(text, at, held, ascii);
++                (at, held) = self.put_row::<false>(text, at, held, ascii);
+             }
+             let Some((c, len)) = utf8_at(text, at) else {
+                 break;
+@@ -1876,6 +1879,41 @@ impl Watch<'_> {
+         held.map_or(0, |(_, start)| start)
+     }
+ 
++    /// Whole-run mode owns REP tracking, so it need not hold a character
++    /// until its successor has been decoded. Commit each checked scalar
++    /// immediately, including a valid prefix before a malformed UTF-8 tail.
++    /// Rejected scalars still pass through `input` for marks, wraps and wide
++    /// cleanup; an invalid scalar or C1 control remains entirely unconsumed.
++    fn print_utf8_direct(&mut self, text: &[u8]) -> usize {
++        let plain = self.fast && self.in_cell.is_empty() && !self.term.mode().contains(TermMode::INSERT) && {
++            let template = &self.term.grid().cursor.template;
++            template.extra.is_none()
++                && !template.flags.intersects(CellFlags::WIDE_CHAR | CellFlags::WIDE_CHAR_SPACER | CellFlags::LEADING_WIDE_CHAR_SPACER)
++        };
++        let ascii = plain && self.term.grid().cursor.charsets == Default::default();
++        let mut at = 0;
++        loop {
++            if plain {
++                let (end, last) = self.put_row::<true>(text, at, None, ascii);
++                at = end;
++                if let Some((last, _)) = last {
++                    self.preceding = Some(last);
++                }
++            }
++            let Some((c, len)) = utf8_at(text, at) else { break };
++            if ('\u{7f}'..='\u{9f}').contains(&c) {
++                break;
++            }
++            alacritty_terminal::vte::ansi::Handler::input(self, c);
++            at += len;
++        }
++        if self.drained >= SYNC_DRAIN_CHUNK {
++            self.fold_sentinel();
++            self.drained = 0;
++        }
++        at
++    }
++
+     /// `print_utf8`'s loop for characters `put_plain` would write, with
+     /// the cursor's row, the pen and the place looked up once rather than
+     /// for each character. Each character is written as the next one is
+@@ -1886,7 +1924,7 @@ impl Watch<'_> {
+     /// a C1 control, or at a held character `put_plain` would refuse, and
+     /// returns where it stopped and what it holds.
+     #[inline(always)]
+-    fn put_row(&mut self, text: &[u8], mut at: usize, mut held: Option<(char, usize)>, ascii: bool) -> (usize, Option<(char, usize)>) {
++    fn put_row<const DIRECT: bool>(&mut self, text: &[u8], mut at: usize, mut held: Option<(char, usize)>, ascii: bool) -> (usize, Option<(char, usize)>) {
+         let columns = self.term.columns();
+         let grid = self.term.grid_mut();
+         if grid.cursor.input_needs_wrap {
+@@ -1947,7 +1985,9 @@ impl Watch<'_> {
+             if ('\u{7f}'..='\u{9f}').contains(&c) {
+                 break;
+             }
+-            if let Some((last, _)) = held {
++            // DIRECT commits the scalar just decoded; the legacy arm keeps
++            // one scalar for the byte parser to observe (and track for REP).
++            if let Some((last, _)) = if DIRECT { Some((c, at)) } else { held } {
+                 let width = if (' '..='~').contains(&last) {
+                     if !ascii {
+                         break;

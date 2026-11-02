@@ -1,0 +1,655 @@
+warning: doc list item without indentation
+   --> crates/stage/src/look.rs:311:9
+    |
+311 |     /// None when there is nothing to focus on.
+    |         ^
+    |
+    = help: if this is supposed to be its own paragraph, add a blank line
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#doc_lazy_continuation
+    = note: `#[warn(clippy::doc_lazy_continuation)]` on by default
+help: indent this line
+    |
+311 |     ///   None when there is nothing to focus on.
+    |         ++
+
+warning: unnecessary closure used with `bool::then`
+   --> crates/stage/src/look.rs:316:9
+    |
+316 |         (lo <= hi).then(|| (lo - self.margin, hi + self.margin))
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#unnecessary_lazy_evaluations
+    = note: `#[warn(clippy::unnecessary_lazy_evaluations)]` on by default
+help: use `then_some` instead
+    |
+316 -         (lo <= hi).then(|| (lo - self.margin, hi + self.margin))
+316 +         (lo <= hi).then_some((lo - self.margin, hi + self.margin))
+    |
+
+warning: using `chunks_exact` with a constant chunk size
+   --> crates/stage/src/look.rs:814:40
+    |
+814 |                     let focus = n[3..].chunks_exact(3).map(|p| [p[0], p[1], p[2]]).collect();
+    |                                        ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<3>().0.iter()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+    = note: `#[warn(clippy::chunks_exact_to_as_chunks)]` on by default
+
+warning: using `chunks_exact` with a constant chunk size
+  --> crates/stage/src/normals.rs:65:32
+   |
+65 |     let body: Vec<bool> = rgba.chunks_exact(4).map(|p| p[3] >= SOLID && p[3] != crate::look::UNLIT_ALPHA).collect();
+   |                                ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<4>().0.iter()`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact` with a constant chunk size
+  --> crates/stage/src/normals.rs:97:10
+   |
+97 |         .chunks_exact(4)
+   |          ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<4>().0.iter()`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact_mut` with a constant chunk size
+   --> crates/stage/src/normals.rs:175:22
+    |
+175 |     for p in normals.chunks_exact_mut(4) {
+    |                      ^^^^^^^^^^^^^^^^^^^ help: consider using `as_chunks_mut` instead: `as_chunks_mut::<4>().0`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `clone` on type `Material` which implements the `Copy` trait
+    --> crates/stage/src/set.rs:1034:32
+     |
+1034 |             let mut material = node.material.clone();
+     |                                ^^^^^^^^^^^^^^^^^^^^^ help: try removing the `clone` call: `node.material`
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#clone_on_copy
+     = note: `#[warn(clippy::clone_on_copy)]` on by default
+
+warning: very complex type used. Consider factoring parts into `type` definitions
+    --> crates/stage/src/set.rs:1101:11
+     |
+1101 |     made: Option<((u32, Patches), Vec<Node>, Vec<Node>)>,
+     |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#type_complexity
+     = note: `#[warn(clippy::type_complexity)]` on by default
+
+warning: using `chunks_exact` with a constant chunk size
+   --> crates/stage/src/normals.rs:305:21
+    |
+305 |         assert!(map.chunks_exact(4).all(|p| p[3] == 255));
+    |                     ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<4>().0.iter()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: length comparison to one
+    --> crates/stage/src/set.rs:1917:17
+     |
+1917 |         assert!(world.meshes.len() >= 1);
+     |                 ^^^^^^^^^^^^^^^^^^^^^^^ help: using `!is_empty` is clearer and more explicit: `!world.meshes.is_empty()`
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#len_zero
+     = note: `#[warn(clippy::len_zero)]` on by default
+
+warning: `glass-stage` (lib) generated 8 warnings (run `cargo clippy --fix --lib -p glass-stage -- ` to apply 6 suggestions)
+warning: `glass-stage` (lib test) generated 10 warnings (8 duplicates) (run `cargo clippy --fix --lib -p glass-stage --tests -- ` to apply 2 suggestions)
+warning: using `chunks_exact_mut` with a constant chunk size
+   --> crates/gpu/src/draw.rs:173:29
+    |
+173 |             for p in pixels.chunks_exact_mut(4) {
+    |                             ^^^^^^^^^^^^^^^^^^^ help: consider using `as_chunks_mut` instead: `as_chunks_mut::<4>().0`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+    = note: `#[warn(clippy::chunks_exact_to_as_chunks)]` on by default
+
+warning: using `chunks_exact_mut` with a constant chunk size
+   --> crates/gpu/src/draw.rs:272:37
+    |
+272 |                     for p in pixels.chunks_exact_mut(4) {
+    |                                     ^^^^^^^^^^^^^^^^^^^ help: consider using `as_chunks_mut` instead: `as_chunks_mut::<4>().0`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact_mut` with a constant chunk size
+  --> crates/gpu/src/picture.rs:52:27
+   |
+52 |     let mut chunks = rgba.chunks_exact_mut(32);
+   |                           ^^^^^^^^^^^^^^^^^^^^
+   |
+help: consider using `as_chunks_mut::<32>()` instead
+  --> crates/gpu/src/picture.rs:52:27
+   |
+52 |     let mut chunks = rgba.chunks_exact_mut(32);
+   |                           ^^^^^^^^^^^^^^^^^^^^
+   = note: you can access the chunks using `chunks.0.iter_mut()`, and the remainder using `chunks.1`
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact_mut` with a constant chunk size
+  --> crates/gpu/src/picture.rs:71:39
+   |
+71 |     for px in chunks.into_remainder().chunks_exact_mut(4) {
+   |                                       ^^^^^^^^^^^^^^^^^^^ help: consider using `as_chunks_mut` instead: `as_chunks_mut::<4>().0`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact` with a constant chunk size
+    --> crates/gpu/src/scene.rs:1281:60
+     |
+1281 |                     out.extend(row[..(width * 4) as usize].chunks_exact(4).map(|b| f32::from_le_bytes([b[0], b[1], b[2], b[3]])));
+     |                                                            ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<4>().0.iter()`
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact_mut` with a constant chunk size
+   --> crates/gpu/src/picture.rs:506:24
+    |
+506 |         for px in rgba.chunks_exact_mut(4) {
+    |                        ^^^^^^^^^^^^^^^^^^^ help: consider using `as_chunks_mut` instead: `as_chunks_mut::<4>().0`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: this assertion has a constant value
+   --> crates/gpu/src/post.rs:382:9
+    |
+382 |         assert!(POST_BYTES <= STRIDE && STRIDE % 256 == 0, "each pass's slice at a legal offset");
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: consider moving this into a const block: `const { assert!(..) }`
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#assertions_on_constants
+    = note: `#[warn(clippy::assertions_on_constants)]` on by default
+
+warning: manual implementation of `.is_multiple_of()`
+   --> crates/gpu/src/post.rs:382:41
+    |
+382 |         assert!(POST_BYTES <= STRIDE && STRIDE % 256 == 0, "each pass's slice at a legal offset");
+    |                                         ^^^^^^^^^^^^^^^^^ help: replace with: `STRIDE.is_multiple_of(256)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#manual_is_multiple_of
+    = note: `#[warn(clippy::manual_is_multiple_of)]` on by default
+
+warning: this assertion has a constant value
+   --> crates/gpu/src/post.rs:395:9
+    |
+395 |         assert!(BLOOM_THRESHOLD - BLOOM_KNEE > 0.3, "the walls and floors never bloom");
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: consider moving this into a const block: `const { assert!(..) }`
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#assertions_on_constants
+
+warning: this assertion has a constant value
+   --> crates/gpu/src/post.rs:396:9
+    |
+396 |         assert!(BLOOM_THRESHOLD + BLOOM_KNEE < 1.0, "a flame does");
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: consider moving this into a const block: `const { assert!(..) }`
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#assertions_on_constants
+
+warning: this assertion has a constant value
+   --> crates/gpu/src/post.rs:398:9
+    |
+398 |         assert!(BLOOM_STRENGTH > 0.0 && BLOOM_STRENGTH <= 1.0, "screened over, at most once");
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: consider moving this into a const block: `const { assert!(..) }`
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#assertions_on_constants
+
+warning: this assertion has a constant value
+   --> crates/gpu/src/post.rs:400:9
+    |
+400 |         assert!(GRAIN < 0.05, "a grain, not a noise");
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: consider moving this into a const block: `const { assert!(..) }`
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#assertions_on_constants
+
+warning: this assertion has a constant value
+   --> crates/gpu/src/post.rs:401:9
+    |
+401 |         assert!(ABERRATION_PX <= 4.0 && IMPACT_RISE < 0.5, "a hit is felt, not a blur");
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: consider moving this into a const block: `const { assert!(..) }`
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#assertions_on_constants
+
+warning: used `unwrap()` on `Some` value
+    --> crates/gpu/src/scene.rs:2133:51
+     |
+2133 |         let bad = Some(Patch { texel: f32::NAN, ..patch.unwrap() });
+     |                                                   ^^^^^^^^^^^^^^
+     |
+help: remove the `Some` and `unwrap()`
+    --> crates/gpu/src/scene.rs:2129:21
+     |
+2129 |         let patch = Some(Patch { picture: 7, rect: [64, 128, 40, 9], origin: [1.0, 2.0, 3.0], texel: 0.5 });
+     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#unnecessary_literal_unwrap
+     = note: `#[warn(clippy::unnecessary_literal_unwrap)]` on by default
+
+warning: used `unwrap()` on `Some` value
+    --> crates/gpu/src/scene.rs:2135:47
+     |
+2135 |         let flat = Some(Patch { texel: 0.0, ..patch.unwrap() });
+     |                                               ^^^^^^^^^^^^^^
+     |
+help: remove the `Some` and `unwrap()`
+    --> crates/gpu/src/scene.rs:2129:21
+     |
+2129 |         let patch = Some(Patch { picture: 7, rect: [64, 128, 40, 9], origin: [1.0, 2.0, 3.0], texel: 0.5 });
+     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#unnecessary_literal_unwrap
+
+warning: used `unwrap()` on `Some` value
+    --> crates/gpu/src/scene.rs:2137:56
+     |
+2137 |         let empty = Some(Patch { rect: [0, 0, 0, 4], ..patch.unwrap() });
+     |                                                        ^^^^^^^^^^^^^^
+     |
+help: remove the `Some` and `unwrap()`
+    --> crates/gpu/src/scene.rs:2129:21
+     |
+2129 |         let patch = Some(Patch { picture: 7, rect: [64, 128, 40, 9], origin: [1.0, 2.0, 3.0], texel: 0.5 });
+     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#unnecessary_literal_unwrap
+
+warning: `glass-gpu` (lib) generated 5 warnings (run `cargo clippy --fix --lib -p glass-gpu -- ` to apply 4 suggestions)
+warning: `glass-gpu` (lib test) generated 16 warnings (5 duplicates) (run `cargo clippy --fix --lib -p glass-gpu --tests -- ` to apply 2 suggestions)
+warning: using `chunks_exact_mut` with a constant chunk size
+   --> crates/glass/src/early.rs:126:26
+    |
+126 |         for pixel in out.chunks_exact_mut(4) {
+    |                          ^^^^^^^^^^^^^^^^^^^ help: consider using `as_chunks_mut` instead: `as_chunks_mut::<4>().0`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+    = note: `#[warn(clippy::chunks_exact_to_as_chunks)]` on by default
+
+warning: using `chunks_exact_mut` with a constant chunk size
+   --> crates/glass/src/early.rs:149:32
+    |
+149 |         for (x, pixel) in line.chunks_exact_mut(4).enumerate() {
+    |                                ^^^^^^^^^^^^^^^^^^^ help: consider using `as_chunks_mut` instead: `as_chunks_mut::<4>().0.iter_mut()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: this `if` statement can be collapsed
+   --> crates/glass/src/early.rs:302:24
+    |
+302 |                   } else if let Some(&coverage) = glyph.data.get(at) {
+    |  ________________________^
+303 | |                     if coverage > 0 {
+304 | |                         self.over(px as u32, py as u32, rgb, f32::from(coverage) / 255.0 * alpha);
+305 | |                     }
+306 | |                 }
+    | |_________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#collapsible_if
+    = note: `#[warn(clippy::collapsible_if)]` on by default
+help: collapse nested if block
+    |
+302 ~                 } else if let Some(&coverage) = glyph.data.get(at)
+303 ~                     && coverage > 0 {
+304 |                         self.over(px as u32, py as u32, rgb, f32::from(coverage) / 255.0 * alpha);
+305 ~                     }
+    |
+
+warning: using `chunks_exact` with a constant chunk size
+   --> crates/glass/src/font.rs:182:49
+    |
+182 |             Content::SubpixelMask => image.data.chunks_exact(4).map(|p| p[1]).collect(),
+    |                                                 ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<4>().0.iter()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact_mut` with a constant chunk size
+   --> crates/glass/src/font.rs:438:19
+    |
+438 |     for p in rgba.chunks_exact_mut(4) {
+    |                   ^^^^^^^^^^^^^^^^^^^ help: consider using `as_chunks_mut` instead: `as_chunks_mut::<4>().0`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact_mut` with a constant chunk size
+   --> crates/glass/src/font.rs:723:23
+    |
+723 |         for px in row.chunks_exact_mut(4) {
+    |                       ^^^^^^^^^^^^^^^^^^^ help: consider using `as_chunks_mut` instead: `as_chunks_mut::<4>().0`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: very complex type used. Consider factoring parts into `type` definitions
+  --> crates/glass/src/render.rs:95:14
+   |
+95 |     strings: FastMap<(u64, u8, u8), (Box<str>, Option<Entry>)>,
+   |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#type_complexity
+   = note: `#[warn(clippy::type_complexity)]` on by default
+
+warning: very complex type used. Consider factoring parts into `type` definitions
+   --> crates/glass/src/render.rs:175:12
+    |
+175 |     state: std::sync::Mutex<(bool, Option<Box<dyn FnOnce() + Send>>)>,
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#type_complexity
+
+warning: field assignment outside of initializer for an instance created with Default::default()
+   --> crates/glass/src/showcase.rs:544:9
+    |
+544 |         camera.transform = Transform::from_translation([0.0, 0.0, 2.9]);
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+note: consider initializing the variable with `glass_stage::scene::Camera { transform: Transform::from_translation([0.0, 0.0, 2.9]), clear: Some([0.0; 4]), ..Default::default() }` and removing relevant reassignments
+   --> crates/glass/src/showcase.rs:543:9
+    |
+543 |         let mut camera = Camera::default();
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#field_reassign_with_default
+    = note: `#[warn(clippy::field_reassign_with_default)]` on by default
+
+warning: clamp-like pattern without using clamp function
+    --> crates/glass/src/showcase.rs:1426:13
+     |
+1426 |     let s = (well[2] / pw).min(1.0).max(1e-3);
+     |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: replace with clamp: `(well[2] / pw).clamp(1e-3, 1.0)`
+     |
+     = note: clamp will panic if max < min, min.is_nan(), or max.is_nan()
+     = note: clamp returns NaN if the input is NaN
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#manual_clamp
+     = note: `#[warn(clippy::manual_clamp)]` on by default
+
+warning: using `chunks_exact` with a constant chunk size
+  --> crates/glass/src/wallpaper.rs:62:14
+   |
+62 |             .chunks_exact(3)
+   |              ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<3>().0.iter()`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact` with a constant chunk size
+  --> crates/glass/src/wallpaper.rs:66:14
+   |
+66 |             .chunks_exact(2)
+   |              ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<2>().0.iter()`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact_mut` with a constant chunk size
+    --> crates/glass/src/window.rs:1075:21
+     |
+1075 |     for p in pixels.chunks_exact_mut(4) {
+     |                     ^^^^^^^^^^^^^^^^^^^ help: consider using `as_chunks_mut` instead: `as_chunks_mut::<4>().0`
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: very complex type used. Consider factoring parts into `type` definitions
+   --> crates/glass/src/lib.rs:155:17
+    |
+155 |     pub scenes: Mutex<Vec<(u32, Option<(scene::Scene, (u32, u32))>)>>,
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#type_complexity
+
+warning: using `chunks_exact` with a constant chunk size
+   --> crates/glass/src/early.rs:450:24
+    |
+450 |         assert!(pixels.chunks_exact(4).all(|p| p == [25, 50, 100, 128]));
+    |                        ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<4>().0.iter()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact` with a constant chunk size
+   --> crates/glass/src/early.rs:516:24
+    |
+516 |         assert!(pixels.chunks_exact(4).all(|p| p == [3, 2, 1, 255]));
+    |                        ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<4>().0.iter()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact` with a constant chunk size
+   --> crates/glass/src/page.rs:254:14
+    |
+254 |             .chunks_exact(4)
+    |              ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<4>().0.iter()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: `glass-window` (lib) generated 14 warnings (run `cargo clippy --fix --lib -p glass-window -- ` to apply 9 suggestions)
+warning: `glass-window` (lib test) generated 17 warnings (14 duplicates) (run `cargo clippy --fix --lib -p glass-window --tests -- ` to apply 3 suggestions)
+    Checking glass-term v0.1.0 (/work/frosty40/glass-repo/tree/crates/term)
+warning: using `chunks_exact` with a constant chunk size
+   --> crates/glass/tests/world_gpu.rs:103:10
+    |
+103 |         .chunks_exact(4)
+    |          ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<4>().0.iter()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+    = note: `#[warn(clippy::chunks_exact_to_as_chunks)]` on by default
+
+warning: using `chunks_exact` with a constant chunk size
+   --> crates/glass/tests/world_gpu.rs:240:30
+    |
+240 |         let differ = layered.chunks_exact(4).zip(carded.chunks_exact(4)).filter(|(a, b)| a != b).count();
+    |                              ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<4>().0.iter()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact` with a constant chunk size
+   --> crates/glass/tests/world_gpu.rs:240:57
+    |
+240 |         let differ = layered.chunks_exact(4).zip(carded.chunks_exact(4)).filter(|(a, b)| a != b).count();
+    |                                                         ^^^^^^^^^^^^^^^
+    |
+help: consider using `as_chunks::<4>()` instead
+   --> crates/glass/tests/world_gpu.rs:240:57
+    |
+240 |         let differ = layered.chunks_exact(4).zip(carded.chunks_exact(4)).filter(|(a, b)| a != b).count();
+    |                                                         ^^^^^^^^^^^^^^^
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact` with a constant chunk size
+   --> crates/glass/tests/world_gpu.rs:241:27
+    |
+241 |         let lit = layered.chunks_exact(4).filter(|p| p[2] > 100).count();
+    |                           ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<4>().0.iter()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact` with a constant chunk size
+   --> crates/glass/tests/world_gpu.rs:355:30
+    |
+355 |         for (i, p) in pixels.chunks_exact(4).enumerate() {
+    |                              ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<4>().0.iter()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: this function has too many arguments (9/7)
+    --> crates/term/examples/glass_mindseye/main.rs:1079:1
+     |
+1079 | / fn build_frame(
+1080 | |     show: &Show,
+1081 | |     cv: &mut Canvas,
+1082 | |     hud: &mut Hud,
+...    |
+1088 | |     end: f32,
+1089 | | ) -> Vec<u8> {
+     | |____________^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#too_many_arguments
+     = note: `#[warn(clippy::too_many_arguments)]` on by default
+
+warning: derefed type is same as origin
+    --> crates/term/examples/glass_mindseye/main.rs:1099:22
+     |
+1099 |     if let Some(s) = surreal.as_deref_mut() {
+     |                      ^^^^^^^^^^^^^^^^^^^^^^ help: try: `surreal`
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#needless_option_as_deref
+     = note: `#[warn(clippy::needless_option_as_deref)]` on by default
+
+warning: very complex type used. Consider factoring parts into `type` definitions
+  --> crates/glass/examples/stream-bench.rs:24:15
+   |
+24 | const BLAST4: [(u32, u32, u32, i32, f32, f32, f32, f32); 4] = [
+   |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#type_complexity
+   = note: `#[warn(clippy::type_complexity)]` on by default
+
+warning: very complex type used. Consider factoring parts into `type` definitions
+  --> crates/glass/examples/stream-bench.rs:87:12
+   |
+87 |     specs: Vec<(u32, u32, u32, i32, f32, f32, f32, f32)>,
+   |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#type_complexity
+
+warning: very complex type used. Consider factoring parts into `type` definitions
+  --> crates/glass/examples/stream-bench.rs:95:19
+   |
+95 |     fn new(specs: Vec<(u32, u32, u32, i32, f32, f32, f32, f32)>) -> Self {
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#type_complexity
+
+warning: using `chunks_exact_mut` with a constant chunk size
+   --> crates/glass/examples/stream-bench.rs:120:32
+    |
+120 |                 for px in rgba.chunks_exact_mut(4) {
+    |                                ^^^^^^^^^^^^^^^^^^^ help: consider using `as_chunks_mut` instead: `as_chunks_mut::<4>().0`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+    = note: `#[warn(clippy::chunks_exact_to_as_chunks)]` on by default
+
+warning: `glass-window` (test "world_gpu") generated 5 warnings (run `cargo clippy --fix --test "world_gpu" -p glass-window -- ` to apply 4 suggestions)
+warning: `glass-term` (example "glass_mindseye") generated 2 warnings (run `cargo clippy --fix --example "glass_mindseye" -p glass-term -- ` to apply 1 suggestion)
+warning: `glass-window` (example "stream-bench") generated 4 warnings (run `cargo clippy --fix --example "stream-bench" -p glass-window -- ` to apply 1 suggestion)
+warning: method `apply_timed` is never used
+   --> crates/term/src/engine.rs:495:8
+    |
+368 | impl Engine {
+    | ----------- method in this implementation
+...
+495 |     fn apply_timed(&mut self, pass: &[u8]) {
+    |        ^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: static `FEED_NS` is never used
+    --> crates/term/src/engine.rs:2980:16
+     |
+2980 |     pub static FEED_NS: AtomicU64 = AtomicU64::new(0);
+     |                ^^^^^^^
+
+warning: static `FEED_CALLS` is never used
+    --> crates/term/src/engine.rs:2981:16
+     |
+2981 |     pub static FEED_CALLS: AtomicU64 = AtomicU64::new(0);
+     |                ^^^^^^^^^^
+
+warning: constant `FEED` is never used
+    --> crates/term/src/engine.rs:2983:15
+     |
+2983 |     pub const FEED: usize = 1;
+     |               ^^^^
+
+warning: function `start` is never used
+    --> crates/term/src/engine.rs:3056:12
+     |
+3056 |     pub fn start() {
+     |            ^^^^^
+
+warning: function `stop` is never used
+    --> crates/term/src/engine.rs:3062:12
+     |
+3062 |     pub fn stop() -> (u64, u64) {
+     |            ^^^^
+
+warning: using `chunks_exact` with a constant chunk size
+   --> crates/term/src/intake/glass_gltf.rs:485:19
+    |
+485 |         Ok(values.chunks_exact(16).map(|m| std::array::from_fn(|c| [m[c * 4], m[c * 4 + 1], m[c * 4 + 2], m[c * 4 + 3]])).collect())
+    |                   ^^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<16>().0.iter()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+    = note: `#[warn(clippy::chunks_exact_to_as_chunks)]` on by default
+
+warning: using `chunks_exact` with a constant chunk size
+   --> crates/term/src/intake/glass_gltf.rs:949:45
+    |
+949 |         let positions: Vec<[f32; 3]> = flat.chunks_exact(3).map(|c| [c[0], c[1], c[2]]).collect();
+    |                                             ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<3>().0.iter()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact` with a constant chunk size
+   --> crates/term/src/intake/glass_gltf.rs:958:57
+    |
+958 |             Some(index) => same("NORMAL", index, &[3])?.chunks_exact(3).map(|c| [c[0], c[1], c[2]]).collect(),
+    |                                                         ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<3>().0.iter()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact` with a constant chunk size
+   --> crates/term/src/intake/glass_gltf.rs:962:59
+    |
+962 |             Some(index) => same("TEXCOORD", index, &[2])?.chunks_exact(2).map(|c| [c[0], c[1]]).collect(),
+    |                                                           ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<2>().0.iter()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact` with a constant chunk size
+   --> crates/term/src/intake/glass_gltf.rs:982:33
+    |
+982 | ...   let joints = jv.chunks_exact(4).map(|c| [c[0], c[1], c[2], c[3]].map(|v| v.min(u32::from(u16::MAX)) as u16)).collect();
+    |                       ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<4>().0.iter()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact` with a constant chunk size
+   --> crates/term/src/intake/glass_gltf.rs:983:34
+    |
+983 |                 let weights = wv.chunks_exact(4).map(|c| [c[0], c[1], c[2], c[3]]).collect();
+    |                                  ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<4>().0.iter()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact` with a constant chunk size
+    --> crates/term/src/intake/glass_gltf.rs:1182:29
+     |
+1182 |     for tri in mesh.indices.chunks_exact(3) {
+     |                             ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<3>().0`
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact_mut` with a constant chunk size
+   --> crates/term/src/intake/sixel.rs:282:41
+    |
+282 |             for px in self.rgba[..size].chunks_exact_mut(4) {
+    |                                         ^^^^^^^^^^^^^^^^^^^ help: consider using `as_chunks_mut` instead: `as_chunks_mut::<4>().0`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: `glass-term` (bin "glass") generated 14 warnings (run `cargo clippy --fix --bin "glass" -p glass-term -- ` to apply 8 suggestions)
+warning: using `chunks_exact` with a constant chunk size
+   --> crates/term/src/intake/sixel.rs:496:32
+    |
+496 |         for px in picture.rgba.chunks_exact(4) {
+    |                                ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<4>().0`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#chunks_exact_to_as_chunks
+
+warning: can be more succinctly written as a byte str
+   --> crates/term/src/speed.rs:448:27
+    |
+448 |                 let end = [b'H', b'f'][rng.below(2)];
+    |                           ^^^^^^^^^^^^ help: try: `*b"Hf"`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#byte_char_slices
+    = note: `#[warn(clippy::byte_char_slices)]` on by default
+
+warning: `glass-term` (bin "glass" test) generated 14 warnings (12 duplicates) (run `cargo clippy --fix --bin "glass" -p glass-term --tests -- ` to apply 2 suggestions)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.65s

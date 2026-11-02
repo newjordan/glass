@@ -1,0 +1,11 @@
+rustc 1.99.0 (b940084d7 2026-09-28)
+binary: rustc
+commit-hash: b940084d7eb6a299eb4bfeb8e34901bc051e7ac4
+commit-date: 2026-09-28
+host: x86_64-unknown-linux-gnu
+release: 1.99.0
+LLVM version: 23.1.1
+rustdoc 1.99.0 (b940084d7 2026-09-28)
+cargo 1.99.1 (5f94df478 2026-08-27)
+Linux 7.2.8-9-omarchy
+f920961c8b459385f73eb171c9c2c8a71b5d6347

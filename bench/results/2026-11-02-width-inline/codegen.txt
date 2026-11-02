@@ -1,0 +1,2 @@
+Inspection only; no runtime candidate.
+The release and test hoist binaries both contain a cached_width symbol, but no direct helper call was identified in Watch::print_utf8. The symbol alone does not establish a per-glyph call or explain the throughput inversion. Reject the causal inference.

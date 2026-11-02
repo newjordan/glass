@@ -13,6 +13,20 @@ A program runs in a pseudo-terminal, and what it writes comes in through
 No dialect is the reference one; each is an adapter onto one shared
 description of what to show.
 
+### Reader correctness and measured research
+
+- Linux: drain readable final PTY bytes before honoring a simultaneous
+  `POLLHUP`; a deterministic raw-PTY regression failed before the correction
+  and passes afterward.
+- Return fully copied reader hand-offs before parsing the independent copy,
+  allowing the existing two buffers to refill sooner. A fresh-control paired
+  comparison measured about +5.1% scroll-region throughput, not a lead on every
+  workload. The bounded read-ahead allowance and quiet RTT are documented in
+  `bench/results/2026-11-02-early-recycle/README.md`.
+- Add balanced six-order terminal comparisons with provenance and workload
+  checks. Preserve rejected Unicode and third-buffer experiments rather than
+  inferring a terminal win from engine microbenchmarks alone.
+
 ### Open intake
 
 - APC graphics (`ESC _ G …`): transmit and place over every transmission

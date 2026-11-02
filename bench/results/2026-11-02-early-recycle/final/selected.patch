@@ -1,0 +1,71 @@
+diff --git i/crates/term/src/read_ahead.rs w/crates/term/src/read_ahead.rs
+index d71fe7e..1d3122f 100644
+--- i/crates/term/src/read_ahead.rs
++++ w/crates/term/src/read_ahead.rs
+@@ -7,13 +7,17 @@
+ //! is already waiting and there is room, so a flood moves in large pieces
+ //! and a single keystroke's echo is handed on at once.
+ //!
+-//! Only two hand-offs are ever in flight, so the program can run at most
+-//! that much further ahead of the screen than the pty itself lets it.
++//! Only two producer hand-offs exist. Once a hand-off has been copied into
++//! the parser's buffer it is recycled immediately, letting the producer fill
++//! both while parsing proceeds. Thus at most two hand-offs plus the copied
++//! one being parsed can be outstanding beyond the pty itself.
+ 
+ use std::io::{self, Read};
+-use std::time::{Duration, Instant};
++use std::time::Duration;
+ use std::os::fd::{AsRawFd, OwnedFd};
+-use std::sync::mpsc::{self, Receiver, Sender, TryRecvError};
++use std::sync::mpsc::{self, Receiver, Sender};
++#[cfg(test)]
++use std::sync::mpsc::TryRecvError;
+ 
+ /// The most one hand-off holds.
+ const CHUNK: usize = 16 * 1024;
+@@ -176,6 +180,14 @@ impl Read for ReadAhead {
+         let n = out.len().min(self.end - self.at);
+         out[..n].copy_from_slice(&self.current[self.at..self.at + n]);
+         self.at += n;
++        if self.at == self.end {
++            // The caller owns an independent copy. Return producer credit now,
++            // not after the caller has parsed it and asks for the next read.
++            let spent = std::mem::take(&mut self.current);
++            self.at = 0;
++            self.end = 0;
++            let _ = self.empty.send(spent);
++        }
+         Ok(n)
+     }
+ }
+@@ -201,6 +213,29 @@ mod tests {
+         }
+     }
+ 
++    #[test]
++    fn copied_handoff_returns_credit_after_its_last_byte_only() {
++        let (full_tx, full) = mpsc::channel();
++        let (empty, empty_rx) = mpsc::channel();
++        let mut ahead = ReadAhead { full, empty, current: vec![1, 2, 3, 4], at: 0, end: 4 };
++        let mut out = [0; 2];
++        assert_eq!(ahead.read(&mut []).unwrap(), 0);
++        assert!(matches!(empty_rx.try_recv(), Err(TryRecvError::Empty)));
++        assert_eq!(ahead.read(&mut out).unwrap(), 2);
++        assert_eq!(out, [1, 2]);
++        assert!(matches!(empty_rx.try_recv(), Err(TryRecvError::Empty)));
++        assert_eq!(ahead.read(&mut out).unwrap(), 2);
++        assert_eq!(out, [3, 4]);
++        assert_eq!(empty_rx.try_recv().unwrap(), [1, 2, 3, 4]);
++        assert!(ahead.current.is_empty());
++        assert_eq!((ahead.at, ahead.end), (0, 0));
++        // EOF cannot return that buffer a second time. No reader thread or
++        // sleep is needed to check producer credit independently of parsing.
++        drop(full_tx);
++        assert_eq!(ahead.read(&mut out).unwrap(), 0);
++        assert!(matches!(empty_rx.try_recv(), Err(TryRecvError::Empty)));
++    }
++
+     /// Every byte the program writes comes out once, in order, however it
+     /// is written, and the program's side closing ends the reads.
+     #[test]

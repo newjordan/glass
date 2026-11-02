@@ -1,0 +1,84 @@
+
+RUN build: cargo build --release -p glass-term --locked
+build 0
+warning: function `stop` is never used
+    --> crates/term/src/engine.rs:3062:12
+     |
+3062 |     pub fn stop() -> (u64, u64) {
+     |            ^^^^
+
+warning: `glass-term` (bin "glass") generated 6 warnings
+    Finished `release` profile [optimized] target(s) in 24.19s
+
+RUN workspace-tests: cargo test --workspace --lib --bins --locked -- --skip vulkan_headless
+workspace-tests 0
+test tests::partial_utf8 ... ok
+test tests::partial_utf8_into_esc ... ok
+test tests::partial_utf8_separating_utf8 ... ok
+test tests::unicode ... ok
+test ansi::tests::sync_bursts_buffer ... ok
+
+test result: ok. 54 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+RUN terminal-reference-tests: cargo test -p glass-alacritty-terminal --locked
+terminal-reference-tests 0
+   Doc-tests alacritty_terminal
+
+running 1 test
+test crates/alacritty-terminal/src/term/mod.rs - term::test::mock_term (line 2490) ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+all doctests ran in 0.11s; merged doctests compilation took 0.11s
+
+RUN doc-tests: cargo test --workspace --doc --locked
+doc-tests 0
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests vte
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+RUN clippy: cargo clippy --workspace --all-targets --locked
+clippy 0
+448 |                 let end = [b'H', b'f'][rng.below(2)];
+    |                           ^^^^^^^^^^^^ help: try: `*b"Hf"`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#byte_char_slices
+    = note: `#[warn(clippy::byte_char_slices)]` on by default
+
+warning: `glass-term` (bin "glass" test) generated 14 warnings (12 duplicates) (run `cargo clippy --fix --bin "glass" -p glass-term --tests -- ` to apply 2 suggestions)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.65s
+
+RUN diff-check: git diff --check
+diff-check 0
+
+RUN throughput: env GLASS=/tmp/glass-hup-final GLASS_ALT=/tmp/glass-recycle-final python3 bench/compare-tput.py bench/results/2026-11-02-hup-drain/gate --rounds 18
+throughput 0
+  tui_frames     1.0097 13/18 wins p=0.0962524
+glass / ghostty:
+  ascii          0.8600 6/18 wins p=0.237885
+  unicode        0.9505 4/18 wins p=0.0308838
+  truecolor      1.1784 18/18 wins p=7.62939e-06
+  cursor_motion  1.1195 18/18 wins p=7.62939e-06
+  scroll_region  0.9361 3/18 wins p=0.00753784
+  tui_frames     1.0723 18/18 wins p=7.62939e-06
+
+RUN quiet-rtt: env GLASS=/tmp/glass-hup-final GLASS_ALT=/tmp/glass-recycle-final OUT=bench/results/2026-11-02-hup-drain/rtt ROUNDS=6 N=300 bash bench/run-pty-rtt.sh
+quiet-rtt 0
+    "rtt-glass-alt-4.json": "846c2de0cd605c28e172fb41848cdaa1bda947ef6da621ac2c68e0709b4e199a",
+    "rtt-glass-alt-5.json": "6743b733a2b3b0a82ee9260d646d11103b4d6f65c0d2b198fe24000fc81ca51c",
+    "rtt-glass-alt-6.json": "265f48897c8965bf7bb8dcc6bd78c7d3473c08fa56293b656ad4bcf65875e084"
+  },
+  "rounds": 6,
+  "samples_per_run": 300,
+  "note": "Samples correlated within sessions; not key-to-screen latency."
+}
+crates/term/src/engine.rs: OK
+crates/term/src/read_ahead.rs: OK
+
+Final-source commands completed; inspect scores, not only exits.

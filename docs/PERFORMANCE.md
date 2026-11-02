@@ -6,9 +6,10 @@ when reading it. The harness and the raw results are in [`bench/`](../bench/);
 
 ## The numbers
 
-Measured against **kitty 0.49.2**, the only other terminal measured so far,
-on one machine: Ryzen 9 9950X3D, RTX 3090, Omarchy (Arch Linux), Hyprland,
-a 154×39 window. Medians.
+The original published comparison against **kitty 0.49.2**, on one machine:
+Ryzen 9 9950X3D, RTX 3090, Omarchy (Arch Linux), Hyprland, a 154×39 window.
+Medians. Later four-terminal and paired research results are separate below;
+these historical numbers are not a claim about every subsequent build.
 
 | Measure | glass | kitty 0.49.2 | |
 | --- | --- | --- | --- |
@@ -225,6 +226,36 @@ Plain text and the scroll region run near what the pty itself can carry: a
 reader that only reads gets about 260 to 300 MB/s through it. Unicode is
 close: Ghostty's rounds ranged from 219 to 316 MB/s, and glass's from 243 to
 247.
+
+## Later paired optimization research (2026-11-02)
+
+The release-style experiments after the four-terminal scoreboard are retained
+with exact executable hashes, raw through-PTY runs and differential checks:
+
+- [SSE2 run scanning](../bench/results/2026-11-02-sse-scan/README.md) and
+  [single-mark sharing](../bench/results/2026-11-02-mark-cache/README.md).
+- [Early reader-credit recycling](../bench/results/2026-11-02-early-recycle/README.md),
+  including a fresh-control final rebuild, verification logs and quiet DA1 RTT.
+- [Final-readable-byte HUP correction](../bench/results/2026-11-02-hup-drain/README.md),
+  reproduced by a failing raw-PTY test before the fix; this is a correctness
+  result, not a throughput claim.
+- Rejected [immediate scalar commit](../bench/results/2026-11-02-direct-commit/README.md),
+  [width-cache hoisting](../bench/results/2026-11-02-width-hoist/README.md), and
+  [a third reader buffer](../bench/results/2026-11-02-third-credit/README.md).
+
+The engine test executable is a screening instrument, not the acceptance gate:
+two Unicode candidates passed parser equivalence yet lost to control through
+a real terminal, including one that won all eleven engine pairs. Correctness
+and microbenchmarks alone do not establish a speed improvement. The newer
+[balanced gate](../bench/README.md#balanced-real-terminal-gate) retains all six
+three-terminal launch orders, paired signs, binary/harness hashes and raw data.
+Significance tests are exploratory; six workloads also create multiple-testing
+risk. Small medians with inconsistent signs are not wins.
+
+These experiments do **not** establish leadership on every metric. Startup,
+key-to-screen latency, CPU/memory use, feature compatibility and other machines
+need their own controlled comparisons. Quiet DA1 RTT measures a different path
+from key-to-screen latency, and this Linux reader change is not a macOS result.
 
 ## The film
 

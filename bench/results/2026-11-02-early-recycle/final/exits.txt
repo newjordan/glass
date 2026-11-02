@@ -1,0 +1,14 @@
+control-build 0
+candidate-build 0
+reader-tests 0
+parser-tests 0
+sweep-whole 0
+sweep-legacy 0
+workspace-tests 0
+terminal-reference-tests 1
+terminal-reference-matched 0
+doc-tests 0
+clippy 0
+diff-check 0
+throughput 0
+quiet-rtt 0

@@ -74,7 +74,10 @@ startup, key-latency and VRAM rows have been run for glass and kitty only.
   Other GPUs and CPUs: not yet.
 
 How each was measured, and every caveat: [docs/PERFORMANCE.md](docs/PERFORMANCE.md).
-The harness and every run: [`bench/`](bench/).
+The harness and every run: [`bench/`](bench/). Later optimization experiments
+and their rejected alternatives are linked in
+[paired research](docs/PERFORMANCE.md#later-paired-optimization-research-2026-11-02);
+they are build-specific results, not a claim of leadership on every metric.
 
 ## What it takes in
 

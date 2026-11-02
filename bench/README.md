@@ -100,6 +100,39 @@ What you get will differ from the published numbers: they come from one
 machine (Ryzen 9 9950X3D, RTX 3090). Plain ASCII in particular depends on
 the CPU's cache; see [docs/PERFORMANCE.md](../docs/PERFORMANCE.md).
 
+### Balanced real-terminal gate
+
+`compare-tput.py` drives the unchanged `run-tput.sh` through all six launch
+permutations of candidate, control and Ghostty (repeat three times = 18 rounds):
+
+```sh
+GLASS=/absolute/candidate GLASS_ALT=/absolute/control \
+  python3 bench/compare-tput.py bench/results/my-gate --rounds 18
+```
+
+It clears `GLASS_*` flags inherited by the runner and requires a fresh output folder.
+Hyprland executes terminal commands using its server environment, so also check
+that the compositor itself has no experimental `GLASS_*` flags. The runner
+retains launch orders, logs, binary and harness hashes and every raw JSON hash,
+and rejects missing/invalid rates, mismatched workloads/bytes/sample counts or
+mixed geometry. A run stays `complete: false` until all launches and provenance
+checks pass. `--summarize-only` checks the recorded orders and exact binaries
+before rebuilding the summary. Ratios are paired within rounds; sign tests are
+exploratory, uncorrected for multiple comparisons. Shared-machine outliers remain
+in the record. This is throughput evidence, not a universal championship test.
+
+For quiet DA1 RTT (not key-to-screen latency), use:
+
+```sh
+GLASS=/absolute/candidate GLASS_ALT=/absolute/control \
+  OUT=bench/results/my-rtt ROUNDS=6 N=300 bash bench/run-pty-rtt.sh
+```
+
+This alternates AB/BA, retains every sample and binary hash, restores the terminal
+through `pty-rtt.py`, and reports both run medians and pooled tails. Sessions,
+not the correlated samples within them, are the independent replication unit.
+Do not run throughput, RTT and CPU-heavy builds/tests concurrently.
+
 ### Paired engine diagnostics
 
 `engine-pairs.py` compares two **test executables**, not terminal binaries.

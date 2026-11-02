@@ -1,0 +1,55 @@
+{
+  "glass": {
+    "run_medians_ms": [
+      0.0314545,
+      0.028804,
+      0.030357000000000002,
+      0.043227,
+      0.035200999999999996,
+      0.0360125
+    ],
+    "median_of_run_medians_ms": 0.03332775,
+    "pooled_median_ms": 0.0342545,
+    "pooled_p90_ms": 0.047509,
+    "pooled_p99_ms": 0.064031
+  },
+  "glass-alt": {
+    "run_medians_ms": [
+      0.038638,
+      0.027331,
+      0.0327965,
+      0.0348655,
+      0.039404499999999995,
+      0.027366
+    ],
+    "median_of_run_medians_ms": 0.033831,
+    "pooled_median_ms": 0.032306,
+    "pooled_p90_ms": 0.049824,
+    "pooled_p99_ms": 0.060274
+  },
+  "paired_run_median_deltas_ms": [
+    -0.0071834999999999954,
+    0.0014729999999999986,
+    -0.0024394999999999972,
+    0.008361500000000001,
+    -0.004203499999999999,
+    0.008646500000000001
+  ],
+  "raw_sha256": {
+    "rtt-glass-1.json": "062080a127c274914e508d21b073e65fbe1a3d9ae5633a655ea3b9dbe927feb0",
+    "rtt-glass-2.json": "dae5285f248ff749049fb56308611a12a713848b3d537cd85cca0dc0a5303a89",
+    "rtt-glass-3.json": "6800d2d019be783c8e96e631dfb47d4612b6c2bf3e146e06c16c75afc43056ce",
+    "rtt-glass-4.json": "eadc5466f0fbd1f129f81d761f7c7501cc270edc1455a854c67e9846a2d0dce5",
+    "rtt-glass-5.json": "2e455bceb104577124b91c680530026d29eddbe74f5aa44366c2e1f55f2998bf",
+    "rtt-glass-6.json": "9245ce5760787153fd2b20abc1274bc4bf72bbad71263092fb161c9fb92fd02d",
+    "rtt-glass-alt-1.json": "ec316e7df5d3f8449be9105e7d3930d8c9172561764135b6c7c400cde3379df5",
+    "rtt-glass-alt-2.json": "26512bd3d04ffefb27d6df52d4af039a82a1592e4a1e785d568d70e733a393f3",
+    "rtt-glass-alt-3.json": "325ea456cf298a5550e87771160d7ebab89b999d95d37c23cadb7890bf072891",
+    "rtt-glass-alt-4.json": "846c2de0cd605c28e172fb41848cdaa1bda947ef6da621ac2c68e0709b4e199a",
+    "rtt-glass-alt-5.json": "6743b733a2b3b0a82ee9260d646d11103b4d6f65c0d2b198fe24000fc81ca51c",
+    "rtt-glass-alt-6.json": "265f48897c8965bf7bb8dcc6bd78c7d3473c08fa56293b656ad4bcf65875e084"
+  },
+  "rounds": 6,
+  "samples_per_run": 300,
+  "note": "Samples correlated within sessions; not key-to-screen latency."
+}

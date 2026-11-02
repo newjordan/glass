@@ -1,0 +1,45 @@
+diff --git i/crates/term/src/engine.rs w/crates/term/src/engine.rs
+index 5b0f466..b8baee0 100644
+--- i/crates/term/src/engine.rs
++++ w/crates/term/src/engine.rs
+@@ -1943,6 +1943,8 @@ impl Watch<'_> {
+             flags: flags | CellFlags::WIDE_CHAR_SPACER,
+             ..narrow.clone()
+         };
++        // Initialization belongs to the row, not to each glyph in it.
++        let widths = width_cache();
+         while let Some((c, len)) = utf8_at(text, at) {
+             if ('\u{7f}'..='\u{9f}').contains(&c) {
+                 break;
+@@ -1965,7 +1967,7 @@ impl Watch<'_> {
+                     // exhaustive equivalence test; and the probe itself cost
+                     // 3.5% as a per-character branch, so it was not kept
+                     // either. The 23% is real and still unclaimed.
+-                    match width_of(last) {
++                    match cached_width(widths, last) {
+                         Some(width @ 1..=2) => width,
+                         Some(0) => {
+                             // A mark joins the cell before it through
+@@ -3641,10 +3643,19 @@ fn utf8_at(bytes: &[u8], at: usize) -> Option<(char, usize)> {
+ /// unasked, -2 is the crate's `None` (widths themselves run 0..=3).
+ #[inline]
+ fn width_of(c: char) -> Option<usize> {
+-    use std::sync::atomic::{AtomicI8, Ordering};
++    cached_width(width_cache(), c)
++}
++
++#[inline]
++fn width_cache() -> &'static [std::sync::atomic::AtomicI8] {
++    use std::sync::atomic::AtomicI8;
+     static CACHE: std::sync::OnceLock<Box<[AtomicI8]>> = std::sync::OnceLock::new();
+-    let cache = CACHE
+-        .get_or_init(|| (0..0x110000).map(|_| AtomicI8::new(-1)).collect::<Vec<_>>().into_boxed_slice());
++    CACHE.get_or_init(|| (0..0x110000).map(|_| AtomicI8::new(-1)).collect::<Vec<_>>().into_boxed_slice())
++}
++
++#[inline]
++fn cached_width(cache: &[std::sync::atomic::AtomicI8], c: char) -> Option<usize> {
++    use std::sync::atomic::Ordering;
+     let slot = &cache[c as usize];
+     let v = slot.load(Ordering::Relaxed);
+     if v >= 0 {

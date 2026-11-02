@@ -1,0 +1,77 @@
+Glass campaign iteration 3 — replicated reader gain and final-byte correctness
+
+Starting revision: f920961c8b459385f73eb171c9c2c8a71b5d6347.
+Linux / Ryzen 9 9950X3D / RTX 3090 / Hyprland; throughput geometry 154 x 39.
+Rust 1.99.0 / LLVM 23.1.1. One shared machine; not universal evidence.
+
+VERDICT
+Not world champion. Final executable preserves three Ghostty throughput leads;
+ASCII, Unicode and scroll-region remain open. Startup, memory, busy input and
+key-to-screen latency, other CPUs/GPUs and macOS were not remeasured. Do not
+claim loop acceptance or all-metric completion.
+
+NEW RUNTIME RESULTS
+1. Return a fully copied hand-off before parsing the independent caller copy.
+Same two 16KiB producer buffers; partial/empty reads unchanged; at most one more
+16KiB future hand-off can be outstanding during parsing. No added wait/unsafe.
+Initial 18-pair scroll gain +12.5% (16/18), replicated against freshly rebuilt
+HEAD control at +5.1% (15/18, exploratory p=.00754), cursor +1.0% (14 wins,
+3 losses, 1 tie, p=.00418). Other small changes not established. Report the
+smaller replicated effect; do not pool away the difference. Fresh quiet DA1
+RTT run-median .02948/.03150ms, mixed signs. Not key-to-screen improvement.
+
+2. New deterministic correctness finding: Linux poll can report POLLIN|POLLHUP
+with final bytes pending. Checking HUP before POLLIN can drop the child’s final
+burst in the FIONREAD/poll race. Raw-PTY regression fails before (exit101), then
+all three reader tests pass after accepting POLLIN first. No added delay.
+
+FINAL BUILD, NOT TRANSFERRED RESULTS
+Final measured executable SHA-256:
+d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c
+Restored at target/release/glass. Final source hashes and snapshots retained.
+18 balanced three-arm rounds, all six orders three times. Final/Ghostty paired
+median ratios and wins:
+ASCII .8600 (6/18), Unicode .9505 (4/18), truecolor 1.1784 (18/18), cursor
+1.1195 (18/18), scroll .9361 (3/18), TUI 1.0723 (18/18).
+Final/pre-HUP differences not established (all exploratory p>=.0963); this is
+not exact equivalence. The earlier scroll parity with Ghostty did not survive
+as a final-build claim. Final quiet RTT run-median .03333/.03383ms, paired signs
+3/3, pooled p99 .06403/.06027ms. No reliable tiny latency change established.
+
+VERIFICATION
+Final source: 830 workspace tests passed (11 ignored, explicit existing
+vulkan_headless exclusion); 136 terminal unit+45 reference tests passed;
+matched-rustdoc workspace doc tests pass; workspace Clippy exit0 with warnings.
+Pre-HUP candidate: 25,600 differential streams, 12,800 each in whole/legacy
+modes, no divergence; fixed parser comparison passes. Do not say rerun final.
+An initial implicit doctest failed from stable-rustdoc/RUSTC1.99 mismatch;
+retained failure and matched-toolchain rerun pass. All final source build,
+test, clippy, throughput, RTT and hash checks exit0. No bound loop acceptance.
+
+DISTINCT REJECTED DIRECTIONS
+Direct scalar commit: 12,800 streams clean; engine Unicode -1.0% inconclusive,
+terminal -3.4%, 0/18 wins. Reject. ASCII microbench gain unrelated to path.
+Hoist width-cache initialization: engine Unicode +3.0%, 11/11; exhaustive width
+check and parser parity pass; terminal -6.5%, 0/18. Reject. The proposed
+out-of-line-call explanation was not demonstrated and is explicitly withdrawn.
+Third producer buffer on top of early recycle: no significant added benefit
+in 18 balanced rounds; extra16KiB unjustified. Reject. A Unicode/Ghostty ratio
+above1 with 10/18 signs is not a win.
+
+HARNESS/REPRODUCIBILITY
+New compare-tput.py retains complete/incomplete state, all six orders, exact
+binary/harness/raw hashes, validates geometry, six workloads, byte counts and
+three timing samples. Rejects incomplete replay and changed raw evidence.
+Runner inherited flags cleared; compositor environment separately checked
+(empty experiment flags). New run-pty-rtt.sh retains sessions and raw samples.
+Do not treat correlated samples as independent terminal trials. Exploratory
+sign tests uncorrected by default; six workloads and repeated research matter.
+
+EXPLICIT EVIDENCE
+bench/results/2026-11-02-early-recycle/README.md (initial + fresh replication)
+bench/results/2026-11-02-hup-drain/README.md (repro + final-source gate)
+bench/results/2026-11-02-direct-commit/README.md
+bench/results/2026-11-02-width-hoist/README.md
+bench/results/2026-11-02-third-credit/README.md
+Raw JSON, exact patches, source snapshots, command logs and binary hashes in
+their named directories. Original scoreboard numbers remain historical.

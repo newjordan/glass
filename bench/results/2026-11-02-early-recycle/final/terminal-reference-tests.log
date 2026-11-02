@@ -1,0 +1,365 @@
+   Compiling glass-alacritty-terminal v0.26.0 (/work/frosty40/glass-repo/tree/crates/alacritty-terminal)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.07s
+     Running unittests src/lib.rs (target/debug/deps/alacritty_terminal-2cbb80f59ccdbffa)
+
+running 136 tests
+test grid::storage::tests::indexing ... ok
+test grid::storage::tests::shrink_before_and_after_zero ... ok
+test grid::storage::tests::shrink_then_grow ... ok
+test grid::storage::tests::rotate_wrap_zero ... ok
+test grid::storage::tests::rotate ... ok
+test grid::storage::tests::region_rotation_reads_as_rotation ... ok
+test grid::storage::tests::shrink_before_zero ... ok
+test grid::storage::tests::truncate_invisible_lines ... ok
+test grid::storage::tests::grow_after_zero ... ok
+test grid::storage::tests::truncate_invisible_lines_beginning ... ok
+test grid::storage::tests::shrink_after_zero ... ok
+test grid::tests::accurate_size_hint ... ok
+test grid::storage::tests::with_capacity ... ok
+test grid::tests::grow_reflow ... ok
+test grid::tests::grow_reflow_disabled ... ok
+test grid::storage::tests::grow_before_zero ... ok
+test grid::storage::tests::initialize ... ok
+test grid::tests::grow_reflow_multiline ... ok
+test grid::tests::scroll_down ... ok
+test grid::tests::scroll_up ... ok
+test grid::tests::shrink_reflow_disabled ... ok
+test grid::tests::shrink_reflow ... ok
+test grid::tests::shrink_reflow_empty_cell_inside_line ... ok
+test grid::tests::test_iter ... ok
+test grid::tests::shrink_reflow_twice ... ok
+test index::tests::add ... ok
+test index::tests::add_clamp ... ok
+test grid::tests::scroll_down_with_history ... ok
+test index::tests::add_grid_clamp ... ok
+test index::tests::add_none_clamp ... ok
+test index::tests::add_wrap ... ok
+test index::tests::location_ordering ... ok
+test index::tests::sub ... ok
+test index::tests::sub_clamp ... ok
+test index::tests::sub_grid_clamp ... ok
+test index::tests::sub_none_clamp ... ok
+test index::tests::sub_wrap ... ok
+test selection::tests::across_adjacent_lines_upward_final_cell_exclusive ... ok
+test selection::tests::between_adjacent_cells_left_to_right ... ok
+test selection::tests::block_is_empty ... ok
+test selection::tests::between_adjacent_cells_right_to_left ... ok
+test selection::tests::block_selection ... ok
+test selection::tests::line_selection ... ok
+test selection::tests::range_intersection ... ok
+test selection::tests::rotate_in_region_down ... ok
+test selection::tests::rotate_in_region_up ... ok
+test selection::tests::rotate_in_region_up_block ... ok
+test selection::tests::selection_bigger_then_smaller ... ok
+test selection::tests::simple_is_empty ... ok
+test selection::tests::semantic_selection ... ok
+test selection::tests::simple_selection ... ok
+test selection::tests::single_cell_left_to_right ... ok
+test selection::tests::single_cell_right_to_left ... ok
+test term::cell::tests::cell_size_is_below_cap ... ok
+test term::cell::tests::line_length_works ... ok
+test term::cell::tests::line_length_works_with_wrapline ... ok
+test term::cell::tests::marks_preserve_existing_extra_attributes ... ok
+test term::cell::tests::shared_marks_are_isolated_from_cell_mutations_and_cache_replacement ... ok
+test term::cell::tests::shared_mark_serializes_like_an_owned_extra ... ok
+test term::search::tests::fullwidth_semantic ... ok
+test term::search::tests::inline_word_search ... ok
+test term::search::tests::fullwidth_across_lines ... ok
+test term::tests::block_selection_works ... ok
+test term::search::tests::fullwidth_into_halfwidth_across_lines ... ok
+test term::search::tests::newline_breaking_semantic ... ok
+test term::search::tests::end_on_fullwidth ... ok
+test term::search::tests::wrapping_into_fullwidth ... ok
+test term::search::tests::reverse_search_dead_recovery ... ok
+test term::search::tests::no_match_left ... ok
+test term::search::tests::wrapping ... ok
+test term::search::tests::no_match_right ... ok
+test term::search::tests::leading_spacer ... ok
+test term::search::tests::empty_match ... ok
+test term::search::tests::wrap_around_to_another_end ... ok
+test term::tests::damage_cursor_movements ... ok
+test term::search::tests::empty_match_multibyte ... ok
+test term::search::tests::anchored_empty ... ok
+test term::search::tests::singlecell_fullwidth ... ok
+test term::search::tests::skip_dead_cell ... ok
+test term::search::tests::no_spacer_fullwidth_linewrap ... ok
+test term::search::tests::include_linebreak_right ... ok
+test term::tests::parse_cargo_version ... ok
+test term::search::tests::empty_match_multiline ... ok
+test term::search::tests::end_on_multibyte_unicode ... ok
+test term::search::tests::regex_left ... ok
+test term::tests::semantic_selection_works ... ok
+test term::tests::simple_selection_works ... ok
+test term::tests::scroll_display_page_down ... ok
+test term::search::tests::greed_is_good ... ok
+test term::tests::clearing_scrollback_sets_vi_cursor_into_viewport ... ok
+test term::tests::scroll_display_page_up ... ok
+test term::search::tests::fullwidth ... ok
+test term::tests::clearing_scrollback_resets_display_offset ... ok
+test term::tests::clearing_viewport_keeps_history_position ... ok
+test term::search::tests::include_linebreak_left ... ok
+test term::search::tests::multiline ... ok
+test term::search::tests::regex_right ... ok
+test term::tests::input_line_drawing_character ... ok
+test term::tests::line_selection_works ... ok
+test term::tests::damage_public_usage ... ok
+test vi_mode::tests::motion_bracket ... ok
+test vi_mode::tests::motion_first_occupied ... ok
+test vi_mode::tests::motion_high_middle_low ... ok
+test vi_mode::tests::motion_semantic_left_end ... ok
+test vi_mode::tests::motion_semantic_right_end ... ok
+test vi_mode::tests::motion_semantic_left_start ... ok
+test vi_mode::tests::motion_semantic_right_start ... ok
+test vi_mode::tests::motion_simple ... ok
+test vi_mode::tests::motion_word ... ok
+test vi_mode::tests::motion_start_end ... ok
+test term::search::tests::wide_without_spacer ... ok
+test term::tests::clear_saved_lines ... ok
+test term::tests::vi_cursor_keep_pos_on_scrollback_buffer ... ok
+test term::tests::window_title ... ok
+test vi_mode::tests::semantic_wide ... ok
+test vi_mode::tests::simple_wide ... ok
+test vi_mode::tests::wide_semantic_char ... ok
+test vi_mode::tests::word_wide ... ok
+test term::search::tests::nested_regex ... ok
+test term::tests::clearing_viewport_with_vi_mode_keeps_history_position ... ok
+test tty::unix::test_get_pw_entry ... ok
+test term::search::tests::multibyte_unicode ... ok
+test vi_mode::tests::scroll_over_top ... ok
+test vi_mode::tests::scroll_simple ... ok
+test vi_mode::tests::scroll_over_bottom ... ok
+test vi_mode::tests::scroll_semantic ... ok
+test vi_mode::tests::scroll_word ... ok
+test term::tests::shrink_lines_updates_inactive_cursor_pos ... ok
+test term::tests::shrink_lines_updates_active_cursor_pos ... ok
+test term::tests::full_damage ... ok
+test term::tests::grow_lines_updates_inactive_cursor_pos ... ok
+test term::tests::grow_lines_updates_active_cursor_pos ... ok
+test term::search::tests::nfa_compile_error ... ok
+test term::tests::grid_serde ... ok
+test grid::storage::tests::indexing_above_inner_len - should panic ... ok
+test term::search::tests::runtime_cache_error ... ok
+
+test result: ok. 136 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.93s
+
+     Running tests/ref.rs (target/debug/deps/ref-5557e1fce079ef27)
+
+running 45 tests
+test selective_erasure ... ok
+test clear_underline ... ok
+test csi_rep ... ok
+test decaln_reset ... ok
+test fish_cc ... ok
+test delete_chars_reset ... ok
+test erase_chars_reset ... ok
+test deccolm_reset ... ok
+test ll ... ok
+test newline_with_cursor_beyond_scroll_region ... ok
+test scroll_up_reset ... ok
+test indexed_256_colors ... ok
+test insert_blank_reset ... ok
+test issue_855 ... ok
+test delete_lines ... ok
+test tmux_git_log ... ok
+test alt_reset ... ok
+test erase_in_line ... ok
+test origin_goto ... ok
+test hyperlinks ... ok
+test tmux_htop ... ok
+test saved_cursor ... ok
+test saved_cursor_alt ... ok
+test sgr ... ok
+test scroll_in_region_up_preserves_history ... ok
+test colored_underline ... ok
+test vim_simple_edit ... ok
+test vttest_cursor_movement_1 ... ok
+test vttest_insert ... ok
+test vttest_scroll ... ok
+test zsh_tab_completion ... ok
+test vttest_origin_mode_2 ... ok
+test vttest_origin_mode_1 ... ok
+test vttest_tab_clear_set ... ok
+test colored_reset ... ok
+test region_scroll_down ... ok
+test wrapline_alt_toggle ... ok
+test tab_rendering ... ok
+test zerowidth ... ok
+test underline ... ok
+test grid_reset ... ok
+test vim_large_window_scroll ... ok
+test vim_24bitcolors_bce ... ok
+test history ... ok
+test row_reset ... ok
+
+test result: ok. 45 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.47s
+
+   Doc-tests alacritty_terminal
+error[E0514]: found crate `parking_lot` compiled by an incompatible version of rustc
+ --> crates/alacritty-terminal/src/sync.rs:5:5
+  |
+5 | use parking_lot::{Mutex, MutexGuard};
+  |     ^^^^^^^^^^^
+  |
+  = note: the following crate versions were found:
+          crate `parking_lot` compiled by rustc 1.99.0 (b940084d7 2026-09-28): /work/frosty40/glass-repo/tree/target/debug/deps/libparking_lot-7744b3a900e29b3f.rlib
+  = help: please recompile that crate using this compiler (rustc 1.99.1 (58cf8f9c3 2026-10-13)) (consider running `cargo clean` first)
+
+error[E0514]: found crate `vte` compiled by an incompatible version of rustc
+  --> crates/alacritty-terminal/src/lib.rs:20:9
+   |
+20 | pub use vte;
+   |         ^^^
+   |
+   = note: the following crate versions were found:
+           crate `vte` compiled by rustc 1.99.0 (b940084d7 2026-09-28): /work/frosty40/glass-repo/tree/target/debug/deps/libvte-ee155eb0cbb08fa6.rlib
+   = help: please recompile that crate using this compiler (rustc 1.99.1 (58cf8f9c3 2026-10-13)) (consider running `cargo clean` first)
+
+error[E0514]: found crate `log` compiled by an incompatible version of rustc
+  --> crates/alacritty-terminal/src/event_loop.rs:17:5
+   |
+17 | use log::error;
+   |     ^^^
+   |
+   = note: the following crate versions were found:
+           crate `log` compiled by rustc 1.99.0 (b940084d7 2026-09-28): /work/frosty40/glass-repo/tree/target/debug/deps/liblog-823af2c8d42e3649.rlib
+   = help: please recompile that crate using this compiler (rustc 1.99.1 (58cf8f9c3 2026-10-13)) (consider running `cargo clean` first)
+
+error[E0514]: found crate `polling` compiled by an incompatible version of rustc
+  --> crates/alacritty-terminal/src/event_loop.rs:18:5
+   |
+18 | use polling::{Event as PollingEvent, Events, PollMode, Poller};
+   |     ^^^^^^^
+   |
+   = note: the following crate versions were found:
+           crate `polling` compiled by rustc 1.99.0 (b940084d7 2026-09-28): /work/frosty40/glass-repo/tree/target/debug/deps/libpolling-c96d7b19b9020541.rlib
+   = help: please recompile that crate using this compiler (rustc 1.99.1 (58cf8f9c3 2026-10-13)) (consider running `cargo clean` first)
+
+error[E0514]: found crate `serde` compiled by an incompatible version of rustc
+  --> crates/alacritty-terminal/src/grid/row.rs:78:13
+   |
+78 |         use serde::ser::SerializeStruct;
+   |             ^^^^^
+   |
+   = note: the following crate versions were found:
+           crate `serde` compiled by rustc 1.99.0 (b940084d7 2026-09-28): /work/frosty40/glass-repo/tree/target/debug/deps/libserde-1743a20a8437bf2e.rlib
+   = help: please recompile that crate using this compiler (rustc 1.99.1 (58cf8f9c3 2026-10-13)) (consider running `cargo clean` first)
+
+error[E0514]: found crate `regex_automata` compiled by an incompatible version of rustc
+ --> crates/alacritty-terminal/src/term/search.rs:7:9
+  |
+7 | pub use regex_automata::hybrid::BuildError;
+  |         ^^^^^^^^^^^^^^
+  |
+  = note: the following crate versions were found:
+          crate `regex_automata` compiled by rustc 1.99.0 (b940084d7 2026-09-28): /work/frosty40/glass-repo/tree/target/debug/deps/libregex_automata-4284592ca325bcdf.rlib
+  = help: please recompile that crate using this compiler (rustc 1.99.1 (58cf8f9c3 2026-10-13)) (consider running `cargo clean` first)
+
+error[E0514]: found crate `libc` compiled by an incompatible version of rustc
+  --> crates/alacritty-terminal/src/tty/unix.rs:24:5
+   |
+24 | use libc::{F_GETFL, F_SETFL, O_NONBLOCK, TIOCSCTTY, c_int, fcntl};
+   |     ^^^^
+   |
+   = note: the following crate versions were found:
+           crate `libc` compiled by rustc 1.99.0 (b940084d7 2026-09-28): /work/frosty40/glass-repo/tree/target/debug/deps/liblibc-b3d84e1d0101ed26.rlib
+   = help: please recompile that crate using this compiler (rustc 1.99.1 (58cf8f9c3 2026-10-13)) (consider running `cargo clean` first)
+
+error[E0514]: found crate `rustix_openpty` compiled by an incompatible version of rustc
+  --> crates/alacritty-terminal/src/tty/unix.rs:27:5
+   |
+27 | use rustix_openpty::openpty;
+   |     ^^^^^^^^^^^^^^
+   |
+   = note: the following crate versions were found:
+           crate `rustix_openpty` compiled by rustc 1.99.0 (b940084d7 2026-09-28): /work/frosty40/glass-repo/tree/target/debug/deps/librustix_openpty-31bbbc28bd8b231d.rlib
+   = help: please recompile that crate using this compiler (rustc 1.99.1 (58cf8f9c3 2026-10-13)) (consider running `cargo clean` first)
+
+error[E0514]: found crate `signal_hook` compiled by an incompatible version of rustc
+  --> crates/alacritty-terminal/src/tty/unix.rs:31:5
+   |
+31 | use signal_hook::low_level::{pipe as signal_pipe, unregister as unregister_signal};
+   |     ^^^^^^^^^^^
+   |
+   = note: the following crate versions were found:
+           crate `signal_hook` compiled by rustc 1.99.0 (b940084d7 2026-09-28): /work/frosty40/glass-repo/tree/target/debug/deps/libsignal_hook-a75c511b8109923c.rlib
+   = help: please recompile that crate using this compiler (rustc 1.99.1 (58cf8f9c3 2026-10-13)) (consider running `cargo clean` first)
+
+error[E0432]: unresolved import `crate::term::cell::Flags`
+  --> crates/alacritty-terminal/src/grid/mod.rs:10:25
+   |
+10 | use crate::term::cell::{Flags, ResetDiscriminant};
+   |                         ^^^^^ no `Flags` in `term::cell`
+
+error[E0432]: unresolved import `crate::term::cell::Flags`
+ --> crates/alacritty-terminal/src/grid/resize.rs:7:25
+  |
+7 | use crate::term::cell::{Flags, ResetDiscriminant};
+  |                         ^^^^^ no `Flags` in `term::cell`
+
+error[E0514]: found crate `base64` compiled by an incompatible version of rustc
+  --> crates/alacritty-terminal/src/term/mod.rs:15:5
+   |
+15 | use base64::Engine;
+   |     ^^^^^^
+   |
+   = note: the following crate versions were found:
+           crate `base64` compiled by rustc 1.99.0 (b940084d7 2026-09-28): /work/frosty40/glass-repo/tree/target/debug/deps/libbase64-6ee8ec72165049e2.rlib
+   = help: please recompile that crate using this compiler (rustc 1.99.1 (58cf8f9c3 2026-10-13)) (consider running `cargo clean` first)
+
+error[E0514]: found crate `bitflags` compiled by an incompatible version of rustc
+  --> crates/alacritty-terminal/src/term/mod.rs:17:5
+   |
+17 | use bitflags::bitflags;
+   |     ^^^^^^^^
+   |
+   = note: the following crate versions were found:
+           crate `bitflags` compiled by rustc 1.99.0 (b940084d7 2026-09-28): /work/frosty40/glass-repo/tree/target/debug/deps/libbitflags-036982f367cf4f84.rlib
+   = help: please recompile that crate using this compiler (rustc 1.99.1 (58cf8f9c3 2026-10-13)) (consider running `cargo clean` first)
+
+error[E0514]: found crate `unicode_width` compiled by an incompatible version of rustc
+  --> crates/alacritty-terminal/src/term/mod.rs:19:5
+   |
+19 | use unicode_width::UnicodeWidthChar;
+   |     ^^^^^^^^^^^^^
+   |
+   = note: the following crate versions were found:
+           crate `unicode_width` compiled by rustc 1.99.0 (b940084d7 2026-09-28): /work/frosty40/glass-repo/tree/target/debug/deps/libunicode_width-ca0ab03338a5edee.rlib
+   = help: please recompile that crate using this compiler (rustc 1.99.1 (58cf8f9c3 2026-10-13)) (consider running `cargo clean` first)
+
+error[E0432]: unresolved import `crate::term::cell::Flags`
+  --> crates/alacritty-terminal/src/selection.rs:18:31
+   |
+18 | use crate::term::cell::{Cell, Flags};
+   |                               ^^^^^ no `Flags` in `term::cell`
+
+error[E0514]: found crate `arrayvec` compiled by an incompatible version of rustc
+ --> crates/alacritty-terminal/src/term/cell.rs:9:5
+  |
+9 | use arrayvec::ArrayVec;
+  |     ^^^^^^^^
+  |
+  = note: the following crate versions were found:
+          crate `arrayvec` compiled by rustc 1.99.0 (b940084d7 2026-09-28): /work/frosty40/glass-repo/tree/target/debug/deps/libarrayvec-74851c77445c2920.rlib
+  = help: please recompile that crate using this compiler (rustc 1.99.1 (58cf8f9c3 2026-10-13)) (consider running `cargo clean` first)
+
+error[E0432]: unresolved import `crate::term::cell::Flags`
+  --> crates/alacritty-terminal/src/term/mod.rs:25:31
+   |
+25 | use crate::term::cell::{Cell, Flags, LineLength};
+   |                               ^^^^^ no `Flags` in `term::cell`
+
+error[E0432]: unresolved import `crate::term::cell::Flags`
+  --> crates/alacritty-terminal/src/term/search.rs:16:31
+   |
+16 | use crate::term::cell::{Cell, Flags};
+   |                               ^^^^^ no `Flags` in `term::cell`
+
+error: aborting due to 18 previous errors
+
+Some errors have detailed explanations: E0432, E0514.
+For more information about an error, try `rustc --explain E0432`.
+error: doctest failed, to rerun pass `-p glass-alacritty-terminal --doc`
+
+Caused by:
+  process didn't exit successfully: `/home/frosty40/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustdoc --edition=2024 --crate-type lib --color auto --crate-name alacritty_terminal --test crates/alacritty-terminal/src/lib.rs --test-run-directory /work/frosty40/glass-repo/tree/crates/alacritty-terminal --extern arrayvec=/work/frosty40/glass-repo/tree/target/debug/deps/libarrayvec-74851c77445c2920.rlib --extern base64=/work/frosty40/glass-repo/tree/target/debug/deps/libbase64-6ee8ec72165049e2.rlib --extern bitflags=/work/frosty40/glass-repo/tree/target/debug/deps/libbitflags-036982f367cf4f84.rlib --extern alacritty_terminal=/work/frosty40/glass-repo/tree/target/debug/deps/libalacritty_terminal-6c8f3838f5c24a24.rlib --extern home=/work/frosty40/glass-repo/tree/target/debug/deps/libhome-c66cba8b8ac3127b.rlib --extern libc=/work/frosty40/glass-repo/tree/target/debug/deps/liblibc-b3d84e1d0101ed26.rlib --extern log=/work/frosty40/glass-repo/tree/target/debug/deps/liblog-823af2c8d42e3649.rlib --extern parking_lot=/work/frosty40/glass-repo/tree/target/debug/deps/libparking_lot-7744b3a900e29b3f.rlib --extern polling=/work/frosty40/glass-repo/tree/target/debug/deps/libpolling-c96d7b19b9020541.rlib --extern regex_automata=/work/frosty40/glass-repo/tree/target/debug/deps/libregex_automata-4284592ca325bcdf.rlib --extern rustix=/work/frosty40/glass-repo/tree/target/debug/deps/librustix-fac3afee63aa4482.rlib --extern rustix_openpty=/work/frosty40/glass-repo/tree/target/debug/deps/librustix_openpty-31bbbc28bd8b231d.rlib --extern serde=/work/frosty40/glass-repo/tree/target/debug/deps/libserde-1743a20a8437bf2e.rlib --extern serde_json=/work/frosty40/glass-repo/tree/target/debug/deps/libserde_json-0e4dd32744b623ed.rlib --extern signal_hook=/work/frosty40/glass-repo/tree/target/debug/deps/libsignal_hook-a75c511b8109923c.rlib --extern unicode_width=/work/frosty40/glass-repo/tree/target/debug/deps/libunicode_width-ca0ab03338a5edee.rlib --extern vte=/work/frosty40/glass-repo/tree/target/debug/deps/libvte-ee155eb0cbb08fa6.rlib -L dependency=/work/frosty40/glass-repo/tree/target/debug/deps -C embed-bitcode=no --cfg 'feature="default"' --cfg 'feature="serde"' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("default", "serde"))' --error-format human` (exit status: 1)
+note: test exited abnormally; to see the full output pass --no-capture to the harness.

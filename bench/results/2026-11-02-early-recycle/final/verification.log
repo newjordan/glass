@@ -1,0 +1,84 @@
+
+RUN control-build: cargo build --release -p glass-term --locked
+control-build 0
+warning: function `stop` is never used
+    --> crates/term/src/engine.rs:3062:12
+     |
+3062 |     pub fn stop() -> (u64, u64) {
+     |            ^^^^
+
+warning: `glass-term` (bin "glass") generated 8 warnings (run `cargo fix --bin "glass" -p glass-term` to apply 2 suggestions)
+    Finished `release` profile [optimized] target(s) in 24.55s
+
+RUN candidate-build: cargo build --release -p glass-term --locked
+candidate-build 0
+warning: function `stop` is never used
+    --> crates/term/src/engine.rs:3062:12
+     |
+3062 |     pub fn stop() -> (u64, u64) {
+     |            ^^^^
+
+warning: `glass-term` (bin "glass") generated 6 warnings
+    Finished `release` profile [optimized] target(s) in 24.36s
+
+RUN reader-tests: cargo test --release -p glass-term --locked -- read_ahead::tests
+reader-tests 0
+     Running unittests src/main.rs (target/release/deps/glass-1153e7f1f5d5d9af)
+
+running 2 tests
+test read_ahead::tests::copied_handoff_returns_credit_after_its_last_byte_only ... ok
+test read_ahead::tests::reading_ahead_gives_every_byte_in_order_then_the_end ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 376 filtered out; finished in 0.00s
+
+
+RUN parser-tests: /tmp/glass-recycle-final-test --exact speed::plain_runs_match_the_parser
+parser-tests 0
+
+running 1 test
+test speed::plain_runs_match_the_parser ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 377 filtered out; finished in 0.34s
+
+
+RUN sweep-whole: env GLASS_SWEEP_SEEDS=64 GLASS_SWEEP_ROUNDS=200 /tmp/glass-recycle-final-test --ignored --exact --nocapture speed::plain_runs_match_the_parser_over_seeds
+sweep-whole 0
+
+running 1 test
+swept 12800 streams over 64 seeds: no divergence
+test speed::plain_runs_match_the_parser_over_seeds ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 377 filtered out; finished in 10.89s
+
+
+RUN sweep-legacy: env GLASS_RUN_WHOLE=0 GLASS_SWEEP_SEEDS=64 GLASS_SWEEP_ROUNDS=200 /tmp/glass-recycle-final-test --ignored --exact --nocapture speed::plain_runs_match_the_parser_over_seeds
+sweep-legacy 0
+
+running 1 test
+swept 12800 streams over 64 seeds: no divergence
+test speed::plain_runs_match_the_parser_over_seeds ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 377 filtered out; finished in 10.98s
+
+
+RUN workspace-tests: cargo test --workspace --lib --bins --locked -- --skip atlas_gpu_tests:: --skip it_draws_on_a_real_gpu
+workspace-tests 0
+test tests::partial_utf8 ... ok
+test tests::partial_utf8_into_esc ... ok
+test tests::partial_utf8_separating_utf8 ... ok
+test tests::unicode ... ok
+test ansi::tests::sync_bursts_buffer ... ok
+
+test result: ok. 54 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+RUN terminal-reference-tests: cargo test -p glass-alacritty-terminal --locked
+terminal-reference-tests 1
+
+Some errors have detailed explanations: E0432, E0514.
+For more information about an error, try `rustc --explain E0432`.
+error: doctest failed, to rerun pass `-p glass-alacritty-terminal --doc`
+
+Caused by:
+  process didn't exit successfully: `/home/frosty40/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustdoc --edition=2024 --crate-type lib --color auto --crate-name alacritty_terminal --test crates/alacritty-terminal/src/lib.rs --test-run-directory /work/frosty40/glass-repo/tree/crates/alacritty-terminal --extern arrayvec=/work/frosty40/glass-repo/tree/target/debug/deps/libarrayvec-74851c77445c2920.rlib --extern base64=/work/frosty40/glass-repo/tree/target/debug/deps/libbase64-6ee8ec72165049e2.rlib --extern bitflags=/work/frosty40/glass-repo/tree/target/debug/deps/libbitflags-036982f367cf4f84.rlib --extern alacritty_terminal=/work/frosty40/glass-repo/tree/target/debug/deps/libalacritty_terminal-6c8f3838f5c24a24.rlib --extern home=/work/frosty40/glass-repo/tree/target/debug/deps/libhome-c66cba8b8ac3127b.rlib --extern libc=/work/frosty40/glass-repo/tree/target/debug/deps/liblibc-b3d84e1d0101ed26.rlib --extern log=/work/frosty40/glass-repo/tree/target/debug/deps/liblog-823af2c8d42e3649.rlib --extern parking_lot=/work/frosty40/glass-repo/tree/target/debug/deps/libparking_lot-7744b3a900e29b3f.rlib --extern polling=/work/frosty40/glass-repo/tree/target/debug/deps/libpolling-c96d7b19b9020541.rlib --extern regex_automata=/work/frosty40/glass-repo/tree/target/debug/deps/libregex_automata-4284592ca325bcdf.rlib --extern rustix=/work/frosty40/glass-repo/tree/target/debug/deps/librustix-fac3afee63aa4482.rlib --extern rustix_openpty=/work/frosty40/glass-repo/tree/target/debug/deps/librustix_openpty-31bbbc28bd8b231d.rlib --extern serde=/work/frosty40/glass-repo/tree/target/debug/deps/libserde-1743a20a8437bf2e.rlib --extern serde_json=/work/frosty40/glass-repo/tree/target/debug/deps/libserde_json-0e4dd32744b623ed.rlib --extern signal_hook=/work/frosty40/glass-repo/tree/target/debug/deps/libsignal_hook-a75c511b8109923c.rlib --extern unicode_width=/work/frosty40/glass-repo/tree/target/debug/deps/libunicode_width-ca0ab03338a5edee.rlib --extern vte=/work/frosty40/glass-repo/tree/target/debug/deps/libvte-ee155eb0cbb08fa6.rlib -L dependency=/work/frosty40/glass-repo/tree/target/debug/deps -C embed-bitcode=no --cfg 'feature="default"' --cfg 'feature="serde"' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("default", "serde"))' --error-format human` (exit status: 1)
+note: test exited abnormally; to see the full output pass --no-capture to the harness.
