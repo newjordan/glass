@@ -1,0 +1,47 @@
+diff --git i/crates/term/src/engine.rs w/crates/term/src/engine.rs
+index 2e7e430..97ef287 100644
+--- i/crates/term/src/engine.rs
++++ w/crates/term/src/engine.rs
+@@ -3397,6 +3397,42 @@ fn text_masks(bytes: &[u8; 16]) -> (u32, u32) {
+ 
+ #[cfg(target_arch = "x86_64")]
+ fn classified_text_len(bytes: &[u8]) -> (usize, bool) {
++    // Keep short / escape-heavy input on baseline SSE2. A flood scans long
++    // suffixes; select the wider scanner only when it can consume two blocks.
++    if bytes.len() >= 64 && std::is_x86_feature_detected!("avx2") {
++        // SAFETY: runtime dispatch established AVX2. The callee only loads
++        // complete blocks that first_chunk proves to be inside this slice.
++        return unsafe { classified_text_len_avx2(bytes) };
++    }
++    classified_text_len_sse2(bytes)
++}
++
++#[cfg(target_arch = "x86_64")]
++#[target_feature(enable = "avx2")]
++unsafe fn classified_text_len_avx2(bytes: &[u8]) -> (usize, bool) {
++    use std::arch::x86_64::*;
++    let (mut at, mut ascii) = (0, true);
++    while let Some(block) = bytes.get(at..).and_then(|rest| rest.first_chunk::<32>()) {
++        // SAFETY: block has exactly 32 readable bytes; loadu has no alignment
++        // requirement and this function requires AVX2.
++        let x = unsafe { _mm256_loadu_si256(block.as_ptr().cast()) };
++        let low = _mm256_cmpeq_epi8(_mm256_min_epu8(x, _mm256_set1_epi8(31)), x);
++        let del = _mm256_cmpeq_epi8(x, _mm256_set1_epi8(127));
++        let control = _mm256_movemask_epi8(_mm256_or_si256(low, del)) as u32;
++        let high = _mm256_movemask_epi8(x) as u32;
++        if control != 0 {
++            let n = control.trailing_zeros();
++            return (at + n as usize, ascii && high & ((1u32 << n) - 1) == 0);
++        }
++        ascii &= high == 0;
++        at += 32;
++    }
++    let (tail, tail_ascii) = classified_text_len_sse2(&bytes[at..]);
++    (at + tail, ascii && tail_ascii)
++}
++
++#[cfg(target_arch = "x86_64")]
++fn classified_text_len_sse2(bytes: &[u8]) -> (usize, bool) {
+     let (mut at, mut ascii) = (0, true);
+     while let Some(&block) = bytes.get(at..).and_then(|rest| rest.first_chunk::<16>()) {
+         let (control, high) = text_masks(&block);

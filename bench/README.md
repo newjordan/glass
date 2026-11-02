@@ -289,3 +289,15 @@ The raw-transport lead was followed into a reader-only small-L3 candidate.
 rejected the policy: .6852 ASCII and .6623 region, each 17/18 losses. The reader
 and parser retain the original placement, and the selected executable is restored.
 Do not turn this diagnostic into an affinity workaround or a championship claim.
+
+
+### Scanner/decoder campaign closure
+
+[`results/2026-11-02-sse2-unroll/`](results/2026-11-02-sse2-unroll/README.md)
+contains the full 18-round, six-order candidate/control/Ghostty gate and its
+hash-checked replay. The small engine gain did not transfer; no runtime change
+was kept. Adjacent `decode-memo`, `avx2-scan` and `validated-scalar` reports retain
+three other measured candidates, limitations, and exact source/binary provenance.
+Three new correctness tests remain: SIMD boundary/high-bit masks, a Linux
+PROT_NONE guard-page slice end, and exhaustive valid-scalar/truncation/boundary
+UTF-8 checks. Read the reports before retrying those experiments.

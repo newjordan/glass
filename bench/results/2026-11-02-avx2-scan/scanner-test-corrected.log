@@ -1,0 +1,6 @@
+
+running 1 test
+test engine::tests::text_runs_end_where_a_byte_at_a_time_scan_ends ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 378 filtered out; finished in 0.01s
+

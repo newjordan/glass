@@ -1,0 +1,26 @@
+diff --git i/crates/term/src/engine.rs w/crates/term/src/engine.rs
+index 2e7e430..83ceba4 100644
+--- i/crates/term/src/engine.rs
++++ w/crates/term/src/engine.rs
+@@ -3398,6 +3398,21 @@ fn text_masks(bytes: &[u8; 16]) -> (u32, u32) {
+ #[cfg(target_arch = "x86_64")]
+ fn classified_text_len(bytes: &[u8]) -> (usize, bool) {
+     let (mut at, mut ascii) = (0, true);
++    // Classify two independent blocks before resolving their combined boundary.
++    // SSE2 is baseline, and the exact masks retain byte order even when the
++    // first control and high bits occur in different halves of this pair.
++    while let Some(block) = bytes.get(at..).and_then(|rest| rest.first_chunk::<32>()) {
++        let (c0, h0) = text_masks(block[..16].try_into().unwrap());
++        let (c1, h1) = text_masks(block[16..].try_into().unwrap());
++        let control = c0 | (c1 << 16);
++        let high = h0 | (h1 << 16);
++        if control != 0 {
++            let n = control.trailing_zeros();
++            return (at + n as usize, ascii && high & ((1u32 << n) - 1) == 0);
++        }
++        ascii &= high == 0;
++        at += 32;
++    }
+     while let Some(&block) = bytes.get(at..).and_then(|rest| rest.first_chunk::<16>()) {
+         let (control, high) = text_masks(&block);
+         if control != 0 {

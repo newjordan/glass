@@ -1,0 +1,42 @@
+diff --git i/crates/term/src/engine.rs w/crates/term/src/engine.rs
+index 2e7e430..85d6662 100644
+--- i/crates/term/src/engine.rs
++++ w/crates/term/src/engine.rs
+@@ -3597,6 +3597,37 @@ impl Mirror {
+ /// the parser takes as it always has.
+ #[inline(always)]
+ fn utf8_at(bytes: &[u8], at: usize) -> Option<(char, usize)> {
++    let lead = *bytes.get(at)?;
++    if lead < 0x80 {
++        return Some((char::from(lead), 1));
++    }
++    // Memoize complete validated decodes, not a different UTF-8 policy. The
++    // exact four-byte tag includes any successor bytes, so a hit can only
++    // reproduce the scalar/length validated for this identical input prefix.
++    // No load crosses the supplied slice, including fragmented PTY reads.
++    if let Some(word) = bytes.get(at..).and_then(|tail| tail.first_chunk::<4>()) {
++        use std::sync::atomic::{AtomicU64, Ordering};
++        static CACHE: [AtomicU64; 1024] = [const { AtomicU64::new(0) }; 1024];
++        let key = u32::from_le_bytes(*word);
++        let slot = &CACHE[(key.wrapping_mul(0x9e3779b9) >> 22) as usize];
++        let entry = slot.load(Ordering::Relaxed);
++        if entry >> 63 != 0 && entry as u32 == key {
++            let value = ((entry >> 32) & 0x1fffff) as u32;
++            let len = ((entry >> 53) & 7) as usize;
++            // SAFETY: only successful scalar decodes are published below,
++            // atomically with the exact input tag and its byte length.
++            return Some((unsafe { char::from_u32_unchecked(value) }, len));
++        }
++        let result = utf8_scalar_at(bytes, at)?;
++        slot.store((1 << 63) | u64::from(key) | ((result.0 as u64) << 32)
++            | ((result.1 as u64) << 53), Ordering::Relaxed);
++        return Some(result);
++    }
++    utf8_scalar_at(bytes, at)
++}
++
++#[inline(always)]
++fn utf8_scalar_at(bytes: &[u8], at: usize) -> Option<(char, usize)> {
+     let lead = *bytes.get(at)?;
+     if lead < 0x80 {
+         return Some((char::from(lead), 1));

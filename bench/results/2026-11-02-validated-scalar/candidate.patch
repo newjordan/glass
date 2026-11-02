@@ -1,0 +1,15 @@
+--- a/crates/term/src/engine.rs
++++ b/crates/term/src/engine.rs
+@@ -3626,7 +3626,11 @@
+         }
+         _ => return None,
+     };
+-    Some((char::from_u32(value)?, len))
++    // SAFETY: the lead ranges exclude overlong two-byte encodings; the
++    // E0/ED bounds exclude overlong three-byte encodings and surrogates;
++    // F0/F4 exclude overlong four-byte encodings and values > U+10FFFF.
++    // Every continuation is 80..BF, so the scalar is fully validated here.
++    Some((unsafe { char::from_u32_unchecked(value) }, len))
+ }
+ 
+ /// `unicode_width`'s answer for `c`, through a flat cache over the

@@ -1,0 +1,125 @@
+Glass scanner/decoder campaign: bounded experiments, stronger correctness gates
+============================================================================
+Iteration 7; loop 1793647379808-1967957. Starting commit 8c10f2d.
+Machine: Ryzen 9 9950X3D, RTX 3090, Linux/Hyprland. Shared, non-isolated host.
+Configured compiler: rustc 1.99.0; normal release thin LTO, one codegen unit.
+No external title/leaderboard submission or new all-metric victory is claimed.
+
+Question and selection rule
+---------------------------
+Can exact-prefix reuse or wider/unrolled text classification improve the fused
+UTF-8 path without changing Unicode widths, wrap/scroll frequency, malformed
+input behavior, reader placement, or release target flags? Retain only changes
+that survive relevant correctness gates AND a real-terminal comparison when
+engine diagnostics justify one. No width-one/skip-store/skip-scroll ceiling is
+treated as a valid semantic optimization.
+
+Four materially bounded candidates
+----------------------------------
+1. Exact-prefix UTF-8 decode memo. A 1,024-slot atomic cache stores successful
+   validated scalar/length results with exact four-byte input tags. Misses and
+   short tails use the original RFC-3629 decoder. Correctness: parser
+   differential entry point passed; randomized/mutated std decoder oracle
+   passed. Nine alternating engine pairs, scale 2, five internal rounds:
+   Unicode candidate/control CPU throughput .89953, 0/9 wins, two-sided sign
+   p .003906. Approximately 10.0% slower. Removed. Hit rate was not instrumented;
+   do not attribute the loss to a proved microarchitectural mechanism.
+
+2. Long-suffix runtime AVX2 scanner. Only suffixes >=64 bytes dispatch to
+   32-byte masks; SSE2 fallback and backward search are unchanged. Nine engine
+   pairs: ASCII 1.0396, region 1.0447, Unicode .9773. Mixed and inconclusive;
+   not selected. Exact scanner oracle and parser differential passed after
+   correcting an initial zero-test filter. No new terminal result claimed.
+
+3. Two-block SSE2 unrolling. Two independent 16-byte masks combine into one
+   32-bit control/high-bit mask; no new CPU requirement or dispatch. Eleven
+   paired engine runs: ASCII 1.01183 (10/11 wins, p .01172), Unicode 1.00897,
+   region 1.00993; small/mixed others. Scanner oracle passed. This candidate
+   advanced to the complete real-terminal gate described below. No dependable
+   gain transferred; removed.
+
+4. Eliminate the scalar-construction check after RFC-3629 byte validation.
+   Only the final char::from_u32 call becomes from_u32_unchecked; no byte
+   validation removed. Both arms include identical new regression tests.
+   All-scalars/truncations/boundary-form oracle and old random oracle passed;
+   two scanner tests and parser differential passed. Eleven engine pairs:
+   Unicode 1.01305 (9/11 wins, p .06543). Focused 19-pair replication at scale 5
+   and seven internal rounds: 1.01153, 13 wins/5 losses/1 tie, p .09625. Small,
+   mixed evidence does not justify a new unsafe operation. Original checked
+   construction retained. No terminal/RTT victory inferred from engine timing.
+
+Raw evidence and source provenance
+----------------------------------
+Every candidate retains control/candidate source, isolated patch, build/test
+logs, engine-pair JSON with frozen executable hashes, raw output and compatible
+byte/read counts. Directories:
+  bench/results/2026-11-02-decode-memo/
+  bench/results/2026-11-02-avx2-scan/
+  bench/results/2026-11-02-sse2-unroll/
+  bench/results/2026-11-02-validated-scalar/
+Each directory has evidence-sha256.json. Earlier iteration artifacts unchanged.
+
+Full real-terminal experiment, not just engine timing
+-----------------------------------------------------
+SSE2 candidate and fresh rebuilt control: 18 rounds, six permutations of
+candidate/control/Ghostty repeated three times, 54 sessions. Grid 154x39.
+Unchanged historical tput.py workloads and DA1-ended timing. No local builds or
+other benchmark jobs overlapped this gate; unrelated host work was not isolated.
+Initial launch used unsupported --out and exited at argument parsing; no
+measurements from that failed launch. Corrected invocation ran all 18 rounds.
+
+Candidate/control terminal throughput, paired median ratio; wins/18:
+  ASCII .99699; 9      Unicode 1.00108; 9   truecolor .98859; 5
+  cursor .99580; 9     region 1.00124; 10   TUI .99020; 6
+No dependable benefit; two-block SSE2 was rejected, not promoted on its engine
+result. Frozen binary/harness/raw-result hashes independently replayed via
+compare-tput.py --summarize-only. Reports:
+  .../2026-11-02-sse2-unroll/gate/terminal-summary.json
+  .../2026-11-02-sse2-unroll/gate-replay.log
+
+Fresh rebuilt SELECTED CONTROL vs Ghostty from the same raw sessions (not the
+rejected scanner's Ghostty comparison), paired ratios and wins/18:
+  ASCII .9465; 7       Unicode 1.0108; 9    truecolor 1.1972; 15
+  cursor 1.1260; 14    region .9672; 8      TUI 1.0674; 13
+  .../2026-11-02-sse2-unroll/selected-vs-ghostty.json
+This is a new shared-host run, not a replacement assertion about prior binaries
+or a universal ranking. ASCII and region are unresolved; Unicode with 9/18
+wins is not a dependable lead. Exploratory sign tests are not multiplicity
+corrected; follow-up measurements after selection are not confirmatory p-values.
+
+Durable code change: three targeted regression tests
+---------------------------------------------------
+Final runtime is byte-for-byte the selected source text, plus only these tests:
+- Exact text-mask/scalar equivalence for every byte value at vector-boundary
+  lengths through 129, plus all pairs of control/high-bit positions. Checks
+  that high bits past a control do NOT affect the returned prefix's ASCII flag.
+- Linux x86-64 legal slice ends of lengths 0..256 directly before a PROT_NONE
+  page. An illegal wide load faults instead of hiding in vector spare capacity.
+- All 1,112,064 Unicode scalars and every encoding truncation, plus 540,672
+  lead/continuation boundary-form checks against standard-library validation.
+  Covers overlong forms, surrogates, invalid continuations, U+10FFFF limits.
+
+Final selected source, explicit minimal verifiers:
+  cargo test --release -p glass-term --locked classified_text -- --nocapture
+    2 passed (new scanner tests).
+  cargo test --release -p glass-term --locked utf8_decoding -- --nocapture
+    2 passed (new exhaustive test and old randomized oracle).
+Logs: .../2026-11-02-sse2-unroll/final-boundary-tests.log,
+      .../2026-11-02-sse2-unroll/final-decoder-tests.log.
+Final source/test executable hashes: final-source-test-hashes.txt.
+No new broad workspace count, Clippy result, key latency, or quiet RTT claimed.
+The prior selected release executable is restored, not rebuilt from a candidate:
+  d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c
+
+Remaining blocker and next testable structural lead
+---------------------------------------------------
+No candidate establishes every-metric superiority. Scalar micro-tuning produced
+at most ~1% diagnostics here; SSE2 unrolling's engine gain did not transfer.
+Neither repeated gate timing nor calling parity a win solves the remaining gap.
+The next substantive, UNVERIFIED lead is compact style-interned cell/page
+storage, as earlier reports suggested. First prototype it on a recorded,
+semantically faithful mixed-width trace: preserve widths, line wraps, scrolls,
+combining marks and wide-cell cleanup. Measure real storage work without the
+invalid width-one/skip-scroll probes. Only proceed to live storage integration
+with differential/reference tests, paired PTY gates and a latency guard. This is
+a proposed next action, not evidence that a compact representation will win.

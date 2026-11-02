@@ -343,3 +343,34 @@ This is the production counterexample to inferring a win from transport alone.
 The same gate's selected-control/Ghostty Unicode ratio was **.9522 (6/18 wins)**;
 there is still no all-metric championship. See
 [the complete gate and control-only comparison](../bench/results/2026-11-02-small-reader/README.md).
+
+
+### Checked scanner/decoder research: four candidates, no runtime promotion
+
+The [two-block SSE2 report](../bench/results/2026-11-02-sse2-unroll/README.md)
+records an engine +1.2% ASCII result that disappeared in the complete 18-round,
+six-order real-terminal gate: candidate/control ASCII .9970, Unicode 1.0011,
+region 1.0012; no dependable production benefit. Full raw results and binary,
+harness and result hashes replay. The candidate was removed.
+
+The fresh **selected-control/Ghostty** arm of that same run gives paired median
+ratios ASCII .9465 (7/18 wins), Unicode 1.0108 (9/18), truecolor 1.1972 (15/18),
+cursor 1.1260 (14/18), region .9672 (8/18), TUI 1.0674 (13/18). This shared-host
+run does not show every-metric superiority; Unicode's apparent parity is not a
+reliable win, and small/variable results do not establish a world title.
+
+Other bounded experiments:
+[exact-prefix UTF-8 memo](../bench/results/2026-11-02-decode-memo/README.md)
+lost 10.0% Unicode engine throughput (0/9 wins);
+[AVX2 long-suffix scan](../bench/results/2026-11-02-avx2-scan/README.md)
+was mixed (+4% ASCII/region, -2.3% Unicode diagnostics), not selected;
+[duplicate scalar-check removal](../bench/results/2026-11-02-validated-scalar/README.md)
+gained only ~1.2% in a focused replication with mixed signs, not enough evidence
+to introduce a new unsafe scalar construction. No terminal wins are claimed
+for engine-only experiments.
+
+The durable change is three regression tests: exact SIMD/control/high-bit
+boundaries, legal slice ends immediately before an inaccessible page, and all
+1,112,064 Unicode scalars with truncations and boundary-form rejection checks.
+On the final selected source, two scanner tests and two decoder tests pass.
+Runtime scanner/decoder code and the selected release executable are unchanged.

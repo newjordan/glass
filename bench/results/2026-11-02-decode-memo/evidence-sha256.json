@@ -1,0 +1,13 @@
+{
+  "README.md": "0c6f25b82fc85d19b4bae3edfaad849ac2981d07a3b7fe74e6cc4f04cc9a856f",
+  "candidate.patch": "345f4b339f9f0dfb923e5738d66ca35aa48ff1b1221a9f73ea3929e5f15a19c9",
+  "control-build.jsonl": "4e5c90b28eaefdd1ce7911dd68bf42b46d24216fea88b3f5e4328254d93fa965",
+  "control-build.log": "e7b5482b76dfaa82b43275e0c898cf0066d6aab5ad4c5674f53fe74c7848186b",
+  "decoder-test.log": "48717d537b86b7c8f6d2bff48899c9e955d1f3fa229f11cb8bb2f8ab00d4157c",
+  "differential.log": "04d4f731cf81eb5a57fceeded56d0a1c08c9298cefacea22e81d07687646967d",
+  "engine-pairs.json": "bdfd9cbb720f0b1a60482ad60f1c0396a10c8950cb83ad22e0258d174728556e",
+  "engine-pairs.log": "0b5368dec0dc28aaa482c67fcdb6b18dda121dd82ebe915543172e1c57dded5d",
+  "engine.candidate.rs": "da034247424613c3a74cacddc5a5019fa1c27eb84997709dedf76b443c077a4f",
+  "engine.control.rs": "3dd277ad52c571f97b7a996141f0c7f0474f36b66cb0e9bc5fde1ccdae0e1096",
+  "selected-sha256.txt": "2885b00ff6e1f3ac38644b08869436643eb99fd50149586cf3aa612f1de5989b"
+}

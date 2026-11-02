@@ -1,0 +1,7 @@
+
+running 2 tests
+test engine::tests::classified_text_never_loads_past_a_guarded_slice ... ok
+test engine::tests::classified_text_masks_match_scalar_at_every_vector_boundary ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 380 filtered out; finished in 0.03s
+

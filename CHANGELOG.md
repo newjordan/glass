@@ -27,6 +27,16 @@ description of what to show.
   checks. Preserve rejected Unicode and third-buffer experiments rather than
   inferring a terminal win from engine microbenchmarks alone.
 
+### Scanner and UTF-8 regression coverage
+
+- Test exact SIMD text masks across 16/32/64/128-byte boundaries and legal
+  slice ends immediately before an inaccessible page on Linux x86-64.
+- Test every Unicode scalar, encoding truncations, and malformed boundary
+  forms against standard-library validation. No runtime decoder change.
+- Record four measured scanner/decoder experiments. The SSE2 engine gain did
+  not transfer to the full paired terminal gate; retain the selected runtime
+  and executable, not a speculative all-metric performance claim.
+
 ### Open intake
 
 - APC graphics (`ESC _ G …`): transmit and place over every transmission

@@ -1,0 +1,636 @@
+{
+  "schema": "glass.engine-pairs/v1",
+  "settings": {
+    "GLASS_BENCH_SCALE": "5.0",
+    "GLASS_BENCH_ROUNDS": "7",
+    "GLASS_BENCH_ONLY": "unicode"
+  },
+  "binaries": {
+    "base": {
+      "path": "/tmp/glass-i7-scalar-control-test",
+      "sha256": "a1f7e9ee289323cc085d99ff19c9c3ee413782243bf40790888541e7a098cc00"
+    },
+    "candidate": {
+      "path": "/tmp/glass-i7-scalar-test",
+      "sha256": "9e20a70398ccb603fe7484e593bbc82e0b2ef854193df555bc9d538fa61a8f74"
+    }
+  },
+  "pairs": [
+    {
+      "order": [
+        "base",
+        "candidate"
+      ],
+      "base": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.35s\n\n",
+        "stderr": "       unicode:   263.3 MB/s    263.9 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 263.3,
+            "mb_cpu_s": 263.9,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      },
+      "candidate": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.33s\n\n",
+        "stderr": "       unicode:   267.0 MB/s    267.7 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 267.0,
+            "mb_cpu_s": 267.7,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      }
+    },
+    {
+      "order": [
+        "candidate",
+        "base"
+      ],
+      "candidate": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.33s\n\n",
+        "stderr": "       unicode:   267.3 MB/s    268.0 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 267.3,
+            "mb_cpu_s": 268.0,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      },
+      "base": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.31s\n\n",
+        "stderr": "       unicode:   267.2 MB/s    268.0 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 267.2,
+            "mb_cpu_s": 268.0,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      }
+    },
+    {
+      "order": [
+        "base",
+        "candidate"
+      ],
+      "base": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.30s\n\n",
+        "stderr": "       unicode:   270.8 MB/s    271.3 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 270.8,
+            "mb_cpu_s": 271.3,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      },
+      "candidate": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.47s\n\n",
+        "stderr": "       unicode:   266.7 MB/s    267.2 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 266.7,
+            "mb_cpu_s": 267.2,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      }
+    },
+    {
+      "order": [
+        "candidate",
+        "base"
+      ],
+      "candidate": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.73s\n\n",
+        "stderr": "       unicode:   269.0 MB/s    269.5 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 269.0,
+            "mb_cpu_s": 269.5,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      },
+      "base": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.33s\n\n",
+        "stderr": "       unicode:   263.6 MB/s    264.3 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 263.6,
+            "mb_cpu_s": 264.3,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      }
+    },
+    {
+      "order": [
+        "base",
+        "candidate"
+      ],
+      "base": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.29s\n\n",
+        "stderr": "       unicode:   268.5 MB/s    269.0 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 268.5,
+            "mb_cpu_s": 269.0,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      },
+      "candidate": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.34s\n\n",
+        "stderr": "       unicode:   264.7 MB/s    265.2 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 264.7,
+            "mb_cpu_s": 265.2,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      }
+    },
+    {
+      "order": [
+        "candidate",
+        "base"
+      ],
+      "candidate": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.35s\n\n",
+        "stderr": "       unicode:   265.2 MB/s    265.8 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 265.2,
+            "mb_cpu_s": 265.8,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      },
+      "base": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.36s\n\n",
+        "stderr": "       unicode:   261.0 MB/s    261.7 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 261.0,
+            "mb_cpu_s": 261.7,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      }
+    },
+    {
+      "order": [
+        "base",
+        "candidate"
+      ],
+      "base": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.35s\n\n",
+        "stderr": "       unicode:   261.4 MB/s    262.0 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 261.4,
+            "mb_cpu_s": 262.0,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      },
+      "candidate": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.33s\n\n",
+        "stderr": "       unicode:   266.8 MB/s    267.3 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 266.8,
+            "mb_cpu_s": 267.3,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      }
+    },
+    {
+      "order": [
+        "candidate",
+        "base"
+      ],
+      "candidate": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.32s\n\n",
+        "stderr": "       unicode:   264.9 MB/s    265.6 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 264.9,
+            "mb_cpu_s": 265.6,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      },
+      "base": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.33s\n\n",
+        "stderr": "       unicode:   263.7 MB/s    264.3 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 263.7,
+            "mb_cpu_s": 264.3,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      }
+    },
+    {
+      "order": [
+        "base",
+        "candidate"
+      ],
+      "base": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.29s\n\n",
+        "stderr": "       unicode:   269.4 MB/s    269.9 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 269.4,
+            "mb_cpu_s": 269.9,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      },
+      "candidate": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.29s\n\n",
+        "stderr": "       unicode:   270.1 MB/s    270.6 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 270.1,
+            "mb_cpu_s": 270.6,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      }
+    },
+    {
+      "order": [
+        "candidate",
+        "base"
+      ],
+      "candidate": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 3.24s\n\n",
+        "stderr": "       unicode:   271.2 MB/s    271.9 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 271.2,
+            "mb_cpu_s": 271.9,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      },
+      "base": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.88s\n\n",
+        "stderr": "       unicode:   268.1 MB/s    268.8 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 268.1,
+            "mb_cpu_s": 268.8,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      }
+    },
+    {
+      "order": [
+        "base",
+        "candidate"
+      ],
+      "base": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.34s\n\n",
+        "stderr": "       unicode:   264.2 MB/s    264.7 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 264.2,
+            "mb_cpu_s": 264.7,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      },
+      "candidate": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.32s\n\n",
+        "stderr": "       unicode:   267.3 MB/s    267.9 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 267.3,
+            "mb_cpu_s": 267.9,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      }
+    },
+    {
+      "order": [
+        "candidate",
+        "base"
+      ],
+      "candidate": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.39s\n\n",
+        "stderr": "       unicode:   264.7 MB/s    265.2 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 264.7,
+            "mb_cpu_s": 265.2,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      },
+      "base": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.32s\n\n",
+        "stderr": "       unicode:   268.7 MB/s    269.2 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 268.7,
+            "mb_cpu_s": 269.2,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      }
+    },
+    {
+      "order": [
+        "base",
+        "candidate"
+      ],
+      "base": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.37s\n\n",
+        "stderr": "       unicode:   262.4 MB/s    262.9 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 262.4,
+            "mb_cpu_s": 262.9,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      },
+      "candidate": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.32s\n\n",
+        "stderr": "       unicode:   265.9 MB/s    266.5 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 265.9,
+            "mb_cpu_s": 266.5,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      }
+    },
+    {
+      "order": [
+        "candidate",
+        "base"
+      ],
+      "candidate": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.30s\n\n",
+        "stderr": "       unicode:   268.3 MB/s    268.9 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 268.3,
+            "mb_cpu_s": 268.9,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      },
+      "base": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.28s\n\n",
+        "stderr": "       unicode:   270.2 MB/s    271.0 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 270.2,
+            "mb_cpu_s": 271.0,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      }
+    },
+    {
+      "order": [
+        "base",
+        "candidate"
+      ],
+      "base": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.37s\n\n",
+        "stderr": "       unicode:   264.3 MB/s    264.9 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 264.3,
+            "mb_cpu_s": 264.9,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      },
+      "candidate": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.34s\n\n",
+        "stderr": "       unicode:   262.5 MB/s    263.1 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 262.5,
+            "mb_cpu_s": 263.1,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      }
+    },
+    {
+      "order": [
+        "candidate",
+        "base"
+      ],
+      "candidate": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.28s\n\n",
+        "stderr": "       unicode:   273.7 MB/s    274.2 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 273.7,
+            "mb_cpu_s": 274.2,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      },
+      "base": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.39s\n\n",
+        "stderr": "       unicode:   262.2 MB/s    262.8 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 262.2,
+            "mb_cpu_s": 262.8,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      }
+    },
+    {
+      "order": [
+        "base",
+        "candidate"
+      ],
+      "base": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.38s\n\n",
+        "stderr": "       unicode:   258.7 MB/s    259.4 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 258.7,
+            "mb_cpu_s": 259.4,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      },
+      "candidate": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.38s\n\n",
+        "stderr": "       unicode:   260.9 MB/s    261.6 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 260.9,
+            "mb_cpu_s": 261.6,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      }
+    },
+    {
+      "order": [
+        "candidate",
+        "base"
+      ],
+      "candidate": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.35s\n\n",
+        "stderr": "       unicode:   267.0 MB/s    267.6 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 267.0,
+            "mb_cpu_s": 267.6,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      },
+      "base": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.37s\n\n",
+        "stderr": "       unicode:   263.7 MB/s    264.1 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 263.7,
+            "mb_cpu_s": 264.1,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      }
+    },
+    {
+      "order": [
+        "base",
+        "candidate"
+      ],
+      "base": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.43s\n\n",
+        "stderr": "       unicode:   259.1 MB/s    259.7 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 259.1,
+            "mb_cpu_s": 259.7,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      },
+      "candidate": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 381 filtered out; finished in 2.37s\n\n",
+        "stderr": "       unicode:   263.3 MB/s    263.9 MB/cpu-s  (83886097 bytes, read 4095)\n",
+        "results": {
+          "unicode": {
+            "mb_s": 263.3,
+            "mb_cpu_s": 263.9,
+            "bytes": 83886097,
+            "read": 4095
+          }
+        }
+      }
+    }
+  ],
+  "summary": {
+    "unicode": {
+      "median_cpu_ratio": 1.011532738095238,
+      "wins": 13,
+      "losses": 5,
+      "sign_p_two_sided": 0.09625244140625
+    }
+  }
+}

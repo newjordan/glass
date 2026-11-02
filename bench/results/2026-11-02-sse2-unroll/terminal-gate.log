@@ -1,0 +1,4 @@
+usage: compare-tput.py [-h] [--terms TERMS] [--rounds ROUNDS]
+                       [--summarize-only]
+                       out
+compare-tput.py: error: unrecognized arguments: --out

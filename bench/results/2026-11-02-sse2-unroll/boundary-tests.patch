@@ -1,0 +1,111 @@
+--- a/crates/term/src/engine.rs
++++ b/crates/term/src/engine.rs
+@@ -3847,6 +3847,108 @@
+         assert_eq!(text_len(b"abcdefg\x00\x7f"), 7);
+     }
+ 
++    /// Exercise exact tail lengths and every vector-boundary lane directly,
++    /// not just the run-search probe offsets that happen to reach the helper.
++    #[cfg(target_arch = "x86_64")]
++    #[test]
++    fn classified_text_masks_match_scalar_at_every_vector_boundary() {
++        for len in [0, 1, 15, 16, 17, 31, 32, 33, 47, 48, 63, 64, 65, 79, 95, 96, 97, 127, 128, 129] {
++            for value in 0..=255u8 {
++                for at in 0..=len {
++                    for fill in [b'a', 0x80] {
++                        let mut bytes = vec![fill; len];
++                        if at < len { bytes[at] = value; }
++                        let n = bytes.iter().position(|&b| b < 0x20 || b == 0x7f).unwrap_or(len);
++                        assert_eq!(classified_text_len(&bytes), (n, bytes[..n].is_ascii()),
++                            "len {len} value {value:#x} at {at} fill {fill:#x}");
++                    }
++                }
++            }
++        }
++        // High bits AFTER a control do not make the returned prefix UTF-8.
++        // High bits BEFORE the control do, including across vector halves.
++        for stop in 0..129 {
++            for high in 0..129 {
++                let mut bytes = [b'a'; 129];
++                bytes[high] = 0x80;
++                bytes[stop] = 0x7f;
++                assert_eq!(classified_text_len(&bytes), (stop, high >= stop));
++            }
++        }
++    }
++
++    /// A legal slice can end at an inaccessible page. This catches accidental
++    /// wide loads past EOF that ordinary Vec-backed oracle tests cannot detect.
++    #[cfg(all(target_arch = "x86_64", target_os = "linux"))]
++    #[test]
++    fn classified_text_never_loads_past_a_guarded_slice() {
++        struct Pages { ptr: *mut libc::c_void, len: usize }
++        impl Drop for Pages {
++            fn drop(&mut self) {
++                // SAFETY: this object uniquely owns the mmap allocation.
++                assert_eq!(unsafe { libc::munmap(self.ptr, self.len) }, 0);
++            }
++        }
++        // SAFETY: sysconf has no preconditions for this constant.
++        let page = unsafe { libc::sysconf(libc::_SC_PAGESIZE) };
++        assert!(page >= 256);
++        let page = page as usize;
++        // SAFETY: anonymous private allocation, no borrowed or fixed address.
++        let ptr = unsafe { libc::mmap(std::ptr::null_mut(), page * 2,
++            libc::PROT_READ | libc::PROT_WRITE, libc::MAP_PRIVATE | libc::MAP_ANONYMOUS, -1, 0) };
++        assert_ne!(ptr, libc::MAP_FAILED);
++        let pages = Pages { ptr, len: page * 2 };
++        // SAFETY: the second page is inside this allocation, page-aligned.
++        assert_eq!(unsafe { libc::mprotect(ptr.cast::<u8>().add(page).cast(), page, libc::PROT_NONE) }, 0);
++        for len in 0..=256 {
++            // SAFETY: the slice ends exactly at the first page's boundary;
++            // its entire length is writable, and it aliases no other slice.
++            let bytes = unsafe { std::slice::from_raw_parts_mut(pages.ptr.cast::<u8>().add(page - len), len) };
++            bytes.fill(b'a');
++            assert_eq!(classified_text_len(bytes), (len, true));
++            if len > 0 {
++                bytes[len - 1] = 0x80;
++                assert_eq!(classified_text_len(bytes), (len, false));
++                bytes[len - 1] = 0x1f;
++                assert_eq!(classified_text_len(bytes), (len - 1, true));
++            }
++        }
++    }
++
++    #[test]
++    fn utf8_decoding_covers_all_scalars_and_boundary_rejections() {
++        let mut buf = [0; 4];
++        for value in 0..=0x10ffff {
++            let Some(c) = char::from_u32(value) else { continue };
++            let bytes = c.encode_utf8(&mut buf).as_bytes();
++            assert_eq!(utf8_at(bytes, 0), Some((c, bytes.len())), "scalar {value:#x}");
++            for len in 0..bytes.len() {
++                assert_eq!(utf8_at(&bytes[..len], 0), None, "truncated scalar {value:#x} to {len}");
++            }
++        }
++        // Exhaust all second-byte restrictions at the overlong/surrogate/
++        // codespace edges, including continuation failures in later lanes.
++        for lead in [0xc0, 0xc1, 0xc2, 0xdf, 0xe0, 0xed, 0xef, 0xf0, 0xf4, 0xf5, 0xff] {
++            for second in 0..=255u8 {
++                for third in [0, 0x7f, 0x80, 0x9f, 0xa0, 0xbf, 0xc0, 0xff] {
++                    for fourth in [0, 0x7f, 0x80, 0xbf, 0xc0, 0xff] {
++                        let bytes = [lead, second, third, fourth];
++                        for len in 1..=4 {
++                            let bytes = &bytes[..len];
++                            let valid = match std::str::from_utf8(bytes) {
++                                Ok(text) => Some(text),
++                                Err(error) if error.valid_up_to() > 0 => std::str::from_utf8(&bytes[..error.valid_up_to()]).ok(),
++                                _ => None,
++                            };
++                            let expected = valid.and_then(|text| text.chars().next()).map(|c| (c, c.len_utf8()));
++                            assert_eq!(utf8_at(bytes, 0), expected, "input {bytes:x?}");
++                        }
++                    }
++                }
++            }
++        }
++    }
++
+     /// The run writer's UTF-8 decoder takes exactly the characters the
+     /// standard library's validation calls well formed, at every offset
+     /// of random bytes and of real text.
