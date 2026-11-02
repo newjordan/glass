@@ -27,24 +27,26 @@ at 60 fps. glass drew it and recorded it itself.
 
 ## Fast
 
-Against kitty 0.49.2 on one machine (Ryzen 9 9950X3D, RTX 3090, Hyprland,
-a 154×39 window). Medians.
+On one machine (Ryzen 9 9950X3D, RTX 3090, Hyprland, a 154×39 window).
+Medians; **bold is the best of the four**. The throughput rows and the CPU
+row are medians of five interleaved rounds through `bench/run-tput.sh`; the
+startup, key-latency and VRAM rows have been run for glass and kitty only.
 
-| | glass | kitty 0.49.2 | |
-| --- | --- | --- | --- |
-| Program's first output on screen, from launch | **46.1 ms** | 185 ms | 4.0× |
-| Window on screen, from launch | **27.4 ms** | 72.1 ms | 2.6× |
-| Program running, from launch | **34.0 ms** | 174 ms | 5.1× |
-| Plain ASCII through the pty | **490 MB/s** | 326 MB/s | 1.5× |
-| Unicode | **215 MB/s** | 149 MB/s | 1.4× |
-| Truecolor | **253 MB/s** | 91 MB/s | 2.8× |
-| Cursor motion | **214 MB/s** | 81 MB/s | 2.6× |
-| Scroll region | **444 MB/s** | 344 MB/s | 1.3× |
-| Full-screen TUI frames | **3,457 fps** | 917 fps | 3.8× |
-| CPU over all six workloads | **0.57 s** | 1.12 s | 2.0× less |
-| VRAM, idle window | **45 MiB** | 50 MiB | 1.1× less |
-| Key press to the program | **2.20 ms** | 2.25 ms | 1.0× |
-| Key press to the program, while it floods output | **3.0 ms** | 38.6 ms | 13× |
+| | glass | ghostty 1.4.0 | kitty 0.49.2 | foot 1.24.0 |
+| --- | --- | --- | --- | --- |
+| Program's first output on screen, from launch | **46.1 ms** | — | 185 ms | — |
+| Window on screen, from launch | **27.4 ms** | — | 72.1 ms | — |
+| Program running, from launch | **34.0 ms** | — | 174 ms | — |
+| Plain ASCII through the pty | 682 MB/s | **959 MB/s** | 312 MB/s | 429 MB/s |
+| Unicode | 218 MB/s | **283 MB/s** | 143 MB/s | 140 MB/s |
+| Truecolor | **262 MB/s** | 239 MB/s | 86 MB/s | 352 MB/s |
+| Cursor motion | **239 MB/s** | 218 MB/s | 76 MB/s | 418 MB/s |
+| Scroll region | 686 MB/s | **1,137 MB/s** | 342 MB/s | 385 MB/s |
+| Full-screen TUI frames | 3,792 fps | **3,807 fps** | 922 fps | 6,296 fps |
+| CPU over all six workloads | **0.55 s** | 0.80 s | 1.05 s | 0.53 s |
+| VRAM, idle window | **45 MiB** | — | 50 MiB | — |
+| Key press to the program | **2.20 ms** | — | 2.25 ms | — |
+| Key press to the program, while it floods output | **3.0 ms** | — | 38.6 ms | — |
 
 ![glass vs kitty 0.49.2, measure by measure](docs/media/glass-advantage.png)
 
@@ -55,10 +57,21 @@ a 154×39 window). Medians.
   CPU: the background first, then your shell's text, with the same fonts
   and colours the GPU draws them in. The GPU's first frame takes over with
   nothing visibly changing.
-- On Linux only kitty has been measured, on one machine. On macOS, against
-  Ghostty 1.4.0 on an M4 Pro, glass is ahead on every measure but wide
-  text, which is about even ([docs/PERFORMANCE.md](docs/PERFORMANCE.md#macos)).
-  Other terminals, GPUs and CPUs: not yet.
+- **Where glass is behind.** ghostty is ahead on plain ASCII (1.4×),
+  scroll region (1.7×) and unicode (1.3×), and the two are level on
+  full-screen TUI frames. glass leads on truecolor and cursor motion, and
+  spends the least CPU of the three GPU terminals over the set — 0.55 s
+  against ghostty's 0.80 s. foot, a CPU renderer, is the fastest here on
+  truecolor, cursor motion and TUI frames.
+- Throughput above a few hundred MB/s is not something you feel; the
+  startup and key-latency rows are. Those are the ones to judge by, and
+  they have not been measured against ghostty yet.
+- One machine, and ghostty's rounds vary widely on it (its ASCII ran 846 to
+  1,139 MB/s across five). Medians of fewer than five rounds do not
+  reproduce. On macOS, against Ghostty 1.4.0 on an M4 Pro, glass is ahead
+  on every measure but wide text, which is about even
+  ([docs/PERFORMANCE.md](docs/PERFORMANCE.md#macos)).
+  Other GPUs and CPUs: not yet.
 
 How each was measured, and every caveat: [docs/PERFORMANCE.md](docs/PERFORMANCE.md).
 The harness and every run: [`bench/`](bench/).

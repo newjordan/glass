@@ -50,10 +50,15 @@ All of it, with the method: [PERFORMANCE.md](PERFORMANCE.md#when-the-prompt-appe
 
 ## How does it compare with alacritty, ghostty, foot or wezterm?
 
-On Linux, only kitty 0.49.2 has been run through the harness, on one
-machine. On macOS, glass was measured against Ghostty 1.4.0 on an M4 Pro:
-ahead on every measure but wide text, which is about even
-([PERFORMANCE.md](PERFORMANCE.md#macos)). Alacritty, foot and wezterm are
+On Linux, glass, ghostty 1.4.0, kitty 0.49.2 and foot have been through the
+throughput harness at 154×39, on one machine. glass leads on truecolor and
+cursor motion and spends the least CPU of the three GPU terminals; ghostty is
+ahead on plain ASCII, scroll region and unicode, and the two are level on
+full-screen TUI frames; foot, rendering on the CPU, is fastest of all on
+truecolor, cursor motion and TUI frames. Startup and key latency have been
+measured for glass and kitty only. On macOS, glass was measured against
+Ghostty 1.4.0 on an M4 Pro: ahead on every measure but wide text, which is
+about even ([PERFORMANCE.md](PERFORMANCE.md#macos)). Alacritty and wezterm are
 not measured yet. Adding a terminal to
 [`bench/`](../bench/README.md#add-another-terminal) is one line; if you run
 it, please post the numbers, whatever they say.

@@ -146,12 +146,31 @@ MB/s on this CPU, depending on where the scheduler put the thread.
 `GLASS_AFFINITY=off` turns the placement off. On a CPU with one L3, or
 several of one size, nothing is placed and nothing changes.
 
-### Only kitty has been measured
+### Which terminals have been measured
 
-alacritty, ghostty, foot and wezterm have not been run through the harness
-yet. glass is ahead of kitty on every measure above; that is all these
-numbers say. Adding a terminal to the harness is one line
-([bench/README.md](../bench/README.md#add-another-terminal)).
+glass, ghostty 1.4.0, kitty 0.49.2 and foot have been through the throughput
+harness at 154×39; alacritty and wezterm have not. The startup, key-latency
+and VRAM measures have been run for glass and kitty only, so the comparison
+against ghostty is throughput and CPU alone.
+
+glass leads the set on truecolor and cursor motion and spends the least CPU of
+the GPU terminals. ghostty is ahead on plain ASCII, scroll region and unicode,
+and level on full-screen TUI frames. Adding a terminal to the harness is one
+line ([bench/README.md](../bench/README.md#add-another-terminal)).
+
+Numbers and raw results:
+[bench/results/2026-11-02-head-idle-scoreboard/](../bench/results/2026-11-02-head-idle-scoreboard/).
+
+### Rounds, and what a difference has to clear
+
+ghostty's throughput varies widely on this machine — its ASCII ran 846 to
+1,139 MB/s across five rounds — so medians of fewer than five rounds do not
+reproduce. For comparing two glass builds, `bench/run-tput.sh` takes a
+`glass-alt` arm that interleaves both binaries in one run; a sign test over
+the paired rounds resolves a 3% change at fifteen rounds, where an unpaired
+median at nine cannot resolve 5%. Code placement alone is worth up to 2.7% of
+a median without moving the signs
+([bench/results/2026-11-02-paired-method/](../bench/results/2026-11-02-paired-method/)).
 
 ### One machine
 
