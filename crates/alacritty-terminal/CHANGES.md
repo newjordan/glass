@@ -24,6 +24,21 @@ Upstream made these fixes on `master` after the 0.26.0 release; glass takes them
 | [`d692748d`](https://github.com/alacritty/alacritty/commit/d692748d3f61253ebe9f5094320120d22f6a046f) | Daniel Fox Franke | `Row::new` builds a row without `unsafe` and without a hidden one-column minimum (`grid/row.rs`). |
 | [`54214706`](https://github.com/alacritty/alacritty/commit/542147067dd016fc5f49120ef0ba605a98a4e3a7) | Christian Duerr | A full keyboard mode stack drops its own oldest entry. Before, it dropped the title stack's (`term/mod.rs`). |
 
+## Single-mark extra sharing
+
+- **`term/cell.rs`:** a cell with no extras attaches its first combining mark
+  through a one-entry, per-thread cache of immutable `Arc<CellExtra>` values.
+  The entry contains exactly one mark and no hyperlink or underline color;
+  all later mutations retain the existing copy-on-write behavior. Retention
+  is bounded to one entry per thread, with an owned-allocation fallback during
+  thread-local teardown. The cell layout, nine-mark limit, attachment rules
+  and serialized values are unchanged.
+- On the Ryzen, 15 paired terminal rounds of the exact final build measured
+  **+3.42% Unicode**, 15/15 wins against the preceding build (an earlier
+  binary measured +2.34%, also 15/15). This does not close the Ghostty gap.
+  Raw measurements and mutation/serialization tests:
+  `bench/results/2026-11-02-mark-cache/`.
+
 ## Lints
 
 Upstream's `lib.rs` denies clippy's warnings. Now that the library is a member of glass's workspace, clippy checks it, and clippy 1.99 has lints newer than upstream's code. These changes don't change behaviour.

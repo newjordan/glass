@@ -1,6 +1,8 @@
 // Changed for glass from alacritty_terminal 0.26.0; CHANGES.md lists every change.
 // - a cell keeps at most 9 zerowidth characters (upstream's fix, alacritty/alacritty@ede2ac14).
+// - single-mark extras share one bounded per-thread cache; mutations remain copy-on-write.
 
+use std::cell::RefCell;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicU32, Ordering};
 
@@ -138,6 +140,36 @@ pub struct CellExtra {
     hyperlink: Option<Hyperlink>,
 }
 
+impl CellExtra {
+    fn with_mark(character: char) -> Self {
+        let mut extra = Self::default();
+        extra.zerowidth.push(character);
+        extra
+    }
+
+    /// A common accent needs one allocation per thread, not per cell. Only
+    /// extras with exactly this mark and no other attributes are cached.
+    /// Retain just the last mark, so arbitrary text cannot grow the cache.
+    fn single_mark(character: char) -> Arc<Self> {
+        thread_local! {
+            static LAST: RefCell<Option<(char, Arc<CellExtra>)>> = const { RefCell::new(None) };
+        }
+        LAST.try_with(|last| {
+            let mut last = last.borrow_mut();
+            if let Some((key, extra)) = last.as_ref()
+                && *key == character
+            {
+                return Arc::clone(extra);
+            }
+            let extra = Arc::new(Self::with_mark(character));
+            *last = Some((character, Arc::clone(&extra)));
+            extra
+        })
+        // Cells may also be used from another thread-local's destructor.
+        .unwrap_or_else(|_| Arc::new(Self::with_mark(character)))
+    }
+}
+
 /// Content and attributes of a single cell in the terminal grid.
 #[derive(Clone, Debug, Eq, PartialEq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
@@ -172,7 +204,11 @@ impl Cell {
     /// Write a new zerowidth character to this cell.
     #[inline]
     pub fn push_zerowidth(&mut self, character: char) {
-        let extra = self.extra.get_or_insert(Default::default());
+        if self.extra.is_none() {
+            self.extra = Some(CellExtra::single_mark(character));
+            return;
+        }
+        let extra = self.extra.as_mut().unwrap();
         let _ = Arc::make_mut(extra).zerowidth.try_push(character);
     }
 
@@ -331,6 +367,60 @@ mod tests {
 
         // Ensure that cell size isn't growing by accident.
         assert!(mem::size_of::<Cell>() <= EXPECTED_CELL_SIZE);
+    }
+
+    #[test]
+    fn shared_marks_are_isolated_from_cell_mutations_and_cache_replacement() {
+        let mut first = Cell::default();
+        let mut second = Cell::default();
+        first.push_zerowidth('\u{301}');
+        second.push_zerowidth('\u{301}');
+        assert!(Arc::ptr_eq(first.extra.as_ref().unwrap(), second.extra.as_ref().unwrap()));
+
+        first.push_zerowidth('\u{308}');
+        first.set_underline_color(Some(Color::Indexed(3)));
+        first.set_hyperlink(Some(Hyperlink::new(Some("id"), "https://example.org".into())));
+        assert_eq!(second.zerowidth(), Some(&['\u{301}'][..]));
+        assert_eq!(second.underline_color(), None);
+        assert_eq!(second.hyperlink(), None);
+        for _ in 0..20 {
+            first.push_zerowidth('\u{302}');
+        }
+        assert_eq!(first.zerowidth().unwrap().len(), MAX_ZEROWIDTH_CHARS);
+        assert_eq!(&first.zerowidth().unwrap()[..2], &['\u{301}', '\u{308}']);
+        assert_eq!(first.underline_color(), Some(Color::Indexed(3)));
+        assert_eq!(first.hyperlink().unwrap().uri(), "https://example.org");
+
+        let mut different = Cell::default();
+        different.push_zerowidth('\u{300}');
+        second.clear_wide();
+        let mut fresh = Cell::default();
+        fresh.push_zerowidth('\u{300}');
+        assert_eq!(fresh.zerowidth(), Some(&['\u{300}'][..]));
+        assert!(Arc::ptr_eq(fresh.extra.as_ref().unwrap(), different.extra.as_ref().unwrap()));
+        assert_eq!(second.zerowidth(), Some(&[][..]));
+    }
+
+    #[test]
+    fn marks_preserve_existing_extra_attributes() {
+        let mut cell = Cell::default();
+        cell.set_underline_color(Some(Color::Indexed(5)));
+        cell.set_hyperlink(Some(Hyperlink::new(Some("other"), "https://example.com".into())));
+        cell.push_zerowidth('\u{301}');
+        assert_eq!(cell.zerowidth(), Some(&['\u{301}'][..]));
+        assert_eq!(cell.underline_color(), Some(Color::Indexed(5)));
+        assert_eq!(cell.hyperlink().unwrap().id(), "other");
+    }
+
+    #[cfg(feature = "serde")]
+    #[test]
+    fn shared_mark_serializes_like_an_owned_extra() {
+        let mut shared = Cell::default();
+        shared.push_zerowidth('\u{301}');
+        let owned = Cell { extra: Some(Arc::new(CellExtra::with_mark('\u{301}'))), ..Cell::default() };
+        let json = serde_json::to_string(&shared).unwrap();
+        assert_eq!(json, serde_json::to_string(&owned).unwrap());
+        assert_eq!(serde_json::from_str::<Cell>(&json).unwrap(), owned);
     }
 
     #[test]

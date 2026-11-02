@@ -1,0 +1,97 @@
+diff --git i/crates/term/src/read_ahead.rs w/crates/term/src/read_ahead.rs
+index a8da230..7b1ee19 100644
+--- i/crates/term/src/read_ahead.rs
++++ w/crates/term/src/read_ahead.rs
+@@ -10,7 +10,7 @@
+ //! Only two hand-offs are ever in flight, so the program can run at most
+ //! that much further ahead of the screen than the pty itself lets it.
+ 
+-use std::io::{self, Read};
++use std::io::{self, BufRead, Read};
+ use std::time::{Duration, Instant};
+ use std::os::fd::{AsRawFd, OwnedFd};
+ use std::sync::mpsc::{self, Receiver, Sender, TryRecvError};
+@@ -153,6 +153,16 @@ impl Read for ReadAhead {
+         if out.is_empty() {
+             return Ok(0);
+         }
++        let available = self.fill_buf()?;
++        let n = out.len().min(available.len());
++        out[..n].copy_from_slice(&available[..n]);
++        self.consume(n);
++        Ok(n)
++    }
++}
++
++impl BufRead for ReadAhead {
++    fn fill_buf(&mut self) -> io::Result<&[u8]> {
+         while self.at >= self.end {
+             let spent = std::mem::take(&mut self.current);
+             if !spent.is_empty() {
+@@ -168,13 +178,14 @@ impl Read for ReadAhead {
+                     self.current = buf;
+                     self.at = 0;
+                 }
+-                Err(_) => return Ok(0),
++                Err(_) => return Ok(&[]),
+             }
+         }
+-        let n = out.len().min(self.end - self.at);
+-        out[..n].copy_from_slice(&self.current[self.at..self.at + n]);
+-        self.at += n;
+-        Ok(n)
++        Ok(&self.current[self.at..self.end])
++    }
++
++    fn consume(&mut self, amount: usize) {
++        self.at += amount.min(self.end - self.at);
+     }
+ }
+ 
+diff --git i/crates/term/src/session.rs w/crates/term/src/session.rs
+index 497422c..3aff14c 100644
+--- i/crates/term/src/session.rs
++++ w/crates/term/src/session.rs
+@@ -2,7 +2,9 @@
+ //! screen its output draws, and the answers a terminal owes the program
+ //! (where the cursor is, what this terminal is, its colours).
+ 
+-use std::io::{Read, Write};
++#[cfg(not(target_os = "linux"))]
++use std::io::Read;
++use std::io::Write;
+ use std::path::Path;
+ use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
+ use std::sync::mpsc::Sender;
+@@ -756,8 +758,22 @@ impl Session {
+             );
+             let parse = std::thread::Builder::new().name("pty-parse".into()).spawn(move || {
+                 crate::affinity::place_hot_thread();
++                #[cfg(target_os = "linux")]
++                use std::io::BufRead;
++                #[cfg(not(target_os = "linux"))]
+                 let mut buf = vec![0u8; 64 * 1024];
+                 'reads: loop {
++                    // Borrow the same bounded hand-off on Linux; its storage
++                    // returns to the reader only after this iteration, just
++                    // as with Read, but without a copy through `buf`.
++                    #[cfg(target_os = "linux")]
++                    let buf = match reader.fill_buf() {
++                        Ok([]) | Err(_) => break,
++                        Ok(bytes) => bytes,
++                    };
++                    #[cfg(target_os = "linux")]
++                    let n = buf.len();
++                    #[cfg(not(target_os = "linux"))]
+                     let n = match reader.read(&mut buf) {
+                         Ok(0) | Err(_) => break,
+                         Ok(n) => n,
+@@ -829,6 +845,8 @@ impl Session {
+                             break 'reads;
+                         }
+                     }
++                    #[cfg(target_os = "linux")]
++                    reader.consume(n);
+                 }
+             });
+             parse.map_err(|e| format!("pty reader: {e}"))?;

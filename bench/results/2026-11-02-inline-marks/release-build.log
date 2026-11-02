@@ -1,0 +1,58 @@
+   Compiling glass-term v0.1.0 (/work/frosty40/glass-repo/tree/crates/term)
+warning: unused import: `Instant`
+  --> crates/term/src/read_ahead.rs:14:27
+   |
+14 | use std::time::{Duration, Instant};
+   |                           ^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `TryRecvError`
+  --> crates/term/src/read_ahead.rs:16:47
+   |
+16 | use std::sync::mpsc::{self, Receiver, Sender, TryRecvError};
+   |                                               ^^^^^^^^^^^^
+
+warning: method `apply_timed` is never used
+   --> crates/term/src/engine.rs:495:8
+    |
+368 | impl Engine {
+    | ----------- method in this implementation
+...
+495 |     fn apply_timed(&mut self, pass: &[u8]) {
+    |        ^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: static `FEED_NS` is never used
+    --> crates/term/src/engine.rs:2996:16
+     |
+2996 |     pub static FEED_NS: AtomicU64 = AtomicU64::new(0);
+     |                ^^^^^^^
+
+warning: static `FEED_CALLS` is never used
+    --> crates/term/src/engine.rs:2997:16
+     |
+2997 |     pub static FEED_CALLS: AtomicU64 = AtomicU64::new(0);
+     |                ^^^^^^^^^^
+
+warning: constant `FEED` is never used
+    --> crates/term/src/engine.rs:2999:15
+     |
+2999 |     pub const FEED: usize = 1;
+     |               ^^^^
+
+warning: function `start` is never used
+    --> crates/term/src/engine.rs:3072:12
+     |
+3072 |     pub fn start() {
+     |            ^^^^^
+
+warning: function `stop` is never used
+    --> crates/term/src/engine.rs:3078:12
+     |
+3078 |     pub fn stop() -> (u64, u64) {
+     |            ^^^^
+
+warning: `glass-term` (bin "glass") generated 8 warnings (run `cargo fix --bin "glass" -p glass-term` to apply 2 suggestions)
+    Finished `release` profile [optimized] target(s) in 23.62s

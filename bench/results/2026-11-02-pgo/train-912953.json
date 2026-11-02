@@ -1,0 +1,9 @@
+{
+  "schema": "glass.pgo-training/v1",
+  "seed": 912953,
+  "cols": 154,
+  "rows": 39,
+  "bytes": 6726828,
+  "sha256": "f847498438ac648ebb43285806ee7657a237beec7ddf63160a7c1c00f9f64613",
+  "wall_s": 2.1709143839980243
+}

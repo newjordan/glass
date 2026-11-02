@@ -1,0 +1,68 @@
+diff --git i/crates/alacritty-terminal/src/grid/row.rs w/crates/alacritty-terminal/src/grid/row.rs
+index 2448882..9987074 100644
+--- i/crates/alacritty-terminal/src/grid/row.rs
++++ w/crates/alacritty-terminal/src/grid/row.rs
+@@ -153,6 +153,14 @@ impl<T> Row<T> {
+         self.extra_free
+     }
+ 
++    /// A lane attached extra state to an already-written physical cell.
++    /// Keep both lane oracles conservative, as IndexMut<Column> would.
++    #[inline]
++    pub fn note_extra_cell(&mut self, column: usize) {
++        self.extra_free = false;
++        self.truncate_uniform(column);
++    }
++
+     /// Changed for glass: the uniform-style prefix length, whatever
+     /// its style (see the field).
+     #[inline]
+diff --git i/crates/term/src/engine.rs w/crates/term/src/engine.rs
+index 5b0f466..584a9e7 100644
+--- i/crates/term/src/engine.rs
++++ w/crates/term/src/engine.rs
+@@ -1935,6 +1935,7 @@ impl Watch<'_> {
+         let _ = row.lane_cells(column, 0);
+         let cells = row.lane_slice_from(column);
+         let mut occ_to = column;
++        let mut first_mark = None;
+         let wide = alacritty_terminal::term::cell::Cell {
+             flags: flags | CellFlags::WIDE_CHAR,
+             ..narrow.clone()
+@@ -1968,10 +1969,22 @@ impl Watch<'_> {
+                     match width_of(last) {
+                         Some(width @ 1..=2) => width,
+                         Some(0) => {
+-                            // A mark joins the cell before it through
+-                            // the caller's `input` fallback; it needs
+-                            // the row, not this slice.
+-                            break;
++                            // Only attach to a base this very loop wrote:
++                            // it is physical, even before occ is committed.
++                            // Leading marks still take input's fallback.
++                            if written == 0 {
++                                break;
++                            }
++                            let mut target = if wrap { column } else { column.saturating_sub(1) };
++                            if cells[target - start_column].flags.contains(CellFlags::WIDE_CHAR_SPACER) {
++                                target = target.saturating_sub(1);
++                            }
++                            cells[target - start_column].push_zerowidth(last);
++                            first_mark = Some(first_mark.map_or(target, |old: usize| old.min(target)));
++                            span_clean = false;
++                            held = Some((c, at));
++                            at += len;
++                            continue;
+                         }
+                         _ => break,
+                     }
+@@ -2021,6 +2034,9 @@ impl Watch<'_> {
+         if occ_to > start_column {
+             row.occ_bump(occ_to - 1);
+         }
++        if let Some(target) = first_mark {
++            row.note_extra_cell(target);
++        }
+         if span_clean && written >= 8 {
+             let end = if wrap { column + 1 } else { column };
+             note_uniform_span(row, span_start, end, &narrow);

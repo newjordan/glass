@@ -1,0 +1,25 @@
+diff --git i/crates/term/src/read_ahead.rs w/crates/term/src/read_ahead.rs
+index a8da230..16e5f34 100644
+--- i/crates/term/src/read_ahead.rs
++++ w/crates/term/src/read_ahead.rs
+@@ -39,9 +39,17 @@ enum Poll {
+ fn wait_for_more(fd: Option<&OwnedFd>, limit: Duration) -> Poll {
+     let Some(fd) = fd else { return Poll::Quiet };
+     let mut pfd = libc::pollfd { fd: fd.as_raw_fd(), events: libc::POLLIN, revents: 0 };
+-    let millis = limit.as_millis().min(i32::MAX as u128) as libc::c_int;
+-    // SAFETY: pfd is one pollfd the call may write; the timeout bounds it.
+-    let r = unsafe { libc::poll(&mut pfd as *mut libc::pollfd, 1, millis) };
++    // poll's integer milliseconds truncate our 400 us top-up to zero:
++    // that is only another readiness probe, not a wait for the tty's next
++    // block. ppoll preserves the sub-millisecond budget without rounding
++    // a quiet keystroke up to a whole millisecond.
++    let timeout = libc::timespec {
++        tv_sec: limit.as_secs().min(libc::time_t::MAX as u64) as libc::time_t,
++        tv_nsec: limit.subsec_nanos() as libc::c_long,
++    };
++    // SAFETY: pfd is one valid pollfd, timeout is initialized and valid,
++    // and a null sigmask leaves the calling thread's signal mask alone.
++    let r = unsafe { libc::ppoll(&mut pfd, 1, &timeout, std::ptr::null()) };
+     if r < 0 {
+         if std::io::Error::last_os_error().kind() == io::ErrorKind::Interrupted {
+             return Poll::Ready;

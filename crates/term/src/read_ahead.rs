@@ -23,8 +23,10 @@ const AHEAD: usize = 2;
 /// has room for a whole one.
 const PTY_READ: usize = 4096;
 
-/// How long a part-full hand-off waits for the pty's next block before
-/// it is handed on as it stands.
+/// Historical top-up budget: poll's whole milliseconds truncate this to
+/// zero, so the current setting is a readiness recheck, not a 400 us wait.
+/// A true 400 us ppoll wait regressed ASCII and added ~0.45 ms quiet DA1
+/// RTT; see bench/results/2026-11-02-ppoll. Preserve the measured behavior.
 const TOP_UP: Duration = Duration::from_micros(400);
 
 /// What waiting on the pty said: more bytes are ready, it stayed quiet
@@ -35,7 +37,7 @@ enum Poll {
     End,
 }
 
-/// Wait for the pty to hold more bytes, up to `limit`.
+/// Check for more pty bytes, waiting only for whole milliseconds in `limit`.
 fn wait_for_more(fd: Option<&OwnedFd>, limit: Duration) -> Poll {
     let Some(fd) = fd else { return Poll::Quiet };
     let mut pfd = libc::pollfd { fd: fd.as_raw_fd(), events: libc::POLLIN, revents: 0 };
@@ -101,11 +103,11 @@ impl ReadAhead {
                     if !waiting(fd.as_ref()) {
                         // The pty is empty this instant. The tty layer
                         // copies a flood in blocks a few microseconds
-                        // apart; handing off between them measured 70k
-                        // tiny hand-offs and 1.2 s of the parser's stall
-                        // in one run. Wait for the next block instead,
-                        // but only briefly: a program that has said all
-                        // it means to say must not wait for more.
+                        // apart. Recheck readiness before handing off;
+                        // TOP_UP currently truncates to poll(0), not a
+                        // sub-millisecond wait. A real wait was measured
+                        // and rejected (see TOP_UP). Do not restore it
+                        // based on the historical comments alone.
                         if filled > 0 {
                             match wait_for_more(fd.as_ref(), TOP_UP) {
                                 Poll::Ready => continue,

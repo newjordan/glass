@@ -1,0 +1,51 @@
+diff --git i/crates/term/src/engine.rs w/crates/term/src/engine.rs
+index 5b0f466..1b3d04d 100644
+--- i/crates/term/src/engine.rs
++++ w/crates/term/src/engine.rs
+@@ -1819,6 +1819,16 @@ impl Watch<'_> {
+     /// decoded to the parser, which keeps it for REP. Returns how many
+     /// bytes it took.
+     fn print_utf8(&mut self, text: &[u8]) -> usize {
++        match std::str::from_utf8(text) {
++            Ok(valid) => self.print_utf8_decoded(text, |at| {
++                let c = valid.get(at..)?.chars().next()?;
++                Some((c, c.len_utf8()))
++            }),
++            Err(_) => self.print_utf8_decoded(text, |at| utf8_at(text, at)),
++        }
++    }
++
++    fn print_utf8_decoded(&mut self, text: &[u8], decode: impl Fn(usize) -> Option<(char, usize)> + Copy) -> usize {
+         // What holds for every character of the run is checked once: the
+         // pen, the charsets, insert mode and in-cell pictures do not change
+         // inside it, whatever `input` does with a character.
+@@ -1834,9 +1844,9 @@ impl Watch<'_> {
+             // As many as fit go into the cursor's row at once; this loop
+             // takes the one that stopped them.
+             if plain {
+-                (at, held) = self.put_row(text, at, held, ascii);
++                (at, held) = self.put_row(at, held, ascii, decode);
+             }
+-            let Some((c, len)) = utf8_at(text, at) else {
++            let Some((c, len)) = decode(at) else {
+                 break;
+             };
+             if ('\u{7f}'..='\u{9f}').contains(&c) {
+@@ -1886,7 +1896,7 @@ impl Watch<'_> {
+     /// a C1 control, or at a held character `put_plain` would refuse, and
+     /// returns where it stopped and what it holds.
+     #[inline(always)]
+-    fn put_row(&mut self, text: &[u8], mut at: usize, mut held: Option<(char, usize)>, ascii: bool) -> (usize, Option<(char, usize)>) {
++    fn put_row(&mut self, mut at: usize, mut held: Option<(char, usize)>, ascii: bool, decode: impl Fn(usize) -> Option<(char, usize)>) -> (usize, Option<(char, usize)>) {
+         let columns = self.term.columns();
+         let grid = self.term.grid_mut();
+         if grid.cursor.input_needs_wrap {
+@@ -1943,7 +1953,7 @@ impl Watch<'_> {
+             flags: flags | CellFlags::WIDE_CHAR_SPACER,
+             ..narrow.clone()
+         };
+-        while let Some((c, len)) = utf8_at(text, at) {
++        while let Some((c, len)) = decode(at) {
+             if ('\u{7f}'..='\u{9f}').contains(&c) {
+                 break;
+             }

@@ -12,6 +12,8 @@ please send the numbers whatever they say.
 | --- | --- |
 | `tput.py` | Runs inside the terminal under test. Writes six workloads through the pty and times each until the terminal answers a DA1 query (`CSI c`), so the clock stops only when every byte has been parsed, as vtebench does. Each workload is written three times and the fastest is kept, with the terminal's own CPU time over it. Writes one JSON file. |
 | `run-tput.sh` | Opens `tput.py` in each terminal in turn, full-screen on a headless output, for each round. |
+| `pgo-train.py` | Seeded mixed terminal sessions for optional PGO research, separate from the scored `tput.py` payload. Writes a training receipt, not a score. See `results/2026-11-02-pgo/README.md`; no default release flags use its profile. |
+| `pty-rtt.py` | Quiet DA1 round trips through the real PTY; stores all samples and validates replies. A reader latency guard, **not** a key-to-screen measurement. See `results/2026-11-02-ppoll/README.md`. |
 | `run-startup.sh` | Launches each terminal in turn and times (a) launch until the program inside is running (it writes the time) and (b) launch until the window is on screen (Hyprland's `openwindow` event, sent when the window's first buffer arrives). Prints every launch and the medians. |
 | `run-misc.sh` | For each terminal: eight quick startups (a); an idle window's memory, threads, VRAM (`nvidia-smi`) and CPU over 10 s; and key latency, 40 keys sent through Hyprland until `keys.py` reads them. |
 | `keys.py` | Runs inside the terminal: logs the time of every key it reads, until `q`. |
@@ -119,6 +121,11 @@ through-pty gate: rotate terminal order, check geometry, retain every round,
 and compare paired ratios rather than dividing unrelated medians.
 The [SSE2 scan report](results/2026-11-02-sse-scan/README.md) is an example
 with complete engine pairs, a balanced terminal gate, and rejected candidates.
+The [single-mark sharing report](results/2026-11-02-mark-cache/README.md)
+adds a bounded allocation-reuse gain (+3.42% Unicode, 15/15 final-build pairs;
+an earlier binary was +2.34%, also 15/15)
+and records four more rejected implementation candidates. Three Ghostty
+throughput leads remain; ASCII, Unicode and scroll-region still do not pass.
 
 ## Add another terminal
 

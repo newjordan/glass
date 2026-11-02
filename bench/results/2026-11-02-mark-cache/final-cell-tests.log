@@ -1,0 +1,14 @@
+   Compiling glass-alacritty-terminal v0.26.0 (/work/frosty40/glass-repo/tree/crates/alacritty-terminal)
+    Finished `release` profile [optimized] target(s) in 4.58s
+     Running unittests src/lib.rs (target/release/deps/alacritty_terminal-adde43eb4a19dee3)
+
+running 6 tests
+test term::cell::tests::marks_preserve_existing_extra_attributes ... ok
+test term::cell::tests::line_length_works_with_wrapline ... ok
+test term::cell::tests::line_length_works ... ok
+test term::cell::tests::cell_size_is_below_cap ... ok
+test term::cell::tests::shared_mark_serializes_like_an_owned_extra ... ok
+test term::cell::tests::shared_marks_are_isolated_from_cell_mutations_and_cache_replacement ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 129 filtered out; finished in 0.00s
+
