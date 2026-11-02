@@ -713,6 +713,16 @@ impl Session {
         // little to hand over one by one (plain text through hand-offs
         // came to 163 MB/s on an M4 Pro, against 375 read here), so there
         // the reads gather in one buffer the parsing takes whole.
+        //
+        // Gather was tried on Linux too, and is not worth the swap: through
+        // the bench's pty it runs ~11% ahead of read-ahead at the same
+        // reader CPU, but at terminal level the two are a wash (337 vs 336
+        // MB/s on a 9950X3D). The lock census says why — read-ahead's
+        // hand-off wait is ~470 ms of a 450 MB flood, gather removes it
+        // outright, and the flood takes exactly as long. The reader idles
+        // because it is ahead of the sink, so hand-off latency is off the
+        // critical path and the 2x between this path and the engine's own
+        // 842 MB/s is downstream of here.
         #[cfg(target_os = "linux")]
         let mut reader = crate::read_ahead::ReadAhead::spawn(reader, pty_fd(master.as_ref()))
             .map_err(|e| format!("pty reader: {e}"))?;

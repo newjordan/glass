@@ -1838,6 +1838,17 @@ impl Watch<'_> {
                     }
                     1
                 } else {
+                    // This lookup is ~23% of `unicode` throughput, measured
+                    // with a temporary probe that called every non-ASCII
+                    // character one cell wide. Three ways to cut it were
+                    // tried and none is worth keeping: a 4 KiB table over
+                    // U+0000..U+0FFF built from this crate is a wash (the
+                    // crate's own multi-level lookup is already as fast); a
+                    // branch-only Latin-1 path was 6% slower *and* disagreed
+                    // with the crate inside U+0000..U+0100, caught by an
+                    // exhaustive equivalence test; and the probe itself cost
+                    // 3.5% as a per-character branch, so it was not kept
+                    // either. The 23% is real and still unclaimed.
                     match unicode_width::UnicodeWidthChar::width(last) {
                         Some(width @ 1..=2) => width,
                         Some(0) => {
@@ -2767,22 +2778,29 @@ fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, c
 /// chunk total they say what a stream's time is made of. Counting is
 /// off until [`counters::start`] says otherwise, so the parse path
 /// pays nothing when no one asks.
-/// The run-whole candidate: when GLASS_RUN_WHOLE=1 the run lane applies
-/// the whole run, holding no character for the parser (glass's REP
-/// tracking makes that sound), so the gap between runs carries only C0.
-/// Off by default while it is measured.
+/// The run lane applies the whole run, holding no character for the
+/// parser (glass's REP tracking makes that sound), so the gap between
+/// runs carries only C0. On by default: it is worth +6-7% on ascii,
+/// ascii_lf and scroll_region at engine level, and the lane agrees with
+/// the byte-at-a-time parser across 25,600 random streams either way
+/// (`plain_runs_match_the_parser_over_seeds`). `GLASS_RUN_WHOLE=0` takes
+/// it off.
 pub fn run_whole() -> bool {
     static ON: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
-    *ON.get_or_init(|| std::env::var_os("GLASS_RUN_WHOLE").is_some_and(|v| v == "1"))
+    *ON.get_or_init(|| !std::env::var_os("GLASS_RUN_WHOLE").is_some_and(|v| v == "0"))
 }
 
 /// Deliberately-incorrect ceiling probes for the parse path: GLASS_RUN_PROBE
-/// (default 0 = correct behaviour), fixed once at startup. 1-3 bound the
-/// suspects inside `print_run`'s cell loop (see the match there); 4-6 bound
-/// the feed path around it: 4 skips the byte-at-a-time parser between runs,
-/// 5 skips the lane's apply, 6 (written 5, with 4) skips both, leaving the
-/// ESC scan, the mirror and the loop itself. A relaxed load is enough: the
-/// value never changes after init, and init happens before the parse thread.
+/// (default 0 = correct behaviour), fixed once at startup. 1 and 2 bound the
+/// suspects inside `print_run`'s cell loop (see the match there: 1 skips the
+/// wide test, 2 is the rejected conditional-pen variant). 100 and over bound
+/// the feed path around it: >=100 skips the lane's apply, and 104 skips the
+/// byte-at-a-time parser as well, leaving the ESC scan, the mirror and the
+/// loop itself. **3 to 99 are inert** — they match no branch, so a run with
+/// one of them measures the baseline and reads as "no headroom here".
+/// `plain_runs_match_the_parser_over_seeds` sees 100 and 104 diverge, and is
+/// the way to check a probe still bites. A relaxed load is enough: the value
+/// never changes after init, and init happens before the parse thread.
 /// Wall-time brackets for the parse path, printed once at exit when
 /// GLASS_PARSE_TIMERS=1. Cheap enough to leave in: a relaxed load and,
 /// when off, no clock.
@@ -2969,8 +2987,16 @@ fn lane(
     }
     if *fed < esc {
         let text = &chunk[*fed..esc];
+        // One character is enough when the lane applies the whole run:
+        // `n` below is then `text.len()`, so a single cell's worth of text
+        // between two colour changes goes to the grid instead of through
+        // the parser. Without run-whole `n` would be 0 and the take would
+        // print nothing, which is what the floor of 1 was for. A frame
+        // that colours every cell (`tui_frames`, `truecolor`,
+        // `cursor_motion`) is exactly this shape, one char per sequence.
+        let floor = if run_whole() { 0 } else { 1 };
         if after_lane
-            && text.len() > 1
+            && text.len() > floor
             && text.iter().all(|b| (0x20..=0x7e).contains(b))
             && processor.sync_timeout().sync_timeout().is_none()
         {
