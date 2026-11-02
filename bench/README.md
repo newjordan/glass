@@ -98,6 +98,28 @@ What you get will differ from the published numbers: they come from one
 machine (Ryzen 9 9950X3D, RTX 3090). Plain ASCII in particular depends on
 the CPU's cache; see [docs/PERFORMANCE.md](../docs/PERFORMANCE.md).
 
+### Paired engine diagnostics
+
+`engine-pairs.py` compares two **test executables**, not terminal binaries.
+Build each source revision with the same flags, using
+`cargo test --release -p glass-term --locked --no-run`, and copy the executable
+reported by Cargo before building the other revision. Then run:
+
+```sh
+python3 bench/engine-pairs.py /path/to/base-test /path/to/candidate-test \
+  --pairs 11 --scale 2 --rounds 5 --out /path/to/engine-pairs.json
+```
+
+The runner alternates AB/BA order, clears inherited `GLASS_*` probes, retains
+binary hashes and complete output, and rejects failed runs, missing workloads,
+nonpositive rates, or mismatched byte/read counts. It reports median paired
+CPU-throughput ratios and exact two-sided sign tests (exploratory, not corrected
+for multiple comparisons). Engine results do **not** replace the real-window,
+through-pty gate: rotate terminal order, check geometry, retain every round,
+and compare paired ratios rather than dividing unrelated medians.
+The [SSE2 scan report](results/2026-11-02-sse-scan/README.md) is an example
+with complete engine pairs, a balanced terminal gate, and rejected candidates.
+
 ## Add another terminal
 
 `term_cmd` in `lib.sh` knows glass, kitty, foot, Alacritty, Ghostty and

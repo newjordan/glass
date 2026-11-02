@@ -1,0 +1,39 @@
+diff --git i/crates/term/src/engine.rs w/crates/term/src/engine.rs
+index c531d56..281a6f9 100644
+--- i/crates/term/src/engine.rs
++++ w/crates/term/src/engine.rs
+@@ -3525,6 +3525,34 @@ impl Mirror {
+ /// the parser takes as it always has.
+ #[inline(always)]
+ fn utf8_at(bytes: &[u8], at: usize) -> Option<(char, usize)> {
++    // One bounded load validates the continuation lanes together. Short
++    // input tails retain the scalar path (no speculative out-of-bounds
++    // reads), including a codepoint split across input chunks.
++    if let Some(&four) = bytes.get(at..)?.first_chunk::<4>() {
++        let x = u32::from_le_bytes(four);
++        let lead = x as u8;
++        if lead < 0x80 {
++            return Some((char::from(lead), 1));
++        }
++        let (value, len) = match lead {
++            0xc2..=0xdf if x & 0x0000_c000 == 0x0000_8000 =>
++                (((x & 0x1f) << 6) | ((x >> 8) & 0x3f), 2),
++            0xe0..=0xef if x & 0x00c0_c000 == 0x0080_8000 => {
++                let value = ((x & 0x0f) << 12) | (((x >> 8) & 0x3f) << 6) | ((x >> 16) & 0x3f);
++                if value < 0x800 { return None; }
++                (value, 3)
++            },
++            0xf0..=0xf4 if x & 0xc0c0_c000 == 0x8080_8000 => {
++                let value = ((x & 0x07) << 18) | (((x >> 8) & 0x3f) << 12) | (((x >> 16) & 0x3f) << 6) | ((x >> 24) & 0x3f);
++                if value < 0x10000 { return None; }
++                (value, 4)
++            },
++            _ => return None,
++        };
++        // Reject surrogates and values beyond U+10FFFF as well as
++        // preserving the decoder's safe char-construction invariant.
++        return Some((char::from_u32(value)?, len));
++    }
+     let lead = *bytes.get(at)?;
+     if lead < 0x80 {
+         return Some((char::from(lead), 1));

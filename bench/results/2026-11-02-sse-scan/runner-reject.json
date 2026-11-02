@@ -1,0 +1,29 @@
+{
+  "schema": "glass.engine-pairs/v1",
+  "settings": {
+    "GLASS_BENCH_SCALE": "1.0",
+    "GLASS_BENCH_ROUNDS": "3",
+    "GLASS_BENCH_ONLY": "ascii"
+  },
+  "binaries": {
+    "base": {
+      "path": "/usr/bin/false",
+      "sha256": "001ae05243f5a4f27fc4863b44f962320014b111a551ce466c9a701ea5c97bb2"
+    },
+    "candidate": {
+      "path": "/work/frosty40/glass-repo/tree/bench/results/local/champion-r1/engine-sse-final",
+      "sha256": "eb196442f18ef618462b400b6e2e5fed8f61291025bd084efb7504d79075df03"
+    }
+  },
+  "pairs": [],
+  "failure": {
+    "pair": 0,
+    "arm": "base",
+    "result": {
+      "exit": 1,
+      "stdout": "",
+      "stderr": "",
+      "results": {}
+    }
+  }
+}

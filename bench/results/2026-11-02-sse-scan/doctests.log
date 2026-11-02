@@ -1,0 +1,171 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.14s
+   Doc-tests alacritty_terminal
+error[E0514]: found crate `parking_lot` compiled by an incompatible version of rustc
+ --> crates/alacritty-terminal/src/sync.rs:5:5
+  |
+5 | use parking_lot::{Mutex, MutexGuard};
+  |     ^^^^^^^^^^^
+  |
+  = note: the following crate versions were found:
+          crate `parking_lot` compiled by rustc 1.99.0 (b940084d7 2026-09-28): /work/frosty40/glass-repo/tree/target/debug/deps/libparking_lot-a561f0cb04e6c098.rlib
+  = help: please recompile that crate using this compiler (rustc 1.99.1 (58cf8f9c3 2026-10-13)) (consider running `cargo clean` first)
+
+error[E0514]: found crate `vte` compiled by an incompatible version of rustc
+  --> crates/alacritty-terminal/src/lib.rs:20:9
+   |
+20 | pub use vte;
+   |         ^^^
+   |
+   = note: the following crate versions were found:
+           crate `vte` compiled by rustc 1.99.0 (b940084d7 2026-09-28): /work/frosty40/glass-repo/tree/target/debug/deps/libvte-5182f9372dffe0d2.rlib
+   = help: please recompile that crate using this compiler (rustc 1.99.1 (58cf8f9c3 2026-10-13)) (consider running `cargo clean` first)
+
+error[E0514]: found crate `log` compiled by an incompatible version of rustc
+  --> crates/alacritty-terminal/src/event_loop.rs:17:5
+   |
+17 | use log::error;
+   |     ^^^
+   |
+   = note: the following crate versions were found:
+           crate `log` compiled by rustc 1.99.0 (b940084d7 2026-09-28): /work/frosty40/glass-repo/tree/target/debug/deps/liblog-823af2c8d42e3649.rlib
+   = help: please recompile that crate using this compiler (rustc 1.99.1 (58cf8f9c3 2026-10-13)) (consider running `cargo clean` first)
+
+error[E0514]: found crate `polling` compiled by an incompatible version of rustc
+  --> crates/alacritty-terminal/src/event_loop.rs:18:5
+   |
+18 | use polling::{Event as PollingEvent, Events, PollMode, Poller};
+   |     ^^^^^^^
+   |
+   = note: the following crate versions were found:
+           crate `polling` compiled by rustc 1.99.0 (b940084d7 2026-09-28): /work/frosty40/glass-repo/tree/target/debug/deps/libpolling-6af2a46ef46d5566.rlib
+   = help: please recompile that crate using this compiler (rustc 1.99.1 (58cf8f9c3 2026-10-13)) (consider running `cargo clean` first)
+
+error[E0514]: found crate `serde` compiled by an incompatible version of rustc
+  --> crates/alacritty-terminal/src/grid/row.rs:78:13
+   |
+78 |         use serde::ser::SerializeStruct;
+   |             ^^^^^
+   |
+   = note: the following crate versions were found:
+           crate `serde` compiled by rustc 1.99.0 (b940084d7 2026-09-28): /work/frosty40/glass-repo/tree/target/debug/deps/libserde-1d1ee7f1c65b2d3d.rlib
+   = help: please recompile that crate using this compiler (rustc 1.99.1 (58cf8f9c3 2026-10-13)) (consider running `cargo clean` first)
+
+error[E0514]: found crate `regex_automata` compiled by an incompatible version of rustc
+ --> crates/alacritty-terminal/src/term/search.rs:7:9
+  |
+7 | pub use regex_automata::hybrid::BuildError;
+  |         ^^^^^^^^^^^^^^
+  |
+  = note: the following crate versions were found:
+          crate `regex_automata` compiled by rustc 1.99.0 (b940084d7 2026-09-28): /work/frosty40/glass-repo/tree/target/debug/deps/libregex_automata-22b929644e72615e.rlib
+  = help: please recompile that crate using this compiler (rustc 1.99.1 (58cf8f9c3 2026-10-13)) (consider running `cargo clean` first)
+
+error[E0514]: found crate `libc` compiled by an incompatible version of rustc
+  --> crates/alacritty-terminal/src/tty/unix.rs:24:5
+   |
+24 | use libc::{F_GETFL, F_SETFL, O_NONBLOCK, TIOCSCTTY, c_int, fcntl};
+   |     ^^^^
+   |
+   = note: the following crate versions were found:
+           crate `libc` compiled by rustc 1.99.0 (b940084d7 2026-09-28): /work/frosty40/glass-repo/tree/target/debug/deps/liblibc-6d2329d7d16a3aa3.rlib
+   = help: please recompile that crate using this compiler (rustc 1.99.1 (58cf8f9c3 2026-10-13)) (consider running `cargo clean` first)
+
+error[E0514]: found crate `rustix_openpty` compiled by an incompatible version of rustc
+  --> crates/alacritty-terminal/src/tty/unix.rs:27:5
+   |
+27 | use rustix_openpty::openpty;
+   |     ^^^^^^^^^^^^^^
+   |
+   = note: the following crate versions were found:
+           crate `rustix_openpty` compiled by rustc 1.99.0 (b940084d7 2026-09-28): /work/frosty40/glass-repo/tree/target/debug/deps/librustix_openpty-14637bfca40d35d0.rlib
+   = help: please recompile that crate using this compiler (rustc 1.99.1 (58cf8f9c3 2026-10-13)) (consider running `cargo clean` first)
+
+error[E0514]: found crate `signal_hook` compiled by an incompatible version of rustc
+  --> crates/alacritty-terminal/src/tty/unix.rs:31:5
+   |
+31 | use signal_hook::low_level::{pipe as signal_pipe, unregister as unregister_signal};
+   |     ^^^^^^^^^^^
+   |
+   = note: the following crate versions were found:
+           crate `signal_hook` compiled by rustc 1.99.0 (b940084d7 2026-09-28): /work/frosty40/glass-repo/tree/target/debug/deps/libsignal_hook-cf9865969af54329.rlib
+   = help: please recompile that crate using this compiler (rustc 1.99.1 (58cf8f9c3 2026-10-13)) (consider running `cargo clean` first)
+
+error[E0432]: unresolved import `crate::term::cell::Flags`
+  --> crates/alacritty-terminal/src/grid/mod.rs:10:25
+   |
+10 | use crate::term::cell::{Flags, ResetDiscriminant};
+   |                         ^^^^^ no `Flags` in `term::cell`
+
+error[E0432]: unresolved import `crate::term::cell::Flags`
+ --> crates/alacritty-terminal/src/grid/resize.rs:7:25
+  |
+7 | use crate::term::cell::{Flags, ResetDiscriminant};
+  |                         ^^^^^ no `Flags` in `term::cell`
+
+error[E0514]: found crate `base64` compiled by an incompatible version of rustc
+  --> crates/alacritty-terminal/src/term/mod.rs:15:5
+   |
+15 | use base64::Engine;
+   |     ^^^^^^
+   |
+   = note: the following crate versions were found:
+           crate `base64` compiled by rustc 1.99.0 (b940084d7 2026-09-28): /work/frosty40/glass-repo/tree/target/debug/deps/libbase64-6ee8ec72165049e2.rlib
+   = help: please recompile that crate using this compiler (rustc 1.99.1 (58cf8f9c3 2026-10-13)) (consider running `cargo clean` first)
+
+error[E0514]: found crate `bitflags` compiled by an incompatible version of rustc
+  --> crates/alacritty-terminal/src/term/mod.rs:17:5
+   |
+17 | use bitflags::bitflags;
+   |     ^^^^^^^^
+   |
+   = note: the following crate versions were found:
+           crate `bitflags` compiled by rustc 1.99.0 (b940084d7 2026-09-28): /work/frosty40/glass-repo/tree/target/debug/deps/libbitflags-036982f367cf4f84.rlib
+   = help: please recompile that crate using this compiler (rustc 1.99.1 (58cf8f9c3 2026-10-13)) (consider running `cargo clean` first)
+
+error[E0514]: found crate `unicode_width` compiled by an incompatible version of rustc
+  --> crates/alacritty-terminal/src/term/mod.rs:19:5
+   |
+19 | use unicode_width::UnicodeWidthChar;
+   |     ^^^^^^^^^^^^^
+   |
+   = note: the following crate versions were found:
+           crate `unicode_width` compiled by rustc 1.99.0 (b940084d7 2026-09-28): /work/frosty40/glass-repo/tree/target/debug/deps/libunicode_width-ca0ab03338a5edee.rlib
+   = help: please recompile that crate using this compiler (rustc 1.99.1 (58cf8f9c3 2026-10-13)) (consider running `cargo clean` first)
+
+error[E0432]: unresolved import `crate::term::cell::Flags`
+  --> crates/alacritty-terminal/src/selection.rs:18:31
+   |
+18 | use crate::term::cell::{Cell, Flags};
+   |                               ^^^^^ no `Flags` in `term::cell`
+
+error[E0514]: found crate `arrayvec` compiled by an incompatible version of rustc
+ --> crates/alacritty-terminal/src/term/cell.rs:7:5
+  |
+7 | use arrayvec::ArrayVec;
+  |     ^^^^^^^^
+  |
+  = note: the following crate versions were found:
+          crate `arrayvec` compiled by rustc 1.99.0 (b940084d7 2026-09-28): /work/frosty40/glass-repo/tree/target/debug/deps/libarrayvec-8c80043aa52d0656.rlib
+  = help: please recompile that crate using this compiler (rustc 1.99.1 (58cf8f9c3 2026-10-13)) (consider running `cargo clean` first)
+
+error[E0432]: unresolved import `crate::term::cell::Flags`
+  --> crates/alacritty-terminal/src/term/mod.rs:25:31
+   |
+25 | use crate::term::cell::{Cell, Flags, LineLength};
+   |                               ^^^^^ no `Flags` in `term::cell`
+
+error[E0432]: unresolved import `crate::term::cell::Flags`
+  --> crates/alacritty-terminal/src/term/search.rs:16:31
+   |
+16 | use crate::term::cell::{Cell, Flags};
+   |                               ^^^^^ no `Flags` in `term::cell`
+
+error: aborting due to 18 previous errors
+
+Some errors have detailed explanations: E0432, E0514.
+For more information about an error, try `rustc --explain E0432`.
+error: doctest failed, to rerun pass `-p glass-alacritty-terminal --doc`
+
+Caused by:
+  process didn't exit successfully: `/home/frosty40/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustdoc --edition=2024 --crate-type lib --color auto --crate-name alacritty_terminal --test crates/alacritty-terminal/src/lib.rs --test-run-directory /work/frosty40/glass-repo/tree/crates/alacritty-terminal --extern arrayvec=/work/frosty40/glass-repo/tree/target/debug/deps/libarrayvec-8c80043aa52d0656.rlib --extern base64=/work/frosty40/glass-repo/tree/target/debug/deps/libbase64-6ee8ec72165049e2.rlib --extern bitflags=/work/frosty40/glass-repo/tree/target/debug/deps/libbitflags-036982f367cf4f84.rlib --extern alacritty_terminal=/work/frosty40/glass-repo/tree/target/debug/deps/libalacritty_terminal-775c1df90effa124.rlib --extern home=/work/frosty40/glass-repo/tree/target/debug/deps/libhome-c66cba8b8ac3127b.rlib --extern libc=/work/frosty40/glass-repo/tree/target/debug/deps/liblibc-6d2329d7d16a3aa3.rlib --extern log=/work/frosty40/glass-repo/tree/target/debug/deps/liblog-823af2c8d42e3649.rlib --extern parking_lot=/work/frosty40/glass-repo/tree/target/debug/deps/libparking_lot-a561f0cb04e6c098.rlib --extern polling=/work/frosty40/glass-repo/tree/target/debug/deps/libpolling-6af2a46ef46d5566.rlib --extern regex_automata=/work/frosty40/glass-repo/tree/target/debug/deps/libregex_automata-22b929644e72615e.rlib --extern rustix=/work/frosty40/glass-repo/tree/target/debug/deps/librustix-a60c9f8e7abdb7f8.rlib --extern rustix_openpty=/work/frosty40/glass-repo/tree/target/debug/deps/librustix_openpty-14637bfca40d35d0.rlib --extern serde=/work/frosty40/glass-repo/tree/target/debug/deps/libserde-1d1ee7f1c65b2d3d.rlib --extern serde_json=/work/frosty40/glass-repo/tree/target/debug/deps/libserde_json-f22caaf5928e446f.rlib --extern signal_hook=/work/frosty40/glass-repo/tree/target/debug/deps/libsignal_hook-cf9865969af54329.rlib --extern unicode_width=/work/frosty40/glass-repo/tree/target/debug/deps/libunicode_width-ca0ab03338a5edee.rlib --extern vte=/work/frosty40/glass-repo/tree/target/debug/deps/libvte-5182f9372dffe0d2.rlib -L dependency=/work/frosty40/glass-repo/tree/target/debug/deps -C embed-bitcode=no --cfg 'feature="default"' --cfg 'feature="serde"' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("default", "serde"))' --error-format human` (exit status: 1)
+note: test exited abnormally; to see the full output pass --no-capture to the harness.

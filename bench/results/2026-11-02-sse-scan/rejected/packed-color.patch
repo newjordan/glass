@@ -1,0 +1,186 @@
+diff --git i/crates/alacritty-terminal/src/term/cell.rs w/crates/alacritty-terminal/src/term/cell.rs
+index 6d8e3b5..4112dce 100644
+--- i/crates/alacritty-terminal/src/term/cell.rs
++++ w/crates/alacritty-terminal/src/term/cell.rs
+@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
+ 
+ use crate::grid::{self, GridCell};
+ use crate::index::Column;
+-use crate::vte::ansi::{Color, Hyperlink as VteHyperlink, NamedColor};
++use crate::vte::ansi::{Color, Hyperlink as VteHyperlink, NamedColor, Rgb};
+ 
+ /// Maximum number of zerowidth characters to retain per grid cell.
+ ///
+@@ -121,7 +121,7 @@ impl<T: Copy> ResetDiscriminant<T> for T {
+ 
+ impl ResetDiscriminant<Color> for Cell {
+     fn discriminant(&self) -> Color {
+-        self.bg
++        self.bg.into()
+     }
+ }
+ 
+@@ -138,13 +138,62 @@ pub struct CellExtra {
+     hyperlink: Option<Hyperlink>,
+ }
+ 
++/// Lossless four-byte grid representation of an ANSI color. The parser's
++/// public enum has a two-byte named-color payload and takes six bytes;
++/// keeping that enum twice in every cell rounds the cell up to 32 bytes.
++/// This private encoding keeps cells at 24 bytes without pointer tagging,
++/// unsafe accesses, or changing the serialized color format.
++#[derive(Clone, Copy, Debug, Eq, PartialEq)]
++#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
++#[cfg_attr(feature = "serde", serde(from = "Color", into = "Color"))]
++pub struct CellColor(u32);
++
++impl From<Color> for CellColor {
++    #[inline]
++    fn from(color: Color) -> Self {
++        Self(match color {
++            Color::Named(named) => named as u32,
++            Color::Spec(Rgb { r, g, b }) => 0x0100_0000 | u32::from(r) << 16 | u32::from(g) << 8 | u32::from(b),
++            Color::Indexed(index) => 0x0200_0000 | u32::from(index),
++        })
++    }
++}
++
++impl From<CellColor> for Color {
++    #[inline]
++    fn from(color: CellColor) -> Self {
++        match color.0 >> 24 {
++            1 => Self::Spec(Rgb { r: (color.0 >> 16) as u8, g: (color.0 >> 8) as u8, b: color.0 as u8 }),
++            2 => Self::Indexed(color.0 as u8),
++            _ => {
++                use NamedColor::*;
++                const BASE: [NamedColor; 16] = [Black, Red, Green, Yellow, Blue, Magenta, Cyan, White,
++                    BrightBlack, BrightRed, BrightGreen, BrightYellow, BrightBlue, BrightMagenta, BrightCyan, BrightWhite];
++                const SPECIAL: [NamedColor; 13] = [Foreground, Background, Cursor, DimBlack, DimRed,
++                    DimGreen, DimYellow, DimBlue, DimMagenta, DimCyan, DimWhite, BrightForeground, DimForeground];
++                // Only From<Color> constructs values; deserialization also
++                // goes through Color, never accepts an arbitrary u32.
++                let named = if color.0 < 16 { BASE[color.0 as usize] } else { SPECIAL[(color.0 - 256) as usize] };
++                Self::Named(named)
++            },
++        }
++    }
++}
++
++impl PartialEq<Color> for CellColor {
++    #[inline]
++    fn eq(&self, other: &Color) -> bool {
++        *self == Self::from(*other)
++    }
++}
++
+ /// Content and attributes of a single cell in the terminal grid.
+ #[derive(Clone, Debug, Eq, PartialEq)]
+ #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+ pub struct Cell {
+     pub c: char,
+-    pub fg: Color,
+-    pub bg: Color,
++    pub fg: CellColor,
++    pub bg: CellColor,
+     pub flags: Flags,
+     pub extra: Option<Arc<CellExtra>>,
+ }
+@@ -154,8 +203,8 @@ impl Default for Cell {
+     fn default() -> Cell {
+         Cell {
+             c: ' ',
+-            bg: Color::Named(NamedColor::Background),
+-            fg: Color::Named(NamedColor::Foreground),
++            bg: Color::Named(NamedColor::Background).into(),
++            fg: Color::Named(NamedColor::Foreground).into(),
+             flags: Flags::empty(),
+             extra: None,
+         }
+@@ -278,10 +327,17 @@ impl GridCell for Cell {
+     }
+ }
+ 
++impl From<CellColor> for Cell {
++    #[inline]
++    fn from(bg: CellColor) -> Self {
++        Self { bg, ..Cell::default() }
++    }
++}
++
+ impl From<Color> for Cell {
+     #[inline]
+     fn from(color: Color) -> Self {
+-        Self { bg: color, ..Cell::default() }
++        Self { bg: color.into(), ..Cell::default() }
+     }
+ }
+ 
+diff --git i/crates/alacritty-terminal/src/term/mod.rs w/crates/alacritty-terminal/src/term/mod.rs
+index 38b0937..a0d95e6 100644
+--- i/crates/alacritty-terminal/src/term/mod.rs
++++ w/crates/alacritty-terminal/src/term/mod.rs
+@@ -1916,12 +1916,12 @@ impl<T: EventListener> Handler for Term<T> {
+         trace!("Setting attribute: {attr:?}");
+         let cursor = &mut self.grid.cursor;
+         match attr {
+-            Attr::Foreground(color) => cursor.template.fg = color,
+-            Attr::Background(color) => cursor.template.bg = color,
++            Attr::Foreground(color) => cursor.template.fg = color.into(),
++            Attr::Background(color) => cursor.template.bg = color.into(),
+             Attr::UnderlineColor(color) => cursor.template.set_underline_color(color),
+             Attr::Reset => {
+-                cursor.template.fg = Color::Named(NamedColor::Foreground);
+-                cursor.template.bg = Color::Named(NamedColor::Background);
++                cursor.template.fg = Color::Named(NamedColor::Foreground).into();
++                cursor.template.bg = Color::Named(NamedColor::Background).into();
+                 cursor.template.flags = Flags::empty();
+                 cursor.template.set_underline_color(None);
+             },
+diff --git i/crates/term/src/engine.rs w/crates/term/src/engine.rs
+index c531d56..09b8c35 100644
+--- i/crates/term/src/engine.rs
++++ w/crates/term/src/engine.rs
+@@ -1155,8 +1155,8 @@ impl Engine {
+             format!(
+                 "{:?} {:?} {:?} {:?} {:?} {:?} {:?}",
+                 cell.c,
+-                cell.fg,
+-                cell.bg,
++                AnsiColor::from(cell.fg),
++                AnsiColor::from(cell.bg),
+                 cell.flags,
+                 cell.zerowidth(),
+                 cell.underline_color(),
+@@ -1204,7 +1204,7 @@ impl Engine {
+                 } else {
+                     cell.c
+                 };
+-                let fg = color_of(cell.fg);
++                let fg = color_of(cell.fg.into());
+                 let mut marks = ['\0'; 3];
+                 if let Some(extra) = cell.zerowidth() {
+                     for (i, ch) in extra.iter().take(3).enumerate() {
+@@ -1215,7 +1215,7 @@ impl Engine {
+                 self.cells.push(Cell {
+                     c,
+                     fg,
+-                    bg: color_of(cell.bg),
++                    bg: color_of(cell.bg.into()),
+                     flags: cell.flags,
+                     link: cell.hyperlink().map(|link| link.uri().to_owned()),
+                     marks,
+diff --git i/crates/term/src/view.rs w/crates/term/src/view.rs
+index c75dcfe..0bf0e93 100644
+--- i/crates/term/src/view.rs
++++ w/crates/term/src/view.rs
+@@ -92,8 +92,8 @@ pub fn paint(
+             // A placeholder cell is a picture, never a glyph. The background stays.
+             let symbol = if source.c == '\0' || source.c == '\u{10EEEE}' { ' ' } else { source.c };
+             cell.set_char(symbol);
+-            cell.fg = color(source.fg);
+-            cell.bg = color(source.bg);
++            cell.fg = color(source.fg.into());
++            cell.bg = color(source.bg.into());
+             let mut modifier = Modifier::empty();
+             use alacritty_terminal::term::cell::Flags as F;
+             modifier.set(Modifier::BOLD, source.flags.contains(F::BOLD));

@@ -1,0 +1,886 @@
+{
+  "schema": "glass.engine-pairs/v1",
+  "settings": {
+    "GLASS_BENCH_SCALE": "1.0",
+    "GLASS_BENCH_ROUNDS": "3",
+    "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames"
+  },
+  "binaries": {
+    "base": {
+      "path": "/work/frosty40/glass-repo/tree/bench/results/local/champion-r1/engine-base",
+      "sha256": "0638ec7d4051773c96bd1be419406830a72239eec29c8cd781852ada94e8aaf1"
+    },
+    "candidate": {
+      "path": "/work/frosty40/glass-repo/tree/bench/results/local/champion-r1/engine-color",
+      "sha256": "d63305608ee838130adf2cc0fe67ada6d960f2d9d8b7d0dfbe5d35d75adccaa0"
+    }
+  },
+  "pairs": [
+    {
+      "order": [
+        "base",
+        "candidate"
+      ],
+      "base": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 376 filtered out; finished in 0.98s\n\n",
+        "stderr": "         ascii:  1737.8 MB/s   1743.5 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   260.5 MB/s    261.1 MB/cpu-s  (16777268 bytes, read 4095)\n     truecolor:   295.8 MB/s    296.5 MB/cpu-s  (25168645 bytes, read 4095)\n cursor_motion:   259.9 MB/s    260.5 MB/cpu-s  (16778061 bytes, read 4095)\n scroll_region:  1737.6 MB/s   1746.1 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   308.6 MB/s    309.2 MB/cpu-s  (20901616 bytes, read 4095)\n",
+        "results": {
+          "ascii": {
+            "mb_s": 1737.8,
+            "mb_cpu_s": 1743.5,
+            "bytes": 25165955,
+            "read": 4095
+          },
+          "unicode": {
+            "mb_s": 260.5,
+            "mb_cpu_s": 261.1,
+            "bytes": 16777268,
+            "read": 4095
+          },
+          "truecolor": {
+            "mb_s": 295.8,
+            "mb_cpu_s": 296.5,
+            "bytes": 25168645,
+            "read": 4095
+          },
+          "cursor_motion": {
+            "mb_s": 259.9,
+            "mb_cpu_s": 260.5,
+            "bytes": 16778061,
+            "read": 4095
+          },
+          "scroll_region": {
+            "mb_s": 1737.6,
+            "mb_cpu_s": 1746.1,
+            "bytes": 16777365,
+            "read": 4095
+          },
+          "tui_frames": {
+            "mb_s": 308.6,
+            "mb_cpu_s": 309.2,
+            "bytes": 20901616,
+            "read": 4095
+          }
+        }
+      },
+      "candidate": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 376 filtered out; finished in 0.98s\n\n",
+        "stderr": "         ascii:  1772.3 MB/s   1776.4 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   262.8 MB/s    263.4 MB/cpu-s  (16777268 bytes, read 4095)\n     truecolor:   283.9 MB/s    284.5 MB/cpu-s  (25168645 bytes, read 4095)\n cursor_motion:   255.8 MB/s    256.3 MB/cpu-s  (16778061 bytes, read 4095)\n scroll_region:  1752.5 MB/s   1756.8 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   305.3 MB/s    305.9 MB/cpu-s  (20901616 bytes, read 4095)\n",
+        "results": {
+          "ascii": {
+            "mb_s": 1772.3,
+            "mb_cpu_s": 1776.4,
+            "bytes": 25165955,
+            "read": 4095
+          },
+          "unicode": {
+            "mb_s": 262.8,
+            "mb_cpu_s": 263.4,
+            "bytes": 16777268,
+            "read": 4095
+          },
+          "truecolor": {
+            "mb_s": 283.9,
+            "mb_cpu_s": 284.5,
+            "bytes": 25168645,
+            "read": 4095
+          },
+          "cursor_motion": {
+            "mb_s": 255.8,
+            "mb_cpu_s": 256.3,
+            "bytes": 16778061,
+            "read": 4095
+          },
+          "scroll_region": {
+            "mb_s": 1752.5,
+            "mb_cpu_s": 1756.8,
+            "bytes": 16777365,
+            "read": 4095
+          },
+          "tui_frames": {
+            "mb_s": 305.3,
+            "mb_cpu_s": 305.9,
+            "bytes": 20901616,
+            "read": 4095
+          }
+        }
+      }
+    },
+    {
+      "order": [
+        "candidate",
+        "base"
+      ],
+      "candidate": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 376 filtered out; finished in 0.99s\n\n",
+        "stderr": "         ascii:  1749.8 MB/s   1753.8 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   261.1 MB/s    261.7 MB/cpu-s  (16777268 bytes, read 4095)\n     truecolor:   280.3 MB/s    280.7 MB/cpu-s  (25168645 bytes, read 4095)\n cursor_motion:   256.6 MB/s    257.1 MB/cpu-s  (16778061 bytes, read 4095)\n scroll_region:  1734.6 MB/s   1738.2 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   300.7 MB/s    301.3 MB/cpu-s  (20901616 bytes, read 4095)\n",
+        "results": {
+          "ascii": {
+            "mb_s": 1749.8,
+            "mb_cpu_s": 1753.8,
+            "bytes": 25165955,
+            "read": 4095
+          },
+          "unicode": {
+            "mb_s": 261.1,
+            "mb_cpu_s": 261.7,
+            "bytes": 16777268,
+            "read": 4095
+          },
+          "truecolor": {
+            "mb_s": 280.3,
+            "mb_cpu_s": 280.7,
+            "bytes": 25168645,
+            "read": 4095
+          },
+          "cursor_motion": {
+            "mb_s": 256.6,
+            "mb_cpu_s": 257.1,
+            "bytes": 16778061,
+            "read": 4095
+          },
+          "scroll_region": {
+            "mb_s": 1734.6,
+            "mb_cpu_s": 1738.2,
+            "bytes": 16777365,
+            "read": 4095
+          },
+          "tui_frames": {
+            "mb_s": 300.7,
+            "mb_cpu_s": 301.3,
+            "bytes": 20901616,
+            "read": 4095
+          }
+        }
+      },
+      "base": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 376 filtered out; finished in 0.99s\n\n",
+        "stderr": "         ascii:  1644.7 MB/s   1648.9 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   249.9 MB/s    250.4 MB/cpu-s  (16777268 bytes, read 4095)\n     truecolor:   292.0 MB/s    292.6 MB/cpu-s  (25168645 bytes, read 4095)\n cursor_motion:   256.9 MB/s    257.4 MB/cpu-s  (16778061 bytes, read 4095)\n scroll_region:  1725.6 MB/s   1728.9 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   303.1 MB/s    303.7 MB/cpu-s  (20901616 bytes, read 4095)\n",
+        "results": {
+          "ascii": {
+            "mb_s": 1644.7,
+            "mb_cpu_s": 1648.9,
+            "bytes": 25165955,
+            "read": 4095
+          },
+          "unicode": {
+            "mb_s": 249.9,
+            "mb_cpu_s": 250.4,
+            "bytes": 16777268,
+            "read": 4095
+          },
+          "truecolor": {
+            "mb_s": 292.0,
+            "mb_cpu_s": 292.6,
+            "bytes": 25168645,
+            "read": 4095
+          },
+          "cursor_motion": {
+            "mb_s": 256.9,
+            "mb_cpu_s": 257.4,
+            "bytes": 16778061,
+            "read": 4095
+          },
+          "scroll_region": {
+            "mb_s": 1725.6,
+            "mb_cpu_s": 1728.9,
+            "bytes": 16777365,
+            "read": 4095
+          },
+          "tui_frames": {
+            "mb_s": 303.1,
+            "mb_cpu_s": 303.7,
+            "bytes": 20901616,
+            "read": 4095
+          }
+        }
+      }
+    },
+    {
+      "order": [
+        "base",
+        "candidate"
+      ],
+      "base": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 376 filtered out; finished in 0.98s\n\n",
+        "stderr": "         ascii:  1690.2 MB/s   1693.6 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   256.3 MB/s    256.9 MB/cpu-s  (16777268 bytes, read 4095)\n     truecolor:   291.1 MB/s    291.7 MB/cpu-s  (25168645 bytes, read 4095)\n cursor_motion:   256.2 MB/s    256.7 MB/cpu-s  (16778061 bytes, read 4095)\n scroll_region:  1667.0 MB/s   1671.1 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   303.8 MB/s    304.5 MB/cpu-s  (20901616 bytes, read 4095)\n",
+        "results": {
+          "ascii": {
+            "mb_s": 1690.2,
+            "mb_cpu_s": 1693.6,
+            "bytes": 25165955,
+            "read": 4095
+          },
+          "unicode": {
+            "mb_s": 256.3,
+            "mb_cpu_s": 256.9,
+            "bytes": 16777268,
+            "read": 4095
+          },
+          "truecolor": {
+            "mb_s": 291.1,
+            "mb_cpu_s": 291.7,
+            "bytes": 25168645,
+            "read": 4095
+          },
+          "cursor_motion": {
+            "mb_s": 256.2,
+            "mb_cpu_s": 256.7,
+            "bytes": 16778061,
+            "read": 4095
+          },
+          "scroll_region": {
+            "mb_s": 1667.0,
+            "mb_cpu_s": 1671.1,
+            "bytes": 16777365,
+            "read": 4095
+          },
+          "tui_frames": {
+            "mb_s": 303.8,
+            "mb_cpu_s": 304.5,
+            "bytes": 20901616,
+            "read": 4095
+          }
+        }
+      },
+      "candidate": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 376 filtered out; finished in 0.99s\n\n",
+        "stderr": "         ascii:  1699.2 MB/s   1702.4 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   258.2 MB/s    258.9 MB/cpu-s  (16777268 bytes, read 4095)\n     truecolor:   283.6 MB/s    284.2 MB/cpu-s  (25168645 bytes, read 4095)\n cursor_motion:   255.4 MB/s    256.0 MB/cpu-s  (16778061 bytes, read 4095)\n scroll_region:  1740.6 MB/s   1745.3 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   297.7 MB/s    298.4 MB/cpu-s  (20901616 bytes, read 4095)\n",
+        "results": {
+          "ascii": {
+            "mb_s": 1699.2,
+            "mb_cpu_s": 1702.4,
+            "bytes": 25165955,
+            "read": 4095
+          },
+          "unicode": {
+            "mb_s": 258.2,
+            "mb_cpu_s": 258.9,
+            "bytes": 16777268,
+            "read": 4095
+          },
+          "truecolor": {
+            "mb_s": 283.6,
+            "mb_cpu_s": 284.2,
+            "bytes": 25168645,
+            "read": 4095
+          },
+          "cursor_motion": {
+            "mb_s": 255.4,
+            "mb_cpu_s": 256.0,
+            "bytes": 16778061,
+            "read": 4095
+          },
+          "scroll_region": {
+            "mb_s": 1740.6,
+            "mb_cpu_s": 1745.3,
+            "bytes": 16777365,
+            "read": 4095
+          },
+          "tui_frames": {
+            "mb_s": 297.7,
+            "mb_cpu_s": 298.4,
+            "bytes": 20901616,
+            "read": 4095
+          }
+        }
+      }
+    },
+    {
+      "order": [
+        "candidate",
+        "base"
+      ],
+      "candidate": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 376 filtered out; finished in 0.98s\n\n",
+        "stderr": "         ascii:  1741.1 MB/s   1745.4 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   264.1 MB/s    264.8 MB/cpu-s  (16777268 bytes, read 4095)\n     truecolor:   285.0 MB/s    285.7 MB/cpu-s  (25168645 bytes, read 4095)\n cursor_motion:   255.4 MB/s    256.0 MB/cpu-s  (16778061 bytes, read 4095)\n scroll_region:  1747.5 MB/s   1751.7 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   306.1 MB/s    306.8 MB/cpu-s  (20901616 bytes, read 4095)\n",
+        "results": {
+          "ascii": {
+            "mb_s": 1741.1,
+            "mb_cpu_s": 1745.4,
+            "bytes": 25165955,
+            "read": 4095
+          },
+          "unicode": {
+            "mb_s": 264.1,
+            "mb_cpu_s": 264.8,
+            "bytes": 16777268,
+            "read": 4095
+          },
+          "truecolor": {
+            "mb_s": 285.0,
+            "mb_cpu_s": 285.7,
+            "bytes": 25168645,
+            "read": 4095
+          },
+          "cursor_motion": {
+            "mb_s": 255.4,
+            "mb_cpu_s": 256.0,
+            "bytes": 16778061,
+            "read": 4095
+          },
+          "scroll_region": {
+            "mb_s": 1747.5,
+            "mb_cpu_s": 1751.7,
+            "bytes": 16777365,
+            "read": 4095
+          },
+          "tui_frames": {
+            "mb_s": 306.1,
+            "mb_cpu_s": 306.8,
+            "bytes": 20901616,
+            "read": 4095
+          }
+        }
+      },
+      "base": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 376 filtered out; finished in 0.98s\n\n",
+        "stderr": "         ascii:  1786.0 MB/s   1791.1 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   258.8 MB/s    259.6 MB/cpu-s  (16777268 bytes, read 4095)\n     truecolor:   290.9 MB/s    291.5 MB/cpu-s  (25168645 bytes, read 4095)\n cursor_motion:   256.0 MB/s    256.6 MB/cpu-s  (16778061 bytes, read 4095)\n scroll_region:  1753.0 MB/s   1756.9 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   304.9 MB/s    305.5 MB/cpu-s  (20901616 bytes, read 4095)\n",
+        "results": {
+          "ascii": {
+            "mb_s": 1786.0,
+            "mb_cpu_s": 1791.1,
+            "bytes": 25165955,
+            "read": 4095
+          },
+          "unicode": {
+            "mb_s": 258.8,
+            "mb_cpu_s": 259.6,
+            "bytes": 16777268,
+            "read": 4095
+          },
+          "truecolor": {
+            "mb_s": 290.9,
+            "mb_cpu_s": 291.5,
+            "bytes": 25168645,
+            "read": 4095
+          },
+          "cursor_motion": {
+            "mb_s": 256.0,
+            "mb_cpu_s": 256.6,
+            "bytes": 16778061,
+            "read": 4095
+          },
+          "scroll_region": {
+            "mb_s": 1753.0,
+            "mb_cpu_s": 1756.9,
+            "bytes": 16777365,
+            "read": 4095
+          },
+          "tui_frames": {
+            "mb_s": 304.9,
+            "mb_cpu_s": 305.5,
+            "bytes": 20901616,
+            "read": 4095
+          }
+        }
+      }
+    },
+    {
+      "order": [
+        "base",
+        "candidate"
+      ],
+      "base": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 376 filtered out; finished in 0.97s\n\n",
+        "stderr": "         ascii:  1759.7 MB/s   1764.6 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   258.9 MB/s    259.7 MB/cpu-s  (16777268 bytes, read 4095)\n     truecolor:   296.3 MB/s    297.0 MB/cpu-s  (25168645 bytes, read 4095)\n cursor_motion:   259.6 MB/s    260.1 MB/cpu-s  (16778061 bytes, read 4095)\n scroll_region:  1748.2 MB/s   1752.0 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   305.9 MB/s    306.6 MB/cpu-s  (20901616 bytes, read 4095)\n",
+        "results": {
+          "ascii": {
+            "mb_s": 1759.7,
+            "mb_cpu_s": 1764.6,
+            "bytes": 25165955,
+            "read": 4095
+          },
+          "unicode": {
+            "mb_s": 258.9,
+            "mb_cpu_s": 259.7,
+            "bytes": 16777268,
+            "read": 4095
+          },
+          "truecolor": {
+            "mb_s": 296.3,
+            "mb_cpu_s": 297.0,
+            "bytes": 25168645,
+            "read": 4095
+          },
+          "cursor_motion": {
+            "mb_s": 259.6,
+            "mb_cpu_s": 260.1,
+            "bytes": 16778061,
+            "read": 4095
+          },
+          "scroll_region": {
+            "mb_s": 1748.2,
+            "mb_cpu_s": 1752.0,
+            "bytes": 16777365,
+            "read": 4095
+          },
+          "tui_frames": {
+            "mb_s": 305.9,
+            "mb_cpu_s": 306.6,
+            "bytes": 20901616,
+            "read": 4095
+          }
+        }
+      },
+      "candidate": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 376 filtered out; finished in 0.98s\n\n",
+        "stderr": "         ascii:  1746.8 MB/s   1751.8 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   261.2 MB/s    261.9 MB/cpu-s  (16777268 bytes, read 4095)\n     truecolor:   283.3 MB/s    283.9 MB/cpu-s  (25168645 bytes, read 4095)\n cursor_motion:   255.3 MB/s    255.9 MB/cpu-s  (16778061 bytes, read 4095)\n scroll_region:  1739.9 MB/s   1744.6 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   305.5 MB/s    306.2 MB/cpu-s  (20901616 bytes, read 4095)\n",
+        "results": {
+          "ascii": {
+            "mb_s": 1746.8,
+            "mb_cpu_s": 1751.8,
+            "bytes": 25165955,
+            "read": 4095
+          },
+          "unicode": {
+            "mb_s": 261.2,
+            "mb_cpu_s": 261.9,
+            "bytes": 16777268,
+            "read": 4095
+          },
+          "truecolor": {
+            "mb_s": 283.3,
+            "mb_cpu_s": 283.9,
+            "bytes": 25168645,
+            "read": 4095
+          },
+          "cursor_motion": {
+            "mb_s": 255.3,
+            "mb_cpu_s": 255.9,
+            "bytes": 16778061,
+            "read": 4095
+          },
+          "scroll_region": {
+            "mb_s": 1739.9,
+            "mb_cpu_s": 1744.6,
+            "bytes": 16777365,
+            "read": 4095
+          },
+          "tui_frames": {
+            "mb_s": 305.5,
+            "mb_cpu_s": 306.2,
+            "bytes": 20901616,
+            "read": 4095
+          }
+        }
+      }
+    },
+    {
+      "order": [
+        "candidate",
+        "base"
+      ],
+      "candidate": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 376 filtered out; finished in 0.99s\n\n",
+        "stderr": "         ascii:  1766.9 MB/s   1771.1 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   261.3 MB/s    262.0 MB/cpu-s  (16777268 bytes, read 4095)\n     truecolor:   283.0 MB/s    283.6 MB/cpu-s  (25168645 bytes, read 4095)\n cursor_motion:   255.6 MB/s    256.1 MB/cpu-s  (16778061 bytes, read 4095)\n scroll_region:  1687.9 MB/s   1722.2 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   299.2 MB/s    299.8 MB/cpu-s  (20901616 bytes, read 4095)\n",
+        "results": {
+          "ascii": {
+            "mb_s": 1766.9,
+            "mb_cpu_s": 1771.1,
+            "bytes": 25165955,
+            "read": 4095
+          },
+          "unicode": {
+            "mb_s": 261.3,
+            "mb_cpu_s": 262.0,
+            "bytes": 16777268,
+            "read": 4095
+          },
+          "truecolor": {
+            "mb_s": 283.0,
+            "mb_cpu_s": 283.6,
+            "bytes": 25168645,
+            "read": 4095
+          },
+          "cursor_motion": {
+            "mb_s": 255.6,
+            "mb_cpu_s": 256.1,
+            "bytes": 16778061,
+            "read": 4095
+          },
+          "scroll_region": {
+            "mb_s": 1687.9,
+            "mb_cpu_s": 1722.2,
+            "bytes": 16777365,
+            "read": 4095
+          },
+          "tui_frames": {
+            "mb_s": 299.2,
+            "mb_cpu_s": 299.8,
+            "bytes": 20901616,
+            "read": 4095
+          }
+        }
+      },
+      "base": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 376 filtered out; finished in 0.98s\n\n",
+        "stderr": "         ascii:  1668.1 MB/s   1672.5 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   253.8 MB/s    254.5 MB/cpu-s  (16777268 bytes, read 4095)\n     truecolor:   294.7 MB/s    295.4 MB/cpu-s  (25168645 bytes, read 4095)\n cursor_motion:   256.9 MB/s    257.5 MB/cpu-s  (16778061 bytes, read 4095)\n scroll_region:  1676.0 MB/s   1680.8 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   304.8 MB/s    305.4 MB/cpu-s  (20901616 bytes, read 4095)\n",
+        "results": {
+          "ascii": {
+            "mb_s": 1668.1,
+            "mb_cpu_s": 1672.5,
+            "bytes": 25165955,
+            "read": 4095
+          },
+          "unicode": {
+            "mb_s": 253.8,
+            "mb_cpu_s": 254.5,
+            "bytes": 16777268,
+            "read": 4095
+          },
+          "truecolor": {
+            "mb_s": 294.7,
+            "mb_cpu_s": 295.4,
+            "bytes": 25168645,
+            "read": 4095
+          },
+          "cursor_motion": {
+            "mb_s": 256.9,
+            "mb_cpu_s": 257.5,
+            "bytes": 16778061,
+            "read": 4095
+          },
+          "scroll_region": {
+            "mb_s": 1676.0,
+            "mb_cpu_s": 1680.8,
+            "bytes": 16777365,
+            "read": 4095
+          },
+          "tui_frames": {
+            "mb_s": 304.8,
+            "mb_cpu_s": 305.4,
+            "bytes": 20901616,
+            "read": 4095
+          }
+        }
+      }
+    },
+    {
+      "order": [
+        "base",
+        "candidate"
+      ],
+      "base": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 376 filtered out; finished in 0.99s\n\n",
+        "stderr": "         ascii:  1726.9 MB/s   1730.0 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   249.7 MB/s    250.3 MB/cpu-s  (16777268 bytes, read 4095)\n     truecolor:   296.2 MB/s    296.9 MB/cpu-s  (25168645 bytes, read 4095)\n cursor_motion:   260.6 MB/s    261.3 MB/cpu-s  (16778061 bytes, read 4095)\n scroll_region:  1751.5 MB/s   1755.4 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   308.8 MB/s    309.3 MB/cpu-s  (20901616 bytes, read 4095)\n",
+        "results": {
+          "ascii": {
+            "mb_s": 1726.9,
+            "mb_cpu_s": 1730.0,
+            "bytes": 25165955,
+            "read": 4095
+          },
+          "unicode": {
+            "mb_s": 249.7,
+            "mb_cpu_s": 250.3,
+            "bytes": 16777268,
+            "read": 4095
+          },
+          "truecolor": {
+            "mb_s": 296.2,
+            "mb_cpu_s": 296.9,
+            "bytes": 25168645,
+            "read": 4095
+          },
+          "cursor_motion": {
+            "mb_s": 260.6,
+            "mb_cpu_s": 261.3,
+            "bytes": 16778061,
+            "read": 4095
+          },
+          "scroll_region": {
+            "mb_s": 1751.5,
+            "mb_cpu_s": 1755.4,
+            "bytes": 16777365,
+            "read": 4095
+          },
+          "tui_frames": {
+            "mb_s": 308.8,
+            "mb_cpu_s": 309.3,
+            "bytes": 20901616,
+            "read": 4095
+          }
+        }
+      },
+      "candidate": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 376 filtered out; finished in 0.99s\n\n",
+        "stderr": "         ascii:  1742.2 MB/s   1745.5 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   259.6 MB/s    260.3 MB/cpu-s  (16777268 bytes, read 4095)\n     truecolor:   284.8 MB/s    285.6 MB/cpu-s  (25168645 bytes, read 4095)\n cursor_motion:   255.5 MB/s    256.2 MB/cpu-s  (16778061 bytes, read 4095)\n scroll_region:  1753.1 MB/s   1757.7 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   303.0 MB/s    303.6 MB/cpu-s  (20901616 bytes, read 4095)\n",
+        "results": {
+          "ascii": {
+            "mb_s": 1742.2,
+            "mb_cpu_s": 1745.5,
+            "bytes": 25165955,
+            "read": 4095
+          },
+          "unicode": {
+            "mb_s": 259.6,
+            "mb_cpu_s": 260.3,
+            "bytes": 16777268,
+            "read": 4095
+          },
+          "truecolor": {
+            "mb_s": 284.8,
+            "mb_cpu_s": 285.6,
+            "bytes": 25168645,
+            "read": 4095
+          },
+          "cursor_motion": {
+            "mb_s": 255.5,
+            "mb_cpu_s": 256.2,
+            "bytes": 16778061,
+            "read": 4095
+          },
+          "scroll_region": {
+            "mb_s": 1753.1,
+            "mb_cpu_s": 1757.7,
+            "bytes": 16777365,
+            "read": 4095
+          },
+          "tui_frames": {
+            "mb_s": 303.0,
+            "mb_cpu_s": 303.6,
+            "bytes": 20901616,
+            "read": 4095
+          }
+        }
+      }
+    },
+    {
+      "order": [
+        "candidate",
+        "base"
+      ],
+      "candidate": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 376 filtered out; finished in 0.98s\n\n",
+        "stderr": "         ascii:  1694.9 MB/s   1698.6 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   263.6 MB/s    264.3 MB/cpu-s  (16777268 bytes, read 4095)\n     truecolor:   288.3 MB/s    288.9 MB/cpu-s  (25168645 bytes, read 4095)\n cursor_motion:   256.6 MB/s    257.1 MB/cpu-s  (16778061 bytes, read 4095)\n scroll_region:  1744.6 MB/s   1748.9 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   306.4 MB/s    307.1 MB/cpu-s  (20901616 bytes, read 4095)\n",
+        "results": {
+          "ascii": {
+            "mb_s": 1694.9,
+            "mb_cpu_s": 1698.6,
+            "bytes": 25165955,
+            "read": 4095
+          },
+          "unicode": {
+            "mb_s": 263.6,
+            "mb_cpu_s": 264.3,
+            "bytes": 16777268,
+            "read": 4095
+          },
+          "truecolor": {
+            "mb_s": 288.3,
+            "mb_cpu_s": 288.9,
+            "bytes": 25168645,
+            "read": 4095
+          },
+          "cursor_motion": {
+            "mb_s": 256.6,
+            "mb_cpu_s": 257.1,
+            "bytes": 16778061,
+            "read": 4095
+          },
+          "scroll_region": {
+            "mb_s": 1744.6,
+            "mb_cpu_s": 1748.9,
+            "bytes": 16777365,
+            "read": 4095
+          },
+          "tui_frames": {
+            "mb_s": 306.4,
+            "mb_cpu_s": 307.1,
+            "bytes": 20901616,
+            "read": 4095
+          }
+        }
+      },
+      "base": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 376 filtered out; finished in 0.98s\n\n",
+        "stderr": "         ascii:  1715.5 MB/s   1722.9 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   252.4 MB/s    253.0 MB/cpu-s  (16777268 bytes, read 4095)\n     truecolor:   293.8 MB/s    294.4 MB/cpu-s  (25168645 bytes, read 4095)\n cursor_motion:   256.4 MB/s    257.0 MB/cpu-s  (16778061 bytes, read 4095)\n scroll_region:  1749.6 MB/s   1753.6 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   305.0 MB/s    305.7 MB/cpu-s  (20901616 bytes, read 4095)\n",
+        "results": {
+          "ascii": {
+            "mb_s": 1715.5,
+            "mb_cpu_s": 1722.9,
+            "bytes": 25165955,
+            "read": 4095
+          },
+          "unicode": {
+            "mb_s": 252.4,
+            "mb_cpu_s": 253.0,
+            "bytes": 16777268,
+            "read": 4095
+          },
+          "truecolor": {
+            "mb_s": 293.8,
+            "mb_cpu_s": 294.4,
+            "bytes": 25168645,
+            "read": 4095
+          },
+          "cursor_motion": {
+            "mb_s": 256.4,
+            "mb_cpu_s": 257.0,
+            "bytes": 16778061,
+            "read": 4095
+          },
+          "scroll_region": {
+            "mb_s": 1749.6,
+            "mb_cpu_s": 1753.6,
+            "bytes": 16777365,
+            "read": 4095
+          },
+          "tui_frames": {
+            "mb_s": 305.0,
+            "mb_cpu_s": 305.7,
+            "bytes": 20901616,
+            "read": 4095
+          }
+        }
+      }
+    },
+    {
+      "order": [
+        "base",
+        "candidate"
+      ],
+      "base": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 376 filtered out; finished in 0.96s\n\n",
+        "stderr": "         ascii:  1750.9 MB/s   1753.9 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   262.8 MB/s    263.5 MB/cpu-s  (16777268 bytes, read 4095)\n     truecolor:   297.8 MB/s    298.5 MB/cpu-s  (25168645 bytes, read 4095)\n cursor_motion:   261.5 MB/s    262.3 MB/cpu-s  (16778061 bytes, read 4095)\n scroll_region:  1752.1 MB/s   1756.3 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   309.8 MB/s    311.4 MB/cpu-s  (20901616 bytes, read 4095)\n",
+        "results": {
+          "ascii": {
+            "mb_s": 1750.9,
+            "mb_cpu_s": 1753.9,
+            "bytes": 25165955,
+            "read": 4095
+          },
+          "unicode": {
+            "mb_s": 262.8,
+            "mb_cpu_s": 263.5,
+            "bytes": 16777268,
+            "read": 4095
+          },
+          "truecolor": {
+            "mb_s": 297.8,
+            "mb_cpu_s": 298.5,
+            "bytes": 25168645,
+            "read": 4095
+          },
+          "cursor_motion": {
+            "mb_s": 261.5,
+            "mb_cpu_s": 262.3,
+            "bytes": 16778061,
+            "read": 4095
+          },
+          "scroll_region": {
+            "mb_s": 1752.1,
+            "mb_cpu_s": 1756.3,
+            "bytes": 16777365,
+            "read": 4095
+          },
+          "tui_frames": {
+            "mb_s": 309.8,
+            "mb_cpu_s": 311.4,
+            "bytes": 20901616,
+            "read": 4095
+          }
+        }
+      },
+      "candidate": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 376 filtered out; finished in 0.99s\n\n",
+        "stderr": "         ascii:  1753.2 MB/s   1757.7 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   261.4 MB/s    262.1 MB/cpu-s  (16777268 bytes, read 4095)\n     truecolor:   282.1 MB/s    282.8 MB/cpu-s  (25168645 bytes, read 4095)\n cursor_motion:   255.0 MB/s    255.6 MB/cpu-s  (16778061 bytes, read 4095)\n scroll_region:  1740.7 MB/s   1745.3 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   297.4 MB/s    298.1 MB/cpu-s  (20901616 bytes, read 4095)\n",
+        "results": {
+          "ascii": {
+            "mb_s": 1753.2,
+            "mb_cpu_s": 1757.7,
+            "bytes": 25165955,
+            "read": 4095
+          },
+          "unicode": {
+            "mb_s": 261.4,
+            "mb_cpu_s": 262.1,
+            "bytes": 16777268,
+            "read": 4095
+          },
+          "truecolor": {
+            "mb_s": 282.1,
+            "mb_cpu_s": 282.8,
+            "bytes": 25168645,
+            "read": 4095
+          },
+          "cursor_motion": {
+            "mb_s": 255.0,
+            "mb_cpu_s": 255.6,
+            "bytes": 16778061,
+            "read": 4095
+          },
+          "scroll_region": {
+            "mb_s": 1740.7,
+            "mb_cpu_s": 1745.3,
+            "bytes": 16777365,
+            "read": 4095
+          },
+          "tui_frames": {
+            "mb_s": 297.4,
+            "mb_cpu_s": 298.1,
+            "bytes": 20901616,
+            "read": 4095
+          }
+        }
+      }
+    }
+  ],
+  "summary": {
+    "ascii": {
+      "median_cpu_ratio": 1.005196032120926,
+      "wins": 6,
+      "losses": 3,
+      "sign_p_two_sided": 0.5078125
+    },
+    "cursor_motion": {
+      "median_cpu_ratio": 0.9945631067961166,
+      "wins": 1,
+      "losses": 8,
+      "sign_p_two_sided": 0.0390625
+    },
+    "scroll_region": {
+      "median_cpu_ratio": 1.0013102426797311,
+      "wins": 5,
+      "losses": 4,
+      "sign_p_two_sided": 1.0
+    },
+    "truecolor": {
+      "median_cpu_ratio": 0.9600541638456332,
+      "wins": 0,
+      "losses": 9,
+      "sign_p_two_sided": 0.00390625
+    },
+    "tui_frames": {
+      "median_cpu_ratio": 0.9893272962483829,
+      "wins": 2,
+      "losses": 7,
+      "sign_p_two_sided": 0.1796875
+    },
+    "unicode": {
+      "median_cpu_ratio": 1.0200308166409862,
+      "wins": 8,
+      "losses": 1,
+      "sign_p_two_sided": 0.0390625
+    }
+  }
+}

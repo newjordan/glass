@@ -1,0 +1,78 @@
+{
+  "schema": "glass.engine-pairs/v1",
+  "settings": {
+    "GLASS_BENCH_SCALE": "0.05",
+    "GLASS_BENCH_ROUNDS": "1",
+    "GLASS_BENCH_ONLY": "ascii,unicode"
+  },
+  "binaries": {
+    "base": {
+      "path": "/work/frosty40/glass-repo/tree/bench/results/local/champion-r1/engine-base",
+      "sha256": "0638ec7d4051773c96bd1be419406830a72239eec29c8cd781852ada94e8aaf1"
+    },
+    "candidate": {
+      "path": "/work/frosty40/glass-repo/tree/bench/results/local/champion-r1/engine-sse-final",
+      "sha256": "eb196442f18ef618462b400b6e2e5fed8f61291025bd084efb7504d79075df03"
+    }
+  },
+  "pairs": [
+    {
+      "order": [
+        "base",
+        "candidate"
+      ],
+      "base": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 376 filtered out; finished in 0.01s\n\n",
+        "stderr": "         ascii:   471.3 MB/s    473.3 MB/cpu-s  (1258445 bytes, read 4095)\n       unicode:   203.1 MB/s    203.6 MB/cpu-s  (838902 bytes, read 4095)\n",
+        "results": {
+          "ascii": {
+            "mb_s": 471.3,
+            "mb_cpu_s": 473.3,
+            "bytes": 1258445,
+            "read": 4095
+          },
+          "unicode": {
+            "mb_s": 203.1,
+            "mb_cpu_s": 203.6,
+            "bytes": 838902,
+            "read": 4095
+          }
+        }
+      },
+      "candidate": {
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 376 filtered out; finished in 0.01s\n\n",
+        "stderr": "         ascii:   625.6 MB/s    627.1 MB/cpu-s  (1258445 bytes, read 4095)\n       unicode:   206.8 MB/s    207.4 MB/cpu-s  (838902 bytes, read 4095)\n",
+        "results": {
+          "ascii": {
+            "mb_s": 625.6,
+            "mb_cpu_s": 627.1,
+            "bytes": 1258445,
+            "read": 4095
+          },
+          "unicode": {
+            "mb_s": 206.8,
+            "mb_cpu_s": 207.4,
+            "bytes": 838902,
+            "read": 4095
+          }
+        }
+      }
+    }
+  ],
+  "summary": {
+    "ascii": {
+      "median_cpu_ratio": 1.3249524614409465,
+      "wins": 1,
+      "losses": 0,
+      "sign_p_two_sided": 1.0
+    },
+    "unicode": {
+      "median_cpu_ratio": 1.0186640471512771,
+      "wins": 1,
+      "losses": 0,
+      "sign_p_two_sided": 1.0
+    }
+  }
+}

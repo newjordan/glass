@@ -1,0 +1,145 @@
+diff --git i/crates/alacritty-terminal/src/term/color.rs w/crates/alacritty-terminal/src/term/color.rs
+index 66753de..ff040bd 100644
+--- i/crates/alacritty-terminal/src/term/color.rs
++++ w/crates/alacritty-terminal/src/term/color.rs
+@@ -48,13 +48,13 @@ impl Index<NamedColor> for Colors {
+ 
+     #[inline]
+     fn index(&self, index: NamedColor) -> &Self::Output {
+-        &self.0[index as usize]
++        &self.0[index.index()]
+     }
+ }
+ 
+ impl IndexMut<NamedColor> for Colors {
+     #[inline]
+     fn index_mut(&mut self, index: NamedColor) -> &mut Self::Output {
+-        &mut self.0[index as usize]
++        &mut self.0[index.index()]
+     }
+ }
+diff --git i/crates/alacritty-terminal/src/term/mod.rs w/crates/alacritty-terminal/src/term/mod.rs
+index 38b0937..6d7f705 100644
+--- i/crates/alacritty-terminal/src/term/mod.rs
++++ w/crates/alacritty-terminal/src/term/mod.rs
+@@ -1697,7 +1697,7 @@ impl<T: EventListener> Handler for Term<T> {
+         trace!("Setting color[{index}] = {color:?}");
+ 
+         // Damage terminal if the color changed and it's not the cursor.
+-        if index != NamedColor::Cursor as usize && self.colors[index] != Some(color) {
++        if index != NamedColor::Cursor.index() && self.colors[index] != Some(color) {
+             self.mark_fully_damaged();
+         }
+ 
+@@ -1727,7 +1727,7 @@ impl<T: EventListener> Handler for Term<T> {
+         trace!("Resetting color[{index}]");
+ 
+         // Damage terminal if the color changed and it's not the cursor.
+-        if index != NamedColor::Cursor as usize && self.colors[index].is_some() {
++        if index != NamedColor::Cursor.index() && self.colors[index].is_some() {
+             self.mark_fully_damaged();
+         }
+ 
+@@ -3254,7 +3254,7 @@ mod tests {
+         term.reset_damage();
+ 
+         // We shouldn't trigger fully damage when cursor gets update.
+-        term.set_color(NamedColor::Cursor as usize, Rgb::default());
++        term.set_color(NamedColor::Cursor.index(), Rgb::default());
+         assert!(!term.damage.full);
+ 
+         // However requesting terminal damage should mark terminal as fully damaged in `Insert`
+diff --git i/crates/term/src/engine.rs w/crates/term/src/engine.rs
+index c531d56..87ffc33 100644
+--- i/crates/term/src/engine.rs
++++ w/crates/term/src/engine.rs
+@@ -201,7 +201,7 @@ fn simulated_after(
+ fn color_of(color: AnsiColor) -> Color {
+     match color {
+         AnsiColor::Named(NamedColor::Foreground | NamedColor::Background) => Color::Default,
+-        AnsiColor::Named(named) => Color::Indexed(u8::try_from(named as usize).unwrap_or(255)),
++        AnsiColor::Named(named) => Color::Indexed(u8::try_from(named.index()).unwrap_or(255)),
+         AnsiColor::Spec(Rgb { r, g, b }) => Color::Rgb(r, g, b),
+         AnsiColor::Indexed(i) => Color::Indexed(i),
+     }
+@@ -1010,7 +1010,7 @@ impl Engine {
+ 
+     /// The cursor colour the program set, if any.
+     pub fn cursor_color(&self) -> Option<Rgb> {
+-        self.term.colors()[NamedColor::Cursor as usize]
++        self.term.colors()[NamedColor::Cursor.index()]
+     }
+ 
+     /// The CSI u keyboard dialect flags the program has pushed: bit 0
+diff --git i/crates/vte/src/ansi.rs w/crates/vte/src/ansi.rs
+index a299760..6b8162d 100644
+--- i/crates/vte/src/ansi.rs
++++ w/crates/vte/src/ansi.rs
+@@ -1013,10 +1013,11 @@ pub enum TabulationClearMode {
+ 
+ /// Standard colors.
+ ///
+-/// The order here matters since the enum should be castable to a `usize` for
+-/// indexing a color list.
++/// Compact named color. Use [`Self::index`] for the ANSI palette slot;
++/// special colors follow the 256 indexed colors in that palette.
+ #[derive(Debug, Copy, Clone, Eq, PartialEq, PartialOrd, Ord)]
+ #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
++#[repr(u8)]
+ pub enum NamedColor {
+     /// Black.
+     Black = 0,
+@@ -1051,7 +1052,7 @@ pub enum NamedColor {
+     /// Bright white.
+     BrightWhite,
+     /// The foreground color.
+-    Foreground = 256,
++    Foreground = 16,
+     /// The background color.
+     Background,
+     /// Color for the cursor itself.
+@@ -1079,6 +1080,14 @@ pub enum NamedColor {
+ }
+ 
+ impl NamedColor {
++    /// Index in the ANSI palette, including the special slots above 255.
++    #[inline]
++    #[must_use]
++    pub const fn index(self) -> usize {
++        let ordinal = self as u8;
++        if ordinal < 16 { ordinal as usize } else { ordinal as usize + 240 }
++    }
++
+     #[must_use]
+     pub fn to_bright(self) -> Self {
+         match self {
+@@ -1432,10 +1441,10 @@ where
+                         for param in &params[1..] {
+                             // 10 is the first dynamic color, also the foreground.
+                             let offset = dynamic_code as usize - 10;
+-                            let index = NamedColor::Foreground as usize + offset;
++                            let index = NamedColor::Foreground.index() + offset;
+ 
+                             // End of setting dynamic colors.
+-                            if index > NamedColor::Cursor as usize {
++                            if index > NamedColor::Cursor.index() {
+                                 unhandled(params);
+                                 break;
+                             }
+@@ -1519,13 +1528,13 @@ where
+             },
+ 
+             // Reset foreground color.
+-            b"110" => self.handler.reset_color(NamedColor::Foreground as usize),
++            b"110" => self.handler.reset_color(NamedColor::Foreground.index()),
+ 
+             // Reset background color.
+-            b"111" => self.handler.reset_color(NamedColor::Background as usize),
++            b"111" => self.handler.reset_color(NamedColor::Background.index()),
+ 
+             // Reset text cursor color.
+-            b"112" => self.handler.reset_color(NamedColor::Cursor as usize),
++            b"112" => self.handler.reset_color(NamedColor::Cursor.index()),
+ 
+             _ => unhandled(params),
+         }

@@ -1,0 +1,15 @@
+pair 1/1 recorded
+{
+  "ascii": {
+    "median_cpu_ratio": 1.3249524614409465,
+    "wins": 1,
+    "losses": 0,
+    "sign_p_two_sided": 1.0
+  },
+  "unicode": {
+    "median_cpu_ratio": 1.0186640471512771,
+    "wins": 1,
+    "losses": 0,
+    "sign_p_two_sided": 1.0
+  }
+}

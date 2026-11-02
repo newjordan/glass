@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/work/frosty40/glass-repo/tree/bench/engine-pairs.py", line 78, in <module>
+    main()
+    ~~~~^^
+  File "/work/frosty40/glass-repo/tree/bench/engine-pairs.py", line 59, in main
+    raise RuntimeError(f"invalid benchmark {arm} pair {i}: {proc.stderr}")
+RuntimeError: invalid benchmark base pair 0: 

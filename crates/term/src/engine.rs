@@ -2800,7 +2800,7 @@ fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, c
         let mut from = stretch;
         stretch = esc + 1;
         while esc - from >= RUN_MIN
-            && let Some((start, end)) = next_run(&chunk[..esc], from)
+            && let Some((start, end, ascii)) = next_run(&chunk[..esc], from)
         {
             from = end;
             mirror.catch_up(chunk, known, start);
@@ -2855,15 +2855,15 @@ fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, c
             // character for the parser (glass's REP tracking makes that
             // sound), so the gap between runs carries only C0.
             let took = if probe >= 100 {
-                if run.is_ascii() { run.len() - 1 } else { run.len() }
+                if ascii { run.len() - 1 } else { run.len() }
             } else if run_whole() {
-                let took = if run.is_ascii() { watch.print_run(run) } else { watch.print_utf8(run) };
+                let took = if ascii { watch.print_run(run) } else { watch.print_utf8(run) };
                 // The whole run went to the grid: keep vte's REP
                 // character matching the stream, for a REP the parser
                 // itself completes (a sequence split across reads).
                 processor.set_preceding_char(watch.preceding);
                 took
-            } else if run.is_ascii() {
+            } else if ascii {
                 watch.print_run(&run[..run.len() - 1])
             } else {
                 watch.print_utf8(run)
@@ -3344,9 +3344,82 @@ fn note_uniform_span(
 
 /// The next run of at least [`RUN_MIN`] bytes of text in `bytes` (printable
 /// ASCII, and bytes of UTF-8 past it), from `from` on, as its start and
-/// end. It looks at one byte in every `RUN_MIN` where no run is, so text
-/// full of escapes is passed over quickly.
-fn next_run(bytes: &[u8], mut from: usize) -> Option<(usize, usize)> {
+/// end, with whether all of those bytes are ASCII. It looks at one byte
+/// in every `RUN_MIN` where no run is, so text full of escapes is passed
+/// over quickly; x86-64 classifies the run during the boundary scan.
+#[cfg(target_arch = "x86_64")]
+fn next_run(bytes: &[u8], mut from: usize) -> Option<(usize, usize, bool)> {
+    let printable = |b: u8| (0x20..=0x7e).contains(&b) || b >= 0x80;
+    while from + RUN_MIN <= bytes.len() {
+        let probe = from + RUN_MIN - 1;
+        if !printable(bytes[probe]) {
+            from = probe + 1;
+            continue;
+        }
+        let (mut start, mut ascii) = (probe + 1, true);
+        while start - from >= 16 {
+            let (control, high) = text_masks(bytes[start - 16..start].try_into().unwrap());
+            if control != 0 {
+                let after = 32 - control.leading_zeros();
+                ascii &= high >> after == 0;
+                start = start - 16 + after as usize;
+                break;
+            }
+            ascii &= high == 0;
+            start -= 16;
+        }
+        while start > from && printable(bytes[start - 1]) {
+            start -= 1;
+            ascii &= bytes[start] < 0x80;
+        }
+        let (tail, tail_ascii) = classified_text_len(&bytes[probe + 1..]);
+        let end = probe + 1 + tail;
+        if end - start >= RUN_MIN {
+            return Some((start, end, ascii && tail_ascii));
+        }
+        from = end + 1;
+    }
+    None
+}
+
+/// Exact per-byte control and high-bit masks. SSE2 is baseline on x86-64.
+#[cfg(target_arch = "x86_64")]
+#[inline(always)]
+fn text_masks(bytes: &[u8; 16]) -> (u32, u32) {
+    use std::arch::x86_64::*;
+    // SAFETY: the array guarantees 16 readable bytes; loadu has no
+    // alignment requirement, and all intrinsics require only SSE2.
+    unsafe {
+        let x = _mm_loadu_si128(bytes.as_ptr().cast());
+        let low = _mm_cmpeq_epi8(_mm_min_epu8(x, _mm_set1_epi8(31)), x);
+        let del = _mm_cmpeq_epi8(x, _mm_set1_epi8(127));
+        (_mm_movemask_epi8(_mm_or_si128(low, del)) as u32, _mm_movemask_epi8(x) as u32)
+    }
+}
+
+#[cfg(target_arch = "x86_64")]
+fn classified_text_len(bytes: &[u8]) -> (usize, bool) {
+    let (mut at, mut ascii) = (0, true);
+    while let Some(&block) = bytes.get(at..).and_then(|rest| rest.first_chunk::<16>()) {
+        let (control, high) = text_masks(&block);
+        if control != 0 {
+            let n = control.trailing_zeros();
+            return (at + n as usize, ascii && high & ((1 << n) - 1) == 0);
+        }
+        ascii &= high == 0;
+        at += 16;
+    }
+    while at < bytes.len() && bytes[at] >= 0x20 && bytes[at] != 0x7f {
+        ascii &= bytes[at] < 0x80;
+        at += 1;
+    }
+    (at, ascii)
+}
+
+// Keep the established word scan on other targets rather than imposing
+// a scalar emulation of x86's masks on the macOS/ARM hot path.
+#[cfg(not(target_arch = "x86_64"))]
+fn next_run(bytes: &[u8], mut from: usize) -> Option<(usize, usize, bool)> {
     let printable = |b: u8| (0x20..=0x7e).contains(&b) || b >= 0x80;
     while from + RUN_MIN <= bytes.len() {
         // Any run of RUN_MIN starting in from..=probe covers the probe.
@@ -3361,7 +3434,7 @@ fn next_run(bytes: &[u8], mut from: usize) -> Option<(usize, usize)> {
         }
         let end = probe + 1 + text_len(&bytes[probe + 1..]);
         if end - start >= RUN_MIN {
-            return Some((start, end));
+            return Some((start, end, bytes[start..end].is_ascii()));
         }
         from = end + 1;
     }
@@ -3372,6 +3445,7 @@ fn next_run(bytes: &[u8], mut from: usize) -> Option<(usize, usize)> {
 /// C0 control or DEL), read eight at a time: a byte below 0x20 borrows
 /// out of its own high bit, and DEL is a zero byte once flipped. A borrow
 /// can only mark bytes after a true one, so the first mark is exact.
+#[cfg(any(test, not(target_arch = "x86_64")))]
 fn text_len(bytes: &[u8]) -> usize {
     const ONES: u64 = 0x0101_0101_0101_0101;
     const HIGH: u64 = 0x8080_8080_8080_8080;
@@ -3716,8 +3790,8 @@ mod tests {
         assert_eq!(answers(b"\x1b[?9999$p"), b"\x1b[?9999;0$y");
     }
 
-    /// The eight-at-a-time scan stops where the byte-at-a-time one does,
-    /// at every offset and with every byte value in every lane.
+    /// Boundary scans and run classification agree with a byte-at-a-time
+    /// model at every offset, including multiple controls in one vector.
     #[test]
     fn text_runs_end_where_a_byte_at_a_time_scan_ends() {
         let slow = |bytes: &[u8]| bytes.iter().position(|&b| b < 0x20 || b == 0x7f).unwrap_or(bytes.len());
@@ -3729,11 +3803,47 @@ mod tests {
                         bytes[at] = stop;
                     }
                     for from in 0..bytes.len() {
-                        assert_eq!(text_len(&bytes[from..]), slow(&bytes[from..]), "stop {stop:#x} at {at} over {fill:#x} from {from}");
+                        let rest = &bytes[from..];
+                        let len = slow(rest);
+                        assert_eq!(text_len(rest), len, "stop {stop:#x} at {at} over {fill:#x} from {from}");
+                        #[cfg(target_arch = "x86_64")]
+                        assert_eq!(classified_text_len(rest), (len, rest[..len].is_ascii()));
                     }
                 }
             }
         }
+        let printable = |b: u8| b >= 0x20 && b != 0x7f;
+        let slow_next = |bytes: &[u8], mut from: usize| {
+            while from < bytes.len() {
+                if !printable(bytes[from]) {
+                    from += 1;
+                    continue;
+                }
+                let start = from;
+                while from < bytes.len() && printable(bytes[from]) { from += 1; }
+                if from - start >= RUN_MIN {
+                    return Some((start, from, bytes[start..from].is_ascii()));
+                }
+            }
+            None
+        };
+        // Every possible byte at each side of a control tests high bits
+        // excluded by both the backward and forward mask. Multiple
+        // controls exercise last-boundary selection (not borrow masks).
+        for value in 0..=255u8 {
+            let mut bytes = [b'a'; 113];
+            for at in [0, 7, 15, 16, 23, 24, 31, 48, 55, 72, 95, 112] {
+                bytes[at] = value;
+            }
+            for at in [3, 17, 60, 61, 86] { bytes[at] = 0x7f; }
+            for from in 0..=bytes.len() {
+                assert_eq!(next_run(&bytes, from), slow_next(&bytes, from), "value {value} from {from}");
+            }
+        }
+        // A short EOF span may advance the probe one past the input.
+        let mut short_tail = [0; RUN_MIN];
+        short_tail[RUN_MIN - 1] = b'A';
+        assert_eq!(next_run(&short_tail, 0), None);
         // A control right after another (a borrow into the next lane).
         assert_eq!(text_len(b"abc\x1f\x20xyz"), 3);
         assert_eq!(text_len(b"abcdefg\x00\x7f"), 7);

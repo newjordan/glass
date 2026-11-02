@@ -1,0 +1,148 @@
+--- a/crates/term/src/engine.rs
++++ b/crates/term/src/engine.rs
+@@ -2800,7 +2800,7 @@
+         let mut from = stretch;
+         stretch = esc + 1;
+         while esc - from >= RUN_MIN
+-            && let Some((start, end)) = next_run(&chunk[..esc], from)
++            && let Some((start, end, ascii)) = next_run(&chunk[..esc], from)
+         {
+             from = end;
+             mirror.catch_up(chunk, known, start);
+@@ -2855,15 +2855,15 @@
+             // character for the parser (glass's REP tracking makes that
+             // sound), so the gap between runs carries only C0.
+             let took = if probe >= 100 {
+-                if run.is_ascii() { run.len() - 1 } else { run.len() }
++                if ascii { run.len() - 1 } else { run.len() }
+             } else if run_whole() {
+-                let took = if run.is_ascii() { watch.print_run(run) } else { watch.print_utf8(run) };
++                let took = if ascii { watch.print_run(run) } else { watch.print_utf8(run) };
+                 // The whole run went to the grid: keep vte's REP
+                 // character matching the stream, for a REP the parser
+                 // itself completes (a sequence split across reads).
+                 processor.set_preceding_char(watch.preceding);
+                 took
+-            } else if run.is_ascii() {
++            } else if ascii {
+                 watch.print_run(&run[..run.len() - 1])
+             } else {
+                 watch.print_utf8(run)
+@@ -3346,50 +3346,80 @@
+ /// ASCII, and bytes of UTF-8 past it), from `from` on, as its start and
+ /// end. It looks at one byte in every `RUN_MIN` where no run is, so text
+ /// full of escapes is passed over quickly.
+-fn next_run(bytes: &[u8], mut from: usize) -> Option<(usize, usize)> {
++fn next_run(bytes: &[u8], mut from: usize) -> Option<(usize, usize, bool)> {
++    const HIGH: u64 = 0x8080_8080_8080_8080;
+     let printable = |b: u8| (0x20..=0x7e).contains(&b) || b >= 0x80;
+     while from + RUN_MIN <= bytes.len() {
+-        // Any run of RUN_MIN starting in from..=probe covers the probe.
++        // Preserve the skip probe for escape-heavy streams. Any run of
++        // RUN_MIN starting in from..=probe covers this byte.
+         let probe = from + RUN_MIN - 1;
+         if !printable(bytes[probe]) {
+             from = probe + 1;
+             continue;
+         }
+-        let mut start = probe;
++        let (mut start, mut ascii) = (probe + 1, true);
++        // Recover the prefix word-wide rather than with 23 byte tests.
++        // A boundary word goes to the scalar tail: borrow propagation
++        // makes only the *first* control bit exact, not the last one.
++        while start - from >= 8 {
++            let x = u64::from_le_bytes(bytes[start - 8..start].try_into().unwrap());
++            if text_boundary(x) != 0 {
++                break;
++            }
++            ascii &= x & HIGH == 0;
++            start -= 8;
++        }
+         while start > from && printable(bytes[start - 1]) {
+             start -= 1;
++            ascii &= bytes[start] < 0x80;
+         }
+-        let end = probe + 1 + text_len(&bytes[probe + 1..]);
++        let (tail, tail_ascii) = text_span(&bytes[probe + 1..]);
++        let end = probe + 1 + tail;
+         if end - start >= RUN_MIN {
+-            return Some((start, end));
++            return Some((start, end, ascii && tail_ascii));
+         }
+         from = end + 1;
+     }
+     None
+ }
+ 
+-/// How many bytes at the start of `bytes` are text to `next_run` (none a
+-/// C0 control or DEL), read eight at a time: a byte below 0x20 borrows
+-/// out of its own high bit, and DEL is a zero byte once flipped. A borrow
+-/// can only mark bytes after a true one, so the first mark is exact.
+-fn text_len(bytes: &[u8]) -> usize {
++/// At least the first marked byte is a C0 control or DEL. Subtraction
++/// may propagate a borrow into a following lane, so use this mask for
++/// finding the first boundary (or testing for none), not the last.
++#[inline]
++fn text_boundary(x: u64) -> u64 {
+     const ONES: u64 = 0x0101_0101_0101_0101;
+     const HIGH: u64 = 0x8080_8080_8080_8080;
+-    let mut at = 0;
++    let control = x.wrapping_sub(ONES * 0x20) & !x & HIGH;
++    let flipped = x ^ (ONES * 0x7f);
++    control | (flipped.wrapping_sub(ONES) & !flipped & HIGH)
++}
++
++/// Scan for the end and classification of a text span together. Only
++/// complete text words contribute to the high-bit accumulator; the
++/// word containing the boundary is classified up to that boundary.
++fn text_span(bytes: &[u8]) -> (usize, bool) {
++    const HIGH: u64 = 0x8080_8080_8080_8080;
++    let (mut at, mut seen) = (0, 0u64);
+     while let Some(&eight) = bytes.get(at..).and_then(|rest| rest.first_chunk::<8>()) {
+         let x = u64::from_le_bytes(eight);
+-        let control = x.wrapping_sub(ONES * 0x20) & !x & HIGH;
+-        let flipped = x ^ (ONES * 0x7f);
+-        let del = flipped.wrapping_sub(ONES) & !flipped & HIGH;
+-        let hit = control | del;
++        let hit = text_boundary(x);
+         if hit != 0 {
+-            return at + (hit.trailing_zeros() / 8) as usize;
++            let n = hit.trailing_zeros() as usize / 8;
++            return (at + n, seen & HIGH == 0 && bytes[at..at + n].is_ascii());
+         }
++        seen |= x;
+         at += 8;
+     }
+-    at + bytes[at..].iter().position(|&b| b < 0x20 || b == 0x7f).unwrap_or(bytes.len() - at)
++    let mut ascii = seen & HIGH == 0;
++    while at < bytes.len() && bytes[at] >= 0x20 && bytes[at] != 0x7f {
++        ascii &= bytes[at] < 0x80;
++        at += 1;
++    }
++    (at, ascii)
+ }
+ 
++
+ /// The states of vte 0.15's parser, as far as telling when it is back
+ /// in ground: its four CSI states act alike on every byte that matters
+ /// here, so they are one; SOS, PM and APC strings are one.
+@@ -3729,14 +3759,16 @@
+                         bytes[at] = stop;
+                     }
+                     for from in 0..bytes.len() {
+-                        assert_eq!(text_len(&bytes[from..]), slow(&bytes[from..]), "stop {stop:#x} at {at} over {fill:#x} from {from}");
++                        let rest = &bytes[from..];
++                        let len = slow(rest);
++                        assert_eq!(text_span(rest), (len, rest[..len].is_ascii()), "stop {stop:#x} at {at} over {fill:#x} from {from}");
+                     }
+                 }
+             }
+         }
+         // A control right after another (a borrow into the next lane).
+-        assert_eq!(text_len(b"abc\x1f\x20xyz"), 3);
+-        assert_eq!(text_len(b"abcdefg\x00\x7f"), 7);
++        assert_eq!(text_span(b"abc\x1f\x20xyz"), (3, true));
++        assert_eq!(text_span(b"abcdefg\x00\x7f"), (7, true));
+     }
+ 
+     /// The run writer's UTF-8 decoder takes exactly the characters the

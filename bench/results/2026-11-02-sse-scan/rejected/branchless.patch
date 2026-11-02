@@ -1,0 +1,48 @@
+--- a/crates/term/src/engine.rs
++++ b/crates/term/src/engine.rs
+@@ -1935,10 +1935,10 @@
+         let _ = row.lane_cells(column, 0);
+         let cells = row.lane_slice_from(column);
+         let mut occ_to = column;
+-        let wide = alacritty_terminal::term::cell::Cell {
++        let pens = [narrow.clone(), alacritty_terminal::term::cell::Cell {
+             flags: flags | CellFlags::WIDE_CHAR,
+             ..narrow.clone()
+-        };
++        }];
+         let spacer = alacritty_terminal::term::cell::Cell {
+             flags: flags | CellFlags::WIDE_CHAR_SPACER,
+             ..narrow.clone()
+@@ -1996,23 +1996,16 @@
+                 // template, as in `print_run`: the assignment's wide
+                 // stores measure faster than the five field stores
+                 // they write the same values as.
+-                {
+-                    let cell = &mut cells[at_col];
+-                    *cell = if width == 2 { wide.clone() } else { narrow.clone() };
+-                    cell.c = last;
+-                }
+-                if width == 2 {
+-                    span_clean = false;
+-                    cells[at_col + 1] = spacer.clone();
+-                }
++                // The trailing cell aliases the lead for a narrow glyph:
++                // write it first, then the lead. Both widths use the same
++                // instruction stream, without a mixed-width branch.
++                cells[at_col + width - 1] = spacer.clone();
++                cells[at_col] = pens[width - 1].clone();
++                cells[at_col].c = last;
++                span_clean &= width == 1;
+                 occ_to = column + width;
+-                let end = column + width - 1;
+-                if end + 1 < columns {
+-                    column = end + 1;
+-                } else {
+-                    column = end;
+-                    wrap = true;
+-                }
++                wrap = occ_to == columns;
++                column = occ_to - usize::from(wrap);
+                 written += 1;
+             }
+             held = Some((c, at));
