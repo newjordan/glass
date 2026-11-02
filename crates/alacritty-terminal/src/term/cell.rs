@@ -263,6 +263,16 @@ impl GridCell for Cell {
         self.extra = None;
     }
 
+    #[inline]
+    fn has_extra(&self) -> bool {
+        self.extra.is_some()
+    }
+
+    #[inline]
+    fn style_eq(&self, other: &Self) -> bool {
+        self.fg == other.fg && self.bg == other.bg && self.flags == other.flags && self.extra == other.extra
+    }
+
     fn reset(&mut self, template: &Self) {
         *self = Cell { bg: template.bg, ..Cell::default() };
     }

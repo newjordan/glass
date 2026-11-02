@@ -260,6 +260,15 @@ impl TermDamageState {
     /// Expand `line`'s damage to span at least `left` to `right` column.
     #[inline]
     fn damage_line(&mut self, line: usize, left: usize, right: usize) {
+        // Changed for glass: while full damage is already owed, the
+        // per-line bounds cannot be observed — `Term::damage` returns
+        // `Full` without reading them, and `reset` undamages every
+        // line before bounds matter again. Skipping the expand then
+        // is pure saving on scrolled floods, where the first scroll
+        // sets `full` and every later cursor move paid it.
+        if self.full {
+            return;
+        }
         self.lines[line].expand(left, right);
     }
 
@@ -752,9 +761,11 @@ impl<T> Term<T> {
 
         let region = origin..self.scroll_region.end;
 
-        // Scroll selection.
-        self.selection =
-            self.selection.take().and_then(|s| s.rotate(self, &region, -(lines as i32)));
+        // Scroll selection (skipped when it sits clear of the region).
+        if !self.selection.as_ref().is_some_and(|s| s.clear_of(&region)) {
+            self.selection =
+                self.selection.take().and_then(|s| s.rotate(self, &region, -(lines as i32)));
+        }
 
         // Scroll vi mode cursor.
         let line = &mut self.vi_mode_cursor.point.line;
@@ -779,8 +790,11 @@ impl<T> Term<T> {
 
         let region = origin..self.scroll_region.end;
 
-        // Scroll selection.
-        self.selection = self.selection.take().and_then(|s| s.rotate(self, &region, lines as i32));
+        // Scroll selection (skipped when it sits clear of the region).
+        if !self.selection.as_ref().is_some_and(|s| s.clear_of(&region)) {
+            self.selection =
+                self.selection.take().and_then(|s| s.rotate(self, &region, lines as i32));
+        }
 
         self.grid.scroll_up(&region, lines);
 

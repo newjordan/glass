@@ -33,6 +33,37 @@ pub struct Row<T> {
     /// cells one at a time, so a row rewritten left-to-right (the flood)
     /// never stores a blank it is about to overwrite.
     pub(crate) blank: Option<T>,
+
+    /// Changed for glass: no physical cell in `inner` holds extra state
+    /// (`GridCell::has_extra`), so overwriting a cell owes no drop. The
+    /// bit is conservative: it is set where that is proven (a fresh row
+    /// of defaults, a scanned vec) and cleared by every `&mut T` escape
+    /// that could install an extra (`IndexMut`, `last_mut`) and by
+    /// `write_cell` when the written cell carries one. The lanes' own
+    /// write paths (`lane_slice`, `overwrite_cell`) do not clear it:
+    /// their callers never write an extra through them, and the bit is
+    /// what lets them skip the per-cell drop an assignment would run.
+    /// A lazily recycled row keeps the bit of its physical cells, stale
+    /// extras included — they are still owned there.
+    pub(crate) extra_free: bool,
+
+    /// Changed for glass: the physical cells `inner[..uniform_to]` all
+    /// share one style (`GridCell::style_eq`: everything but the
+    /// character) — the style of `inner[0]`, which witnesses it, so no
+    /// specimen is stored. A full-overwrite lane whose template
+    /// carries that style may store the character alone over that
+    /// prefix. This is a property of the *physical* bytes: a lazy
+    /// recycle leaves it untouched (the stale cells keep their style,
+    /// which is the style the next flood overwrites anyway), and every
+    /// `&mut T` escape truncates it to the first column it can reach.
+    /// The lane escapes (`lane_slice`, `overwrite_cell`, `lane_cells`)
+    /// do not maintain it, as with `extra_free`: their callers note
+    /// (`note_uniform_write`) or truncate (`truncate_uniform`) what
+    /// they wrote.
+    /// u32, not usize: it never exceeds the column count, and the
+    /// narrower field packs the row into 64 bytes — rows are moved
+    /// whole by region rotation, so their size is scroll cost.
+    pub(crate) uniform_to: u32,
 }
 
 // Changed for glass: serde for Row is derived from the *observable* row.
@@ -77,7 +108,7 @@ impl<'de, T: serde::Deserialize<'de>> serde::Deserialize<'de> for Row<T> {
                 let occ: usize = seq
                     .next_element()?
                     .ok_or_else(|| serde::de::Error::missing_field("occ"))?;
-                Ok(Row { inner, occ, blank: None })
+                Ok(Row { inner, occ, blank: None, extra_free: false, uniform_to: 0 })
             }
             fn visit_map<V: serde::de::MapAccess<'de>>(
                 self,
@@ -103,7 +134,7 @@ impl<'de, T: serde::Deserialize<'de>> serde::Deserialize<'de> for Row<T> {
                 }
                 let inner = inner.ok_or_else(|| serde::de::Error::missing_field("inner"))?;
                 let occ = occ.ok_or_else(|| serde::de::Error::missing_field("occ"))?;
-                Ok(Row { inner, occ, blank: None })
+                Ok(Row { inner, occ, blank: None, extra_free: false, uniform_to: 0 })
             }
         }
         deserializer.deserialize_struct(
@@ -115,6 +146,91 @@ impl<'de, T: serde::Deserialize<'de>> serde::Deserialize<'de> for Row<T> {
 }
 
 impl<T> Row<T> {
+    /// Changed for glass: no physical cell holds extra state, so a
+    /// full overwrite of a cell owes no drop (see the field).
+    #[inline]
+    pub fn extra_free(&self) -> bool {
+        self.extra_free
+    }
+
+    /// Changed for glass: the uniform-style prefix length, whatever
+    /// its style (see the field).
+    #[inline]
+    pub fn uniform_to(&self) -> usize {
+        self.uniform_to as usize
+    }
+
+    /// Changed for glass: every physical cell before `end` shares
+    /// `specimen`'s style, so overwriting that prefix with a template
+    /// of that style needs only the character stored (see the fields).
+    #[inline]
+    pub fn uniform_covers(&self, end: usize, specimen: &T) -> bool
+    where
+        T: GridCell,
+    {
+        end <= self.uniform_to as usize
+            && (self.uniform_to == 0 || self.inner[0].style_eq(specimen))
+    }
+
+    /// Changed for glass: the length of the uniform-style prefix when
+    /// it carries `specimen`'s style, else 0 — `uniform_covers` for a
+    /// writer that does not know its span in advance.
+    #[inline]
+    pub fn uniform_prefix(&self, specimen: &T) -> usize
+    where
+        T: GridCell,
+    {
+        if self.uniform_to > 0 && self.inner[0].style_eq(specimen) {
+            self.uniform_to as usize
+        } else {
+            0
+        }
+    }
+
+    /// Changed for glass: record a full overwrite of `start..end` with
+    /// `specimen`'s style (the lane escapes' side of the uniform-prefix
+    /// contract, and `write_cell`/`materialize_to`'s own bookkeeping).
+    #[inline]
+    pub fn note_uniform_write(&mut self, start: usize, end: usize, specimen: &T)
+    where
+        T: GridCell,
+    {
+        if end <= start {
+            return;
+        }
+        // Called after the write landed. The old prefix's style is
+        // witnessed by a cell the write did not touch: `inner[0]` when
+        // the write starts past it, `inner[end]` when it ends before
+        // the prefix does. With no witness there is no surviving old
+        // prefix to match.
+        let old_to = self.uniform_to as usize;
+        let matches_old = if start > 0 && old_to > 0 {
+            self.inner[0].style_eq(specimen)
+        } else if start == 0 && end < old_to {
+            self.inner[end].style_eq(specimen)
+        } else {
+            false
+        };
+        if matches_old {
+            if start <= old_to && end > old_to {
+                self.uniform_to = end as u32;
+            }
+        } else if start == 0 {
+            self.uniform_to = end as u32;
+        } else if start < old_to {
+            self.uniform_to = start as u32;
+        }
+    }
+
+    /// Changed for glass: forget uniformity at and past `at` — what a
+    /// writer that cannot describe its style owes the contract.
+    #[inline]
+    pub fn truncate_uniform(&mut self, at: usize) {
+        if (at as u32) < self.uniform_to {
+            self.uniform_to = at as u32;
+        }
+    }
+
     /// The observable frontier of a lazily recycled row: columns at or
     /// past it are the blank (no wide flags), columns before it are
     /// physical cells a writer must guard. None when the row is not
@@ -170,6 +286,13 @@ impl<T> Row<T> {
                 let blank = blank.clone();
                 for cell in &mut self.inner[start..stop] {
                     *cell = blank.clone();
+                }
+                // The filled span now holds the blank's style, which
+                // this generic path does not compare against the
+                // uniform specimen: forget uniformity from `start`.
+                // (The lanes re-note the spans they overwrite.)
+                if (start as u32) < self.uniform_to {
+                    self.uniform_to = start as u32;
                 }
             }
             if stop < self.inner.len() {
@@ -236,6 +359,9 @@ impl<T> Row<T> {
     {
         let mut blank = T::default();
         blank.reset(template);
+        if blank.has_extra() {
+            self.extra_free = false;
+        }
         self.occ = 0;
         self.blank = Some(blank);
     }
@@ -252,18 +378,26 @@ impl<T: PartialEq> PartialEq for Row<T> {
 
 impl<T: Default> Row<T> {
     /// Create a new terminal row.
-    pub fn new(columns: usize) -> Row<T> {
+    pub fn new(columns: usize) -> Row<T>
+    where
+        T: GridCell,
+    {
+        let extra_free = !T::default().has_extra();
         let inner = iter::repeat_with(T::default).take(columns).collect();
-        Row { inner, occ: 0, blank: None }
+        Row { inner, occ: 0, blank: None, extra_free, uniform_to: columns as u32 }
     }
 
     /// Increase the number of columns in the row.
     #[inline]
-    pub fn grow(&mut self, columns: usize) {
+    pub fn grow(&mut self, columns: usize)
+    where
+        T: GridCell,
+    {
         if self.inner.len() >= columns {
             return;
         }
 
+        self.extra_free &= !T::default().has_extra();
         self.inner.resize_with(columns, T::default);
     }
 
@@ -280,6 +414,7 @@ impl<T: Default> Row<T> {
 
         // Split off cells for a new row.
         let mut new_row = self.inner.split_off(columns);
+        self.truncate_uniform(columns);
         let index = new_row.iter().rposition(|c| !c.is_empty()).map_or(0, |i| i + 1);
         new_row.truncate(index);
 
@@ -308,19 +443,39 @@ impl<T: Default> Row<T> {
         }
 
         // Reset every dirty cell in the row.
-        for item in &mut self.inner[0..self.occ] {
+        let span = self.occ;
+        for item in &mut self.inner[0..span] {
             item.reset(template);
         }
 
         self.occ = 0;
+        // A generic reset may keep a template's extra; stay conservative.
+        self.extra_free = false;
+        // The reset span now holds one style (the reset form of the
+        // template, witnessed by its first cell); beyond it the old
+        // physical bytes survive, so a longer prefix stands only if
+        // its first surviving cell (`inner[span]`) shares that style.
+        if span > 0
+            && !(self.uniform_to as usize > span && self.inner[0].style_eq(&self.inner[span]))
+        {
+            self.uniform_to = span as u32;
+        }
     }
 }
 
 #[allow(clippy::len_without_is_empty)]
 impl<T> Row<T> {
     #[inline]
-    pub fn from_vec(vec: Vec<T>, occ: usize) -> Row<T> {
-        Row { inner: vec, occ, blank: None }
+    pub fn from_vec(vec: Vec<T>, occ: usize) -> Row<T>
+    where
+        T: GridCell,
+    {
+        let extra_free = vec.iter().all(|cell| !cell.has_extra());
+        let uniform_to = match vec.first() {
+            Some(first) => vec.iter().take_while(|cell| cell.style_eq(first)).count() as u32,
+            None => 0,
+        };
+        Row { inner: vec, occ, blank: None, extra_free, uniform_to }
     }
 
     #[inline]
@@ -336,6 +491,8 @@ impl<T> Row<T> {
     #[inline]
     pub fn last_mut(&mut self) -> Option<&mut T> {
         self.occ = self.inner.len();
+        self.extra_free = false;
+        self.truncate_uniform(self.inner.len().saturating_sub(1));
         self.inner.last_mut()
     }
 
@@ -344,12 +501,23 @@ impl<T> Row<T> {
     where
         T: GridCell,
     {
+        self.extra_free &= vec.iter().all(|cell| !cell.has_extra());
+        if self.uniform_to > 0
+            && self.uniform_to as usize == self.inner.len()
+            && vec.iter().all(|cell| cell.style_eq(&self.inner[0]))
+        {
+            self.uniform_to += vec.len() as u32;
+        }
         self.occ += vec.len();
         self.inner.append(vec);
     }
 
     #[inline]
     pub fn append_front(&mut self, mut vec: Vec<T>) {
+        if !vec.is_empty() {
+            self.extra_free = false;
+            self.uniform_to = 0;
+        }
         self.occ += vec.len();
 
         vec.append(&mut self.inner);
@@ -379,6 +547,7 @@ impl<T> Row<T> {
 
     #[inline]
     pub fn front_split_off(&mut self, at: usize) -> Vec<T> {
+        self.uniform_to = 0;
         self.occ = self.occ.saturating_sub(at);
 
         let mut split = self.inner.split_off(at);
@@ -396,13 +565,14 @@ impl<T> Row<T> {
         T: GridCell,
     {
         self.materialize_to(col + 1);
+        self.truncate_uniform(col);
         self.inner[col].flags_mut().remove(f);
     }
 
     /// Record that the cell at `col` was written, advancing the observable
     /// frontier past it without materializing anything.
     #[inline]
-    pub(crate) fn occ_bump(&mut self, col: usize) {
+    pub fn occ_bump(&mut self, col: usize) {
         self.occ = max(self.occ, col + 1);
     }
 
@@ -411,6 +581,17 @@ impl<T> Row<T> {
     #[inline]
     pub(crate) fn lane_slice(&mut self, column: usize, end: usize) -> &mut [T] {
         &mut self.inner[column..end]
+    }
+
+    /// Changed for glass: the raw physical slice from `column` to the
+    /// row's end, for `put_row`'s per-glyph writes. The caller has
+    /// materialized the gap before `column` (via `lane_cells`) and
+    /// records what it wrote with `occ_bump`; cells past the lazy
+    /// frontier are stale physical bytes, to be overwritten in full
+    /// or read only through the guard the caller runs.
+    #[inline]
+    pub fn lane_slice_from(&mut self, column: usize) -> &mut [T] {
+        &mut self.inner[column..]
     }
 
     /// Full-overwrite single-cell accessor for the UTF-8 print paths
@@ -453,6 +634,9 @@ impl<T> Row<T> {
     where
         T: GridCell,
     {
+        if cell.has_extra() {
+            self.extra_free = false;
+        }
         // Fast path first: a row that was never recycled, or whose
         // frontier is already past the write, is a plain store. Flags is
         // Copy, so the under-flags leave the borrow before the store.
@@ -468,6 +652,18 @@ impl<T> Row<T> {
         let under = *under;
         if !physical_write {
             self.materialize_to(col);
+        }
+        // Uniform-prefix upkeep for the store below, done while
+        // `inner[0]` still witnesses the old prefix (`note_uniform_write`
+        // is the post-write form the lanes use). Conservative at
+        // column 0: establishing a prefix is the lanes' job.
+        let prefix_to = self.uniform_to as usize;
+        if col < prefix_to {
+            if !self.inner[0].style_eq(&cell) {
+                self.uniform_to = col as u32;
+            }
+        } else if col == prefix_to && col > 0 && self.inner[0].style_eq(&cell) {
+            self.uniform_to = (col + 1) as u32;
         }
         self.inner[col] = cell;
         if col + 1 > self.occ {
@@ -605,6 +801,8 @@ impl<'a, T> IntoIterator for &'a mut Row<T> {
 
     #[inline]
     fn into_iter(self) -> slice::IterMut<'a, T> {
+        self.extra_free = false;
+        self.uniform_to = 0;
         self.occ = self.len();
         self.inner.iter_mut()
     }
@@ -622,10 +820,12 @@ impl<T> Index<Column> for Row<T> {
 impl<T: Clone> IndexMut<Column> for Row<T> {
     #[inline]
     fn index_mut(&mut self, index: Column) -> &mut T {
+        self.extra_free = false;
         if fill_census::on() {
             fill_census::SITE[1].fetch_add(1, std::sync::atomic::Ordering::Relaxed);
         }
         self.materialize_to(*index + 1);
+        self.truncate_uniform(*index);
         self.occ = max(self.occ, *index + 1);
         &mut self.inner[index.0]
     }
@@ -643,10 +843,12 @@ impl<T> Index<Range<Column>> for Row<T> {
 impl<T: Clone> IndexMut<Range<Column>> for Row<T> {
     #[inline]
     fn index_mut(&mut self, index: Range<Column>) -> &mut [T] {
+        self.extra_free = false;
         if fill_census::on() {
             fill_census::SITE[2].fetch_add(1, std::sync::atomic::Ordering::Relaxed);
         }
         self.materialize_to(*index.end);
+        self.truncate_uniform(index.start.0);
         self.occ = max(self.occ, *index.end);
         &mut self.inner[(index.start.0)..(index.end.0)]
     }
@@ -664,7 +866,9 @@ impl<T> Index<RangeTo<Column>> for Row<T> {
 impl<T: Clone> IndexMut<RangeTo<Column>> for Row<T> {
     #[inline]
     fn index_mut(&mut self, index: RangeTo<Column>) -> &mut [T] {
+        self.extra_free = false;
         self.materialize_to(*index.end);
+        self.truncate_uniform(0);
         self.occ = max(self.occ, *index.end);
         &mut self.inner[..(index.end.0)]
     }
@@ -682,7 +886,9 @@ impl<T> Index<RangeFrom<Column>> for Row<T> {
 impl<T: Clone> IndexMut<RangeFrom<Column>> for Row<T> {
     #[inline]
     fn index_mut(&mut self, index: RangeFrom<Column>) -> &mut [T] {
+        self.extra_free = false;
         self.materialize_all();
+        self.truncate_uniform(index.start.0);
         self.occ = self.len();
         &mut self.inner[(index.start.0)..]
     }
@@ -700,7 +906,9 @@ impl<T> Index<RangeFull> for Row<T> {
 impl<T: Clone> IndexMut<RangeFull> for Row<T> {
     #[inline]
     fn index_mut(&mut self, _: RangeFull) -> &mut [T] {
+        self.extra_free = false;
         self.materialize_all();
+        self.truncate_uniform(0);
         self.occ = self.len();
         &mut self.inner[..]
     }
@@ -718,7 +926,9 @@ impl<T> Index<RangeToInclusive<Column>> for Row<T> {
 impl<T: Clone> IndexMut<RangeToInclusive<Column>> for Row<T> {
     #[inline]
     fn index_mut(&mut self, index: RangeToInclusive<Column>) -> &mut [T] {
+        self.extra_free = false;
         self.materialize_to(*index.end + 1);
+        self.truncate_uniform(0);
         self.occ = max(self.occ, *index.end + 1);
         &mut self.inner[..=(index.end.0)]
     }

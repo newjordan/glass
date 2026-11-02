@@ -65,7 +65,7 @@ impl<T> Storage<T> {
     #[inline]
     pub fn with_capacity(visible_lines: usize, columns: usize) -> Storage<T>
     where
-        T: Default,
+        T: Default + crate::grid::GridCell,
     {
         // Initialize visible lines; the scrollback buffer is initialized dynamically.
         let mut inner = Vec::with_capacity(visible_lines);
@@ -78,7 +78,7 @@ impl<T> Storage<T> {
     #[inline]
     pub fn grow_visible_lines(&mut self, next: usize)
     where
-        T: Default,
+        T: Default + crate::grid::GridCell,
     {
         // Number of lines the buffer needs to grow.
         let additional_lines = next - self.visible_lines;
@@ -124,7 +124,7 @@ impl<T> Storage<T> {
     #[inline]
     pub fn initialize(&mut self, additional_rows: usize, columns: usize)
     where
-        T: Default,
+        T: Default + crate::grid::GridCell,
     {
         if self.len + additional_rows > self.inner.len() {
             self.rezero();
@@ -218,16 +218,32 @@ impl<T> Storage<T> {
             // The run straddles the ring's seam ([a, len) plus [0, =b]):
             // possible whenever `zero` has moved, which any full-screen
             // scroll does. Rare (the region is small against the
-            // history), and the swap chain below is always correct, so
-            // take it rather than split the ring.
-            let mut i = start;
-            while i < end - positions as i32 {
-                let (x, y) = (at(i), at(i + positions as i32));
-                if x != y {
-                    self.inner.swap(x, y);
-                }
-                i += 1;
+            // history), so take it rather than split the ring — in
+            // logical line order, where a scroll up is a left rotation,
+            // done as three reversals of swaps.
+            //
+            // Changed for glass: the swap chain this replaces
+            // (`swap(at(i), at(i + positions))` upward) is a rotation
+            // only for `positions == 1`; a `CSI S` of several lines
+            // at the seam needs the real rotation.
+            let height = (end - start) as usize;
+            let positions = positions % height;
+            if positions == 0 {
+                return;
             }
+            let idx: Vec<usize> = (start..end).map(at).collect();
+            let reverse = |inner: &mut Vec<Row<T>>, mut lo: usize, mut hi: usize| {
+                while lo < hi {
+                    hi -= 1;
+                    if lo < hi {
+                        inner.swap(idx[lo], idx[hi]);
+                        lo += 1;
+                    }
+                }
+            };
+            reverse(&mut self.inner, 0, positions);
+            reverse(&mut self.inner, positions, height);
+            reverse(&mut self.inner, 0, height);
         }
     }
 
@@ -796,6 +812,42 @@ mod tests {
         storage.rotate(2);
 
         assert!(storage.zero < storage.inner.len());
+    }
+
+    #[test]
+    fn region_rotation_reads_as_rotation() {
+        // Every ring offset, region and count: scrolling the region up
+        // by `positions` reads, line by line, as a left rotation of
+        // the region's rows — at the seam too, where a swap chain
+        // once rotated correctly only for `positions == 1`.
+        let visible = 6usize;
+        for zero in 0..8 {
+            for (start, end) in [(0, 6), (1, 5), (2, 6), (0, 3)] {
+                for positions in 1..4usize {
+                    let mut storage: Storage<char> = Storage {
+                        inner: (0..8)
+                            .map(|i| filled_row(char::from(b'a' + i as u8)))
+                            .collect(),
+                        zero,
+                        visible_lines: visible,
+                        len: 8,
+                    };
+                    let logical = |storage: &Storage<char>| -> Vec<char> {
+                        (0..visible as i32).map(|l| storage[Line(l)][Column(0)]).collect()
+                    };
+                    let before = logical(&storage);
+                    storage.rotate_region(start, end, positions);
+                    let mut expect = before;
+                    expect[start as usize..end as usize]
+                        .rotate_left(positions % (end - start) as usize);
+                    assert_eq!(
+                        logical(&storage),
+                        expect,
+                        "zero={zero} region={start}..{end} positions={positions}"
+                    );
+                }
+            }
+        }
     }
 
     fn filled_row(content: char) -> Row<char> {

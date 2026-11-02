@@ -23,7 +23,7 @@ use std::time::Instant;
 use alacritty_terminal::event::{Event as TermEvent, EventListener, WindowSize};
 use alacritty_terminal::grid::{Dimensions, GridCell};
 use alacritty_terminal::index::{Column, Point};
-use alacritty_terminal::term::cell::{CellExtra, Flags as CellFlags};
+use alacritty_terminal::term::cell::Flags as CellFlags;
 use alacritty_terminal::grid::Scroll;
 use alacritty_terminal::term::{Config, Term, TermMode};
 use alacritty_terminal::vte::ansi::{
@@ -53,10 +53,19 @@ fn scrollback_lines() -> usize {
             .unwrap_or(10_000)
     })
 }
-/// Bytes fed to `Term` between reads of the scroll-count sentinel, so a
-/// single feed cannot scroll the sentinel out of a full history before it
-/// is read.
-const SCROLL_COUNT_CHUNK: usize = 1024;
+/// Bytes fed to `Term` between the engine's own reads of the
+/// scroll-count sentinel. The sentinel cannot be scrolled out of a
+/// full history between those reads, but not because this number is
+/// small: inside a chunk the wrapper paces it — `drained` folds every
+/// `SYNC_DRAIN_CHUNK` prints and linefeeds, scrolls down fold around
+/// themselves, and `note_scroll_up` folds when the lines it carries
+/// by hand reach the same bound — so unread travel stays within a
+/// screenful of that bound whatever this chunk is. What the chunk
+/// size does set is how often a feed pays a fresh wrapper, a sentinel
+/// read and the count's bookkeeping: at 1024 that was a measurable
+/// slice of a plain-text flood, which reads the sentinel to learn
+/// nothing the wrapper's pacing had not already counted.
+const SCROLL_COUNT_CHUNK: usize = 8192;
 /// When the sentinel has scrolled this far into history, it is replanted on
 /// the top row, so it always has room to move.
 const SCROLL_COUNT_REPLANT: usize = 4_096;
@@ -354,9 +363,6 @@ pub struct Engine {
     /// Whether such runs are written at once. Always, but for the tests
     /// that hold the fast path to the parser's own result.
     fast: bool,
-    /// The last combining mark written straight into a cell, and that
-    /// cell's extras: a mark alone on a cell that had none (`put_mark`).
-    mark: Option<(char, Arc<CellExtra>)>,
 }
 
 impl Engine {
@@ -408,7 +414,6 @@ impl Engine {
             joined: Vec::new(),
             mirror: Mirror::default(),
             fast: true,
-            mark: None,
         }
     }
 
@@ -515,7 +520,6 @@ impl Engine {
                 region_bottom,
                 mirror,
                 fast,
-                mark,
                 ..
             } = self;
             let alternate = term.mode().contains(TermMode::ALT_SCREEN);
@@ -543,11 +547,9 @@ impl Engine {
                 primary_snap: None,
                 primary: scrolled,
                 fast: *fast,
-                mark: mark.take(),
             };
             feed(processor, &mut watch, mirror, chunk, *fast);
             self.preceding_char = watch.preceding;
-            *mark = watch.mark.take();
             *alt_scrolled = watch.alt_scrolled;
             *region_top = watch.region_top;
             *region_bottom = watch.region_bottom;
@@ -722,7 +724,6 @@ impl Engine {
                 primary_snap: None,
                 primary: scrolled,
                 fast: self.fast,
-                mark: None,
                 preceding: self.preceding_char,
             };
             // The wrapper paces itself while the whole buffered frame is
@@ -1373,8 +1374,6 @@ struct Watch<'a> {
     /// lanes last wrote, kept as the parser's `preceding_char` is, so a
     /// REP taken by the lane repeats what the stream actually printed.
     preceding: Option<char>,
-    /// The engine's `mark`, for the chunk.
-    mark: Option<(char, Arc<CellExtra>)>,
 }
 
 impl Watch<'_> {
@@ -1407,7 +1406,6 @@ impl Watch<'_> {
             primary_snap: None,
             primary: scrolled,
             fast: engine.fast,
-            mark: None,
             preceding: None,
         }
     }
@@ -1555,7 +1553,7 @@ impl Watch<'_> {
         if c < '\u{a0}' {
             return false;
         }
-        let width = match unicode_width::UnicodeWidthChar::width(c) {
+        let width = match width_of(c) {
             Some(width @ 1..=2) => width,
             _ => return false,
         };
@@ -1642,6 +1640,35 @@ impl Watch<'_> {
             let (fg, bg, flags) = (template.fg, template.bg, template.flags);
             let column = point.column.0.min(columns - 1);
             let n = (columns - column).min(run.len() - taken);
+            // Dropless writes when the row owes no `extra` drops (the
+            // row's maintained `extra_free` bit): the assignment's
+            // drop/store of the old `Arc` cell value was ~40% of the
+            // lane's cost above char+extra alone (probe-bounded,
+            // 2026-11-02).
+            // One row lookup for the lane's three questions: dropless
+            // writes, char-only writes, and what the write owes the
+            // uniform prefix afterwards.
+            let (dropless, prefix, prefix_to) = {
+                let row = &grid[point.line];
+                (row.extra_free(), row.uniform_prefix(template), row.uniform_to())
+            };
+            // Char-only writes when the row's uniform-style prefix
+            // covers the whole slice in this pen: the pen stores are
+            // then already in place, and no cell underneath can be
+            // wide (the pen carries no wide bits). The flood's steady
+            // state — every row recycled still holding the previous
+            // cycle's pen — takes this branch for whole lines. The
+            // cursor's template is the specimen (`style_eq` ignores
+            // the character, and this run was refused a pen carrying
+            // an extra above). Short slices skip the char-only branch:
+            // its per-slice upkeep only pays over a real run.
+            let uniform = n >= 8
+                && !flags.intersects(CellFlags::WIDE_CHAR | CellFlags::WIDE_CHAR_SPACER)
+                && column + n <= prefix;
+            // A full write restyles prefix cells the prefix claimed
+            // only when it starts inside the prefix in a different
+            // style; same-style and beyond-prefix writes owe nothing.
+            let owes_truncate = column < prefix_to && prefix < prefix_to;
             let (cells, blank_from) = grid.lane_cells_slice(point.line, column, n);
             let mut written = 0;
             // The run-lane ceiling probes (env-gated; DELIBERATELY
@@ -1651,7 +1678,7 @@ impl Watch<'_> {
             // is set, and never set by anything but the bench.
             // The shipped loop stores the pen unconditionally: measured
             // against a conditional-store variant (probe 2) it wins by
-            // ~15% — the compares cost more than the fire-and-forget
+            // ~25% — the compares cost far more than the fire-and-forget
             // stores they would save. Probe 1 skips the wide test, 2 is
             // the rejected conditional-pen variant, kept for the record.
             match crate::engine::probes::get() {
@@ -1663,44 +1690,99 @@ impl Watch<'_> {
                     cell.extra = None;
                     written += 1;
                 },
-                2 => for (cell, &b) in cells.iter_mut().zip(&run[taken..taken + n]) {
-                    if cell.flags.intersects(CellFlags::WIDE_CHAR | CellFlags::WIDE_CHAR_SPACER) {
-                        break;
-                    }
-                    if cell.fg != fg || cell.bg != bg || cell.flags != flags || cell.extra.is_some() {
-                        cell.fg = fg;
-                        cell.bg = bg;
-                        cell.flags = flags;
-                        cell.extra = None;
-                    }
-                    cell.c = char::from(b);
-                    written += 1;
-                },
-                _ => {
-                    // The REP character is what this loop last wrote, set
-                    // once after the loop rather than per cell: the lane's
-                    // writes are prints the parser never sees, so `input`
-                    // cannot track them itself.
+                _ if uniform => {
                     let mut last = None;
-                    for (i, (cell, &b)) in cells.iter_mut().zip(&run[taken..taken + n]).enumerate() {
-                        // The wide-char guard reads the observable cell:
-                        // columns past the lazy frontier are blank, and
-                        // their physical bytes are stale — never trust them.
-                        if column + i < blank_from
-                            && cell.flags.intersects(CellFlags::WIDE_CHAR | CellFlags::WIDE_CHAR_SPACER)
-                        {
-                            break;
-                        }
-                        cell.fg = fg;
-                        cell.bg = bg;
-                        cell.flags = flags;
-                        cell.extra = None;
+                    for (cell, &b) in cells.iter_mut().zip(&run[taken..taken + n]) {
                         cell.c = char::from(b);
                         last = Some(b);
                         written += 1;
                     }
                     if written > 0 {
                         self.preceding = last.map(char::from);
+                    }
+                }
+                _ => {
+                    // How much of the slice may be written before a wide
+                    // character underneath must be left to `input`: the
+                    // guard reads the observable cells, and columns past
+                    // the lazy frontier are blank — their physical bytes
+                    // are stale, never to be trusted. The read runs ahead
+                    // of the writes so the write loop below stays the
+                    // shape it is; see the template comment there.
+                    let mut limit = n;
+                    if column < blank_from {
+                        let guarded = (blank_from - column).min(n);
+                        if let Some(bad) = cells[..guarded]
+                            .iter()
+                            .position(|cell| cell.flags.intersects(CellFlags::WIDE_CHAR | CellFlags::WIDE_CHAR_SPACER))
+                        {
+                            limit = bad;
+                        }
+                    }
+                    // Whole cells from one template, not field stores:
+                    // the same five values written either way, but the
+                    // template assignment's wide stores measure faster
+                    // than five narrow field stores on the plain-text
+                    // floods (+5% ascii, +10% scroll_region MB/cpu-s,
+                    // paired, in 2026-11-02-gate-stack). The template's
+                    // extra is `None`, so its clone is a plain copy; the
+                    // assignment still drops each old cell's extra as
+                    // the field form did.
+                    //
+                    // When the row's `extra_free` bit holds, no replaced
+                    // cell owns an extra, so the drop can be skipped
+                    // outright (`ptr::write`). Learning that per cell
+                    // costs the same load the drop does (-15% measured
+                    // with a precheck scan); the maintained row bit
+                    // learns it once per row instead.
+                    //
+                    // The REP character is what this loop last wrote, set
+                    // once after the loop rather than per cell: the lane's
+                    // writes are prints the parser never sees, so `input`
+                    // cannot track them itself.
+                    let template =
+                        alacritty_terminal::term::cell::Cell { c: ' ', fg, bg, flags, extra: None };
+                    let mut last = None;
+                    if dropless {
+                        for (cell, &b) in
+                            cells[..limit].iter_mut().zip(&run[taken..taken + limit])
+                        {
+                            let mut fresh = template.clone();
+                            fresh.c = char::from(b);
+                            // SAFETY: `extra_free` holds for the whole
+                            // row, so the replaced value owns nothing;
+                            // skipping its drop cannot leak. This lane
+                            // only ever writes `extra: None` cells, so
+                            // the bit stays true.
+                            unsafe { std::ptr::write(cell, fresh) };
+                            last = Some(b);
+                            written += 1;
+                        }
+                    } else {
+                        for (cell, &b) in
+                            cells[..limit].iter_mut().zip(&run[taken..taken + limit])
+                        {
+                            *cell = template.clone();
+                            cell.c = char::from(b);
+                            last = Some(b);
+                            written += 1;
+                        }
+                    }
+                    if written > 0 {
+                        self.preceding = last.map(char::from);
+                        // The full writes above leave their span in the
+                        // template's style; say so, and the next pass
+                        // over this row in the same pen writes chars
+                        // alone. Short writes skip the note's style
+                        // compare (as at the check) but still owe the
+                        // prefix a truncate when they restyled cells
+                        // it claimed (`owes_truncate`, above).
+                        if written >= 8 {
+                            grid[point.line]
+                                .note_uniform_write(column, column + written, &template);
+                        } else if owes_truncate {
+                            grid[point.line].truncate_uniform(column);
+                        }
                     }
                 }
             }
@@ -1817,6 +1899,17 @@ impl Watch<'_> {
         let mut wrap = false;
         let mut written = 0;
         let row = &mut grid[line];
+        // This run's writes all land at or past `column` through the
+        // lane escapes, which do not maintain the row's uniform-style
+        // prefix; truncate it here, then re-note the span below if
+        // every glyph took the narrow template. (Writing narrow
+        // glyphs char-only inside the prefix was tried and measured
+        // -20% on unicode: per glyph here the decode, width lookup
+        // and guard dwarf the pen stores saved, unlike `print_run`
+        // where the store is the whole loop.)
+        let span_start = column;
+        let mut span_clean = true;
+        row.truncate_uniform(column);
         // Non-lazy rows guard every column (guard_from = usize::MAX, so
         // `column < guard_from` always holds); lazy rows guard only their
         // physical prefix — past the frontier the observable cell is the
@@ -1826,6 +1919,29 @@ impl Watch<'_> {
         let guard_from = match row.lazy_frontier() {
             Some(frontier) if column >= frontier => 0,
             other => other.unwrap_or(usize::MAX),
+        };
+        // The cells this run writes, built once (see the write below).
+        let narrow = alacritty_terminal::term::cell::Cell { c: ' ', fg, bg, flags, extra: None };
+        // Materialize the gap left of the run once, then write into
+        // the raw slice for the rest of the run: per glyph this saves
+        // overwrite_cell's frontier branches and the guard's
+        // virtual-cell blank check (together ~4% of unicode, bounded
+        // with both removed). `occ` is bumped once at the end for the
+        // span actually written; the guard reads physical cells, but
+        // it only runs below `guard_from`, where physical is
+        // observable. A mark leaves the run instead of being put
+        // inline — the caller's fallback hands it to `input`.
+        let start_column = column;
+        let _ = row.lane_cells(column, 0);
+        let cells = row.lane_slice_from(column);
+        let mut occ_to = column;
+        let wide = alacritty_terminal::term::cell::Cell {
+            flags: flags | CellFlags::WIDE_CHAR,
+            ..narrow.clone()
+        };
+        let spacer = alacritty_terminal::term::cell::Cell {
+            flags: flags | CellFlags::WIDE_CHAR_SPACER,
+            ..narrow.clone()
         };
         while let Some((c, len)) = utf8_at(text, at) {
             if ('\u{7f}'..='\u{9f}').contains(&c) {
@@ -1849,54 +1965,47 @@ impl Watch<'_> {
                     // exhaustive equivalence test; and the probe itself cost
                     // 3.5% as a per-character branch, so it was not kept
                     // either. The 23% is real and still unclaimed.
-                    match unicode_width::UnicodeWidthChar::width(last) {
+                    match width_of(last) {
                         Some(width @ 1..=2) => width,
                         Some(0) => {
-                            put_mark(row, column, wrap, last, &mut self.mark);
-                            written += 1;
-                            held = Some((c, at));
-                            at += len;
-                            continue;
+                            // A mark joins the cell before it through
+                            // the caller's `input` fallback; it needs
+                            // the row, not this slice.
+                            break;
                         }
                         _ => break,
                     }
                 };
-                // The wide-char guard reads the OBSERVABLE cell: on a lazily
-                // recycled row that is the blank, and reading it must not
-                // materialize the tail (Row::virtual_cell, not IndexMut).
-                // The row is borrowed once for the whole run: the guard and
-                // both writes are Row methods on that borrow, so a wide
-                // glyph pays no grid-storage re-index per access (the
-                // virtual_read/overwrite_cell form paid four Line->ring
-                // divisions per wide glyph — the -19% unicode cost).
+                // The wide-char guard reads the slice's physical
+                // cells, which are the observable ones below
+                // `guard_from` (above it the observable cell is the
+                // blank, which carries no wide flags).
+                let at_col = column - start_column;
                 if wrap
                     || column + width > columns
                     || (column < guard_from
-                        && (row.virtual_cell(column).flags.intersects(underneath)
+                        && (cells[at_col].flags.intersects(underneath)
                             || (width == 2
-                                && row.virtual_cell(column + 1).flags.intersects(underneath))))
+                                && cells[at_col + 1].flags.intersects(underneath))))
                 {
                     break;
                 }
-                // Full-overwrite writes: a recycled row pays no blank fill
-                // for the cell this store itself makes valid (overwrite_cell,
-                // not IndexMut — the -34% unicode regression's cause).
+                // Full-overwrite writes: a recycled row pays no blank
+                // fill for cells this run writes (the gap was
+                // materialized once above). Whole cells from a
+                // template, as in `print_run`: the assignment's wide
+                // stores measure faster than the five field stores
+                // they write the same values as.
                 {
-                    let cell = row.overwrite_cell(column);
+                    let cell = &mut cells[at_col];
+                    *cell = if width == 2 { wide.clone() } else { narrow.clone() };
                     cell.c = last;
-                    cell.fg = fg;
-                    cell.bg = bg;
-                    cell.flags = if width == 2 { flags | CellFlags::WIDE_CHAR } else { flags };
-                    cell.extra = None;
                 }
                 if width == 2 {
-                    let spacer = row.overwrite_cell(column + 1);
-                    spacer.c = ' ';
-                    spacer.fg = fg;
-                    spacer.bg = bg;
-                    spacer.flags = flags | CellFlags::WIDE_CHAR_SPACER;
-                    spacer.extra = None;
+                    span_clean = false;
+                    cells[at_col + 1] = spacer.clone();
                 }
+                occ_to = column + width;
                 let end = column + width - 1;
                 if end + 1 < columns {
                     column = end + 1;
@@ -1908,6 +2017,13 @@ impl Watch<'_> {
             }
             held = Some((c, at));
             at += len;
+        }
+        if occ_to > start_column {
+            row.occ_bump(occ_to - 1);
+        }
+        if span_clean && written >= 8 {
+            let end = if wrap { column + 1 } else { column };
+            note_uniform_span(row, span_start, end, &narrow);
         }
         grid.cursor.point.column = Column(column);
         grid.cursor.input_needs_wrap = wrap;
@@ -1930,7 +2046,7 @@ impl Watch<'_> {
             if !plain {
                 return false;
             }
-            match unicode_width::UnicodeWidthChar::width(c) {
+            match width_of(c) {
                 Some(width @ 1..=2) => width,
                 _ => return false,
             }
@@ -1956,6 +2072,8 @@ impl Watch<'_> {
         {
             return false;
         }
+        // The writes below go through the lane escapes; see put_row.
+        row.truncate_uniform(column);
         {
             let cell = row.overwrite_cell(column);
             cell.c = c;
@@ -1981,43 +2099,6 @@ impl Watch<'_> {
         }
         self.drained += 1;
         true
-    }
-
-    /// After a scroll of the whole screen, ask the cache for the row the
-    /// next one will reuse: the oldest line of a full history, untouched
-    /// for thousands of lines and long out of cache. The scroll clears
-    /// it and the text lands in it, so fetching it a line ahead keeps a
-    /// stream of output from waiting on memory once per line.
-    #[inline]
-    fn warm_next_row(&mut self) {
-        #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
-        {
-            let history = self.term.history_size();
-            if history == 0 {
-                return;
-            }
-            let grid = self.term.grid();
-            let row = &grid[Line(-(history as i32))];
-            let cells = &row[..Column(grid.columns())];
-            let bytes = std::mem::size_of_val(cells);
-            let start = cells.as_ptr().cast::<i8>();
-            // Apple's cores fetch 128 bytes a line, x86's 64.
-            let line = if cfg!(target_arch = "aarch64") { 128 } else { 64 };
-            for offset in (0..bytes).step_by(line) {
-                // SAFETY: a prefetch is a hint: it reads nothing the
-                // program sees and cannot fault, and the address is inside
-                // the row's own cells.
-                #[cfg(target_arch = "x86_64")]
-                unsafe {
-                    std::arch::x86_64::_mm_prefetch::<{ std::arch::x86_64::_MM_HINT_ET0 }>(start.wrapping_add(offset));
-                }
-                // SAFETY: as above; PRFM is the same hint, for a store.
-                #[cfg(target_arch = "aarch64")]
-                unsafe {
-                    std::arch::asm!("prfm pstl1keep, [{0}]", in(reg) start.wrapping_add(offset), options(nostack, preserves_flags, readonly));
-                }
-            }
-        }
     }
 
     /// The primary screen is up again partway through a feed: count on
@@ -2107,26 +2188,53 @@ impl Watch<'_> {
             return false;
         }
         let clears = (end - origin).max(0) as usize <= lines && origin != 0;
+        let count_delta = if origin == 0 && !clears { lines as u64 } else { 0 };
+        // Whether anything could move is read off `base`, which the
+        // no-move path below carries by hand between the folds the
+        // chunk's own pacing runs (SCROLL_COUNT_CHUNK at the engine,
+        // the drained counters here). While the store has said nothing
+        // could move, the band is never used, so the sentinel fold that
+        // measuring it takes is not paid per scroll: on a flood of plain
+        // text that fold — a selection range read against the grid —
+        // was taken on every line that scrolled, for a band no event
+        // ever carried.
+        let moves = self.scroll_moves_pictures(origin, clears, true);
+        if !moves {
+            // The fold the band measurement took on every scroll was
+            // also what replanted a dropped sentinel before `Term`
+            // scrolled, and a scroll with no sentinel planted is a line
+            // the count never sees (found by the seed sweep: the fast
+            // and slow lanes replanted at different drained folds and
+            // their counts parted by the scrolls in between). That part
+            // cannot wait for the chunk's own folds — but it is only
+            // owed when the sentinel is actually missing, or when the
+            // lines carried by hand since the last fold (`base` ahead
+            // of `count`) approach what a pacing fold would have read;
+            // both are one compare on a flood.
+            if !self.alternate
+                && (self.term.selection.is_none()
+                    || self.base.saturating_sub(self.count) >= SYNC_DRAIN_CHUNK as u64)
+            {
+                self.fold_sentinel();
+            }
+            if self.alternate && count_delta > 0 {
+                self.alt_scrolled = self.alt_scrolled.saturating_add(count_delta);
+            }
+            // A full-screen scroll that moves no picture still carries
+            // the top line, on either screen, so later text in this
+            // chunk shares the pictures' lines.
+            if count_delta > 0 {
+                self.base = self.base.saturating_add(count_delta);
+            }
+            return false;
+        }
         // The band is measured before the count moves. On the alternate
         // screen the count is this mirror, and reading it after the add
-        // would place the band a scroll ahead of the pictures. While the
-        // store has said nothing could move, the band is never used: the
-        // sentinel waits for the chunk's own read, and `base` carries the
-        // lines meanwhile, as it does after every scroll that moves nothing.
+        // would place the band a scroll ahead of the pictures.
         let before = self.scrolled_now();
-        let count_delta = if origin == 0 && !clears { lines as u64 } else { 0 };
         if self.alternate && count_delta > 0 {
             self.alt_scrolled = self.alt_scrolled.saturating_add(count_delta);
-        }
-        // `base` moves after the band is measured. A full-screen scroll
-        // that moves no picture still carries the top line, on either
-        // screen, so later text in this chunk shares the pictures' lines.
-        let moves = self.scroll_moves_pictures(origin, clears, true);
-        if count_delta > 0 && (self.alternate || !moves) {
             self.base = self.base.saturating_add(count_delta);
-        }
-        if !moves {
-            return false;
         }
         self.events.push(Event::RegionScroll {
             alternate: self.alternate,
@@ -2194,7 +2302,7 @@ impl alacritty_terminal::vte::ansi::Handler for Watch<'_> {
             if cursor.input_needs_wrap || cursor.point.column.0 + 1 >= self.term.columns() {
                 let line = cursor.point.line.0;
                 if line + 1 == self.region_bottom {
-                    let width = unicode_width::UnicodeWidthChar::width(c).unwrap_or(0);
+                    let width = width_of(c).unwrap_or(0);
                     let pending = cursor.input_needs_wrap && width > 0;
                     let wide = !cursor.input_needs_wrap && width > 1;
                     if pending || wide {
@@ -2216,7 +2324,7 @@ impl alacritty_terminal::vte::ansi::Handler for Watch<'_> {
             let wrapped = cursor.input_needs_wrap;
             let line = self.base.saturating_add(row.max(0) as u64);
             if self.in_cell.iter().any(|&(top, bottom, _, _)| line <= bottom && line >= top) {
-                let width = unicode_width::UnicodeWidthChar::width(c).unwrap_or(0);
+                let width = width_of(c).unwrap_or(0);
                 if width > 0 {
                     let end = col + usize::from(wrapped);
                     self.covers(row, 1, end.saturating_sub(width), width);
@@ -2290,9 +2398,6 @@ impl alacritty_terminal::vte::ansi::Handler for Watch<'_> {
         self.term.linefeed();
         if emitted {
             self.after_scroll();
-        }
-        if line + 1 == self.region_bottom && self.region_top == 0 {
-            self.warm_next_row();
         }
         self.drained += 1;
         if self.drained >= SYNC_DRAIN_CHUNK {
@@ -2683,6 +2788,14 @@ fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, c
     // Where the last sequence the lane took ended: the parser is in
     // ground there, with nothing half read.
     let mut lane_end = None;
+    // Whether the parser is known to be in ground at `fed`, with no
+    // sequence or character half read from an earlier chunk. False at a
+    // chunk's start, where the previous chunk may have ended inside a
+    // sequence whose payload the gap would be completing; true once a
+    // parser advance reaches a point the mirror calls ground, a run is
+    // taken from ground, or the lane takes a sequence. Only then may a
+    // gap of bare controls be carried out without the parser (`plain_c0`).
+    let mut ground_at_fed = false;
     for esc in memchr::memchr_iter(0x1b, chunk).chain(std::iter::once(chunk.len())) {
         let mut from = stretch;
         stretch = esc + 1;
@@ -2707,14 +2820,27 @@ fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, c
             }
             if fed < ground {
                 if crate::engine::probes::get() != 104 {
-                    let t_vte = timers::on().then(Instant::now);
-                    let b = ground - fed;
-                    processor.advance(watch, &chunk[fed..ground]);
-                    if let Some(t) = t_vte {
-                        timers::record_vte(t, b);
+                    let gap = &chunk[fed..ground];
+                    // A gap of bare controls with the parser in ground at
+                    // its start and no synchronized update collecting is
+                    // carried out here: between two plain runs that is
+                    // the whole gap ("\\r\\n" a line on the floods this
+                    // counts most on), and the parser's state machine
+                    // would do exactly these calls and stay in ground.
+                    if !(ground_at_fed
+                        && processor.sync_timeout().sync_timeout().is_none()
+                        && plain_c0(watch, gap))
+                    {
+                        let t_vte = timers::on().then(Instant::now);
+                        let b = ground - fed;
+                        processor.advance(watch, gap);
+                        if let Some(t) = t_vte {
+                            timers::record_vte(t, b);
+                        }
                     }
                 }
                 fed = ground;
+                ground_at_fed = true;
             }
             if processor.sync_timeout().sync_timeout().is_some() {
                 continue;
@@ -2750,6 +2876,7 @@ fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, c
                 counters::LANE_RUN_BYTES.fetch_add(took as u64, Ordering::Relaxed);
             }
             fed += took;
+            ground_at_fed = true;
         }
         if esc < chunk.len() {
             let after_lane = lane_end == Some(fed);
@@ -2758,6 +2885,7 @@ fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, c
                 // What follows the sequence is looked into from its end.
                 stretch = esc + len;
                 lane_end = Some(fed);
+                ground_at_fed = true;
             }
         }
     }
@@ -2768,9 +2896,41 @@ fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, c
             counters::VTE_BYTES.fetch_add((chunk.len() - fed) as u64, Ordering::Relaxed);
         }
         if crate::engine::probes::get() != 104 {
-            processor.advance(watch, &chunk[fed..]);
+            let rest = &chunk[fed..];
+            if !(ground_at_fed
+                && processor.sync_timeout().sync_timeout().is_none()
+                && plain_c0(watch, rest))
+            {
+                processor.advance(watch, rest);
+            }
         }
     }
+}
+
+/// Carry out a gap of bare controls as the parser in ground would:
+/// CR, HT, BS and the line-feeds (LF, VT, FF) onto the handler, in
+/// order. Returns false, having done nothing, when any byte is not one
+/// of those six, so the caller hands the whole gap to the parser. The
+/// caller decides the parser is in ground at the gap's start and that
+/// no synchronized update is collecting: inside a sequence these bytes
+/// are payload, and inside a sync they are deferred with the rest.
+fn plain_c0(watch: &mut Watch<'_>, gap: &[u8]) -> bool {
+    use alacritty_terminal::vte::ansi::Handler;
+    if !gap.iter().all(|b| matches!(b, b'\r' | b'\t' | 0x08 | b'\n' | 0x0b | 0x0c)) {
+        return false;
+    }
+    if timers::on() {
+        timers::C0_BYTES.fetch_add(gap.len() as u64, Ordering::Relaxed);
+    }
+    for &b in gap {
+        match b {
+            b'\r' => watch.carriage_return(),
+            b'\t' => watch.put_tab(1),
+            0x08 => watch.backspace(),
+            _ => watch.linefeed(),
+        }
+    }
+    true
 }
 
 /// Where the bytes a chunk applied went, while a census is on: the run
@@ -3001,7 +3161,30 @@ fn lane(
             && processor.sync_timeout().sync_timeout().is_none()
         {
             let n = if run_whole() { text.len() } else { text.len() - 1 };
-            let t = watch.print_run(&text[..n]);
+            // A single cell between colour changes (the tui_frames /
+            // truecolor shape) pays print_run's whole setup for one
+            // store; put_plain is the same write with the row looked
+            // up once. Its caller-side conditions are print_utf8's:
+            // checked here exactly as there.
+            let single_plain = n == 1 && {
+                let template = &watch.term.grid().cursor.template;
+                watch.fast
+                    && watch.in_cell.is_empty()
+                    && !watch.term.mode().contains(TermMode::INSERT)
+                    && template.extra.is_none()
+                    && !template.flags.intersects(
+                        CellFlags::WIDE_CHAR
+                            | CellFlags::WIDE_CHAR_SPACER
+                            | CellFlags::LEADING_WIDE_CHAR_SPACER,
+                    )
+                    && watch.term.grid().cursor.charsets == Default::default()
+            };
+            let t = if single_plain && watch.put_plain(char::from(text[0]), true, true) {
+                watch.preceding = Some(char::from(text[0]));
+                1
+            } else {
+                watch.print_run(&text[..n])
+            };
             // The whole text went to the grid: vte's REP character must
             // match it, for a REP the parser completes later.
             if run_whole() {
@@ -3145,42 +3328,18 @@ fn sgr_color(params: &[u16], at: &mut usize) -> Option<AnsiColor> {
     }
 }
 
-/// `Term::input`'s mark (a character of no width, such as a combining
-/// accent): on the cell before the cursor at `column` (on the cursor's
-/// own while a wrap is pending), or on the wide character a spacer there
-/// belongs to. Out of line, so the loop it is called from stays small.
-///
-/// A mark alone on a cell that had no extras gives that cell the same
-/// extras as the last such cell, so it shares them (`last`) rather than
-/// allocating its own: accented text repeats a few marks, each of which
-/// `push_zerowidth` would allocate twice. Extras are copied before they
-/// change (`Arc::make_mut`), so a shared one is never changed under
-/// another cell.
+/// `put_row`'s uniform-prefix note, out of line: the style compare
+/// inside is wide, and inlined into the per-glyph loop it measurably
+/// slows every glyph (unicode -24% with it inline, 2026-11-02).
 #[cold]
 #[inline(never)]
-fn put_mark(
+fn note_uniform_span(
     row: &mut alacritty_terminal::grid::Row<alacritty_terminal::term::cell::Cell>,
-    column: usize,
-    wrap: bool,
-    mark: char,
-    last: &mut Option<(char, Arc<CellExtra>)>,
+    from: usize,
+    end: usize,
+    narrow: &alacritty_terminal::term::cell::Cell,
 ) {
-    let mut at = if wrap { column } else { column.saturating_sub(1) };
-    if row[Column(at)].flags.contains(CellFlags::WIDE_CHAR_SPACER) {
-        at = at.saturating_sub(1);
-    }
-    let cell = &mut row[Column(at)];
-    if cell.extra.is_some() {
-        cell.push_zerowidth(mark);
-        return;
-    }
-    match last {
-        Some((shared, extra)) if *shared == mark => cell.extra = Some(Arc::clone(extra)),
-        _ => {
-            cell.push_zerowidth(mark);
-            *last = cell.extra.as_ref().map(|extra| (mark, Arc::clone(extra)));
-        }
-    }
+    row.note_uniform_write(from, end, narrow);
 }
 
 /// The next run of at least [`RUN_MIN`] bytes of text in `bytes` (printable
@@ -3396,6 +3555,33 @@ fn utf8_at(bytes: &[u8], at: usize) -> Option<(char, usize)> {
         _ => return None,
     };
     Some((char::from_u32(value)?, len))
+}
+
+/// `unicode_width`'s answer for `c`, through a flat cache over the
+/// whole codespace filled from the crate on first ask: the crate's
+/// multi-level lookup is several dependent loads for the planes a
+/// mixed-width flood actually writes (CJK, emoji, symbols — the 4 KiB
+/// table over U+0000..U+0FFF tried earlier never held them), where
+/// this is one. The cache is write-once per codepoint and every writer
+/// stores the same value, so relaxed atomics are enough; -1 is
+/// unasked, -2 is the crate's `None` (widths themselves run 0..=3).
+#[inline]
+fn width_of(c: char) -> Option<usize> {
+    use std::sync::atomic::{AtomicI8, Ordering};
+    static CACHE: std::sync::OnceLock<Box<[AtomicI8]>> = std::sync::OnceLock::new();
+    let cache = CACHE
+        .get_or_init(|| (0..0x110000).map(|_| AtomicI8::new(-1)).collect::<Vec<_>>().into_boxed_slice());
+    let slot = &cache[c as usize];
+    let v = slot.load(Ordering::Relaxed);
+    if v >= 0 {
+        return Some(v as usize);
+    }
+    if v == -2 {
+        return None;
+    }
+    let w = unicode_width::UnicodeWidthChar::width(c);
+    slot.store(w.map_or(-2, |w| w as i8), Ordering::Relaxed);
+    w
 }
 
 fn held_back(bytes: &[u8]) -> Option<Vec<u8>> {
@@ -3654,6 +3840,20 @@ mod tests {
     }
 
     #[test]
+    fn width_cache_agrees_with_the_crate_everywhere() {
+        // The flat cache in `width_of` is only a cache: for every
+        // codepoint it must answer exactly what the crate answers,
+        // on the first ask (which fills it) and the second (which
+        // reads it back).
+        for v in 0..0x110000u32 {
+            let Some(c) = char::from_u32(v) else { continue };
+            let want = unicode_width::UnicodeWidthChar::width(c);
+            assert_eq!(width_of(c), want, "U+{v:04X} first ask");
+            assert_eq!(width_of(c), want, "U+{v:04X} cached");
+        }
+    }
+
+    #[test]
     fn lines_scrolled_off_top_count_exactly() {
         // Full-screen scrolling: each line that leaves the top counts.
         let mut term = Engine::new(4, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1) });
@@ -3679,6 +3879,21 @@ mod tests {
         assert_eq!(term.scrolled_off_top(), 1);
         // And it keeps counting from there.
         term.process(b"\r\nsix");
+        assert_eq!(term.scrolled_off_top(), 2);
+    }
+
+    #[test]
+    fn lines_scrolled_after_the_sentinel_is_erased_still_count() {
+        // An erase that touches the top row drops `Term`'s selection —
+        // the scroll counter's sentinel — and no wrapper path replants
+        // it. The lines that scroll off after the erase, in the same
+        // feed, must still count: the sentinel is replanted before the
+        // first of them scrolls, not at the next pacing fold.
+        let mut term = Engine::new(4, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1) });
+        // As the reader's pump leaves it while the store holds nothing:
+        // no scroll on this screen can move a picture.
+        term.set_motion(None);
+        term.process(b"\x1b[H\x1b[2Kone\r\ntwo\r\nthree\r\nfour\r\nfive\r\nsix");
         assert_eq!(term.scrolled_off_top(), 2);
     }
 

@@ -58,6 +58,25 @@ pub trait GridCell: Sized + Clone {
     /// per-cell state a full reset would have cleared but a flags-only
     /// pass does not (Cell's CellExtra). Default: nothing.
     fn strip_stale(&mut self) {}
+
+    /// Changed for glass: whether this cell holds dynamically allocated
+    /// extra state (Cell's CellExtra) whose drop a full overwrite must
+    /// run. Rows track the negation (`Row::extra_free`) so a lane that
+    /// overwrites a whole row of plain cells can skip every per-cell
+    /// drop. Default: no extra state exists.
+    fn has_extra(&self) -> bool {
+        false
+    }
+
+    /// Changed for glass: everything but the character matches `other`
+    /// (pen, flags, extra state), so a writer that only stores the
+    /// character leaves the cell exactly as a full overwrite with
+    /// `other`'s style would. Rows track a uniform-style prefix against
+    /// a specimen cell (`Row::uniform_covers`) so flood lanes can write
+    /// the character alone. Default: never — only `Cell` opts in.
+    fn style_eq(&self, _other: &Self) -> bool {
+        false
+    }
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]

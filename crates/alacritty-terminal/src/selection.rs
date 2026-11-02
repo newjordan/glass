@@ -137,6 +137,20 @@ impl Selection {
         self.region.end = Anchor::new(point, side);
     }
 
+    /// Whether `rotate` over `range` would return this selection
+    /// unchanged: both anchors outside it (above it, or below it).
+    /// Changed for glass: the scroll sentinel sits above any
+    /// subregion for a whole region flood, and the scroll paths check
+    /// this to skip the take/rotate/put per scrolled line.
+    #[inline]
+    pub fn clear_of(&self, range: &Range<Line>) -> bool {
+        let start = self.region.start.point.line;
+        let end = self.region.end.point.line;
+        (range.start.0 != 0 && start < range.start && end < range.start)
+            || (start >= range.end && end >= range.end)
+    }
+
+    #[inline]
     pub fn rotate<D: Dimensions>(
         mut self,
         dimensions: &D,
