@@ -614,6 +614,119 @@ fn plain_runs_match_the_parser() {
     }
 }
 
+/// [`plain_runs_match_the_parser`] over many seeds. The fixed-seed test is
+/// the gate CI runs; this is the sweep to run before a change to the lane's
+/// own rules becomes the default (the run-whole gap, say), where 400 streams
+/// out of one seed is thinner evidence than it looks. `GLASS_SWEEP_SEEDS`
+/// seeds from `GLASS_SWEEP_FROM`, `GLASS_SWEEP_ROUNDS` streams each. Check
+/// the sweep still bites before trusting it: `GLASS_RUN_PROBE=5` is
+/// deliberately incorrect, and must fail.
+#[test]
+#[ignore]
+fn plain_runs_match_the_parser_over_seeds() {
+    let seeds: u64 = env("GLASS_SWEEP_SEEDS", 64);
+    let from: u64 = env("GLASS_SWEEP_FROM", 1);
+    let rounds: usize = env("GLASS_SWEEP_ROUNDS", 100);
+    // The ceiling probes are a startup-fixed atomic, and only main and the
+    // bench ever set it — so without this the sweep silently ignores
+    // GLASS_RUN_PROBE and cannot be used to check that it still bites.
+    crate::engine::probes::init();
+    let mut swept = 0usize;
+    for seed in from..from + seeds {
+        let mut rng = Rng::new(seed);
+        for round in 0..rounds {
+            let len = 200 + rng.below(4000);
+            let stream = random_stream(&mut rng, len);
+            let n = rng.below(20);
+            let cuts = random_cuts(&mut rng, &stream, n);
+            let (rows, cols) = [(6, 10), (24, 80), (3, 40), (39, 154)][round % 4];
+            // The difference pass wants the cuts as windows over the whole
+            // stream, as the shrink test builds them.
+            let mut w: Vec<usize> = std::iter::once(0)
+                .chain(cuts.iter().copied().filter(|v| *v < stream.len()))
+                .chain(std::iter::once(stream.len()))
+                .collect();
+            w.sort_unstable();
+            w.dedup();
+            if let Some(field) = plain_runs_first_difference(rows, cols, &stream, &w) {
+                panic!(
+                    "seed {seed} round {round} ({rows}x{cols}) diverges in {field}: {:?}",
+                    String::from_utf8_lossy(&stream)
+                );
+            }
+            swept += 1;
+        }
+    }
+    eprintln!("swept {swept} streams over {seeds} seeds: no divergence");
+}
+
+/// Shrink a divergence [`plain_runs_match_the_parser_over_seeds`] found:
+/// `GLASS_SHRINK_SEED` and `GLASS_SHRINK_ROUND` name the case, which is
+/// regenerated exactly as the sweep generates it, then cut down greedily —
+/// slices removed from anywhere while the divergence still stands — and
+/// printed. The cuts are dropped first, since a stream that diverges when fed
+/// whole is the clearer report.
+#[test]
+#[ignore]
+fn shrink_sweep_divergence() {
+    let seed: u64 = env("GLASS_SHRINK_SEED", 18);
+    let target: usize = env("GLASS_SHRINK_ROUND", 161);
+    crate::engine::probes::init();
+    let mut rng = Rng::new(seed);
+    let (mut stream, mut cuts, mut rows, mut cols) = (Vec::new(), Vec::new(), 0, 0);
+    for round in 0..=target {
+        let len = 200 + rng.below(4000);
+        let s = random_stream(&mut rng, len);
+        let n = rng.below(20);
+        let c = random_cuts(&mut rng, &s, n);
+        if round == target {
+            let (r, co) = [(6, 10), (24, 80), (3, 40), (39, 154)][round % 4];
+            (stream, cuts, rows, cols) = (s, c, r, co);
+        }
+    }
+    let windows = |stream: &[u8], cuts: &[usize]| {
+        let mut w: Vec<usize> = std::iter::once(0)
+            .chain(cuts.iter().copied().filter(|v| *v < stream.len()))
+            .chain(std::iter::once(stream.len()))
+            .collect();
+        w.sort_unstable();
+        w.dedup();
+        w
+    };
+    let differs = |stream: &[u8], cuts: &[usize]| {
+        plain_runs_first_difference(rows, cols, stream, &windows(stream, cuts)).is_some()
+    };
+    assert!(differs(&stream, &cuts), "seed {seed} round {target} does not diverge");
+    // Whole-stream first: if it still diverges with no reads in the middle,
+    // the cuts are not part of the story.
+    if differs(&stream, &[]) {
+        cuts = Vec::new();
+    }
+    // Greedy removal, largest slices first.
+    let mut size = stream.len() / 2;
+    while size > 0 {
+        let mut at = 0;
+        while at + size <= stream.len() {
+            let mut shorter = stream.clone();
+            shorter.drain(at..at + size);
+            let kept: Vec<usize> = cuts.iter().copied().filter(|&v| v < shorter.len()).collect();
+            if differs(&shorter, &kept) {
+                stream = shorter;
+                cuts = kept;
+            } else {
+                at += 1;
+            }
+        }
+        size /= 2;
+    }
+    let field = plain_runs_first_difference(rows, cols, &stream, &windows(&stream, &cuts));
+    panic!(
+        "minimal: {rows}x{cols} field={field:?} cuts={cuts:?} len={} stream={:?}",
+        stream.len(),
+        String::from_utf8_lossy(&stream)
+    );
+}
+
 /// One pass of `plain_runs_match_the_parser`'s comparison on a given
 /// stream and cuts, returning the first field where fast differs from
 /// slow, or None when they agree. Used by the shrink and debug tests.
