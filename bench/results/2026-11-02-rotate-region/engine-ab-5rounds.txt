@@ -1,0 +1,7 @@
+scroll_region head=516.1 rotate=737.1
+ascii head=714.1 rotate=665.1
+ascii_lf head=428.4 rotate=412.2
+unicode head=202.8 rotate=207.2
+truecolor head=234.9 rotate=232.8
+cursor_motion head=213.6 rotate=213.1
+tui_frames head=255.5 rotate=251.7

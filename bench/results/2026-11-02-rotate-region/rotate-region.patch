@@ -1,0 +1,102 @@
+diff --git i/crates/alacritty-terminal/src/grid/mod.rs w/crates/alacritty-terminal/src/grid/mod.rs
+index 56e15b0..2ecb1b6 100644
+--- i/crates/alacritty-terminal/src/grid/mod.rs
++++ w/crates/alacritty-terminal/src/grid/mod.rs
+@@ -325,9 +325,14 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
+             }
+         } else {
+             // Rotate lines without moving anything into history.
+-            for i in (region.start.0..region.end.0 - positions as i32).map(Line::from) {
+-                self.raw.swap(i, i + positions);
+-            }
++            // Changed for glass: a chain of pairwise swaps moves every row in
++            // the region once per position — 35 swaps for the common one-line
++            // scroll in a 37-row region — while a rotation's data movement is
++            // independent of region height. Rotating the region's sub-slice
++            // in one slice operation moves each row exactly once for any
++            // `positions`, and keeps `occ`/`blank` (the lazy-recycle state)
++            // with its row, exactly as a swap does.
++            self.raw.rotate_region(region.start.0, region.end.0, positions);
+         }
+ 
+         // Ensure all new lines are fully cleared.
+diff --git i/crates/alacritty-terminal/src/grid/storage.rs w/crates/alacritty-terminal/src/grid/storage.rs
+index a280f35..5eeb762 100644
+--- i/crates/alacritty-terminal/src/grid/storage.rs
++++ w/crates/alacritty-terminal/src/grid/storage.rs
+@@ -180,6 +180,58 @@ impl<T> Storage<T> {
+         self.zero = (self.zero + count) % self.inner.len();
+     }
+ 
++    /// Rotate the physical rows behind one screen region, without touching
++    /// history above it or the fixed lines below it.
++    ///
++    /// Changed for glass: a region scroll used to walk the region with
++    /// pairwise `swap`s — one pass of `region.end - region.start - positions`
++    /// swaps per scroll, each moving two whole `Row<T>`s (inner Vec plus the
++    /// lazy-recycle `occ`/`blank` state). A ring rotation moves each row
++    /// exactly once for any `positions`, as `rotate` does for the whole
++    /// buffer. The rows are moved whole, so `occ` and `blank` stay with the
++    /// text they belong to, exactly as a swap chain leaves them.
++    ///
++    /// Only the visible sub-slice turns: the caller's lines are relative to
++    /// the visible top, while the ring may start anywhere in `inner`.
++    pub(crate) fn rotate_region(&mut self, start: i32, end: i32, positions: usize) {
++        let len = self.inner.len();
++        if len == 0 || positions == 0 || end <= start {
++            return;
++        }
++        // Same mapping as `compute_index`: visible line `l` sits at
++        // `zero + visible_lines - 1 - l`, so higher lines sit at lower
++        // offsets. The region's rows therefore occupy the physical run
++        // from `at(end - 1)` (lowest slot) up to `at(start)` (highest),
++        // and scrolling up by `positions` moves each row down that run
++        // by exactly `positions` slots: one `rotate_right` of the run.
++        // Rows move whole, so the lazy-recycle `occ`/`blank` state stays
++        // with its text, exactly as the swap chain left it.
++        let visible = self.visible_lines as i32;
++        let at = |l: i32| (self.zero as i32 + visible - 1 - l).rem_euclid(len as i32) as usize;
++        let a = at(end - 1);
++        let b = at(start);
++        if a == b {
++            return;
++        }
++        if a < b {
++            self.inner[a..=b].rotate_right(positions % (b - a + 1));
++        } else {
++            // The run straddles the ring's seam ([a, len) plus [0, =b]):
++            // possible whenever `zero` has moved, which any full-screen
++            // scroll does. Rare (the region is small against the
++            // history), and the swap chain below is always correct, so
++            // take it rather than split the ring.
++            let mut i = start;
++            while i < end - positions as i32 {
++                let (x, y) = (at(i), at(i + positions as i32));
++                if x != y {
++                    self.inner.swap(x, y);
++                }
++                i += 1;
++            }
++        }
++    }
++
+     /// Update the raw storage buffer.
+     #[inline]
+     pub fn replace_inner(&mut self, vec: Vec<Row<T>>) {
+diff --git i/crates/alacritty-terminal/tests/ref.rs w/crates/alacritty-terminal/tests/ref.rs
+index 8a75f92..f77a4ea 100644
+--- i/crates/alacritty-terminal/tests/ref.rs
++++ w/crates/alacritty-terminal/tests/ref.rs
+@@ -122,9 +122,10 @@ fn ref_test(dir: &Path) {
+ 
+     if grid != term_grid {
+         for i in 0..grid.total_lines() {
++            let line = Line(i as i32 - (grid.total_lines() as i32 - grid.screen_lines() as i32));
+             for j in 0..grid.columns() {
+-                let cell = &term_grid[Line(i as i32)][Column(j)];
+-                let original_cell = &grid[Line(i as i32)][Column(j)];
++                let cell = &term_grid[line][Column(j)];
++                let original_cell = &grid[line][Column(j)];
+                 if original_cell != cell {
+                     println!("[{i}][{j}] {original_cell:?} => {cell:?}",);
+                 }
