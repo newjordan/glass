@@ -115,10 +115,6 @@ impl<'de, T: serde::Deserialize<'de>> serde::Deserialize<'de> for Row<T> {
 }
 
 impl<T> Row<T> {
-    /// The cell a read at `index` must observe: the lazy blank when this
-    /// row is recycled and `index` is past `occ`, the physical cell
-    /// otherwise.
-    #[inline(always)]
     /// The observable frontier of a lazily recycled row: columns at or
     /// past it are the blank (no wide flags), columns before it are
     /// physical cells a writer must guard. None when the row is not
@@ -143,10 +139,10 @@ impl<T> Row<T> {
     /// when this row is recycled past `occ`, the physical cell otherwise.
     #[inline(always)]
     pub fn virtual_cell(&self, index: usize) -> &T {
-        if let Some(blank) = self.blank.as_ref() {
-            if index >= self.occ {
-                return blank;
-            }
+        if let Some(blank) = self.blank.as_ref()
+            && index >= self.occ
+        {
+            return blank;
         }
         &self.inner[index]
     }
@@ -221,7 +217,7 @@ impl<T> Row<T> {
         let tail = self
             .blank
             .as_ref()
-            .map(|blank| std::iter::repeat(blank).take(self.inner.len() - physical));
+            .map(|blank| std::iter::repeat_n(blank, self.inner.len() - physical));
         self.inner[..physical].iter().chain(tail.into_iter().flatten())
     }
 
@@ -366,10 +362,10 @@ impl<T> Row<T> {
     where
         T: GridCell,
     {
-        if let Some(blank) = self.blank.as_ref() {
-            if !blank.is_empty() {
-                return false;
-            }
+        if let Some(blank) = self.blank.as_ref()
+            && !blank.is_empty()
+        {
+            return false;
         }
         // For a lazily recycled row the tail is observably `blank`, so
         // only the physical prefix can hold content.
@@ -392,14 +388,6 @@ impl<T> Row<T> {
 }
 
 impl<T> Row<T> {
-    /// The observable cell at `col` by value, for `Copy` cell types: the
-    /// lazy blank when the row is recycled past `occ`, the physical cell
-    /// otherwise. Readers that need the value (not a reference) use this.
-    #[inline]
-    pub(crate) fn virtual_read(&self, col: usize) -> &T {
-        self.virtual_cell(col)
-    }
-
     /// Clear flag bits on the observable cell at `col`, materializing the
     /// lazy tail only if that column is past the frontier.
     #[inline]
