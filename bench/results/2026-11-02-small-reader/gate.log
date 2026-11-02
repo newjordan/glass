@@ -1,0 +1,32 @@
+round 1/18: glass glass-alt ghostty
+round 2/18: glass ghostty glass-alt
+round 3/18: glass-alt glass ghostty
+round 4/18: glass-alt ghostty glass
+round 5/18: ghostty glass glass-alt
+round 6/18: ghostty glass-alt glass
+round 7/18: glass glass-alt ghostty
+round 8/18: glass ghostty glass-alt
+round 9/18: glass-alt glass ghostty
+round 10/18: glass-alt ghostty glass
+round 11/18: ghostty glass glass-alt
+round 12/18: ghostty glass-alt glass
+round 13/18: glass glass-alt ghostty
+round 14/18: glass ghostty glass-alt
+round 15/18: glass-alt glass ghostty
+round 16/18: glass-alt ghostty glass
+round 17/18: ghostty glass glass-alt
+round 18/18: ghostty glass-alt glass
+glass / glass-alt:
+  ascii          0.6852 1/18 wins p=0.000144958
+  unicode        0.9647 5/18 wins p=0.0962524
+  truecolor      0.9974 8/18 wins p=0.814529
+  cursor_motion  0.9794 5/18 wins p=0.0962524
+  scroll_region  0.6623 1/18 wins p=0.000144958
+  tui_frames     0.9818 7/18 wins p=0.480682
+glass / ghostty:
+  ascii          0.7362 4/18 wins p=0.0308838
+  unicode        0.9427 6/18 wins p=0.237885
+  truecolor      1.2131 17/18 wins p=0.000144958
+  cursor_motion  1.1312 17/18 wins p=0.000144958
+  scroll_region  0.6713 0/18 wins p=7.62939e-06
+  tui_frames     1.0412 12/18 wins p=0.237885

@@ -257,6 +257,28 @@ key-to-screen latency, CPU/memory use, feature compatibility and other machines
 need their own controlled comparisons. Quiet DA1 RTT measures a different path
 from key-to-screen latency, and this Linux reader change is not a macOS result.
 
+### Producer-placement sensitivity is not an optimization
+
+A separate Linux diagnostic at
+[`2026-11-02-producer-placement`](../bench/results/2026-11-02-producer-placement/README.md)
+kept the terminal binary, payload and terminal-thread CPU masks fixed and
+restricted only the process writing the PTY. On this 9950X3D, twelve balanced
+rounds found Glass small-cache-domain/unpinned paired ratios of **0.5735 ASCII**,
+**0.9287 Unicode**, and **0.6754 scroll region**. Ghostty's corresponding
+experiment did not find reliable differences. Restricting the producer to the
+large-cache domain did not establish an improvement over unpinned for either.
+
+This is a reproducibility/sensitivity result, not a new default-terminal score.
+It does not separate producer execution capacity, clock speed, scheduling, PTY
+cost or cross-domain communication; allowed masks do not record actual CPU
+residency. Nor does a non-significant Ghostty result prove equivalence or a
+terminal-by-treatment interaction. The default gate remains unpinned. The new
+`bench/linux/run-producer-placement.sh` records treatment orders, topology,
+binary/harness hashes, producer and terminal-thread masks, complete raw results,
+and validated summaries so a restricted-child diagnostic cannot silently pass
+for default behavior. The next causal controls are a fast sink, fixed minimal
+PTY reader, and scheduler/blocked-time traces, not a more favorable leaderboard.
+
 ## The film
 
 "Mind's eye" is 95 seconds at 1080p and 60 fps. Every frame is a program
@@ -289,3 +311,35 @@ bench/run-misc.sh
 
 The harness launches through Hyprland; [bench/README.md](../bench/README.md)
 has the requirements, what each script measures, and how to add a terminal.
+
+## Transport-only control: producer/reader pairing matters
+
+A new diagnostic removes the terminal entirely: the existing benchmark's payload
+bytes are written to null, pipe and raw-PTY sinks, with only a minimal C reader.
+Three randomized 12-block runs retain **972 measured trials**. With the reader
+on large L3, small-domain producer PTY throughput fell to .356/.427/.340 of
+unrestricted placement (ASCII/Unicode/region), replicated at .370/.441/.433.
+Moving only the reader to small L3 reversed the relationship: the small-domain
+producer was .995/.996/1.011, while a large-domain producer was .847/.847/.823.
+
+This establishes that the placement effect can occur without Glass's parser or
+renderer and depends on reader/producer domain pairing in this control. It does
+**not** identify the kernel mechanism or predict a terminal speedup: Glass also
+hands those bytes from reader to parser. Cross-run sink medians are not paired
+policy estimates, host load changed, and exploratory sign tests are uncorrected.
+No benchmark producer/competitor affinity or official throughput workload changed.
+See [method, all raw receipts and caveats](../bench/results/2026-11-02-transport-control/README.md).
+
+The previously interrupted bounded-channel experiment was completed (14 inherited
+rounds plus 4 explicitly resumed rounds) and rejected; no robust gain and a .9701
+TUI median ratio. The pending branchless-wide store experiment passed the existing
+differential test but lost **6.9% Unicode in 11/11 pairs**, so it too was removed.
+These negative results are not a new selected-source victory over Ghostty.
+
+The follow-through **reader-only small-L3 policy was tested and rejected** in a
+fresh-control, 18-round, unchanged terminal gate: ASCII .6852 and region .6623,
+each losing 17/18 pairs. The original source and measured executable are restored.
+This is the production counterexample to inferring a win from transport alone.
+The same gate's selected-control/Ghostty Unicode ratio was **.9522 (6/18 wins)**;
+there is still no all-metric championship. See
+[the complete gate and control-only comparison](../bench/results/2026-11-02-small-reader/README.md).

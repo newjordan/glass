@@ -1954,17 +1954,15 @@ impl Watch<'_> {
                     }
                     1
                 } else {
-                    // This lookup is ~23% of `unicode` throughput, measured
-                    // with a temporary probe that called every non-ASCII
-                    // character one cell wide. Three ways to cut it were
-                    // tried and none is worth keeping: a 4 KiB table over
-                    // U+0000..U+0FFF built from this crate is a wash (the
-                    // crate's own multi-level lookup is already as fast); a
-                    // branch-only Latin-1 path was 6% slower *and* disagreed
-                    // with the crate inside U+0000..U+0100, caught by an
-                    // exhaustive equivalence test; and the probe itself cost
-                    // 3.5% as a per-character branch, so it was not kept
-                    // either. The 23% is real and still unclaimed.
+                    // Making every non-ASCII character one cell wide sped
+                    // up an old ablation, but also changed cursor movement,
+                    // spacer writes, wrap frequency and guards. It does not
+                    // isolate width lookup cost or promise a reclaimable gain.
+                    // A 4 KiB U+0000..U+0FFF table was a wash; a Latin-1
+                    // branch was slower and disagreed with the width policy.
+                    // Preserve the authoritative table's semantics. See
+                    // bench/results/2026-11-02-glyph-batch for another measured
+                    // attempt to separate lookup/decoding from cursor stride.
                     match width_of(last) {
                         Some(width @ 1..=2) => width,
                         Some(0) => {

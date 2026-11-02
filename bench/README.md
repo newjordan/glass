@@ -222,3 +222,70 @@ bench/take-mindseye.sh film.mp4 95 --surreal  # with the video cubes and figures
 
 The recorder uses NVENC (`hevc_nvenc`) by default; set
 `GLASS_RECORD_CODEC=libx264` without it.
+
+### Producer placement diagnostic (Linux)
+
+Do not pin a producer and publish the result as default terminal performance.
+On multi-domain CPUs, the child writing the PTY can materially change end-to-end
+throughput even when the terminal binary, parser policy and payload are fixed.
+The separate diagnostic below restricts **only the child**, uses unchanged
+`tput.py`, and records both child and terminal-thread allowed CPU masks. It
+cycles all six treatment orders; run terminals sequentially, not concurrently.
+Choose masks from the actual machine topology, not these example CPU numbers:
+
+```sh
+OUT=bench/results/new-placement-glass TERM_NAME=glass GLASS=/path/to/frozen/glass \
+  ROUNDS=12 LARGE_CPUS=0-7,16-23 SMALL_CPUS=8-15,24-31 \
+  bash bench/linux/run-producer-placement.sh
+OUT=bench/results/new-placement-ghostty TERM_NAME=ghostty \
+  ROUNDS=12 LARGE_CPUS=0-7,16-23 SMALL_CPUS=8-15,24-31 \
+  bash bench/linux/run-producer-placement.sh
+```
+
+Each new output directory contains the binary/harness hashes, topology, treatment
+order, raw throughput, affinity sidecars and validated paired summary. Replay
+with `python3 -I bench/linux/producer-placement.py summarize OUT 12`; the runner
+also verifies its input hashes after completing the run. An allowed CPU mask is
+**not** a sample of the CPU actually used. This experiment cannot separate cache
+locality, inter-domain communication, clock speed and scheduler effects, nor
+explain every historical outlier. Its sign tests are exploratory and uncorrected.
+The default gate is still `compare-tput.py`, without this wrapper. See
+[the diagnostic report](results/2026-11-02-producer-placement/README.md) for actual
+observations and the rejected parser/reader alternatives from the same iteration.
+
+### Parser-free transport controls (Linux)
+
+`linux/transport-control.py` is a **diagnostic**, not a terminal ranking. It
+extracts the existing `tput.py` payload builder and compares fixed-size writes
+to null/pipe/raw-PTY sinks under randomized producer CPU placement. A minimal
+C sink validates byte totals; explicit reader placement permits reciprocal
+controls. Use the machine's actual topology, not these example masks:
+
+```sh
+cc -O3 -Wall -Wextra -Werror -o /tmp/glass-transport-sink linux/transport-sink.c
+python3 -I linux/transport-control.py run results/new-transport \
+  --sink /tmp/glass-transport-sink --large 0-7,16-23 --small 8-15,24-31 \
+  --blocks 12 --repeats 8 --seed 179365
+# Add --sink-cpus 8-15,24-31 for the reciprocal reader-domain control.
+python3 -I linux/transport-control.py summarize results/new-transport
+```
+
+Run from `bench/`, without concurrent benchmarks/builds. Each run requires a
+fresh output directory and retains treatment order, actual masks, workload and
+input hashes, byte counts and every trial. Disabled scheduler runqueue accounting
+is reported as unavailable, not zero wait. Preserve both the sink and script used
+for durable replay. The default terminal gate remains unchanged; do not pin the
+producer or comparator to manufacture an apparent win. See the
+[972-trial transport-control report](results/2026-11-02-transport-control/README.md).
+
+The interrupted bounded-channel gate was completed without overwriting its first
+14 rounds; [the completion report](results/2026-11-02-handoff-completion/README.md)
+explains the session break and rejects promotion. The isolated branchless-wide
+edit [lost Unicode in all 11 engine pairs](results/2026-11-02-branchless-wide/README.md)
+and was removed as well.
+
+The raw-transport lead was followed into a reader-only small-L3 candidate.
+[Its complete default terminal gate](results/2026-11-02-small-reader/README.md)
+rejected the policy: .6852 ASCII and .6623 region, each 17/18 losses. The reader
+and parser retain the original placement, and the selected executable is restored.
+Do not turn this diagnostic into an affinity workaround or a championship claim.

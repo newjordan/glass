@@ -1,0 +1,107 @@
+diff --git i/crates/term/src/affinity.rs w/crates/term/src/affinity.rs
+index 4060061..29e527d 100644
+--- i/crates/term/src/affinity.rs
++++ w/crates/term/src/affinity.rs
+@@ -143,6 +143,60 @@ fn chosen() -> Option<&'static [usize]> {
+         .as_deref()
+ }
+ 
++/// Experimental role split: the copying-only reader uses the smallest cache
++/// domain; the history-owning parser keeps the largest. Respect the same
++/// opt-out, allowed CPU intersection, and homogeneous-machine no-op policy.
++pub fn place_io_thread() {
++    #[cfg(not(target_os = "linux"))]
++    place_hot_thread();
++    #[cfg(target_os = "linux")]
++    {
++        static CHOSEN: std::sync::OnceLock<Option<Vec<usize>>> = std::sync::OnceLock::new();
++        let cpus = CHOSEN.get_or_init(|| {
++            if !wanted(std::env::var("GLASS_AFFINITY").ok().as_deref()) {
++                return None;
++            }
++            let domains = domains(Path::new("/sys/devices/system/cpu"));
++            let least = domains.iter().map(|d| d.bytes).min()?;
++            if domains.iter().all(|d| d.bytes == least) {
++                return None;
++            }
++            let mut cpus: Vec<_> = domains.iter().filter(|d| d.bytes == least)
++                .flat_map(|d| d.cpus.iter().copied()).collect();
++            cpus.sort_unstable();
++            cpus.dedup();
++            Some(cpus)
++        });
++        if let Some(cpus) = cpus {
++            place_on(cpus);
++        }
++    }
++}
++
++#[cfg(target_os = "linux")]
++fn place_on(cpus: &[usize]) {
++    // SAFETY: both sets are initialized bit arrays, sized for these calls;
++    // every index is checked below MAX_CPUS. Never expand the allowed set.
++    unsafe {
++        let size = std::mem::size_of::<libc::cpu_set_t>();
++        let mut allowed: libc::cpu_set_t = std::mem::zeroed();
++        if libc::sched_getaffinity(0, size, &mut allowed) != 0 {
++            return;
++        }
++        let mut set: libc::cpu_set_t = std::mem::zeroed();
++        let mut any = false;
++        for &cpu in cpus.iter().filter(|&&cpu| cpu < MAX_CPUS) {
++            if libc::CPU_ISSET(cpu, &allowed) {
++                libc::CPU_SET(cpu, &mut set);
++                any = true;
++            }
++        }
++        if any {
++            libc::sched_setaffinity(0, size, &set);
++        }
++    }
++}
++
+ /// Place the calling thread on the largest L3's CPUs, among those it may
+ /// run on already, or on macOS mark it user-interactive. Does nothing
+ /// where the module says it does nothing.
+@@ -157,27 +211,7 @@ pub fn place_hot_thread() {
+     }
+     #[cfg(target_os = "linux")]
+     if let Some(cpus) = chosen() {
+-        // SAFETY: both sets are plain bit arrays the calls fill or read,
+-        // sized as the calls are told; CPU numbers are below MAX_CPUS, the
+-        // set's own size, so the bit helpers index inside it.
+-        unsafe {
+-            let size = std::mem::size_of::<libc::cpu_set_t>();
+-            let mut allowed: libc::cpu_set_t = std::mem::zeroed();
+-            if libc::sched_getaffinity(0, size, &mut allowed) != 0 {
+-                return;
+-            }
+-            let mut set: libc::cpu_set_t = std::mem::zeroed();
+-            let mut any = false;
+-            for &cpu in cpus.iter().filter(|&&cpu| cpu < MAX_CPUS) {
+-                if libc::CPU_ISSET(cpu, &allowed) {
+-                    libc::CPU_SET(cpu, &mut set);
+-                    any = true;
+-                }
+-            }
+-            if any {
+-                libc::sched_setaffinity(0, size, &set);
+-            }
+-        }
++        place_on(cpus);
+     }
+ }
+ 
+diff --git i/crates/term/src/read_ahead.rs w/crates/term/src/read_ahead.rs
+index ff93733..8b94e77 100644
+--- i/crates/term/src/read_ahead.rs
++++ w/crates/term/src/read_ahead.rs
+@@ -92,7 +92,7 @@ impl ReadAhead {
+             let _ = empty.send(vec![0; CHUNK]);
+         }
+         std::thread::Builder::new().name("pty-read".into()).spawn(move || {
+-            crate::affinity::place_hot_thread();
++            crate::affinity::place_io_thread();
+             while let Ok(mut buf) = empty_rx.recv() {
+                 let mut filled = 0;
+                 let mut ended = false;

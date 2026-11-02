@@ -1,0 +1,46 @@
+diff --git i/crates/term/src/read_ahead.rs w/crates/term/src/read_ahead.rs
+index ff93733..30f1f86 100644
+--- i/crates/term/src/read_ahead.rs
++++ w/crates/term/src/read_ahead.rs
+@@ -15,7 +15,7 @@
+ use std::io::{self, Read};
+ use std::time::Duration;
+ use std::os::fd::{AsRawFd, OwnedFd};
+-use std::sync::mpsc::{self, Receiver, Sender};
++use std::sync::mpsc::{self, Receiver, SyncSender};
+ #[cfg(test)]
+ use std::sync::mpsc::TryRecvError;
+ 
+@@ -73,7 +73,7 @@ fn wait_for_more(fd: Option<&OwnedFd>, limit: Duration) -> Poll {
+ pub struct ReadAhead {
+     /// Hand-offs, each with how much of it was read.
+     full: Receiver<(Vec<u8>, usize)>,
+-    empty: Sender<Vec<u8>>,
++    empty: SyncSender<Vec<u8>>,
+     current: Vec<u8>,
+     end: usize,
+     at: usize,
+@@ -84,8 +84,10 @@ impl ReadAhead {
+     /// descriptor, duplicated) says whether more is waiting; without it
+     /// every read is handed on by itself.
+     pub fn spawn(mut reader: Box<dyn Read + Send>, fd: Option<OwnedFd>) -> io::Result<Self> {
+-        let (full_tx, full) = mpsc::channel::<(Vec<u8>, usize)>();
+-        let (empty, empty_rx) = mpsc::channel::<Vec<u8>>();
++        // Ownership of AHEAD buffers bounds either queue to AHEAD messages.
++        // Reserve the rings once instead of allocating unbounded-channel blocks.
++        let (full_tx, full) = mpsc::sync_channel::<(Vec<u8>, usize)>(AHEAD);
++        let (empty, empty_rx) = mpsc::sync_channel::<Vec<u8>>(AHEAD);
+         // Each hand-off is filled once and keeps its length, so a reused
+         // one is read into as it is, not cleared again.
+         for _ in 0..AHEAD {
+@@ -220,8 +222,8 @@ mod tests {
+ 
+     #[test]
+     fn copied_handoff_returns_credit_after_its_last_byte_only() {
+-        let (full_tx, full) = mpsc::channel();
+-        let (empty, empty_rx) = mpsc::channel();
++        let (full_tx, full) = mpsc::sync_channel(AHEAD);
++        let (empty, empty_rx) = mpsc::sync_channel(AHEAD);
+         let mut ahead = ReadAhead { full, empty, current: vec![1, 2, 3, 4], at: 0, end: 4 };
+         let mut out = [0; 2];
+         assert_eq!(ahead.read(&mut []).unwrap(), 0);

@@ -1,0 +1,21 @@
+block 1/12
+block 2/12
+block 3/12
+block 4/12
+block 5/12
+block 6/12
+block 7/12
+block 8/12
+block 9/12
+block 10/12
+block 11/12
+block 12/12
+null/ascii {'large': (1.0394, 7, 0.7744140625), 'small': (1.0899, 8, 0.3876953125)}
+null/unicode {'large': (1.1237, 7, 0.7744140625), 'small': (0.965, 5, 0.7744140625)}
+null/scroll_region {'large': (1.0361, 7, 0.7744140625), 'small': (0.9888, 5, 0.7744140625)}
+pipe/ascii {'large': (0.9463, 5, 0.7744140625), 'small': (0.7781, 5, 0.7744140625)}
+pipe/unicode {'large': (0.7209, 4, 0.3876953125), 'small': (0.5797, 2, 0.03857421875)}
+pipe/scroll_region {'large': (1.0947, 8, 0.3876953125), 'small': (0.6179, 2, 0.03857421875)}
+pty/ascii {'large': (0.9531, 6, 1.0), 'small': (0.356, 2, 0.03857421875)}
+pty/unicode {'large': (1.1108, 9, 0.14599609375), 'small': (0.4271, 1, 0.00634765625)}
+pty/scroll_region {'large': (1.0425, 8, 0.3876953125), 'small': (0.3401, 3, 0.14599609375)}

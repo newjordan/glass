@@ -1,0 +1,4 @@
+PASS: JSON-normalized summary fields and all 54 raw hashes replay exactly.
+Earlier direct comparison failed because Python tuples != JSON lists; no raw/summary discrepancy.
+glass-alt {'ascii': (0.9374, 7, 11, 0.48068), 'unicode': (0.9943, 8, 10, 0.81453), 'truecolor': (0.9939, 8, 10, 0.81453), 'cursor_motion': (1.0048, 11, 7, 0.48068), 'scroll_region': (0.9858, 7, 11, 0.48068), 'tui_frames': (0.9701, 5, 13, 0.09625)}
+ghostty {'ascii': (0.8893, 7, 11, 0.48068), 'unicode': (0.9667, 7, 10, 0.62906), 'truecolor': (1.1903, 15, 3, 0.00754), 'cursor_motion': (1.1334, 14, 4, 0.03088), 'scroll_region': (1.0343, 11, 7, 0.48068), 'tui_frames': (1.0531, 11, 7, 0.48068)}

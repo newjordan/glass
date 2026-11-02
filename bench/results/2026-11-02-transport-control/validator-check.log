@@ -1,0 +1,6 @@
+REJECTED raw-hash: changed raw trials
+REJECTED wrong-mask: wrong producer mask
+REJECTED wrong-bytes: wrong byte count
+REJECTED missing-trial: incomplete trial count
+REJECTED duplicate-trial: duplicate/unknown trial
+REJECTED incomplete: incomplete control run

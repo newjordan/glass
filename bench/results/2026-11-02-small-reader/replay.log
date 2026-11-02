@@ -1,0 +1,7 @@
+PASS: complete 18-round gate, all 54 raw sessions, geometry/byte counts, binary/harness/runner hashes and recomputed summaries.
+ascii: 0.685242, wins 1/18, sign p 0.00014496
+unicode: 0.964693, wins 5/18, sign p 0.09625244
+truecolor: 0.997379, wins 8/18, sign p 0.81452942
+cursor_motion: 0.979366, wins 5/18, sign p 0.09625244
+scroll_region: 0.662341, wins 1/18, sign p 0.00014496
+tui_frames: 0.981822, wins 7/18, sign p 0.48068237

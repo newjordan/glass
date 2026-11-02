@@ -1,0 +1,141 @@
+Iteration 6 — reciprocal transport controls and a production counterexample
+==========================================================================
+Objective: beat Ghostty on every metric without breaking correctness or latency.
+Outcome: concrete new causal evidence, no accepted runtime optimization, not an
+all-metric championship. No acceptance command is bound to this loop.
+
+New finding: placement effects survive removal of the terminal
+-------------------------------------------------------------
+New bench/linux/transport-control.py reuses the AST statements that build the
+existing tput.py workloads at 154x39. It does not execute terminal setup or
+rewrite the workload bytes. Three workloads (ASCII, Unicode, scroll-region) use
+fixed 64-KiB writes to /dev/null, a pipe, or a raw PTY. Pipe/PTY feed a minimal C
+reader with no parser, renderer, DA1, scrollback, compositor or terminal window.
+The C sink validates byte totals, reports actual allowed CPUs, retries EINTR,
+and timestamps completion before formatting the result.
+
+Nine transport/producer treatments are shuffled per block, 12 blocks per run.
+Three complete runs contain 972 measured trials (324 each), with all trial rows,
+orders, masks, byte counts, hashes and summaries retained. Separate smoke runs
+are not included in those 972. The sink is placed on large or small L3; producer
+arms are unrestricted, large L3 (0-7,16-23), small L3 (8-15,24-31). These are this
+9950X3D's masks, not portable defaults. Masks do not identify the particular core
+used. Host load/frequency were not isolated.
+
+Paired median raw-PTY throughput ratios vs unrestricted producer in each run:
+
+  Reader domain / producer       ASCII       Unicode     Region
+  large / small, seed 179365     .3560 2/12  .4271 1/12  .3401 3/12
+  large / small, seed 179366     .3697 1/12  .4405 0/12  .4328 2/12
+  small / small, seed 179367     .9950 4/12  .9963 5/12  1.0105 7/12
+  small / large, seed 179367     .8470 0/12  .8465 1/12  .8231 0/12
+
+Entries after ratios are throughput wins out of 12 blocks. Exploratory sign
+tests are two-sided and uncorrected for multiple metrics. Large-reader
+replication small-producer p: .00635/.000488/.03857. Small-reader large-producer
+p: .000488/.00635/.000488. Null trials were very short/noisy in the first run;
+replication and reciprocal controls lengthened only null trials 16-fold. Pipe
+losses were smaller. An initial smoke null penalty did not reproduce and is not
+reported as an established effect.
+
+This evidence rules out terminal parsing/rendering as a necessary cause of the
+observed placement loss, and rules out a universally slow small-cache producer
+as its sole explanation. Producer/reader pairing matters in this control. It
+does NOT identify a kernel/cache-coherence/scheduler mechanism, or prove an
+optimal placement policy. Cross-run sink medians are not paired policy gains.
+
+Full sources/results:
+  bench/linux/transport-control.py
+  bench/linux/transport-sink.c
+  bench/results/2026-11-02-transport-control/README.md
+  bench/results/2026-11-02-transport-control/{randomized,replication,small-sink}/
+
+Production follow-through: small-domain reader rejected
+-------------------------------------------------------
+A distinct candidate placed only the copying Linux reader on smallest unequal
+L3, keeping parser/history on largest L3. This was not the earlier rejected
+scheduler-managed reader. Same opt-out, allowed-mask intersection, homogeneous
+machine no-op and macOS behavior. Producer, parser, buffering and HUP-drain
+semantics unchanged. Fresh control/candidate built with identical flags/compiler.
+
+Three existing read_ahead::tests passed, including final bytes at hangup and
+credit recycling. No new broad-suite or cross-platform claim was made.
+The unchanged 18-round terminal gate completed all six launch orders three
+times, including Ghostty. No other benchmark/build ran concurrently in this
+workspace. All outliers retained; exploratory sign tests uncorrected.
+
+  Metric       Candidate/control  Wins/18  Two-sided sign p
+  ASCII              .685242        1          .00014496
+  Unicode            .964693        5          .09625244
+  Truecolor          .997379        8          .81452942
+  Cursor             .979366        5          .09625244
+  Region             .662341        1          .00014496
+  TUI                .981822        7          .48068237
+
+Reject. Raw transport behavior did not transfer into a reader/parser policy win.
+The exact reason (handoff topology, cache or scheduling costs, etc.) remains
+unresolved. A bounded live-mask capture attempt did not capture a two-thread
+session; no observed runtime masks are claimed for the terminal candidate.
+Focused reader tests are not exhaustive affinity/cross-platform verification.
+
+  bench/results/2026-11-02-small-reader/README.md
+  bench/results/2026-11-02-small-reader/gate/terminal-summary.json
+  bench/results/2026-11-02-small-reader/replay.log
+
+Selected-control comparison, NOT rejected candidate vs Ghostty
+-------------------------------------------------------------
+The fresh selected control arm from that same full gate gives median paired
+control/Ghostty throughput ratios and wins:
+  ASCII 1.0867 (12/18), Unicode .9522 (6/18), truecolor 1.2103 (16/18),
+  cursor 1.1319 (16/18), region 1.0296 (10/18), TUI 1.0585 (14/18).
+Unicode remains behind; small apparent advantages with mixed wins are not robust
+lead claims. This does not establish every-metric superiority or a world title.
+  bench/results/2026-11-02-small-reader/selected-vs-ghostty.json
+
+Interrupted work closed without mixing candidates
+-------------------------------------------------
+1. Bounded sync-channel reader gate: original 14/18 rounds preserved; resumed
+   15-18 under frozen binaries/harness into a fresh directory. Session break
+   explicitly recorded, not called an uninterrupted replication. All 54 raw
+   sessions and derived summaries replay. Median candidate/control ASCII .9374,
+   Unicode .9943, truecolor .9939, cursor 1.0048, region .9858, TUI .9701.
+   No dependable win; reject. Source restored before engine candidate test.
+   bench/results/2026-11-02-handoff-completion/README.md
+2. Pending branchless wide-cell stores: isolated from bounded channels; existing
+   differential test passed (one broader seed sweep still ignored). Eleven
+   paired engine CPU measurements lost Unicode 6.9% in all 11; reject. This was
+   not eight-glyph staging. No terminal/RTT gate was claimed for rejected code.
+   bench/results/2026-11-02-branchless-wide/README.md
+
+Audit, limitations and final state
+---------------------------------
+- All 972 transport trials replay, with raw hashes and byte/mask validation.
+- Validator rejects altered hashes, wrong masks/counts, missing or duplicate
+  trials, incomplete manifests. Negative validation is harness validation only.
+- Exact named frozen script revisions and C sink source/executable preserved;
+  final replay also succeeds with original /tmp sink absent. First missing-sink
+  replay used a nonexistent manifest key and was fixed; no raw results changed.
+- Host kernel.sched_schedstats=0. Original v1 summary printed runqueue fractions;
+  do not interpret them. Final summaries report null (unavailable).
+- Reciprocal run free-text note mistakenly says reader large; actual numeric
+  sink_cpus and every measured sink_allowed field correctly say small. Its
+  warm-up used large; measured trials used small. Final script fixes both,
+  preserving the original frozen revision/manifest/raw data unchanged.
+- Final harness closes spare parent read descriptor after readiness; final-smoke
+  validates cleanup. Earlier descriptor lifetime is explicitly preserved in
+  measured revisions. Production runtime code was not changed by harness fixes.
+- Reader-role split removed after full rejection. affinity.rs/read_ahead.rs
+  match selected source byte-for-byte. engine.rs has only an earlier explanatory
+  comment correction relative to HEAD, no new runtime change.
+- Exact selected release executable restored:
+  SHA-256 d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c.
+- No quiet RTT or broad workspace tests rerun for rejected policies. No new
+  latency improvement, comprehensive correctness, PGO or cross-platform claim.
+
+Next necessary work
+-------------------
+Keep benchmark producer/comparator affinity unchanged. Do not promote the raw
+transport sink policy. The all-metric objective still requires a Unicode gain
+that survives fresh-control terminal pairs and a quiet-RTT guard, without losing
+ASCII/region. Any follow-up topology policy must address BOTH producer->reader
+and reader->parser links, not infer a default from a two-process synthetic sink.

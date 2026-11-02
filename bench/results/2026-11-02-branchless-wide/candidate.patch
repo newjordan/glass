@@ -1,0 +1,80 @@
+diff --git i/crates/term/src/engine.rs w/crates/term/src/engine.rs
+index 5b0f466..895edac 100644
+--- i/crates/term/src/engine.rs
++++ w/crates/term/src/engine.rs
+@@ -1935,10 +1935,6 @@ impl Watch<'_> {
+         let _ = row.lane_cells(column, 0);
+         let cells = row.lane_slice_from(column);
+         let mut occ_to = column;
+-        let wide = alacritty_terminal::term::cell::Cell {
+-            flags: flags | CellFlags::WIDE_CHAR,
+-            ..narrow.clone()
+-        };
+         let spacer = alacritty_terminal::term::cell::Cell {
+             flags: flags | CellFlags::WIDE_CHAR_SPACER,
+             ..narrow.clone()
+@@ -1954,17 +1950,15 @@ impl Watch<'_> {
+                     }
+                     1
+                 } else {
+-                    // This lookup is ~23% of `unicode` throughput, measured
+-                    // with a temporary probe that called every non-ASCII
+-                    // character one cell wide. Three ways to cut it were
+-                    // tried and none is worth keeping: a 4 KiB table over
+-                    // U+0000..U+0FFF built from this crate is a wash (the
+-                    // crate's own multi-level lookup is already as fast); a
+-                    // branch-only Latin-1 path was 6% slower *and* disagreed
+-                    // with the crate inside U+0000..U+0100, caught by an
+-                    // exhaustive equivalence test; and the probe itself cost
+-                    // 3.5% as a per-character branch, so it was not kept
+-                    // either. The 23% is real and still unclaimed.
++                    // Making every non-ASCII character one cell wide sped
++                    // up an old ablation, but also changed cursor movement,
++                    // spacer writes, wrap frequency and guards. It does not
++                    // isolate width lookup cost or promise a reclaimable gain.
++                    // A 4 KiB U+0000..U+0FFF table was a wash; a Latin-1
++                    // branch was slower and disagreed with the width policy.
++                    // Preserve the authoritative table's semantics. See
++                    // bench/results/2026-11-02-glyph-batch for another measured
++                    // attempt to separate lookup/decoding from cursor stride.
+                     match width_of(last) {
+                         Some(width @ 1..=2) => width,
+                         Some(0) => {
+@@ -1985,8 +1979,7 @@ impl Watch<'_> {
+                     || column + width > columns
+                     || (column < guard_from
+                         && (cells[at_col].flags.intersects(underneath)
+-                            || (width == 2
+-                                && cells[at_col + 1].flags.intersects(underneath))))
++                            || cells[at_col + width - 1].flags.intersects(underneath)))
+                 {
+                     break;
+                 }
+@@ -1996,15 +1989,18 @@ impl Watch<'_> {
+                 // template, as in `print_run`: the assignment's wide
+                 // stores measure faster than the five field stores
+                 // they write the same values as.
+-                {
+-                    let cell = &mut cells[at_col];
+-                    *cell = if width == 2 { wide.clone() } else { narrow.clone() };
+-                    cell.c = last;
+-                }
+-                if width == 2 {
+-                    span_clean = false;
+-                    cells[at_col + 1] = spacer.clone();
+-                }
++                // Write the end cell first, then the glyph. For a narrow
++                // glyph both addresses coincide, so the final glyph replaces
++                // the temporary spacer; for a wide one the spacer remains.
++                // This removes the unpredictable per-glyph wide-store branch.
++                cells[at_col + width - 1] = spacer.clone();
++                let mut glyph = narrow.clone();
++                glyph.flags |= CellFlags::from_bits_retain(
++                    CellFlags::WIDE_CHAR.bits() * (width - 1) as u16,
++                );
++                glyph.c = last;
++                cells[at_col] = glyph;
++                span_clean &= width == 1;
+                 occ_to = column + width;
+                 let end = column + width - 1;
+                 if end + 1 < columns {

@@ -1,0 +1,10 @@
+block 1/1
+null/ascii {'large': (0.9687, 0, 1.0), 'small': (0.8902, 0, 1.0)}
+null/unicode {'large': (0.9851, 0, 1.0), 'small': (0.7631, 0, 1.0)}
+null/scroll_region {'large': (1.8535, 1, 1.0), 'small': (0.9989, 0, 1.0)}
+pipe/ascii {'large': (1.9029, 1, 1.0), 'small': (0.7442, 0, 1.0)}
+pipe/unicode {'large': (0.8503, 0, 1.0), 'small': (1.3609, 1, 1.0)}
+pipe/scroll_region {'large': (3.2144, 1, 1.0), 'small': (0.583, 0, 1.0)}
+pty/ascii {'large': (0.9321, 0, 1.0), 'small': (0.2962, 0, 1.0)}
+pty/unicode {'large': (1.0152, 1, 1.0), 'small': (0.3755, 0, 1.0)}
+pty/scroll_region {'large': (0.8689, 0, 1.0), 'small': (0.3129, 0, 1.0)}

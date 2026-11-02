@@ -1,0 +1,4 @@
+PASS randomized: 324 trials, raw hash, sink byte counts, summary replay, unavailable runqueue fractions.
+PASS replication: 324 trials, raw hash, sink byte counts, summary replay, unavailable runqueue fractions.
+PASS small-sink: 324 trials, raw hash, sink byte counts, summary replay, unavailable runqueue fractions.
+PASS replication replay with original /tmp sink absent: exact named preserved sink accepted. First attempt failed on nonexistent sink_path key; corrected.

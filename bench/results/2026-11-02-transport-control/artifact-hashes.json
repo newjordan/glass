@@ -1,0 +1,7 @@
+{
+  "reports/research-1eecf9876bb302e9da10ff629e71e6d8-6.txt": "f5ad94aeae6360fc0eaaad686b7d272171d2859736b1c6c019857b93ad1f38b0",
+  "bench/results/2026-11-02-transport-control/README.md": "6d499a7d703755acc5581adc934cc6459c7ebca5c896b2c8ebb2e2eb1363025e",
+  "bench/results/2026-11-02-small-reader/README.md": "d3217d2dc5f63cf6053c8f12b6e8c64b13741771c89d467471c8b43836e5e569",
+  "bench/results/2026-11-02-handoff-completion/README.md": "84fbeeb86d07e35819e0d8cf15208a96d05dc1927200b0806addac3a11b3eb30",
+  "bench/results/2026-11-02-branchless-wide/README.md": "ab9d48879f1bb08b312b1bc84c888f2b7db01930bc0175d93090cc033bbdca3e"
+}
