@@ -39,6 +39,14 @@ description of what to show.
 
 ### Open intake
 
+### Measured research and parser regression coverage
+
+- Test CRLF records across chunking, modes, wide/combining predecessors, REP,
+  sync output, suffix retention and actual 10,000-line history recycling.
+- Reject bounded bulk-CRLF scrolling and a separate feed-outline ablation after
+  complete 18-round terminal comparisons each. Preserve build/source/hash/raw
+  receipts; neither runtime change ships. Exact selected executable restored.
+
 - APC graphics (`ESC _ G …`): transmit and place over every transmission
   medium (direct, file, temporary file, shared memory), chunking, `o=z`
   compression, z-index above and below text, source rectangles, Unicode

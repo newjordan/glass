@@ -1,0 +1,4 @@
+usage: compare-tput.py [-h] [--terms TERMS] [--rounds ROUNDS]
+                       [--summarize-only]
+                       out
+compare-tput.py: error: unrecognized arguments: --candidate --baseline /tmp/glass-i8-selected --cap GLASSI8BULK --out bench/results/2026-11-02-bulk-lines/terminal

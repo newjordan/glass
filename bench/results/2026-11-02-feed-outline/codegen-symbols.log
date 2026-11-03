@@ -1,0 +1,5 @@
+/tmp/glass-i8-outline-control
+(no standalone glass::engine::feed symbol)
+/tmp/glass-i8-outline
+00000000003cc8e0 000000000000208a t glass::engine::feed
+This proves symbol presence/absence only, not the cause of any timing difference.

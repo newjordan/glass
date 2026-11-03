@@ -1136,3 +1136,68 @@ fn paint_speed() {
     }
     eprintln!("paint: {:.1} us per frame", t.elapsed().as_secs_f64() * 1e6 / 500.0);
 }
+
+/// Consecutive records on recycled rows, including a saturated history,
+/// retained suffixes, combining/wide predecessors, REP and sync boundaries.
+/// This guards both the parser and any future CRLF/scroll coalescing path.
+#[test]
+fn crlf_records_preserve_history_and_suffixes() {
+    // The shipped history is 10,000 rows; this separate case really fills
+    // and recycles it (the shorter mode matrix below does not).
+    let mut saturated = b"history suffix, kept until scrolling\r\n".repeat(10_100);
+    saturated.extend_from_slice(b"\x1b[6n");
+    for step in [4095, saturated.len()] {
+        let mut cuts: Vec<_> = (0..saturated.len()).step_by(step).collect();
+        cuts.push(saturated.len());
+        assert_eq!(plain_runs_first_difference(3, 40, &saturated, &cuts), None,
+            "saturated history, chunk {step}");
+    }
+    let (rows, cols) = (6, 40);
+    for setup in ["", "\x1b[2;6r", "\x1b[?1049h", "\x1b[31;44m", "\x1b[20h", "\x1b[?7l"] {
+        let mut stream = setup.as_bytes().to_vec();
+        // Build enough history to preserve and compare older suffixes.
+        for _ in 0..1100 { stream.extend_from_slice(b"old row suffix, kept until it really scrolls\r\n"); }
+        stream.extend_from_slice("\x1b[6;1H漢字e\u{301} untouched suffix\x1b[6;1H".as_bytes());
+        let records = [24, 1, 39, 40, 23, 2, 38, 25];
+        for pass in 0..32 {
+            if pass % 4 == 0 { stream.extend_from_slice(b"\x1b[?2026h"); }
+            for (n, len) in records.iter().copied().enumerate() {
+                stream.extend(std::iter::repeat_n(b'a' + ((pass + n) % 26) as u8, len));
+                stream.extend_from_slice(b"\r\n");
+            }
+            if pass % 4 == 0 { stream.extend_from_slice(b"\x1b[?2026l"); }
+            stream.extend_from_slice(b"\x1b[3b\r\n");
+        }
+        stream.extend_from_slice(b"\x1b[6n\x1b[r\x1b[?1049l");
+        for step in [39, 41, 160, 4095, stream.len()] {
+            let mut cuts: Vec<_> = (0..stream.len()).step_by(step).collect();
+            cuts.push(stream.len());
+            assert_eq!(plain_runs_first_difference(rows, cols, &stream, &cuts), None,
+                "setup {setup:?}, chunk {step}");
+        }
+    }
+}
+
+/// Long and short ASCII CRLF records preserve every observable field
+/// across terminal modes, wrap boundaries, and input chunk boundaries.
+#[test]
+fn ascii_crlf_records_match_parser() {
+    for (rows, cols) in [(3, 40), (6, 80), (24, 80), (39, 154)] {
+        for setup in ["", "\x1b[2;3r", "\x1b[?1049h", "\x1b[31;44m", "\x1b[?7l", "\x1b[4h", "\x1b(0"] {
+            let mut stream = setup.as_bytes().to_vec();
+            for n in 0..90 {
+                let len = [cols - 1, cols, 24, 1, cols + 1, 0][n % 6];
+                stream.extend(std::iter::repeat_n(b'a' + (n % 26) as u8, len));
+                stream.extend_from_slice(b"\r\n");
+                if n % 13 == 0 { stream.extend_from_slice("\x1b[2b漢字\r\n".as_bytes()); }
+            }
+            stream.extend_from_slice(b"\x1b[5b\x1b[6n\x1b[r\x1b[?1049l");
+            for step in [1, 23, 160, 4096, stream.len()] {
+                let mut cuts: Vec<_> = (0..stream.len()).step_by(step).collect();
+                cuts.push(stream.len());
+                assert_eq!(plain_runs_first_difference(rows, cols, &stream, &cuts), None,
+                    "{rows}x{cols} setup {setup:?} step {step}");
+            }
+        }
+    }
+}

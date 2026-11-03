@@ -1,0 +1,14 @@
+glass / glass-alt:
+  ascii          0.9105 5/18 wins p=0.143463
+  unicode        1.0075 12/18 wins p=0.237885
+  truecolor      1.0835 17/18 wins p=0.000144958
+  cursor_motion  1.0146 15/18 wins p=0.00753784
+  scroll_region  0.9801 8/18 wins p=0.814529
+  tui_frames     0.9944 6/18 wins p=0.237885
+glass / ghostty:
+  ascii          0.8108 4/18 wins p=0.0308838
+  unicode        1.0041 10/18 wins p=0.814529
+  truecolor      1.2914 17/18 wins p=0.000144958
+  cursor_motion  1.1398 16/18 wins p=0.00131226
+  scroll_region  0.9771 8/18 wins p=0.814529
+  tui_frames     1.0705 15/18 wins p=0.00753784

@@ -1,0 +1,147 @@
+Glass iteration 8: bounded CRLF coalescing and a feed-inlining ablation
+
+STATUS: reported research, not an accepted optimization, championship, or loop
+completion. Starting commit beca9117840fc6395b2d499b954920586ec9a1b2.
+
+1. New structural hypothesis
+
+Consecutive complete ASCII/CRLF records at the bottom of a scroll region could
+replace per-line rotations with one bulk rotation. This is materially distinct
+from the scanner/decoder, affinity and reader-buffer changes already tried.
+Candidate accepted at most eight complete records and at most region-height
+minus one; refused pictures/unknown picture motion, nonzero column, insert
+mode, non-default charset/template extras and wrap-pending cursor. The existing
+print_run path wrote every character. Keeping the first target row preserved
+its unwritten suffix. Parser mirror was advanced only over complete ASCII/CRLF.
+Nothing deferred across a call. All candidate sources and patches retained.
+
+2. Measured engine signal, but rejected after real-pipeline measurements
+
+V1: 9 alternating control/candidate engine pairs, existing six workloads,
+3 repetitions per invocation, scale 1.0, read sizes 4095/4096/65536. CPU ratios:
+ASCII 1.1826 (9/9 wins), region 1.1878 (9/9), truecolor .8822 (0/9).
+V2 added a cheap first-record CRLF guard and an out-of-line helper. ASCII/region
+still gained, but truecolor .8678 (0/9), so no promotion. V3 also forced feed
+out of line; its engine round was noisy under unrelated host load.
+V1 and V3 separately passed the existing randomized parser differential test:
+12,800 streams each, 64 seeds x 200 rounds; no divergence. These are specific
+candidate receipts, NOT a final source randomized sweep.
+
+V3 real-terminal gate: 18 rounds, three terminals, six balanced orders repeated
+three times, unchanged tput.py workloads, 154x39, DA1-ended timing. Compared to
+frozen pre-experiment exact selected executable:
+
+metric          median candidate/control    wins/18
+ASCII                   .98546                 9
+Unicode                1.00257                 9
+truecolor              1.10987                17
+cursor_motion          1.02304                16
+scroll_region           .97766                 7
+TUI                    1.00384                10
+
+The engine ASCII/region gains did not transfer. Runtime batching was rejected
+and removed. A low-level test explicitly confirmed consumption and fallback,
+but was removed with the helper; exact source retained in the candidate snapshot.
+Initial test harness failures arose from comparing non-normalized ring Storage
+and engine counters not copied back from direct Watch, not demonstrated cell
+loss. Logical cells/cursor/history passed; pump-based tests cover counters.
+An initial commentary wrongly inferred that the pump tests did not authorize
+batching. Tracing session::pump proved they do; direct consumption tests removed
+ambiguity. Report retains these corrections instead of silently changing claims.
+
+3. Causal ablation: the truecolor direction does not require CRLF batching
+
+Escape-heavy truecolor/cursor workloads cannot use consecutive ASCII/CRLF
+coalescing. V3 also changed inlining, so blaming batching for these gains would
+be an attribution error. A second experiment removed ALL batching and changed
+only one runtime line: #[inline(never)] on engine::feed. Both arms freshly rebuilt
+with the same configured RUSTC 1.99.0, locked dependencies, release thin LTO and
+one codegen unit. PATH rustc is 1.99.1 but is not Cargo's configured compiler.
+Fresh control exactly matched the prior iteration's fresh-control hash.
+
+Second real-terminal gate: 18 rounds/54 sessions, all six orders repeated three
+times. Candidate/fresh-control paired throughput:
+
+metric          median ratio    wins/18    uncorrected two-sided sign p
+ASCII              .91049          5              .143463
+Unicode           1.00745         12              .237885
+truecolor         1.08351         17              .000144958
+cursor_motion     1.01457         15              .00753784
+scroll_region      .98010          8              .814529
+TUI                .99435          6              .237885
+
+This reproduces the truecolor direction without batching. nm records a distinct
+standalone feed symbol in the annotation candidate, absent in control. It does
+NOT prove an instruction-cache/register-allocation/specialization mechanism.
+The annotation was rejected conservatively: the ASCII direction was concerning,
+remaining weak metrics did not establish a useful gain. ASCII's sign test is
+not conventionally significant; region is inconclusive, NOT a proved regression.
+Do not turn this promotion decision into a theorem of universal performance.
+
+4. Current comparison to Ghostty, no universal title
+
+Fresh rebuilt selected-source control/Ghostty ratios from the ablation gate:
+ASCII .97904 (8/18), Unicode 1.00751 (9/18), truecolor 1.17774 (16/18), cursor
+1.12409 (15/18), region 1.04458 (10/18), TUI 1.07655 (15/18).
+ASCII/Unicode/region do NOT establish reliable victories. The historical exact
+selected executable used in the first gate and fresh same-source control in the
+second gate have different hashes. Their identities are explicitly distinguished.
+No cross-run medians or binaries were merged into a flattering scoreboard.
+
+5. Verifiable final code and build state
+
+No runtime optimization retained. engine.rs matches pre-experiment source
+byte-for-byte, SHA256 a8ce762cc7c76ec1226942b363c3bd020d73189c3b9a917b4fb20d1496b9efce.
+The exact previously selected executable is restored at target/release/glass,
+compared byte-for-byte to /tmp/glass-i8-selected, SHA256:
+d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c.
+
+Two new test-only regressions (65 source lines) remain in speed.rs. They compare
+existing fast and byte-at-a-time paths through the real Splitter/pump on CRLF,
+chunk boundaries, widths, combining predecessors, insert/charset fallback,
+no-wrap, alternate screen, restricted regions, REP replies, sync boundaries,
+suffix retention, history and scroll counters. Initial 1,100-record saturation
+claim was wrong: shipped history is 10,000 lines. It was corrected with a
+separate 10,100-record stream; final verification includes the corrected case.
+
+Final command on restored runtime source:
+cargo test --release -p glass-term --locked records_ -- --nocapture
+Result: 3 passed, 0 failed, 0 ignored (two new speed tests and one pre-existing
+intake test also matched the substring). Finished in .75 seconds after build.
+Final source diff whitespace check passed. No broad workspace/clippy/doc suite
+or final randomized sweep claimed. No new latency claim; both candidates were
+rejected, so no new RTT promotion gate. All jobs from this iteration finished.
+
+6. Reproducibility, caveats and retained evidence
+
+bench/results/2026-11-02-bulk-lines/: three engine variants and raw paired JSON,
+source snapshots, candidate patches, differential logs, direct-path receipt,
+18-round real-terminal gate/replay, build logs and JSONL.
+bench/results/2026-11-02-feed-outline/: fresh control and candidate receipts,
+one-line patch, symbols, final record test receipt, exact restoration hashes,
+18-round real-terminal gate/replay, derived control/Ghostty pairs.
+Both directories have evidence-sha256.json; every listed artifact hash checked.
+Both terminal summaries are complete, 18 orders each, six distinct permutations.
+All 108 raw terminal JSON hashes, binary hashes and harness hashes checked.
+No local build/benchmark overlapped either real-terminal performance gate.
+Unrelated host work was not stopped or isolated. Shared Ryzen 9 9950X3D, RTX3090,
+Linux/Hyprland. Sign tests are exploratory and uncorrected for multiplicity,
+correlation, shared-host load and scheduling/order effects. Benchmark latency
+boundary is DA1 completion, NOT keyboard-to-screen or visible-frame latency.
+
+The initial bulk terminal command used unsupported options and measured nothing;
+the corrected positional-directory/environment-binary invocation and replay
+both exited 0. Retained failed log is not counted as a performance measurement.
+The one-line ablation command and replay both exited 0. Final restored-source
+record-test/byte-comparison job exited 0. No external acceptance command or
+leaderboard submission is bound to this loop, so loop completion is not claimed.
+
+7. Next testable lead (UNVERIFIED)
+
+Selectively isolate escape-heavy feed code without perturbing long-ASCII code
+generation. This needs a fresh-control paired gate and mixed/chunk-boundary
+correctness, not an unconditional outlined path. Do not install from the present
+hypothesis. Or obtain matched-input CPU/wall stage profiles first: isolated
+engine ASCII/region wins have repeatedly failed to reach the full pipeline.
+The necessary next objective remains dependable wins on ASCII/Unicode/region,
+while guarding the truecolor/cursor/TUI leads. No championship established.

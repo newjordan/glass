@@ -374,3 +374,44 @@ boundaries, legal slice ends immediately before an inaccessible page, and all
 1,112,064 Unicode scalars with truncations and boundary-form rejection checks.
 On the final selected source, two scanner tests and two decoder tests pass.
 Runtime scanner/decoder code and the selected release executable are unchanged.
+
+
+### CRLF bulk scrolling and feed code generation: rejected trade-offs
+
+The [bounded CRLF experiment](../bench/results/2026-11-02-bulk-lines/README.md)
+replaced several bottom-of-region ASCII/CRLF rotations with one, retaining
+suffixes and parser equivalence. Nine engine pairs gained **18.3% ASCII and
+18.8% region (9/9 each)**, but lost **11.8% truecolor (0/9 wins)**. Two follow-ups
+changed guarding/inlining; the selected candidate's full 18-round, six-order
+terminal gate did **not** transfer the ASCII/region gain: ratios **.9855** and
+**.9777** against its frozen control. Runtime batching was removed.
+
+That candidate also forced `feed` out of line. Its **11.0% truecolor (17/18)**
+gain therefore could not be attributed to batching. A [one-line fresh-control
+ablation](../bench/results/2026-11-02-feed-outline/README.md) removed all batching:
+truecolor still gained **8.35% (17/18)** and cursor **1.46% (15/18)**, while ASCII
+was **.9105 (5/18)**, Unicode **1.0075 (12/18)**, region **.9801 (8/18)** and TUI
+**.9944 (6/18)**. It too was rejected: not a useful all-metric promotion. Region
+is inconclusive, not a proved regression; ASCII's sign p=.1435 is not a
+conventional significant loss. These are conservative promotion decisions.
+
+Both full gates retain **108 terminal sessions total**, source/build receipts,
+all six balanced orders, binary/harness/raw JSON hashes and successful hash
+replays. Shared-host sign tests are exploratory and uncorrected. The one-line
+ablation confirms that the truecolor direction does not require batching;
+it does not prove an instruction-cache/register-allocation mechanism.
+
+The fresh selected-control/Ghostty arm of the ablation measured ASCII **.9790
+(8/18)**, Unicode **1.0075 (9/18)**, truecolor **1.1777 (16/18)**, cursor **1.1241
+(15/18)**, region **1.0446 (10/18)**, TUI **1.0765 (15/18)**. ASCII, Unicode and
+region still lack dependable victories. This fresh rebuilt same-source control
+is not the exact historical selected executable; no cross-run medians or
+binary identities are silently merged. **No world championship is established.**
+
+Runtime source and exact selected release executable were restored. Retained
+changes are two parser-equivalence regressions for CRLF chunking, terminal
+modes, suffixes, wide/combining predecessors, REP, synchronized output, and a
+real **10,100-record / 10,000-line-history** recycling case. The final relevant
+release test gate passed **3 tests** (two new, one existing filter match).
+The bulk V1 and V3 experiments separately passed **12,800 differential streams
+each**; those receipts are candidate-specific, not a final workspace sweep.

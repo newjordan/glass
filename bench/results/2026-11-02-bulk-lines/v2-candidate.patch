@@ -1,0 +1,153 @@
+diff --git i/crates/term/src/engine.rs w/crates/term/src/engine.rs
+index 275d5d3..46ac869 100644
+--- i/crates/term/src/engine.rs
++++ w/crates/term/src/engine.rs
+@@ -1810,6 +1810,63 @@ impl Watch<'_> {
+         taken
+     }
+ 
++    /// At the bottom of a region, several bounded ASCII records can share
++    /// one scroll. Only complete CRLF records are considered; nothing is
++    /// deferred past this call and every character still uses `print_run`.
++    /// The first record retains the old bottom row's unwritten suffix, while
++    /// later records land on the blank rows the bulk scroll recycles.
++    #[inline(never)]
++    fn print_records(&mut self, text: &[u8], first: usize) -> usize {
++        const MAX: usize = 8;
++        if !self.in_cell.is_empty() || self.motion_end.is_some()
++            || self.term.mode().contains(TermMode::INSERT)
++            || self.term.grid().cursor.point.line.0 + 1 != self.region_bottom
++            || self.term.grid().cursor.point.column.0 != 0
++            || self.term.grid().cursor.input_needs_wrap
++        {
++            return 0;
++        }
++        let cursor = &self.term.grid().cursor;
++        if cursor.template.extra.is_some() || cursor.charsets != Default::default() {
++            return 0;
++        }
++        let columns = self.term.columns();
++        let cap = MAX.min((self.region_bottom - self.region_top - 1).max(0) as usize);
++        let mut records = [(0usize, 0usize); MAX];
++        let (mut count, mut at, mut len) = (0, 0, first);
++        while count < cap && len > 0 && len <= columns
++            && text.get(at + len..at + len + 2) == Some(b"\r\n")
++        {
++            records[count] = (at, len);
++            count += 1;
++            at += len + 2;
++            if count < cap {
++                len = ascii_record_len(&text[at..]);
++            }
++        }
++        if count < 2 {
++            return 0;
++        }
++        // No picture can move (motion_end was refused above). Keep the
++        // scroll-count sentinel and primary/alternate accounting on the
++        // same path as ordinary linefeeds, then scroll once, not per row.
++        self.note_scroll_up(self.region_top, count);
++        alacritty_terminal::vte::ansi::Handler::scroll_up(self.term, count);
++        self.term.grid_mut().cursor.point.line = Line(self.region_bottom - 1 - count as i32);
++        for &(start, len) in &records[..count] {
++            let took = self.print_run(&text[start..start + len]);
++            debug_assert_eq!(took, len);
++            alacritty_terminal::vte::ansi::Handler::carriage_return(self.term);
++            self.term.grid_mut().cursor.point.line += 1;
++        }
++        self.drained += count;
++        if self.drained >= SYNC_DRAIN_CHUNK {
++            self.fold_sentinel();
++            self.drained = 0;
++        }
++        at
++    }
++
+     /// Text the parser would print, decoded once here and each character
+     /// taken as `input` takes it: the plain ones written straight into
+     /// their cells, the rest (a mark that joins the cell before, a
+@@ -2843,6 +2900,23 @@ fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, c
+             if processor.sync_timeout().sync_timeout().is_some() {
+                 continue;
+             }
++            // Look only within this ESC-free stretch. The mirror has
++            // already seen the first record; consuming additional ASCII
++            // and CRLF keeps both machines in Ground with no UTF-8 tail.
++            if ascii && chunk.get(end..end + 2) == Some(b"\r\n")
++                && run_whole() && crate::engine::probes::get() == 0
++            {
++                let took = watch.print_records(&chunk[ground..esc], end - ground);
++                if took > 0 {
++                    processor.set_preceding_char(watch.preceding);
++                    fed = ground + took;
++                    from = fed;
++                    known = fed;
++                    mirror.high = false;
++                    ground_at_fed = true;
++                    continue;
++                }
++            }
+             let run = &chunk[ground..end];
+             let probe = crate::engine::probes::get();
+             let t_run = timers::on().then(Instant::now);
+@@ -3340,6 +3414,28 @@ fn note_uniform_span(
+     row.note_uniform_write(from, end, narrow);
+ }
+ 
++/// Printable ASCII prefix for a candidate record. The x86 scanner already
++/// computes exact control/high-bit masks; high bytes must stop speculation.
++fn ascii_record_len(bytes: &[u8]) -> usize {
++    #[cfg(target_arch = "x86_64")]
++    {
++        let mut at = 0;
++        while let Some(block) = bytes.get(at..).and_then(|rest| rest.first_chunk::<16>()) {
++            let (control, high) = text_masks(block);
++            let stop = control | high;
++            if stop != 0 {
++                return at + stop.trailing_zeros() as usize;
++            }
++            at += 16;
++        }
++        at + bytes[at..].iter().position(|b| !(0x20..=0x7e).contains(b)).unwrap_or(bytes.len() - at)
++    }
++    #[cfg(not(target_arch = "x86_64"))]
++    {
++        bytes.iter().position(|b| !(0x20..=0x7e).contains(b)).unwrap_or(bytes.len())
++    }
++}
++
+ /// The next run of at least [`RUN_MIN`] bytes of text in `bytes` (printable
+ /// ASCII, and bytes of UTF-8 past it), from `from` on, as its start and
+ /// end, with whether all of those bytes are ASCII. It looks at one byte
+diff --git i/crates/term/src/speed.rs w/crates/term/src/speed.rs
+index 755215b..0623183 100644
+--- i/crates/term/src/speed.rs
++++ w/crates/term/src/speed.rs
+@@ -1136,3 +1136,27 @@ fn paint_speed() {
+     }
+     eprintln!("paint: {:.1} us per frame", t.elapsed().as_secs_f64() * 1e6 / 500.0);
+ }
++
++/// Batching may move the scroll before the writes, but not change any
++/// observable row, suffix, cursor, history count, screen, or REP reply.
++#[test]
++fn bulk_ascii_records_match_parser() {
++    for (rows, cols) in [(3, 40), (6, 80), (24, 80), (39, 154)] {
++        for setup in ["", "\x1b[2;3r", "\x1b[?1049h", "\x1b[31;44m", "\x1b[?7l", "\x1b[4h", "\x1b(0"] {
++            let mut stream = setup.as_bytes().to_vec();
++            for n in 0..90 {
++                let len = [cols - 1, cols, 24, 1, cols + 1, 0][n % 6];
++                stream.extend(std::iter::repeat_n(b'a' + (n % 26) as u8, len));
++                stream.extend_from_slice(b"\r\n");
++                if n % 13 == 0 { stream.extend_from_slice("\x1b[2b漢字\r\n".as_bytes()); }
++            }
++            stream.extend_from_slice(b"\x1b[5b\x1b[6n\x1b[r\x1b[?1049l");
++            for step in [1, 23, 160, 4096, stream.len()] {
++                let mut cuts: Vec<_> = (0..stream.len()).step_by(step).collect();
++                cuts.push(stream.len());
++                assert_eq!(plain_runs_first_difference(rows, cols, &stream, &cuts), None,
++                    "{rows}x{cols} setup {setup:?} step {step}");
++            }
++        }
++    }
++}

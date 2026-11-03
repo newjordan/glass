@@ -301,3 +301,16 @@ three other measured candidates, limitations, and exact source/binary provenance
 Three new correctness tests remain: SIMD boundary/high-bit masks, a Linux
 PROT_NONE guard-page slice end, and exhaustive valid-scalar/truncation/boundary
 UTF-8 checks. Read the reports before retrying those experiments.
+
+
+### CRLF/coalesced-scroll and code-generation ablation (2026-11-02)
+
+[Bulk CRLF report](results/2026-11-02-bulk-lines/README.md) and
+[one-line feed-outline ablation](results/2026-11-02-feed-outline/README.md):
+engine ASCII/region gains did not transfer to the full terminal. A persistent
+truecolor gain survived removing all batching, but outlining risked ASCII and
+was rejected too. Both 18-round, six-order gates and hash replays completed:
+108 terminal sessions total. The reports distinguish frozen historical-control
+and fresh rebuilt-control binaries; do not mix their identities. Runtime source
+and selected executable restored, two test-only CRLF/history regressions retained.
+No benchmark workload or competitor placement changed and no title is claimed.
