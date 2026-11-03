@@ -1,0 +1,17 @@
+{
+  "schema": "glass.multibyte-outline-post-commit/v1",
+  "claim": "reported",
+  "head": "b70b5c21057b845494e1a46d1997240fc7d8d4aa",
+  "created_utc": "2026-11-03T11:42:35.549055+00:00",
+  "checkpoint_matches_initial": true,
+  "frozen_replay_references": 58,
+  "receipt_sha256": {
+    "bench/results/2026-11-03-multibyte-outline/checkpoint-post-commit.json": "9559a360ea3e43a23bccca81c311c30156cd761fa306e316036f224286a65b88",
+    "bench/results/2026-11-03-multibyte-outline/frozen-replay-post-commit.json": "4e8539f54fbf2f3892b7ca19cced2ef2f50cd2ea9cfc0ab1fde20fca00b11859",
+    "bench/results/2026-11-03-multibyte-outline/final-frozen-index.json": "eed2972de0f1133d4a3bab7ca77c3dd45d9aebe212ac477f58f5d4dc1389775c",
+    "bench/results/2026-11-03-multibyte-outline/checkpoint-final.json": "9559a360ea3e43a23bccca81c311c30156cd761fa306e316036f224286a65b88"
+  },
+  "whitespace_note": "git diff --cached --check reported only generated original test-log trailing blank lines in candidate/control terminal-tests/sweep logs. Logs retained verbatim, no correction to frozen bytes.",
+  "runtime_promotion": false,
+  "note": "Measured rejected candidate and local replay; not world championship or a new Ghostty comparison."
+}

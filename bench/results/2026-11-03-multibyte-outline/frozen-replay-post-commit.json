@@ -1,0 +1,27 @@
+{
+  "schema": "glass.historical-evidence-replay/v1",
+  "manifests": [
+    {
+      "path": "bench/results/2026-11-03-multibyte-outline/evidence-sha256.json",
+      "manifest_sha256": "5b6dfa8150a525f4703a72b8618d235ea13063fad4309e9fa9c96d06300cbd3a",
+      "files": 53,
+      "live_paths": 53,
+      "historical_paths": 0,
+      "bytes": 4476689
+    },
+    {
+      "path": "bench/results/2026-11-03-multibyte-outline/receipt-evidence-sha256.json",
+      "manifest_sha256": "d0955e78b34b16d3f08c17992df2d9b31185953c561d6415a0efac2ed312b544",
+      "files": 5,
+      "live_paths": 5,
+      "historical_paths": 0,
+      "bytes": 15809
+    }
+  ],
+  "manifest_count": 2,
+  "file_references": 58,
+  "historical_references": 0,
+  "unique_source_versions": 58,
+  "note": "Explicit historical byte-integrity replay only; not timing, safety or championship acceptance.",
+  "index_sha256": "eed2972de0f1133d4a3bab7ca77c3dd45d9aebe212ac477f58f5d4dc1389775c"
+}
