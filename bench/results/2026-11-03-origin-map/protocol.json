@@ -1,0 +1,7 @@
+{
+  "schema": "glass.origin-map-protocol/v1",
+  "hypothesis": "Origin-tagged cells replayed through the real Grid::resize preserve anchors without inferring line identity from lengths.",
+  "gate": "Prior exact height/mixed oracles over six history capacities plus new Unicode/blank cases; compare tagged shadow output against actual grid; no timing before semantic success.",
+  "promotion": "Experimental only; shadow replay doubles resize and allocates per-cell metadata. Retain exact failing results; restore if incomplete.",
+  "preservation": "Earlier evidence immutable; no shipping executable replacement."
+}

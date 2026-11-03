@@ -1,0 +1,209 @@
+[
+  {
+    "label": "height-0",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "0"
+    },
+    "exit": 0,
+    "log": "candidate-v4-height-0.log",
+    "sha256": "530df36df7c3e5fede75ca36a1a5a13c26e45298ff19835d3f9e1c3b848a28ed"
+  },
+  {
+    "label": "height-1",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "1"
+    },
+    "exit": 0,
+    "log": "candidate-v4-height-1.log",
+    "sha256": "28ad4742aeffd43f86a60eddd6872b8e29b82691790723b6b815fa7d4941cc2e"
+  },
+  {
+    "label": "height-2",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "2"
+    },
+    "exit": 0,
+    "log": "candidate-v4-height-2.log",
+    "sha256": "c659e4ac0c05336d9d45c78d537103f0faa0f1d2f21fe2a04db4d179773bb7e3"
+  },
+  {
+    "label": "height-8",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "8"
+    },
+    "exit": 0,
+    "log": "candidate-v4-height-8.log",
+    "sha256": "b7fbb6645b41913d4dd9d07f3fc9850ac0a3053d9aeb9e30dda52ecfd5ba4863"
+  },
+  {
+    "label": "height-32",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "32"
+    },
+    "exit": 0,
+    "log": "candidate-v4-height-32.log",
+    "sha256": "8214c2cf600a02ebcfd541234418c4ee1926c965ec37bf5110b8d6859014a6b4"
+  },
+  {
+    "label": "height-10000",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "candidate-v4-height-10000.log",
+    "sha256": "6a1cc0f67f498ba1be2a2a86978a3ae8aa9319577d21b06fa76d8a0d6a1851fe"
+  },
+  {
+    "label": "mixed-0",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "0"
+    },
+    "exit": 0,
+    "log": "candidate-v4-mixed-0.log",
+    "sha256": "50feb38325393e28809933bb76080e0e02a79260a48634f979b9fb43aa78aa67"
+  },
+  {
+    "label": "mixed-1",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "1"
+    },
+    "exit": 0,
+    "log": "candidate-v4-mixed-1.log",
+    "sha256": "93b59015ff786a67971910589b8a3bdcd60c795c89d25aac888a3f61416c9ace"
+  },
+  {
+    "label": "mixed-2",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "2"
+    },
+    "exit": 0,
+    "log": "candidate-v4-mixed-2.log",
+    "sha256": "2ed15ad9759f724d10cf0b70a03dad639978e960eb5160acc2faddc418374a99"
+  },
+  {
+    "label": "mixed-8",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "8"
+    },
+    "exit": 0,
+    "log": "candidate-v4-mixed-8.log",
+    "sha256": "fd4749183f371aae4013e8979b89ecec4c66f0da2e4d248958c3fa00ab53e310"
+  },
+  {
+    "label": "mixed-32",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "32"
+    },
+    "exit": 0,
+    "log": "candidate-v4-mixed-32.log",
+    "sha256": "5d97c861e79b5950c1123a1c269028700e2533292b2b105f221e3282b24d603f"
+  },
+  {
+    "label": "mixed-10000",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "candidate-v4-mixed-10000.log",
+    "sha256": "5d97c861e79b5950c1123a1c269028700e2533292b2b105f221e3282b24d603f"
+  },
+  {
+    "label": "terminal",
+    "args": [],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 101,
+    "log": "candidate-v4-terminal.log",
+    "sha256": "b52366a15f08f8ce25debe57529d26568d92d553967c6cac2a537a3138557ad0"
+  },
+  {
+    "label": "sweep",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "speed::plain_runs_match_the_parser_over_seeds"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000",
+      "GLASS_SWEEP_SEEDS": "64",
+      "GLASS_SWEEP_ROUNDS": "200"
+    },
+    "exit": 0,
+    "log": "candidate-v4-sweep.log",
+    "sha256": "73b6942b15ae9cd7142ea50e23df32a7df698cf59a68b203c88f000b7d1e46e1"
+  }
+]

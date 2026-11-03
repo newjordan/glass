@@ -1,0 +1,92 @@
+[
+  {
+    "label": "unicode-0",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::origin_map_unicode_marker_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "0"
+    },
+    "exit": 101,
+    "log": "control-unicode-0.log",
+    "sha256": "20c547aa05e3d9617b33ed27598da6bee831a9b84b3afb843a32da2d13292b56"
+  },
+  {
+    "label": "unicode-1",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::origin_map_unicode_marker_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "1"
+    },
+    "exit": 101,
+    "log": "control-unicode-1.log",
+    "sha256": "f399d36e96aa3110a6852c51b4d1d9cc0146c6e161e2a78021ae73f527be007e"
+  },
+  {
+    "label": "unicode-2",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::origin_map_unicode_marker_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "2"
+    },
+    "exit": 101,
+    "log": "control-unicode-2.log",
+    "sha256": "8b2401c70c939f7762c8d2a75470fcbba858db7e3ade91746b2b473f1672e1f7"
+  },
+  {
+    "label": "unicode-8",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::origin_map_unicode_marker_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "8"
+    },
+    "exit": 101,
+    "log": "control-unicode-8.log",
+    "sha256": "0447dc2f942dc3d3f521e02309db0aafd3421f74122633c19234d4afa9cb52e0"
+  },
+  {
+    "label": "unicode-32",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::origin_map_unicode_marker_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "32"
+    },
+    "exit": 101,
+    "log": "control-unicode-32.log",
+    "sha256": "72d3b1d63f97317eb070fc80308f28d4172ce0a7c10bfdc91613e130b0efa06f"
+  },
+  {
+    "label": "unicode-10000",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::origin_map_unicode_marker_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 101,
+    "log": "control-unicode-10000.log",
+    "sha256": "6e4db72606f6efea7d3e2910523c4bf2dac07769de4b6f824640c55d477c8988"
+  }
+]

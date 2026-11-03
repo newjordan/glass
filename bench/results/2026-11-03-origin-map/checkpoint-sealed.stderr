@@ -1,0 +1,19 @@
+Traceback (most recent call last):
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-origin-map/verify.py", line 178, in <module>
+    print(json.dumps(check(),indent=2,sort_keys=True))
+                     ~~~~~^^
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-origin-map/verify.py", line 126, in check
+    seal()
+    ~~~~^^
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-origin-map/verify.py", line 117, in seal
+    manifest=load(D/'evidence-sha256.json')
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-origin-map/verify.py", line 30, in load
+    return json.loads(Path(path).read_text(), object_pairs_hook=unique)
+                      ~~~~~~~~~~~~~~~~~~~~^^
+  File "/usr/lib/python3.14/pathlib/__init__.py", line 787, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/pathlib/__init__.py", line 771, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/work/frosty40/glass-repo/tree/bench/results/2026-11-03-origin-map/evidence-sha256.json'

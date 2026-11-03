@@ -930,3 +930,27 @@ python3 -B bench/results/2026-11-03-height-snapshot/verify.py
 python3 -B bench/results/2026-11-03-height-snapshot/test-verify.py
 python3 -B bench/replay-evidence-index.py bench/results/2026-11-03-height-snapshot/final-frozen-index.json
 ```
+
+### Origin-map resize experiment (2026-11-03, iteration 38)
+
+`results/2026-11-03-origin-map/` retains a rejected diagnostic shadow-Grid arm.
+Tags follow actual Grid resize operations, separate untagged-clone guards compare
+results, and unique real text cells independently check picture positions.
+Across histories 0/1/2/8/32/10000: 124,416 Unicode observations per arm show
+47,640 control failures, 1,496 origin-only failures, zero after the isolated
+base>=history guard. Guarded origins also clear 56,160 height-only and 20,736
+mixed ASCII observations. They still lose a blank logical-slot picture in an
+existing regression; physical-cell provenance is insufficient. No promotion,
+latency/memory measurement, or Ghostty win. Candidate suite fails 4 tests; the
+restored shipping sources pass 392 tests and 12,800 differential streams.
+
+Run `python3 -B bench/results/2026-11-03-origin-map/verify.py`,
+`python3 -B bench/results/2026-11-03-origin-map/test-verify.py`, and
+`python3 -B bench/replay-evidence-index.py --root . --index
+bench/results/2026-11-03-origin-map/final-frozen-index.json`.
+The verifier rejects missing/duplicate/malformed observations, false summaries,
+zero-test executions, mismatched configurations/build sources, and hashes.
+Seven Python tests reject 27 evidence corruptions and 7 invalid configurations.
+Zero-test setup runs, an auxiliary compile failure, an initially wrong row
+assertion and its corrected blank-slot probe are retained, never counted as
+passing coverage. Earlier evidence sources remain untouched.

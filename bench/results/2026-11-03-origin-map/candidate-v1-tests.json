@@ -1,0 +1,195 @@
+[
+  {
+    "label": "height-0",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "0"
+    },
+    "exit": 0,
+    "log": "candidate-v1-height-0.log",
+    "sha256": "aa87a087c1ecaa7053952ccb94db158900a5004e542f2b0af1526e26892fadbc"
+  },
+  {
+    "label": "height-1",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "1"
+    },
+    "exit": 0,
+    "log": "candidate-v1-height-1.log",
+    "sha256": "aa87a087c1ecaa7053952ccb94db158900a5004e542f2b0af1526e26892fadbc"
+  },
+  {
+    "label": "height-2",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "2"
+    },
+    "exit": 0,
+    "log": "candidate-v1-height-2.log",
+    "sha256": "aa87a087c1ecaa7053952ccb94db158900a5004e542f2b0af1526e26892fadbc"
+  },
+  {
+    "label": "height-8",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "8"
+    },
+    "exit": 0,
+    "log": "candidate-v1-height-8.log",
+    "sha256": "aa87a087c1ecaa7053952ccb94db158900a5004e542f2b0af1526e26892fadbc"
+  },
+  {
+    "label": "height-32",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "32"
+    },
+    "exit": 0,
+    "log": "candidate-v1-height-32.log",
+    "sha256": "aa87a087c1ecaa7053952ccb94db158900a5004e542f2b0af1526e26892fadbc"
+  },
+  {
+    "label": "height-10000",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "candidate-v1-height-10000.log",
+    "sha256": "aa87a087c1ecaa7053952ccb94db158900a5004e542f2b0af1526e26892fadbc"
+  },
+  {
+    "label": "mixed-0",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "0"
+    },
+    "exit": 0,
+    "log": "candidate-v1-mixed-0.log",
+    "sha256": "88eab1d75bf9c24301ddede644f9a0f568c5c1423cd0bd6e6937896713aae051"
+  },
+  {
+    "label": "mixed-1",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "1"
+    },
+    "exit": 0,
+    "log": "candidate-v1-mixed-1.log",
+    "sha256": "88eab1d75bf9c24301ddede644f9a0f568c5c1423cd0bd6e6937896713aae051"
+  },
+  {
+    "label": "mixed-2",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "2"
+    },
+    "exit": 0,
+    "log": "candidate-v1-mixed-2.log",
+    "sha256": "88eab1d75bf9c24301ddede644f9a0f568c5c1423cd0bd6e6937896713aae051"
+  },
+  {
+    "label": "mixed-8",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "8"
+    },
+    "exit": 0,
+    "log": "candidate-v1-mixed-8.log",
+    "sha256": "88eab1d75bf9c24301ddede644f9a0f568c5c1423cd0bd6e6937896713aae051"
+  },
+  {
+    "label": "mixed-32",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "32"
+    },
+    "exit": 0,
+    "log": "candidate-v1-mixed-32.log",
+    "sha256": "88eab1d75bf9c24301ddede644f9a0f568c5c1423cd0bd6e6937896713aae051"
+  },
+  {
+    "label": "mixed-10000",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "candidate-v1-mixed-10000.log",
+    "sha256": "88eab1d75bf9c24301ddede644f9a0f568c5c1423cd0bd6e6937896713aae051"
+  },
+  {
+    "label": "terminal",
+    "args": [],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 101,
+    "log": "candidate-v1-terminal.log",
+    "sha256": "dc2969ebe82da9a24549621cd5670b3e7833114195771add4f8b1f42bf940423"
+  },
+  {
+    "label": "sweep",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "speed::lane_sweep_divergence"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "candidate-v1-sweep.log",
+    "sha256": "90b3cffdfc64cabe6eccb8ba7df34c3d2c464f98114e96e97a57bd4b612f1d3d"
+  }
+]

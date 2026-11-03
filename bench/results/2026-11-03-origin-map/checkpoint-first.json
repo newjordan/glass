@@ -1,0 +1,48 @@
+{
+  "candidate_suite": {
+    "failed": 4,
+    "ignored": 16,
+    "passed": 388
+  },
+  "control_failures": [
+    10288,
+    8496,
+    9728,
+    7616,
+    5756,
+    5756
+  ],
+  "final_sweep_streams": 12800,
+  "final_tests": 392,
+  "guarded_failures": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "height_observations": 56160,
+  "histories": [
+    0,
+    1,
+    2,
+    8,
+    32,
+    10000
+  ],
+  "mixed_observations": 20736,
+  "preserved_tracked_files": 8038,
+  "runtime_promoted": false,
+  "schema": "glass.origin-map-checkpoint/v1",
+  "selected_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "unicode_observations_per_arm": 124416,
+  "untreated_base_failures": [
+    0,
+    256,
+    48,
+    328,
+    432,
+    432
+  ]
+}

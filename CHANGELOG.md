@@ -368,3 +368,14 @@ These are one machine's numbers, not a general claim.
   one-field matcher characterizations plus ignored desired-invariant matrices.
 - Shipping runtime/executable unchanged; 392 tests and 12,800 differential streams
   pass; four Python tests reject 24 evidence corruptions. No speed or Ghostty win.
+
+## Research — 2026-11-03 (origin-map, iteration 38)
+- Separate physical-cell provenance from absolute-coordinate base and blank
+  logical-slot anchors using real shadow-Grid resize replay. Base guard clears
+  124,416 Unicode-marker observations (shipping fails 47,640); height/mixed
+  nonblank matrices also pass. This is finite correctness evidence, not speed.
+- Reject promotion: established blank-slot picture regression still fails.
+  Retain exact build sources, raw failures, corrected probe, and setup mistakes.
+- Shipping runtime/executable unchanged; 392 tests and 12,800 differential
+  streams pass. Seven Python tests reject 27 evidence corruptions and 7 invalid
+  configurations. No Ghostty comparison or latency/memory claim.

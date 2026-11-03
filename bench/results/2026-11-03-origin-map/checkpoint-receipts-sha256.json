@@ -1,0 +1,13 @@
+{
+  "bench/results/2026-11-03-origin-map/README.md": "9c12aff25b813847c0d04c08871b4a5278e007131cc8010943874c313abb35b8",
+  "bench/results/2026-11-03-origin-map/final-frozen-index.json": "5e0a0e8ac4a91ea8525a590097c65cd36dea97b50ccbef199f83cf281522d92e",
+  "bench/results/2026-11-03-origin-map/checkpoint-pre-commit.json": "6fc5df67cc8bec571fed6352d7ccf218c680006391e4221f057bcfbe7c4a3351",
+  "bench/results/2026-11-03-origin-map/checkpoint-pre-commit.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "bench/results/2026-11-03-origin-map/checkpoint-sealed-v2.json": "6fc5df67cc8bec571fed6352d7ccf218c680006391e4221f057bcfbe7c4a3351",
+  "bench/results/2026-11-03-origin-map/checkpoint-sealed-v2.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "bench/results/2026-11-03-origin-map/python-tests-sealed-v2.log": "4dae4bc47610154abd7ee368cd1621ae59536ccbc31c744508b5439e9279b513",
+  "bench/results/2026-11-03-origin-map/frozen-replay-v2.json": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "bench/results/2026-11-03-origin-map/frozen-replay-v2.stderr": "e4f297395b45eed2149c38b61001449b22aa79bc9baee9ab4e00b0c02e20b832",
+  "bench/results/2026-11-03-origin-map/frozen-replay-v3.json": "b8e236a74a8e57cc373c97f74eaa3d7e7372acbeed2e5ad3d8ee9318e741d873",
+  "bench/results/2026-11-03-origin-map/frozen-replay-v3.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

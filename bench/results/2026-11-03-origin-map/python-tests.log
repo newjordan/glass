@@ -1,0 +1,10 @@
+test_complete (__main__.Evidence.test_complete) ... ok
+test_duplicate_json (__main__.Evidence.test_duplicate_json) ... ok
+test_failure_not_laundered (__main__.Evidence.test_failure_not_laundered) ... ok
+test_mixed_corruptions (__main__.Evidence.test_mixed_corruptions) ... ok
+test_unicode_corruptions (__main__.Evidence.test_unicode_corruptions) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 7.884s
+
+OK

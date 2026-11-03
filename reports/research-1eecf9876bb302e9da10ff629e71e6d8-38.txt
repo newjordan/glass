@@ -1,0 +1,83 @@
+Iteration 38 — resize origin provenance separates three coordinate contracts
+Date: 2026-11-03
+Standing objective: beat Ghostty on every metric. Outcome: substantive local correctness research, not a world-champion, performance, or promotion claim.
+
+Decision
+========
+REJECT the experimental shadow-origin arm for runtime promotion. All modified runtime sources and the selected target/release/glass executable are restored/unchanged. A resize mapper that passes the nonblank matrices still fails the established blank logical-slot anchor contract. No runtime, PTY, frame, input-latency, or Ghostty timing was attempted after this semantic failure.
+
+New evidence
+============
+The prior length-only candidate passed height-only tests but failed 32/3,456 mixed-resize observations at history capacity 10000. This iteration tests a materially different mechanism: replay real Grid::resize on a transient Grid<Tagged<Cell>>, with optional original cell positions carried through the actual row split/join/rotation operations. Tagged equality, flags, emptiness, style, reset discriminant, and reset semantics delegate to the original cell; reset/strip clear origin. No Cell/layout/hot-path field is added. Raw ring geometry, history limit, cached rows, cursor state, and observable recycled cells are copied. A separate untagged clone runs the same resize; assertions compare retained cells, history, display offset, cursor and saved cursor positions, and pending wrap. These guards ran in the candidate arms; they are not an independent implementation of resize or proof of equivalence over all states.
+
+The initial origin-only arm eliminates the previously remaining 32 ASCII mixed-resize failures. Its inherited new_scrolled calculation, however, can be smaller than actual retained history. A real old-cell destination can then have a negative absolute coordinate, and map_anchor returns None even though the tagged cell survived. The isolated v3 -> v4 runtime delta is:
+    reflow.new_scrolled = reflow.new_scrolled.max(after.history as u64);
+This is a local coordinate-domain guard, not proof that absolute coordinates are globally correct. It eliminates all failures in the new nonblank Unicode matrix while retaining the ASCII/height results.
+
+Six history capacities, always in order: 0, 1, 2, 8, 32, 10000.
+Unique-marker Unicode matrix: 20,736 observations per capacity, 124,416 per arm.
+    shipping control: 10,288 / 8,496 / 9,728 / 7,616 / 5,756 / 5,756 failures
+    origins, inherited base (v3): 0 / 256 / 48 / 328 / 432 / 432 failures
+    origins, base guard (v4):     0 / 0 / 0 / 0 / 0 / 0 failures
+Shipping-control total failures: 47,640. These are matrix observations, not independent statistical samples; zero failures is finite coverage, not general correctness.
+
+The Unicode oracle uses actual Engine::grid_line cell characters and picture positions through the real Splitter/pump picture intake. It does not copy either reflow mapper's expected destination. Background includes CJK, emoji, combining text and dense content; unique markers are M, Han character U+6F22, rocket U+1F680, and M followed by a combining mark. Both parser/fast lanes, primary/alternate resize, records=0/12, marker rows, cursor rows, columns 0/3/8, narrow/grow/round-trip sizes are covered. Combining-marker tests check the base-cell position, not normalization or combining-mark contents. Columns come from grid_line, which emits exactly one char per grid cell, including spacer cells; this is not a grapheme-count oracle.
+
+For v4, the pre-existing height and mixed desired-invariant matrices also execute:
+    height-only: 56,160 observations; 0 failures
+    mixed ASCII: 20,736 observations; 0 failures
+This is 201,312 passing nonblank-anchor observations for v4 across the three matrices, not 201,312 full terminal tests. The v4 differential stream test executes 12,800 streams over 64 seeds without divergence; it is a parser/fast-lane gate, not a resize anchor oracle.
+
+Promotion blocker: physical cells are not all logical anchor slots
+================================================================
+The pre-existing a_reflow_keeps_a_picture_on_the_same_text test fails in the candidate. Its stream is digits filling a row, MARK on its wrapped tail, and a picture at blank column 4 immediately after MARK. Width grows 10 -> 20 and shrinks back to 10. The text survives but padding gets trimmed; the original physical blank-cell identity is absent. The legacy logical-offset mapper retains a slot even when that particular blank cell is physically destroyed.
+
+A corrected auxiliary v5 probe (same runtime as v4) records:
+    width=20 exact=Some((0, 14.0)) inferred=Some((0, 14.0))
+    width=10 exact=None inferred=Some((1, 4.0))
+It independently asserts that MARK still exists, then fails the intended assertion that the blank-slot picture survives (0 placements vs 1). The inferred destination is a mapper result, not independent proof of that destination's text alignment; the established regression requires picture survival and column 4 after narrowing.
+
+The initial auxiliary v3/v4 probe made an incorrect extra assumption that MARK must be on row 1; retained receipts fail there. V5 removes that harness error by searching actual visible rows, and fails specifically at missing placement. The pre-existing regression already failed independently at the picture-count assertion; it is not rewritten to accommodate the experiment.
+
+Candidate full suite: 388 passed, 4 failed, 16 ignored. The four failures are retained:
+    1. a_reflow_keeps_a_picture_on_the_same_text — real blank-anchor regression.
+    2. inactive_primary_height_shrink_coordinate_defect_is_reproducible — shipping-defect characterization expects old broken coordinate base.
+    3. height_growth_picture_coordinate_defect_is_reproducible — characterization expects absent height mapping.
+    4. mixed_resize_round_trip_picture_defect_is_reproducible — characterization expects shipping picture loss.
+The last three are expected when fixing those defects, but do not excuse the first. Shipping characterizations are not weakened or deleted.
+
+Limitations / next necessary work
+================================
+An origin tag maps surviving physical content; a separate, explicitly specified rule must map blank logical slots, without resurrecting anchors whose own content was erased. Blind fallback to the legacy length matcher reintroduces unrelated-tail-truncation ambiguity. The experiment also does not settle cross-resize absolute identity or all short-history/output-scroll defects. The lower-bound guard alone is not an absolute-coordinate authority.
+
+Shadow provenance is not a latency-ready fix: it allocates O(retained cells), copies grids, and runs both tagged and reference resizes before the real resize. This diagnostic uses more than one extra resize, not merely a cheap tag. No latency or memory comparison was collected. Full-history denial-of-service or allocation-failure behavior has not been characterized. A production approach likely needs sparse logical-slot and physical-cell event mapping emitted by resize itself, with explicit truncation semantics, rather than replaying three complete grids or retaining a per-cell tag in the hot path.
+
+Build and evidence discipline
+=============================
+All exact arms are built using forced input refresh, non-fresh Cargo package receipts, source hashes, and copied executable hashes; candidate-v4 and restored arm have separate build identity.json/cargo.jsonl/cargo.log receipts. Experimental source snapshots are explicit candidate-v1/v3/v4/v5 files, plus the shipping-control and final originals. An attempted v2 build failed due to a missing module qualification in the auxiliary diagnostic; its source and compiler diagnostics are retained. No passing results are claimed for that build.
+
+Initial capacity commands omitted --ignored (zero executed tests), and two attempted sweep names did not exist (zero executed tests). These files remain as failed experiment setup history; they are explicitly not counted. Counted gates require the exact named test, --ignored where needed, complete unique configuration sets, real summary counts, and a nonzero result line. A read-only review seat timed out without a returned review; no independent review endorsement is claimed.
+
+Final restored runtime: 392 tests passed, 14 ignored; 12,800 differential streams passed. The two separately rebuilt restored executables have equal SHA-256, 58d4f0c9dd6f1824aa0b97f227f23aea87e213108889cdb5ac55186419c06f0e. The selected shipping executable remains d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c.
+Seven Python tests pass and reject 27 corrupted-evidence variants plus 7 invalid run configurations. Finite negative checks are not cryptographic adversarial integrity proof. The checkpoint binds source snapshots to build receipts, verifies command/configuration identity, rejects zero tests, validates all 124,416 configuration identities per Unicode arm, parses actual text/picture observations, recomputes failure totals, and checks restored live sources and selected binary. Earlier tracked files are preserved except the three append-only research documentation updates; prior evidence is never edited. The report and evidence checkpoint are local research, not an externally bound acceptance command.
+
+Reproduce
+=========
+python3 -B bench/results/2026-11-03-origin-map/verify.py
+python3 -B bench/results/2026-11-03-origin-map/test-verify.py
+python3 -B bench/replay-evidence-index.py --root . --index bench/results/2026-11-03-origin-map/final-frozen-index.json
+
+Primary artifacts
+=================
+bench/results/2026-11-03-origin-map/protocol.json
+bench/results/2026-11-03-origin-map/starting-state.json
+bench/results/2026-11-03-origin-map/build-candidate-v4/identity.json
+bench/results/2026-11-03-origin-map/build-final-restored/identity.json
+bench/results/2026-11-03-origin-map/candidate-v4-*.log
+bench/results/2026-11-03-origin-map/control-unicode-*.log
+bench/results/2026-11-03-origin-map/candidate-v5-blank.log
+bench/results/2026-11-03-origin-map/final-restored-terminal.log
+bench/results/2026-11-03-origin-map/final-restored-sweep.log
+bench/results/2026-11-03-origin-map/checkpoint-final.json
+
+Sealing setup note: the first manifest-generation script aborted before creating a manifest because its verifier-edit lookup used the wrong variable names. Resulting absent-manifest/absent-index check failures are retained under the initial sealed/replay filenames, not counted as passes. Fresh v2 checkpoint/replay filenames are used for the actual sealed checks.

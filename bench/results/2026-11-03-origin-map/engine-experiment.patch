@@ -1,0 +1,74 @@
+--- bench/results/2026-11-03-origin-map/original-crates_term_src_engine.rs	2026-11-03 09:27:31.714049535 -0600
++++ bench/results/2026-11-03-origin-map/candidate-v4-crates_term_src_engine.rs	2026-11-03 09:36:32.536204576 -0600
+@@ -889,27 +889,38 @@
+         let rows = rows.max(1);
+         let cols = cols.max(2);
+         let old_cols = self.term.columns();
+-        let on_alt = self.term.mode().contains(TermMode::ALT_SCREEN);
+-        let before = if old_cols != cols {
+-            if on_alt { self.primary_snap.clone() } else { Some(self.snap_grid()) }
++        let before = if old_cols != cols || self.term.screen_lines() != rows {
++            Some(snap_primary(&self.term, self.scrolled_off_top as u64))
+         } else {
+             None
+         };
++        let old_grid = self.term.primary_grid();
++        let height_shift = if rows > old_grid.screen_lines() {
++            old_grid.history_size().min(rows - old_grid.screen_lines()) as i64
++        } else {
++            -((old_grid.cursor.point.line.0 as usize + 1).saturating_sub(rows) as i64)
++        };
++        let origin_map = before.as_ref().map(|_| self.term.primary_grid().resize_origins(rows, cols));
+         self.term.resize(Size { columns: cols, lines: rows });
+         self.region_top = 0;
+         self.region_bottom = rows as i32;
+         if let Some(before) = before {
+-            let after = if on_alt {
+-                simulated_after(&before, rows, cols)
++            let after = snap_primary(&self.term, self.scrolled_off_top as u64);
++            let mut reflow = crate::intake::motion::reflow_of(&before, &after);
++            reflow.new_scrolled = if old_cols == cols {
++                reflow.height = Some((height_shift, rows));
++                (before.scrolled as i64 - height_shift).max(0) as u64
+             } else {
+-                self.snap_grid()
++                crate::intake::motion::scrolled_after(&reflow)
+             };
+-            let mut reflow = crate::intake::motion::reflow_of(&before, &after);
+-            reflow.new_scrolled = crate::intake::motion::scrolled_after(&reflow);
++            reflow.new_scrolled = reflow.new_scrolled.max(after.history as u64);
++            reflow.exact = origin_map;
+             self.scrolled_off_top = reflow.new_scrolled as usize;
+             self.pending_reflow = Some(reflow);
+         }
+-        self.fold_sentinel();
++        // The snapshot mapping already accounts for this resize. The old
++        // selection carries the same displacement and must not count it again.
++        self.plant_sentinel();
+         if self.term.mode().contains(TermMode::ALT_SCREEN) {
+             // The primary grid reflowed out of sight. Keep the prediction,
+             // including the scroll count, so the next width change maps
+@@ -1294,12 +1305,19 @@
+ /// pictures on the same text. Called when the alternate screen is
+ /// entered and when the live grid is resized, not after every chunk.
+ fn snap_term(term: &Term<Listener>, scrolled: u64) -> crate::intake::motion::GridSnap {
++    snap_raw_grid(term.grid(), scrolled)
++}
++
++fn snap_primary(term: &Term<Listener>, scrolled: u64) -> crate::intake::motion::GridSnap {
++    snap_raw_grid(term.primary_grid(), scrolled)
++}
++
++fn snap_raw_grid(grid: &alacritty_terminal::grid::Grid<alacritty_terminal::term::cell::Cell>, scrolled: u64) -> crate::intake::motion::GridSnap {
+     use alacritty_terminal::index::{Column, Line};
+     use alacritty_terminal::term::cell::Flags;
+-    let cols = term.columns();
+-    let screen = term.screen_lines();
+-    let history = term.history_size();
+-    let grid = term.grid();
++    let cols = grid.columns();
++    let screen = grid.screen_lines();
++    let history = grid.history_size();
+     let mut lines = Vec::with_capacity(history + screen);
+     for i in -(history as i32)..(screen as i32) {
+         let row = &grid[Line(i)];

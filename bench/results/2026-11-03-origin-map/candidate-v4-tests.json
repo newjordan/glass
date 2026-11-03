@@ -1,0 +1,114 @@
+[
+  {
+    "label": "unicode-0",
+    "test": "intake::position_tests::origin_map_unicode_marker_matrix",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::origin_map_unicode_marker_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "0"
+    },
+    "exit": 0,
+    "log": "candidate-v4-unicode-0.log",
+    "sha256": "dc581b6b0d50d7464377d07d6230a9c1705e1d1fafdb8b8602cfe7abc8c51b23"
+  },
+  {
+    "label": "unicode-1",
+    "test": "intake::position_tests::origin_map_unicode_marker_matrix",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::origin_map_unicode_marker_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "1"
+    },
+    "exit": 0,
+    "log": "candidate-v4-unicode-1.log",
+    "sha256": "c03a622b0c7517a46cafbc998e942958ab3cab9dd948065389d2f53d5f0778a1"
+  },
+  {
+    "label": "unicode-2",
+    "test": "intake::position_tests::origin_map_unicode_marker_matrix",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::origin_map_unicode_marker_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "2"
+    },
+    "exit": 0,
+    "log": "candidate-v4-unicode-2.log",
+    "sha256": "dc7bf081a87d4777b904822e511f4141a0e1c920296701c3a32cb0e8122d9af0"
+  },
+  {
+    "label": "unicode-8",
+    "test": "intake::position_tests::origin_map_unicode_marker_matrix",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::origin_map_unicode_marker_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "8"
+    },
+    "exit": 0,
+    "log": "candidate-v4-unicode-8.log",
+    "sha256": "28a765fac419e902051c15530cb3863263b98b4e36a5ad66c0ef080341f204a0"
+  },
+  {
+    "label": "unicode-32",
+    "test": "intake::position_tests::origin_map_unicode_marker_matrix",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::origin_map_unicode_marker_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "32"
+    },
+    "exit": 0,
+    "log": "candidate-v4-unicode-32.log",
+    "sha256": "649e10fd681f8dd942b08a8a60927d94c64822b515a3e50f8b15f73093e3244d"
+  },
+  {
+    "label": "unicode-10000",
+    "test": "intake::position_tests::origin_map_unicode_marker_matrix",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::origin_map_unicode_marker_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "candidate-v4-unicode-10000.log",
+    "sha256": "649e10fd681f8dd942b08a8a60927d94c64822b515a3e50f8b15f73093e3244d"
+  },
+  {
+    "label": "blank",
+    "test": "intake::position_tests::origin_map_blank_slot_diagnostic",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::origin_map_blank_slot_diagnostic"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 101,
+    "log": "candidate-v4-blank.log",
+    "sha256": "50e0c71d5a8f6a5ae29e2bb165f6af477adb662601fb35ae4f2716617d3e20b2"
+  }
+]

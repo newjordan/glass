@@ -1,0 +1,25 @@
+
+running 1 test
+blank-slot width=20 exact=Some((0, 14.0)) inferred=Some((0, 14.0)) text="0123456789MARK      "
+blank-slot width=10 exact=None inferred=Some((1, 4.0)) text="MARK      "
+
+thread 'intake::position_tests::origin_map_blank_slot_diagnostic' (84886) panicked at crates/term/src/intake/position_tests.rs:872:5:
+assertion `left == right` failed
+  left: "    "
+ right: "MARK"
+stack backtrace:
+   0: __rustc::rust_begin_unwind
+   1: core::panicking::panic_fmt
+   2: core::panicking::assert_failed_inner
+   3: core::panicking::assert_failed::<alloc::string::String, &str>
+   4: <glass::intake::position_tests::origin_map_blank_slot_diagnostic::{closure#0} as core::ops::function::FnOnce<()>>::call_once
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+test intake::position_tests::origin_map_blank_slot_diagnostic ... FAILED
+
+failures:
+
+failures:
+    intake::position_tests::origin_map_blank_slot_diagnostic
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 407 filtered out; finished in 0.00s
+

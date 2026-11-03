@@ -1,0 +1,6 @@
+
+running 1 test
+test intake::position_tests::mixed_snapshot_marker_picture_matrix ... ignored, desired invariant diagnostic: shipping mixed resize is known to fail
+
+test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 405 filtered out; finished in 0.00s
+

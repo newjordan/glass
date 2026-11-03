@@ -966,3 +966,28 @@ python3 -B bench/results/2026-11-03-height-snapshot/verify.py
 python3 -B bench/results/2026-11-03-height-snapshot/test-verify.py
 python3 -B bench/replay-evidence-index.py bench/results/2026-11-03-height-snapshot/final-frozen-index.json
 ```
+
+### Resize provenance: nonblank success, blank-slot blocker (2026-11-03, iteration 38)
+
+A distinct shadow-Grid origin-tag experiment clears all prior height/mixed
+nonblank-anchor matrices, then exposes the inherited coordinate base falling
+below actual history. A one-line lower-bound guard removes all failures in a
+new 124,416-observation unique Unicode-marker matrix: shipping control fails
+47,640 observations, origin-only 1,496, guarded origins zero. Guarded origins
+also pass 56,160 height-only and 20,736 mixed ASCII observations. These are finite
+matrix observations, not independent samples or full terminal tests.
+
+**Rejected for promotion:** the established blank-slot picture regression
+fails. A physical blank cell trimmed by reflow need not be a deleted logical
+anchor slot. Corrected probe records exact=None vs legacy Some((1,4)) after
+narrowing; MARK survives, the picture does not. Legacy output is not an
+independent destination oracle. Candidate suite is 388 passed / 4 failed
+(three shipping-defect characterizations plus this real regression).
+Shadow replay allocates O(retained cells), includes tagged and reference clone
+resizes before actual resize, and has no latency/memory result. No Ghostty or
+performance claim. All runtime sources/selected executable restored unchanged;
+392 final tests and 12,800 differential streams pass. Seven Python tests reject
+27 evidence corruptions and 7 invalid configurations. Sources, setup mistakes,
+failed compile, raw observations, build bindings and corrected failure retained
+in `bench/results/2026-11-03-origin-map/`; full report
+`reports/research-1eecf9876bb302e9da10ff629e71e6d8-38.txt`.

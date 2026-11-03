@@ -1,0 +1,2 @@
+usage: replay-evidence-index.py [-h] [--root ROOT] index
+replay-evidence-index.py: error: unrecognized arguments: --index
