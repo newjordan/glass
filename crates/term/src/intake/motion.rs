@@ -43,26 +43,48 @@ pub struct Rect {
 
 /// What a scroll does to one rectangle.
 #[derive(Clone, Debug)]
-pub enum Fate {
-    Keep(Rect),
+pub enum Fate<T = Rect> {
+    Keep(T),
     /// `first` keeps the showing's identity; the rest are new showings of
     /// the same picture, in top-to-bottom order.
-    Split(Rect, Vec<Rect>),
+    Split(T, Vec<T>),
     Gone,
+}
+
+/// One surviving slice, with its first cell row in this call's input rectangle.
+/// Screen displacement is not this offset: moving up can cut the top while
+/// leaving the screen line unchanged, and moving down can cut only the bottom.
+#[derive(Clone, Debug)]
+pub struct ScrolledRect {
+    pub rect: Rect,
+    pub from: u16,
 }
 
 /// Move or cut `rect` through one band scroll. `image` is the picture's
 /// pixel size, used when a cut has to name a source rectangle.
 pub fn scroll_rect(rect: Rect, band: &BandScroll, image: (u32, u32)) -> Fate {
+    match scroll_rect_with_rows(rect, band, image) {
+        Fate::Keep(piece) => Fate::Keep(piece.rect),
+        Fate::Split(first, rest) => {
+            Fate::Split(first.rect, rest.into_iter().map(|piece| piece.rect).collect())
+        }
+        Fate::Gone => Fate::Gone,
+    }
+}
+
+/// The same geometry with exact input-row provenance for coverage transport.
+/// Offsets saturate at the coverage domain's limit; no tracked row survives
+/// a cut at or beyond u16::MAX.
+pub fn scroll_rect_with_rows(rect: Rect, band: &BandScroll, image: (u32, u32)) -> Fate<ScrolledRect> {
     if rect.height <= 0.0 || rect.width <= 0.0 {
-        return Fate::Keep(rect);
+        return Fate::Keep(ScrolledRect { rect, from: 0 });
     }
     let start = rect.line as f64;
     let end = start + f64::from(rect.height);
     let top = band.top as f64;
     let bottom = band.bottom as f64;
     if bottom <= top {
-        return Fate::Keep(rect);
+        return Fate::Keep(ScrolledRect { rect, from: 0 });
     }
 
     // Above the band, inside it, below it. A slice is (from, to) in the
@@ -129,7 +151,7 @@ pub fn scroll_rect(rect: Rect, band: &BandScroll, image: (u32, u32)) -> Fate {
         slices.push((below_from - start, end - start, band.count_delta as f64));
     }
 
-    let mut pieces = Vec::new();
+    let mut pieces: Vec<ScrolledRect> = Vec::new();
     let mut previous_to = None;
     for (from, to, delta) in slices {
         if let Some(piece) = cut_rows(&rect, from, to, delta, image) {
@@ -138,13 +160,13 @@ pub fn scroll_rect(rect: Rect, band: &BandScroll, image: (u32, u32)) -> Fate {
                 // can close a gap made by discarded source rows. Only join
                 // slices that were also contiguous in the original picture.
                 && previous_to == Some(from)
-                && adjacent(prev, &piece)
+                && adjacent(&prev.rect, &piece)
             {
-                merge(prev, &piece);
+                merge(&mut prev.rect, &piece);
                 previous_to = Some(to);
                 continue;
             }
-            pieces.push(piece);
+            pieces.push(ScrolledRect { rect: piece, from: from as u16 });
             previous_to = Some(to);
         }
     }

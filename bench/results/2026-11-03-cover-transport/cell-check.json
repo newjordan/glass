@@ -1,0 +1,34 @@
+{
+  "control": {
+    "observations": 10368,
+    "cases": 2592,
+    "total_by_step": [
+      2592,
+      2592,
+      2592,
+      2592
+    ],
+    "failures_by_step": [
+      0,
+      968,
+      520,
+      520
+    ]
+  },
+  "candidate": {
+    "observations": 10368,
+    "cases": 2592,
+    "total_by_step": [
+      2592,
+      2592,
+      2592,
+      2592
+    ],
+    "failures_by_step": [
+      0,
+      0,
+      0,
+      0
+    ]
+  }
+}

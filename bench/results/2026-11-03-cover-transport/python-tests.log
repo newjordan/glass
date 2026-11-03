@@ -1,0 +1,10 @@
+test_complete (__main__.Evidence.test_complete) ... ok
+test_coordinate_shapes (__main__.Evidence.test_coordinate_shapes) ... ok
+test_duplicate_json_and_unknown_arm (__main__.Evidence.test_duplicate_json_and_unknown_arm) ... ok
+test_engine_expectation_not_authority (__main__.Evidence.test_engine_expectation_not_authority) ... ok
+test_record_corruptions (__main__.Evidence.test_record_corruptions) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 7.776s
+
+OK

@@ -5,6 +5,17 @@ All notable changes to glass are recorded here. Versions follow
 
 ## 0.1.0 - unreleased
 
+### Fix — retain original-row coverage through picture scrolling
+
+- Keep text-covered cells attached to the correct original picture rows when
+  sixel / OSC 1337 images are split or cropped by partial-region scrolling.
+  Carry transient slice provenance rather than infer it from screen movement.
+  Real wire/cell oracle: 2,008/10,368 failing control observations → zero on
+  candidate; setup passes both arms. Candidate 395 tests pass, 14 ignored;
+  both arms pass 12,800 differential streams. No performance or Ghostty claim.
+  Evidence: `bench/results/2026-11-03-cover-transport/README.md`.
+
+
 ### Research — safe scalar-domain UTF8 validation, rejected
 
 - Test uniform continuation checks and decoded-scalar minima, retaining safe

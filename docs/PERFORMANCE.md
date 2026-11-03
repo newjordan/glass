@@ -1073,3 +1073,18 @@ and cropped images). Candidate: 394 tests pass, 14 ignored; both arms pass
 record corruptions and independent-oracle tampering. Selected executable stays
 unchanged. No resize-witness/coverage-mask, performance or Ghostty win claim.
 Evidence and replay: `bench/results/2026-11-03-source-seams/README.md`.
+
+
+### 2026-11-03 — explicit row provenance for in-cell picture covers
+
+Partial-region scrolls could resurrect text-covered sixel/OSC 1337 cells and
+hide surviving cells because screen displacement was mistaken for a top crop.
+The runtime now carries the input slice's original-row offset transiently to
+coverage cropping. Real intake, two parser lanes/screens, both directions,
+three masks and repeated/reverse scrolling: 2,008/10,368 failing control
+observations versus zero candidate; every setup passes both arms. Candidate
+395 tests pass, 14 ignored; both arms pass 12,800 differential streams. Five
+Python evidence-checker tests pass. Selected release executable unchanged;
+runtime sources changed. No fractional-size, resize-witness, memory, performance
+or Ghostty superiority claim. Evidence and exact reproduction:
+`bench/results/2026-11-03-cover-transport/README.md`.

@@ -1,0 +1,46 @@
+{
+  "matrices": {
+    "control": {
+      "observations": 10368,
+      "cases": 2592,
+      "total_by_step": [
+        2592,
+        2592,
+        2592,
+        2592
+      ],
+      "failures_by_step": [
+        0,
+        968,
+        520,
+        520
+      ]
+    },
+    "candidate": {
+      "observations": 10368,
+      "cases": 2592,
+      "total_by_step": [
+        2592,
+        2592,
+        2592,
+        2592
+      ],
+      "failures_by_step": [
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "final_tests": {
+    "passed": 395,
+    "ignored": 14
+  },
+  "differential_streams_per_arm": 12800,
+  "checker_tests": 5,
+  "evidence_sources": 62,
+  "historical_references": 1752,
+  "historical_versions": 1729,
+  "selected_executable_unchanged": true
+}

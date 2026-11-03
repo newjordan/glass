@@ -1789,14 +1789,11 @@ type ShowingKey = (Space, u32, Option<u32>);
 
 /// Write a scrolled or cropped rectangle back onto a showing. Covered
 /// spans stay with the picture; a cut from the top shifts them.
-fn apply_moved(put: &mut Put, rect: &motion::Rect) {
-    let cut_top = if rect.height + 0.01 < put.height && rect.line >= put.line {
-        (rect.line - put.line) as u16
-    } else {
-        0
-    };
-    if cut_top > 0 || rect.height + 0.01 < put.height {
-        put.covered.crop_rows(cut_top, rect.height.ceil().max(0.0) as u16);
+fn apply_moved(put: &mut Put, piece: &motion::ScrolledRect) {
+    let rect = &piece.rect;
+    let rows = rect.height.ceil().max(0.0) as u16;
+    if piece.from > 0 || rows != put.height.ceil().max(0.0) as u16 {
+        put.covered.crop_rows(piece.from, rows);
     }
     put.line = rect.line;
     put.column = rect.column;
@@ -2136,7 +2133,7 @@ impl Intake {
                 height: put.height,
                 source: put.source,
             };
-            match motion::scroll_rect(rect, band, image) {
+            match motion::scroll_rect_with_rows(rect, band, image) {
                 motion::Fate::Keep(next) => apply_moved(put, &next),
                 motion::Fate::Split(first, rest) => {
                     // Preserve the unsliced coverage for every new fragment.

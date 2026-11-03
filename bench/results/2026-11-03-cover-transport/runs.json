@@ -1,0 +1,90 @@
+[
+  {
+    "label": "control",
+    "argv": [
+      "/tmp/glass-i44-control-v3",
+      "--exact",
+      "intake::position_tests::cover_transport_real_intake_cell_oracle",
+      "--test-threads=1",
+      "--nocapture"
+    ],
+    "environment": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 101,
+    "binary_sha256": "4e49d44a76397672eb1bcae1e8c78e459fd6982555a6d7bfa2b84bd390e8337b",
+    "log": "control.log",
+    "log_sha256": "39130016e25a9454f24fcf24c0bb6aabd66a4714d7ee6166b9d3ae71cd6b7f9d"
+  },
+  {
+    "label": "candidate",
+    "argv": [
+      "/tmp/glass-i44-candidate",
+      "--exact",
+      "intake::position_tests::cover_transport_real_intake_cell_oracle",
+      "--test-threads=1",
+      "--nocapture"
+    ],
+    "environment": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "binary_sha256": "a14cb2e53b88dfac777752c33e43052232c5026094e6bb61fec04be814b20a54",
+    "log": "candidate.log",
+    "log_sha256": "f36e948b63c4a7d0afd8a606cac756989077460981976e7815315e0e7456fd16"
+  },
+  {
+    "label": "full-candidate",
+    "argv": [
+      "/tmp/glass-i44-candidate",
+      "--test-threads=1"
+    ],
+    "environment": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "binary_sha256": "a14cb2e53b88dfac777752c33e43052232c5026094e6bb61fec04be814b20a54",
+    "log": "full-candidate.log",
+    "log_sha256": "0b7bc1bca3c79b74a4710073897b507917d64e53eccefe0a175d13dab2f67f0a"
+  },
+  {
+    "label": "sweep-control",
+    "argv": [
+      "/tmp/glass-i44-control-v3",
+      "--exact",
+      "speed::plain_runs_match_the_parser_over_seeds",
+      "--ignored",
+      "--test-threads=1",
+      "--nocapture"
+    ],
+    "environment": {
+      "GLASS_SCROLLBACK": "10000",
+      "GLASS_SWEEP_SEEDS": "64",
+      "GLASS_SWEEP_ROUNDS": "200"
+    },
+    "exit": 0,
+    "binary_sha256": "4e49d44a76397672eb1bcae1e8c78e459fd6982555a6d7bfa2b84bd390e8337b",
+    "log": "sweep-control.log",
+    "log_sha256": "9450e606b65d10f2c5f41e97eecf559d1d11822dd409098a6227b1cc901c4cc2"
+  },
+  {
+    "label": "sweep-candidate",
+    "argv": [
+      "/tmp/glass-i44-candidate",
+      "--exact",
+      "speed::plain_runs_match_the_parser_over_seeds",
+      "--ignored",
+      "--test-threads=1",
+      "--nocapture"
+    ],
+    "environment": {
+      "GLASS_SCROLLBACK": "10000",
+      "GLASS_SWEEP_SEEDS": "64",
+      "GLASS_SWEEP_ROUNDS": "200"
+    },
+    "exit": 0,
+    "binary_sha256": "a14cb2e53b88dfac777752c33e43052232c5026094e6bb61fec04be814b20a54",
+    "log": "sweep-candidate.log",
+    "log_sha256": "d0c79ed0a2e1758a42bdbc410b2ad33f64a1fd06366d7b72279e0881813009ce"
+  }
+]
