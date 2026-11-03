@@ -5,6 +5,20 @@ All notable changes to glass are recorded here. Versions follow
 
 ## 0.1.0 - unreleased
 
+### Research — scanner outlining recovers truecolor, Unicode vetoes promotion
+
+- Test one scanner inline attribute in a 12-block, four-arm factorial (48 exact
+  engine sessions). Authority-outlined/control truecolor gains 4.94%, but Unicode
+  loses 2.40% and fails the prospective .98 guard. Runtime rejected/restored;
+  no new terminal/Ghostty timing or championship claim.
+- Confirm register-carried decimal index and retain exact disassembly. The moved
+  print_utf8 routine keeps 1,967 relocation-masked instructions; layout/caller
+  effects remain unproven. Retain raw replay and 23 evidence-corruption checks.
+- Both new arms and restored control pass 383 tests plus 12,800 differential
+  streams each; 65 Python tests pass. Selected executable, 120 crate Rust sources
+  and 6,318 prior tracked reports/results are unchanged. Read-only checkpoint:
+  `python3 -B bench/results/2026-11-03-csi-outlining/verify.py`.
+
 ### Research — exact-binary instruction attribution (no runtime change)
 
 - Freeze 24 plain/profiled engine sessions and one excluded sampler pilot.

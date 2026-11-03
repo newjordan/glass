@@ -1,0 +1,18 @@
+{
+  "control-inline": {
+    "address": "0x2623a0",
+    "size": 8524
+  },
+  "authority-inline": {
+    "address": "0x261dc0",
+    "size": 8524
+  },
+  "control-outlined": {
+    "address": "0x262370",
+    "size": 8524
+  },
+  "authority-outlined": {
+    "address": "0x261c90",
+    "size": 8524
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "glass.csi-outlining-print-codegen/v1",
+  "parsers": {
+    "control": {
+      "instructions": 1967,
+      "size_bytes": 8524,
+      "inline_address": "0x2623a0",
+      "outlined_address": "0x262370",
+      "same_relocation_masked_instructions": true,
+      "normalized_sha256": "cf852bb412567140b2610b0c8f5142e479fe400b781752f0a461967aac44f64f"
+    },
+    "authority": {
+      "instructions": 1967,
+      "size_bytes": 8524,
+      "inline_address": "0x261dc0",
+      "outlined_address": "0x261c90",
+      "same_relocation_masked_instructions": true,
+      "normalized_sha256": "cf852bb412567140b2610b0c8f5142e479fe400b781752f0a461967aac44f64f"
+    }
+  },
+  "limits": "Masks only absolute target addresses, RIP-relative displacements and comments. Keeps annotated branch offsets and operations. Same listing is not byte identity, a full relocation/callee equality proof, or a cause of the Unicode loss. No instruction timing measured."
+}

@@ -1,0 +1,21 @@
+{
+  "schema": "glass.historical-evidence-index/v1",
+  "manifests": [
+    {
+      "path": "bench/results/2026-11-03-instruction-attribution/evidence-sha256.json",
+      "sha256": "14edd2233a8983e0baf36fb49b33ebd64e8f6d646da8d18fbcb7af4799a4c300",
+      "source_root": ".",
+      "snapshots": {
+        "CHANGELOG.md": "bench/results/2026-11-03-csi-outlining/prior-CHANGELOG.md",
+        "bench/README.md": "bench/results/2026-11-03-csi-outlining/prior-bench_README.md",
+        "docs/PERFORMANCE.md": "bench/results/2026-11-03-csi-outlining/prior-docs_PERFORMANCE.md"
+      }
+    },
+    {
+      "path": "bench/results/2026-11-03-instruction-attribution/supplemental-evidence-sha256.json",
+      "sha256": "c21e00ffc54db6f684a25531fb2b52f7fb36cbc0a7d9c5ea048761ab4020d9c5",
+      "source_root": ".",
+      "snapshots": {}
+    }
+  ]
+}

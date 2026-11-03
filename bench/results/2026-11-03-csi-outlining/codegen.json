@@ -1,0 +1,24 @@
+{
+  "schema": "glass.csi-outlining-codegen/v1",
+  "arms": {
+    "control-outlined": {
+      "binary_sha256": "f0afc11400459ba1395abd96163ca9bac7b25ac2fd84d97146d2a14217a0139c",
+      "scanner_decimal_loop_start": "0x2a17a2",
+      "scanner_decimal_loop_end": "0x2a17dd",
+      "loop_instructions": 18,
+      "register_index": "r9",
+      "selected_loop_stack_references": 0,
+      "apply_call_address": "0x258e46"
+    },
+    "authority-outlined": {
+      "binary_sha256": "f46646f5bb759ad5126012e96588eee2d573b63616dd262d047a2e596d14b852",
+      "scanner_decimal_loop_start": "0x2a0d72",
+      "scanner_decimal_loop_end": "0x2a0dad",
+      "loop_instructions": 18,
+      "register_index": "r9",
+      "selected_loop_stack_references": 0,
+      "apply_call_address": "0x258c03"
+    }
+  },
+  "note": "Checks the decimal-digit loop only. Parameter arrays and caller spills remain. Outlining also changes ABI, layout and optimization context; no unique causal/timing conclusion."
+}

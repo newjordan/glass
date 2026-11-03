@@ -1,0 +1,53 @@
+{
+  "schema": "glass.csi-outlining-hash-seeds/v1",
+  "checkpoints": [
+    {
+      "seed": 0,
+      "exit": 0,
+      "same_checkpoint": true,
+      "stdout_sha256": "76ea62dab90b4a84e3dabaa205d8754b1d224d2200a4973b1a1517e2a82e77f2"
+    },
+    {
+      "seed": 1,
+      "exit": 0,
+      "same_checkpoint": true,
+      "stdout_sha256": "76ea62dab90b4a84e3dabaa205d8754b1d224d2200a4973b1a1517e2a82e77f2"
+    },
+    {
+      "seed": 2,
+      "exit": 0,
+      "same_checkpoint": true,
+      "stdout_sha256": "76ea62dab90b4a84e3dabaa205d8754b1d224d2200a4973b1a1517e2a82e77f2"
+    },
+    {
+      "seed": 3,
+      "exit": 0,
+      "same_checkpoint": true,
+      "stdout_sha256": "76ea62dab90b4a84e3dabaa205d8754b1d224d2200a4973b1a1517e2a82e77f2"
+    },
+    {
+      "seed": 4,
+      "exit": 0,
+      "same_checkpoint": true,
+      "stdout_sha256": "76ea62dab90b4a84e3dabaa205d8754b1d224d2200a4973b1a1517e2a82e77f2"
+    },
+    {
+      "seed": 17,
+      "exit": 0,
+      "same_checkpoint": true,
+      "stdout_sha256": "76ea62dab90b4a84e3dabaa205d8754b1d224d2200a4973b1a1517e2a82e77f2"
+    },
+    {
+      "seed": 42,
+      "exit": 0,
+      "same_checkpoint": true,
+      "stdout_sha256": "76ea62dab90b4a84e3dabaa205d8754b1d224d2200a4973b1a1517e2a82e77f2"
+    },
+    {
+      "seed": 123456789,
+      "exit": 0,
+      "same_checkpoint": true,
+      "stdout_sha256": "76ea62dab90b4a84e3dabaa205d8754b1d224d2200a4973b1a1517e2a82e77f2"
+    }
+  ]
+}

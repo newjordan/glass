@@ -1,0 +1,94 @@
+{
+  "schema": "glass.csi-outlining-counter-diagnostic/v1",
+  "sessions": [
+    {
+      "arm": "control-inline",
+      "argv": [
+        "/tmp/glass-i26-control-inline-test",
+        "--ignored",
+        "--exact",
+        "speed::speed",
+        "--nocapture"
+      ],
+      "settings": {
+        "GLASS_BENCH_ONLY": "unicode",
+        "GLASS_BENCH_SCALE": "0.25",
+        "GLASS_BENCH_ROUNDS": "1",
+        "GLASS_BENCH_READ": "4095",
+        "GLASS_BENCH_COUNTERS": "1"
+      },
+      "start_ns": 161608321647361,
+      "end_ns": 161608351960334,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.03s\n\n",
+      "stderr": "       unicode: lanes   97.2%  vte    0.1%  (4077084 + 3946 of 4194372 bytes)\n       unicode:   229.7 MB/s    230.3 MB/cpu-s  (4194372 bytes, read 4095)\n"
+    },
+    {
+      "arm": "authority-inline",
+      "argv": [
+        "/tmp/glass-i26-authority-inline-test",
+        "--ignored",
+        "--exact",
+        "speed::speed",
+        "--nocapture"
+      ],
+      "settings": {
+        "GLASS_BENCH_ONLY": "unicode",
+        "GLASS_BENCH_SCALE": "0.25",
+        "GLASS_BENCH_ROUNDS": "1",
+        "GLASS_BENCH_READ": "4095",
+        "GLASS_BENCH_COUNTERS": "1"
+      },
+      "start_ns": 161608352113342,
+      "end_ns": 161608379819433,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.03s\n\n",
+      "stderr": "       unicode: lanes   97.5%  vte    0.1%  (4088560 + 3946 of 4194372 bytes)\n       unicode:   249.9 MB/s    250.6 MB/cpu-s  (4194372 bytes, read 4095)\n"
+    },
+    {
+      "arm": "control-outlined",
+      "argv": [
+        "/tmp/glass-i26-control-outlined-test",
+        "--ignored",
+        "--exact",
+        "speed::speed",
+        "--nocapture"
+      ],
+      "settings": {
+        "GLASS_BENCH_ONLY": "unicode",
+        "GLASS_BENCH_SCALE": "0.25",
+        "GLASS_BENCH_ROUNDS": "1",
+        "GLASS_BENCH_READ": "4095",
+        "GLASS_BENCH_COUNTERS": "1"
+      },
+      "start_ns": 161608379935802,
+      "end_ns": 161608408641473,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.03s\n\n",
+      "stderr": "       unicode: lanes   97.2%  vte    0.1%  (4077084 + 3946 of 4194372 bytes)\n       unicode:   245.0 MB/s    245.8 MB/cpu-s  (4194372 bytes, read 4095)\n"
+    },
+    {
+      "arm": "authority-outlined",
+      "argv": [
+        "/tmp/glass-i26-authority-outlined-test",
+        "--ignored",
+        "--exact",
+        "speed::speed",
+        "--nocapture"
+      ],
+      "settings": {
+        "GLASS_BENCH_ONLY": "unicode",
+        "GLASS_BENCH_SCALE": "0.25",
+        "GLASS_BENCH_ROUNDS": "1",
+        "GLASS_BENCH_READ": "4095",
+        "GLASS_BENCH_COUNTERS": "1"
+      },
+      "start_ns": 161608408748324,
+      "end_ns": 161608436302810,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.03s\n\n",
+      "stderr": "       unicode: lanes   97.5%  vte    0.1%  (4088560 + 3946 of 4194372 bytes)\n       unicode:   250.4 MB/s    251.0 MB/cpu-s  (4194372 bytes, read 4095)\n"
+    }
+  ],
+  "note": "Post-result descriptive byte-path counters only. This does NOT count scanner calls and does NOT enter the timed 48-session gate; generated Unicode stream contains no ESC, but round preparation has three CSI commands."
+}

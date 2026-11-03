@@ -791,3 +791,34 @@ result/report files are unchanged. Raw evidence, instruction disassembly,
 existing-ELF-reader cross-check and read-only `verify.py` are under
 `bench/results/2026-11-03-instruction-attribution/`; full report:
 `reports/research-1eecf9876bb302e9da10ff629e71e6d8-25.txt`.
+
+
+### Scanner outlining factorial (2026-11-03, iteration 26)
+
+One `simple` scanner inline attribute, 12 balanced four-arm blocks / 48 retained
+in-process engine sessions. Authority-outlined/original-control median CPU-rate
+ratios: ASCII **1.074813**, Unicode **0.975962**, truecolor **1.049426**, cursor
+**1.060409**, scroll-region **1.059254**, TUI **1.078943**. Both target workloads
+clear six-workload Holm p=.002930, but Unicode fails the prospective .98 point
+guard. **Candidate rejected; production unchanged.** No PTY/Ghostty comparison.
+
+Exact disassembly confirms the outlined decimal index remains in r9 with no
+stack references in its selected 18-instruction loop. Outlining recovers 12.67%
+truecolor within the authority parser but costs 3.11% on the original parser;
+this supports code-generation sensitivity, not unique spill causality. Unicode's
+generated stream has no CSI; setup commands precede timing. The moved print_utf8
+routine retains 1,967 relocation-masked instructions / 8,524 bytes in all arms.
+Caller/code-placement effects are open leads, not established explanations.
+
+Both outlined arms and restored control pass 383 terminal tests and 12,800
+existing differential streams each; 65 Python tests pass. Independent raw replay
+and 23 corruption rejections retain the failed gate, not an optimization win.
+All 120 crate Rust sources, 6,318 prior tracked reports/results and selected
+executable are unchanged. Full report:
+`reports/research-1eecf9876bb302e9da10ff629e71e6d8-26.txt`; evidence and replay:
+
+```sh
+python3 -B bench/results/2026-11-03-csi-outlining/verify.py
+python3 -B bench/replay-evidence-index.py \
+  bench/results/2026-11-03-csi-outlining/frozen-index.json
+```

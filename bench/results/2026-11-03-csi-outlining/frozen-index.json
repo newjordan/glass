@@ -1,0 +1,11 @@
+{
+  "schema": "glass.historical-evidence-index/v1",
+  "manifests": [
+    {
+      "path": "bench/results/2026-11-03-csi-outlining/evidence-sha256.json",
+      "sha256": "dc7f31ae013106ca4853a350d415dc6fcbbcfc98e5a63cade042bc8a16c19d29",
+      "source_root": ".",
+      "snapshots": {}
+    }
+  ]
+}

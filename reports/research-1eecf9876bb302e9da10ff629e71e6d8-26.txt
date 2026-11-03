@@ -1,0 +1,142 @@
+Glass iteration 26 — CSI scanner outlining: truecolor recovery, Unicode veto
+Date: 2026-11-03 UTC
+Status: reported research result, REJECTED runtime candidate. Not championship acceptance.
+
+Question and prospective design
+-------------------------------
+Iteration 25 identified a decimal-loop index spill in the rejected authoritative-
+ground parser, but did not establish causal cost. This iteration tests a single
+new source intervention: replace #[inline] with #[inline(never)] on engine::simple.
+The 2x2 factorial crosses original/authority parser with inline/outlined scanner.
+The authority parser and its two VTE accessors are exactly iteration 24's retained
+candidate. No additional semantic optimization or correctness test was introduced.
+
+Protocol and all four source snapshots were saved before build/timing. The initial
+preparation stopped on an overbroad source assertion: authority VTE accessors are
+intentional prerequisites, not unintended source drift. prepare.py corrects the
+assertion before builds. A requested independent reviewer timed out after 180s
+and supplied no usable review. An accidental checker placeholder was caught by
+Python syntax validation and replaced before replay; no measurement was lost.
+
+All four arms were freshly built serially with bench/build-engine-arm.py, which
+advances source mtimes beyond Cargo fingerprint times and selects the actual
+Cargo test artifact. The two original arms byte-match their exact i24 executables.
+Build receipts bind all four input sources. Source restoration is unconditional;
+a final restored build byte-matches control and restores Cargo's artifact too.
+Selected target/release/glass was never rebuilt or replaced.
+
+The contemplated 11 blocks were changed BEFORE measurements to 12 for exact
+Williams balance: four orders repeated three times, each arm in every slot three
+times, each directed within-block predecessor relation three times. Forty-eight
+serial sessions, six workloads/session, scale 2.0, five rounds, read size 4095.
+No pilot, retries, dropped sessions, rescue variant, or pooling old timing data.
+This is the existing in-process speed test, best-of-five CPU throughput; not PTY.
+Primary contrast: authority-outlined / control-inline. Prospective operational
+screen: all six median CPU ratios >= .98; at least ASCII or scroll-region >=1.02,
+more wins than losses, two-sided sign-test Holm p<.05 across six workloads.
+A .98 point guard is NOT a statistical equivalence guarantee.
+
+Measured primary result
+-----------------------
+Workload          median CPU ratio   wins/losses   Holm p
+ASCII                1.074813          12 / 0      .0029296875
+Unicode               .975962           2 / 10     .03857421875
+truecolor            1.049426          12 / 0      .0029296875
+cursor_motion        1.060409          12 / 0      .0029296875
+scroll_region        1.059254          12 / 0      .0029296875
+tui_frames           1.078943          12 / 0      .0029296875
+
+Both target workloads clear. Unicode alone fails the .98 regression guard; its
+12 block ratios range .954869–1.016611. Reject the runtime candidate. No fresh
+terminal/Ghostty comparison or end-to-end promotion follows a failed engine gate.
+Sequential shared-host sign-test results are conditional screens, not universal
+wins or instruction-level causal identification.
+
+New mechanism evidence
+----------------------
+The emitted-code manipulation succeeded: both outlined decimal loops carry the
+index in r9 and load the next byte via -1(%rsi,%r9,1). The selected 18-instruction
+decimal region contains zero stack references. Engine::apply has one static call
+to the outlined scanner. Caller spills and parameter arrays still exist. Saving
+and re-running objdump checks exact executable disassembly, not guessed source
+assembly. authority-outlined loop is 0x2a0d72..0x2a0dad; control-outlined loop is
+0x2a17a2..0x2a17dd. Original authority assembly still shows index reload/store at
+0x28(%rsp); original control carries its index in r8.
+
+Contemporaneous secondary median contrasts (descriptive, no extra gate):
+                               truecolor        Unicode
+original authority / control     .926359         .999102
+authority outlined / inline     1.126678         .978229
+control outlined / inline        .968862        1.004718
+ratio-of-ratios                  1.166029         .970733
+
+Thus scanner outlining recovers the authority parser's truecolor loss (+12.67%
+within that parser) while slowing truecolor on the original parser (-3.11%). This
+interaction supports optimizer/context sensitivity. It DOES NOT prove removing
+the particular spill caused recovery: outlining also changes ABI/calls, layout,
+register allocation and optimization context. A future narrowly matched emission
+intervention would be needed for stronger attribution. The failed Unicode guard
+also prevents calling this a generally beneficial scanner optimization.
+
+Distinct finding beyond the proposed decimal mechanism: Unicode's generated
+stream contains no ESC/CSI. Each round's three setup CSI commands occur before
+its timed interval. Source inspection establishes that; existing byte-path
+counters do not count scanner calls. Four post-result counter sessions at scale
+.25/one round are retained separately, never pooled into the gate. Within each
+parser, inline and outlined byte-path counts are identical (control lane/VTE
+4,077,084/3,946; authority 4,088,560/3,946 out of 4,194,372 stream bytes). Counters
+include setup and do not account for every byte category. They cannot identify
+the Unicode loss, and their timings are not confirmatory evidence.
+
+All four print_utf8 symbols are 8,524 bytes / 1,967 disassembled instructions.
+Within both parser pairs, operation listings match after masking ONLY absolute
+annotated target addresses, RIP-relative displacements and comments; annotated
+branch offsets and operations are kept. In fact all four normalized listings
+share SHA-256 cf852bb412567140b2610b0c8f5142e479fe400b781752f0a461967aac44f64f.
+Control placement changes 0x2623a0 -> 0x262370, authority 0x261dc0 -> 0x261c90.
+This is NOT raw-byte identity or proof of identical callees/relocation semantics.
+It narrows the lead: unchanged text-routine listing, moved placement and changed
+caller/neighbor code. Layout/front-end/cache, caller changes and shared-host noise
+remain open hypotheses; no one is asserted as the cause.
+
+Correctness and evidence
+------------------------
+Each outlined arm and the final restored control pass 383 terminal tests (11
+ignored) and the existing deterministic 64x200 = 12,800-stream differential sweep.
+Original arms are byte-identical to already checked i24 binaries; no new mutant
+was needed for an attribute-only intervention. Existing Python suite: 65 tests.
+Independent raw replay rechecks exact 48-session schedule, settings, all binary
+hashes, serialized nonoverlapping intervals, raw metric parsing, six equal
+workload shapes, positive finite rates, test census, balanced order, ratios,
+sign tests and Holm adjustment. Twenty-three actual retained-report corruption
+challenges are rejected. Mutation checks test the replay, NOT runtime correctness
+or benchmark accuracy. Exact codegen and print instruction checks rerun objdump.
+
+All 120 tracked crate Rust sources, 6,318 prior tracked result/report files and
+selected terminal executable remain byte-identical. Selected executable SHA-256:
+d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c.
+Prior checkpoint was replayed before and after builds. Explicit snapshots preserve
+historical documentation references rather than modifying earlier manifests.
+New checkpoint and frozen-manifest replay receipts accompany this report.
+
+Reproduce the read-only checkpoint (requires exact /tmp research executables):
+  python3 -B bench/results/2026-11-03-csi-outlining/verify.py
+Frozen byte-integrity replay (does not require executables):
+  python3 -B bench/replay-evidence-index.py \
+    bench/results/2026-11-03-csi-outlining/frozen-index.json
+
+Artifacts: bench/results/2026-11-03-csi-outlining/. Raw timings raw.json, prospective
+protocol.json, analysis.json, codegen/print-codegen reports and implementations,
+source snapshots, build receipts, disassembly, correctness logs, corruption cases,
+prior checkpoint adapter with exact documented remapping, SHA-256 manifest/index.
+
+Disposition and next necessary research
+--------------------------------------
+No production change and no world-champion claim. The instruction lead paid off
+in a real truecolor recovery but failed the all-workload gate. Do not promote
+this attribute or merely relax Unicode's guard. Next distinguish a placement/
+caller interaction from text decoding cost, with a separately declared emission-
+controlled experiment, before any end-to-end candidate comparison. Then require
+fresh PTY/Ghostty evidence for any competitive claim. No acceptance command is
+bound to the broader objective; this is a verified local research checkpoint,
+not campaign completion.

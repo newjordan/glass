@@ -1,0 +1,18 @@
+{
+  "control-inline": {
+    "path": "/tmp/glass-i26-control-inline-test",
+    "sha256": "288161ef4ed3bd64429f996878f28aa820010815c298491eaa844fbbef85766c"
+  },
+  "authority-inline": {
+    "path": "/tmp/glass-i26-authority-inline-test",
+    "sha256": "cfa915a6247d228696fdf0438d7ea2aaa30e40024d80df81dfb3e65b5a955ccd"
+  },
+  "control-outlined": {
+    "path": "/tmp/glass-i26-control-outlined-test",
+    "sha256": "f0afc11400459ba1395abd96163ca9bac7b25ac2fd84d97146d2a14217a0139c"
+  },
+  "authority-outlined": {
+    "path": "/tmp/glass-i26-authority-outlined-test",
+    "sha256": "f46646f5bb759ad5126012e96588eee2d573b63616dd262d047a2e596d14b852"
+  }
+}

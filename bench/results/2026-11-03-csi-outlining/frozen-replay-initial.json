@@ -1,0 +1,19 @@
+{
+  "schema": "glass.historical-evidence-replay/v1",
+  "manifests": [
+    {
+      "path": "bench/results/2026-11-03-csi-outlining/evidence-sha256.json",
+      "manifest_sha256": "dc7f31ae013106ca4853a350d415dc6fcbbcfc98e5a63cade042bc8a16c19d29",
+      "files": 99,
+      "live_paths": 99,
+      "historical_paths": 0,
+      "bytes": 8615101
+    }
+  ],
+  "manifest_count": 1,
+  "file_references": 99,
+  "historical_references": 0,
+  "unique_source_versions": 99,
+  "note": "Explicit historical byte-integrity replay only; not timing, safety or championship acceptance.",
+  "index_sha256": "39e0e3cae00808b12e07dbb42cf84293bbc207c6fe4bccf7ad9eb85babef19e7"
+}
