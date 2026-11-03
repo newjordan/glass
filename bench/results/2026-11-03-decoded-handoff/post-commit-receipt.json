@@ -1,0 +1,22 @@
+{
+  "schema": "glass.decoded-handoff-post-commit/v1",
+  "research_commit": "3e7e4350dc164b7501027dd0f9b0f040139200d0",
+  "runtime_promotion": false,
+  "checks": [
+    {
+      "check": "canonical_checkpoint",
+      "path": "bench/results/2026-11-03-decoded-handoff/checkpoint-post-commit.json",
+      "exit": 0,
+      "sha256": "d85caa200b350096170c40914fc90cb82f2ac89be02325160bf011c15c0d17e4",
+      "same_as_initial": true
+    },
+    {
+      "check": "complete_frozen_replay",
+      "path": "bench/results/2026-11-03-decoded-handoff/complete-frozen-replay-post-commit.json",
+      "exit": 0,
+      "sha256": "aba3c522a11083c1acf72abe73c208e3d40700d66e3ff377606c6be7c470e263",
+      "references": 88
+    }
+  ],
+  "whitespace": "See immutable staging-note.json; raw patch context whitespace retained and excluded from formatting gate, all other staged paths checked."
+}
