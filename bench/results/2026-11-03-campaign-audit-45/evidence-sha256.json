@@ -1,0 +1,30 @@
+{
+  "schema": "glass.research-evidence/v1",
+  "sha256": {
+    "bench/results/2026-11-03-campaign-audit-45/README.md": "25d1da6fc056a7985620289063c65179becb42d782102aa157ca593dd56c5024",
+    "bench/results/2026-11-03-campaign-audit-45/audit-first.exit": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "bench/results/2026-11-03-campaign-audit-45/audit-first.stderr": "a909126bf17a8ddd07afb094ca6ca5b8a9094ec02ba9690b108fd15af8de42f4",
+    "bench/results/2026-11-03-campaign-audit-45/audit-first.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bench/results/2026-11-03-campaign-audit-45/audit.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "bench/results/2026-11-03-campaign-audit-45/audit.json": "18aff2ac6bbbd778376beb1dad1b7cbd96408073d30d81adaba8910d0341b0c5",
+    "bench/results/2026-11-03-campaign-audit-45/audit.py": "baffc6208c2f9e2aad7b9c11ff39ab43307b8bae942c4cee97ed9129d547e68d",
+    "bench/results/2026-11-03-campaign-audit-45/audit.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bench/results/2026-11-03-campaign-audit-45/checkpoint-first.exit": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "bench/results/2026-11-03-campaign-audit-45/checkpoint-first.json": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bench/results/2026-11-03-campaign-audit-45/checkpoint-first.stderr": "bb29c3ec4008cf2f532c4f353e7338457ff5c7de8db714eeba99f7eb9168e251",
+    "bench/results/2026-11-03-campaign-audit-45/claims.json": "4b33707c106b298cb22a0214e5b9869a951707e82030594b05d127c8af12b6d5",
+    "bench/results/2026-11-03-campaign-audit-45/existing-index-tests.log": "1e43b905e11ca028139fe5078016515111aaf7cebf8d6a3e224b7d03b9cb6ac9",
+    "bench/results/2026-11-03-campaign-audit-45/failed-processes.json": "ef49f6fdb5b7ce83d087dae83654cf85ab6ae982211a2eedb89314af6da6c2c7",
+    "bench/results/2026-11-03-campaign-audit-45/input-sha256.json": "1f65652df8a5363fe1b4d66453ca6b5ebdbc2dc5da6d343db40b6608859470ac",
+    "bench/results/2026-11-03-campaign-audit-45/prior-checkpoint.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "bench/results/2026-11-03-campaign-audit-45/prior-checkpoint.json": "dc54766f8101d0f6435b59223b9f002b79d0efa1f8640e8a0cebe078fa7aebc4",
+    "bench/results/2026-11-03-campaign-audit-45/prior-checkpoint.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bench/results/2026-11-03-campaign-audit-45/prior-process-12667.log": "8a71623c8950b3503b7b0884b967c6b217b19d674f0ddb2a805ef971838d0c12",
+    "bench/results/2026-11-03-campaign-audit-45/prior-process-12669.log": "ad9d7c2a49e5c447a32f080359aae6a7da77804c399323c35bf91234ca28118c",
+    "bench/results/2026-11-03-campaign-audit-45/prior-process-12670.log": "de5be0932d7fdf50744a202c1ff6ad146c569778196f1d789ea6211f770076f8",
+    "bench/results/2026-11-03-campaign-audit-45/setup-error-summary.json": "25169b1807a28f37065396b2d25f0d94bbd7de0c6b4089756a803d4e76943afa",
+    "bench/results/2026-11-03-campaign-audit-45/starting-state.json": "e2ef8aebb7a601ad0bb1366a6e37d12a81e26505e70cfefbe729b7b1244b4004",
+    "bench/results/2026-11-03-campaign-audit-45/verify.py": "ed6a949092fb306b5e16a88cc8d9baa59ffd5f4f865c04b7e8a00f404bfaa197",
+    "reports/research-1eecf9876bb302e9da10ff629e71e6d8-45.txt": "4c2d277f01dfe994d68b2eaa894db3e7138cf8b8cc9820470f574748e65250bb"
+  }
+}

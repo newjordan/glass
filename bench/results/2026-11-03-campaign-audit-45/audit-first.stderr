@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-campaign-audit-45/audit.py", line 285, in <module>
+    print(json.dumps(run(), indent=2, sort_keys=True))
+                     ~~~^^
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-campaign-audit-45/audit.py", line 273, in run
+    'checker_correction': checker_inventory(), 'provenance_sensitivity': binding_sensitivity(),
+                          ~~~~~~~~~~~~~~~~~^^
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-campaign-audit-45/audit.py", line 237, in checker_inventory
+    record = methods['test_record_corruption']
+             ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'test_record_corruption'

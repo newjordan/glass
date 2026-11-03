@@ -1,0 +1,128 @@
+[
+  {
+    "iteration": 31,
+    "directory": "bench/results/2026-11-03-local-mark-lane",
+    "report": "reports/research-1eecf9876bb302e9da10ff629e71e6d8-31.txt",
+    "checkpoint": "bench/results/2026-11-03-local-mark-lane/checkpoint-post-commit.json",
+    "classification": "rejected-performance",
+    "reconciled_scope": "Unicode 1.025787 paired CPU ratio; fixed engine screen false; no promotion.",
+    "competitive_acceptance": false
+  },
+  {
+    "iteration": 32,
+    "directory": "bench/results/2026-11-03-pen-dispatch",
+    "report": "reports/research-1eecf9876bb302e9da10ff629e71e6d8-32.txt",
+    "checkpoint": "bench/results/2026-11-03-pen-dispatch/checkpoint-post-commit.json",
+    "classification": "rejected-performance-and-oracle-negative",
+    "reconciled_scope": "Truecolor 1.001550 ratio; screen false. Common FG/BG mutant accepted by 12800 differential streams, rejected by literal oracle.",
+    "competitive_acceptance": false
+  },
+  {
+    "iteration": 33,
+    "directory": "bench/results/2026-11-03-exact-corpus",
+    "report": "reports/research-1eecf9876bb302e9da10ff629e71e6d8-33.txt",
+    "checkpoint": "bench/results/2026-11-03-exact-corpus/checkpoint-post-commit.json",
+    "classification": "measurement-correction",
+    "reconciled_scope": "Only TUI generated payload byte-identical to PTY export. Exact exported payloads validated; not a runtime speedup.",
+    "competitive_acceptance": false
+  },
+  {
+    "iteration": 34,
+    "directory": "bench/results/2026-11-03-pass-samples",
+    "report": "reports/research-1eecf9876bb302e9da10ff629e71e6d8-34.txt",
+    "checkpoint": "bench/results/2026-11-03-pass-samples/checkpoint-post-commit.json",
+    "classification": "measurement-correction",
+    "reconciled_scope": "360 internal passes across 24 sessions; CPU and wall fastest pass differ once. Observer ratios are not a runtime candidate.",
+    "competitive_acceptance": false
+  },
+  {
+    "iteration": 35,
+    "directory": "bench/results/2026-11-03-scroll-authority",
+    "report": "reports/research-1eecf9876bb302e9da10ff629e71e6d8-35.txt",
+    "checkpoint": "bench/results/2026-11-03-scroll-authority/checkpoint-post-commit.json",
+    "classification": "rejected-correctness",
+    "reconciled_scope": "Output-only scroll authority fails all 76 resize cases; small-history counting remains unfixed.",
+    "competitive_acceptance": false
+  },
+  {
+    "iteration": 36,
+    "directory": "bench/results/2026-11-03-movement-authority",
+    "report": "reports/research-1eecf9876bb302e9da10ff629e71e6d8-36.txt",
+    "checkpoint": "bench/results/2026-11-03-movement-authority/checkpoint-post-commit.json",
+    "classification": "rejected-correctness",
+    "reconciled_scope": "4704 primary and 1392 inactive cases each arm; prototype zero matrix mismatches but two defect tests filtered; runtime restored.",
+    "competitive_acceptance": false
+  },
+  {
+    "iteration": 37,
+    "directory": "bench/results/2026-11-03-height-snapshot",
+    "report": "reports/research-1eecf9876bb302e9da10ff629e71e6d8-37.txt",
+    "checkpoint": "bench/results/2026-11-03-height-snapshot/checkpoint-post-commit.json",
+    "classification": "rejected-correctness",
+    "reconciled_scope": "Zero height failures on 56160 observations does not cover 32 remaining mixed failures of 3456; runtime restored.",
+    "competitive_acceptance": false
+  },
+  {
+    "iteration": 38,
+    "directory": "bench/results/2026-11-03-origin-map",
+    "report": "reports/research-1eecf9876bb302e9da10ff629e71e6d8-38.txt",
+    "checkpoint": "bench/results/2026-11-03-origin-map/checkpoint-post-commit.json",
+    "classification": "rejected-correctness",
+    "reconciled_scope": "Guarded Unicode finite matrix zero failures; candidate suite 388 passed, 4 failed, 16 ignored; runtime restored.",
+    "competitive_acceptance": false
+  },
+  {
+    "iteration": 39,
+    "directory": "bench/results/2026-11-03-blank-witness",
+    "report": "reports/research-1eecf9876bb302e9da10ff629e71e6d8-39.txt",
+    "checkpoint": "bench/results/2026-11-03-blank-witness/checkpoint-post-commit.json",
+    "classification": "rejected-correctness",
+    "reconciled_scope": "Witness deletion fixes finite cases, but broad slot failures and failing full suites remain; corrected GLASS_SCROLLBACK runs authoritative, not initial suite failures.",
+    "competitive_acceptance": false
+  },
+  {
+    "iteration": 40,
+    "directory": "bench/results/2026-11-03-persistent-witness",
+    "report": "reports/research-1eecf9876bb302e9da10ff629e71e6d8-40.txt",
+    "checkpoint": "bench/results/2026-11-03-persistent-witness/checkpoint-post-commit.json",
+    "classification": "rejected-correctness",
+    "reconciled_scope": "168296 continuously in-bounds observations pass, but 2728 broader slot failures and 3 full-suite failures remain; no runtime promotion.",
+    "competitive_acceptance": false
+  },
+  {
+    "iteration": 41,
+    "directory": "bench/results/2026-11-03-scroll-witness",
+    "report": "reports/research-1eecf9876bb302e9da10ff629e71e6d8-41.txt",
+    "checkpoint": "bench/results/2026-11-03-scroll-witness/checkpoint-post-commit.json",
+    "classification": "rejected-correctness",
+    "reconciled_scope": "Witness-aware scrolling zero of 2880 finite matrix failures, but broad slots and 3 full-suite failures remain; research-only.",
+    "competitive_acceptance": false
+  },
+  {
+    "iteration": 42,
+    "directory": "bench/results/2026-11-03-split-witness",
+    "report": "reports/research-1eecf9876bb302e9da10ff629e71e6d8-42.txt",
+    "checkpoint": "bench/results/2026-11-03-split-witness/checkpoint-post-commit.json",
+    "classification": "source-fix-not-selected-build",
+    "reconciled_scope": "4 shipping physical-fragment cases fail on control and pass production; prototype 1680 cases does not confer witness correctness on shipping.",
+    "competitive_acceptance": false
+  },
+  {
+    "iteration": 43,
+    "directory": "bench/results/2026-11-03-source-seams",
+    "report": "reports/research-1eecf9876bb302e9da10ff629e71e6d8-43.txt",
+    "checkpoint": "bench/results/2026-11-03-source-seams/checkpoint-post-commit.json",
+    "classification": "source-fix-not-selected-build",
+    "reconciled_scope": "Real sixel/OSC1337 source-row merge matrix: 384 of 1536 control failures, 0 candidate; 394 tests and 14 ignored.",
+    "competitive_acceptance": false
+  },
+  {
+    "iteration": 44,
+    "directory": "bench/results/2026-11-03-cover-transport",
+    "report": "reports/research-1eecf9876bb302e9da10ff629e71e6d8-44.txt",
+    "checkpoint": "bench/results/2026-11-03-cover-transport/checkpoint-post-commit.json",
+    "classification": "source-fix-not-selected-build",
+    "reconciled_scope": "Covered-cell oracle: 2008 of 10368 control observations fail, 0 candidate; 395 tests and 14 ignored. README checker counts require correction.",
+    "competitive_acceptance": false
+  }
+]

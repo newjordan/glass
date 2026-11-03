@@ -1,0 +1,9 @@
+{
+  "source": "bench/results/2026-11-03-cover-transport/build-control/cargo.jsonl",
+  "errors": [
+    "no field `parts` on type `&intake::View`",
+    "no method named `set_plain_runs` found for struct `engine::Engine` in the current scope",
+    "no method named `view` found for struct `intake::Intake` in the current scope"
+  ],
+  "excluded_from_success_counts": true
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "id": 12667,
+    "source": "bench/results/2026-11-03-campaign-audit-45/prior-process-12667.log",
+    "sha256": "8a71623c8950b3503b7b0884b967c6b217b19d674f0ddb2a805ef971838d0c12",
+    "interpretation": "setup failure; build exit 101, wrapper exit 1"
+  },
+  {
+    "id": 12669,
+    "source": "bench/results/2026-11-03-campaign-audit-45/prior-process-12669.log",
+    "sha256": "ad9d7c2a49e5c447a32f080359aae6a7da77804c399323c35bf91234ca28118c",
+    "interpretation": "expected failing control matrix; not candidate success"
+  },
+  {
+    "id": 12670,
+    "source": "bench/results/2026-11-03-campaign-audit-45/prior-process-12670.log",
+    "sha256": "de5be0932d7fdf50744a202c1ff6ad146c569778196f1d789ea6211f770076f8",
+    "interpretation": "exploratory normalized-coordinate probe, not accepted matrix"
+  }
+]

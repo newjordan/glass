@@ -1,0 +1,178 @@
+# Iteration 45 — mandatory evidence review: championship gap remains open
+
+Status: reported local research; no championship acceptance, runtime promotion,
+new benchmark capture, Rust build, submission or deployment. Starting HEAD:
+a085a8c. Existing reports and sources are preserved, not silently rewritten.
+
+## Review scope and implementation
+
+The mandatory 15-iteration review reconciles all 14 intervening iteration claims
+(31–44) in an explicit claims.json ledger. Iteration30's review remains the
+historical inventory for earlier work; no historical lead transfers to a newer
+artifact merely because it is in the same repository.
+
+Primary new code and artifacts:
+  bench/results/2026-11-03-campaign-audit-45/audit.py
+  bench/results/2026-11-03-campaign-audit-45/verify.py
+  bench/results/2026-11-03-campaign-audit-45/claims.json
+  bench/results/2026-11-03-campaign-audit-45/audit.json
+
+The preceding cover-transport verifier exited 0, saved as prior-checkpoint.json
+and prior-checkpoint.exit. Its output matches the earlier saved checkpoint.
+Six tests from the existing test_replay_evidence_index.py entry point passed;
+existing-index-tests.log retains that actual execution. The corrected new audit
+exited 0. This review recomputes retained raw observations and checks source and
+executable identities. It does NOT rerun the historical Rust suites or timings.
+
+## Literal target delta — exact selected executable, not latest runtime source
+
+Selected SHA256:
+  d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c
+Ghostty SHA256:
+  ef28bf3a0f6ead69014da86ab0c9a2ef30fcf3bf297a6a27c4c18dfc80a56a62
+
+Source: bench/results/2026-11-03-role-partition/shipping-vs-ghostty/
+The existing terminal replay checks all 60 raw sessions, harness hashes and both
+available executable hashes. The audit independently recomputes 30 paired ratios
+per workload, two-sided sign probabilities and within-series six-workload Holm
+adjustments. No new timing or new favorable comparator is introduced.
+
+Workload       selected/Ghostty   wins/losses  Holm p       own gain to parity
+ASCII          0.947116395        10/20        .197474293   +5.583644%
+Unicode        0.929112259         3/27        .000025291  +7.629621%
+Truecolor      1.181802248        30/0         .000000011   0
+Cursor motion  1.098724997        30/0         .000000011   0
+Scroll region  0.989284971        13/17        .584664712   +1.083108%
+TUI frames     1.062165424        29/1         .000000231   0
+
+Only THREE of six have corrected positive leads. Unicode's small p-value points
+against Glass, not in its favor. ASCII/scroll-region inconclusiveness is not
+equivalence. Parity gain is max(0,100*(1/paired_median-1)): an observed point delta,
+not a superiority margin or forecast. These serial shared-host signs need not
+be independent. Holm within one series does not correct adaptive campaign search.
+
+Iterations42–44 fix runtime sources, but the selected executable remains exactly
+the identity above. Those source fixes have NOT been competitively measured in
+that selected build. Missing gates remain cold startup, idle/loaded RAM and VRAM,
+displayed key-to-screen latency under idle/flood load, displayed frame delivery,
+and agreed compatibility/platform scope. DA1 throughput and key-to-PTY proxies do
+not supply display latency. No acceptance command or world-ranking scope is bound.
+
+## Reconciliation of all active iteration31–44 claims
+
+31: Local mark lane handled 490113 of 507568 marks, but its Unicode 1.025787 CPU
+    point ratio did not clear the fixed engine screen. Rejected, restored.
+32: Pen-dispatch split truecolor ratio 1.001550 did not clear its screen. The
+    deliberate shared FG/BG-handler mutant passed 12800 differential streams and
+    failed the literal pen oracle. A green shared-oracle sweep is not independent
+    semantic correctness. No runtime candidate was promoted.
+33: Exact exported corpus loading passed byte equality; only TUI among the six
+    generated payloads was byte-identical to PTY export. The comparison is corpus
+    sensitivity, not evidence of runtime speedup.
+34: 360 internal passes in 24 sessions are not 360 independent trials. One workload
+    session had different CPU and wall minima. Observer ratios are not a candidate.
+35: Output-only movement authority failed all 76 resize cases, versus zero control
+    mismatches. It is rejected. The small-history finding remains open, not fixed.
+36: Prototype zero mismatches in 4704 primary and 1392 inactive cases is bounded;
+    its 391-pass suite filtered TWO tests. Final restored suite: 390 passes. The
+    rejected prototype is not silently labeled shipping.
+37: Candidate-v5 zero failures on 56160 height observations did not remove 32
+    mixed-resize failures of 3456 cases. Rejected; final restored 392-pass suite.
+38: Guarded Unicode matrix finite success did not make the prototype acceptable:
+    its suite retained 388 passes, FOUR failures and 16 ignored. Restored runtime.
+39: Finite deletion success did not remove broader slot failures or full-suite
+    failures. Initial runs with wrong effective scrollback failed heavily; corrected
+    bound runs, not initial failures or stale binary assumptions, are authoritative.
+40: 168296 continuously in-bounds observations pass, but 2728 broader slot failures
+    and THREE full-suite failures remain. The runtime was restored.
+41: Witness-aware finite scroll matrix is 0/2880 failures, versus stale 2232/2880
+    and transport-only 144/2880. It still retains three full-suite failures and
+    broader slot limits. Research-only; no promotion.
+42: Four shipping physical-fragment cases fail control and pass production. The
+    1680 prototype cases do not transfer witness correctness to production. Source
+    fix retained; selected executable unchanged.
+43: Real-intake source-row merge matrix: 384/1536 control failures, 0/1536 candidate;
+    394-pass production suite, 14 ignored. Source fix, not new speed evidence.
+44: Covered-cell matrix: 2592 cases and 10368 observations PER ARM; control step
+    failures [0,968,520,520], candidate [0,0,0,0]. Production suite 395 passes,
+    14 ignored. Both differential arms log 12800 streams. Source correctness only.
+
+The new audit invokes the existing analyzers/parsers directly rather than counting
+report assertions as observations. Relevant failed/filtered suites remain explicit
+negative evidence. Finite matrices and common-handler differential tests do not
+prove complete terminal/Unicode/image compatibility.
+
+## New concrete findings missed by the preceding checkpoint
+
+1. Source-checked checker inventory contradicts iteration44 README wording.
+   README says 18 record corruptions and six malformed-coordinate shapes. The
+   actual test_record_corruptions list contains FOURTEEN mutations and
+   test_coordinate_shapes contains SEVEN bad shapes. There are five unittest
+   methods. Duplicate JSON key, unknown arm and colluding expected/actual edits
+   are additional separate rejection checks, not reasons to call 14 entries 18.
+   The AST-derived counts and the README's old wording are both checked. The
+   historical README is preserved; this is its explicit correction.
+
+2. Semantic provenance sensitivity: iteration44 verifier binds claimed binary
+   SHA256, log SHA256, environment and argv[1:], but not argv[0] to the receipt's
+   executable path. A decoded-JSON-only mutation replaces the candidate path with
+   the control executable while retaining the declared candidate hash and logs.
+   Existing verify() returns the identical checkpoint; the new bind_invocation
+   check rejects it. All real saved run records satisfy the new path/hash binding,
+   and both retained test executables match their hashes.
+   This is an in-memory cross-field test AFTER byte-manifest checking, NOT an
+   on-disk manifest bypass, alleged wrong execution, timing fraud or exploit.
+   mock.patch restores the old loader on normal and exceptional paths. Production
+   metadata and historical verifier files are not mutated.
+
+3. Frozen replay coverage has a scope boundary. Iteration44's final index correctly
+   checks 14 manifests, 1819 references and 1790 unique source versions. It omits
+   iteration31's separate two-manifest/136-reference/71-version package. Nothing
+   here proves a missing file or corruption: these are different explicit scopes.
+   This review checks their union: 16 manifests, 1955 references, 1861 versions.
+   The final index additionally freezes this review's own explicit artifacts.
+   References are not tests; versions are not independent experiments.
+
+## Retained failure accounting
+
+The initial new audit failed on a KeyError in the AST inventory's singular method
+name; audit-first.stderr and audit-first.exit retain it. The lookup identifiers
+were corrected to actual source names before the successful measured audit. No
+results were manufactured by changing old checker source or counts.
+The first final wrapper then reproduced the audit but failed archive replay
+because the new manifest used a nonstandard schema. checkpoint-first.* retains
+that exit 1. The manifest was corrected to the existing glass.research-evidence/v1
+schema before the final checkpoint; no measured observations were changed.
+
+Retained previous process logs 12667, 12669, 12670 are copied verbatim into this
+review. 12667's build wrapper exited 1 after Cargo 101: wrong View.parts,
+Engine.set_plain_runs and Intake.view API names. 12669 and 12670 each failed the
+control cell-oracle test; neither is candidate success. Corrected control-v3 and
+candidate run identities, commands and expected exits are bound in the latest
+checkpoint. Initial normalized-versus-pixel-coordinate setup mistakes and the
+zero-selected-test exploratory probe remain excluded from accepted matrix counts.
+The earlier whitespace/precommit failure was not a completed commit or test pass;
+actual later commits and successful checkpoint, not the failed command, are used.
+
+## Preservation, replay and next necessary action
+
+starting-state.json protects 9017 pre-existing tracked paths, including runtime
+sources, reports and shared docs. The selected binary hash is unchanged. The
+review creates only additive artifacts in this directory and this report; it does
+not adopt or delete unrelated pre-existing untracked work.
+
+Replay from repository root:
+  python3 -B bench/results/2026-11-03-campaign-audit-45/verify.py
+
+That command requires exact evidence and equality with the saved audit output.
+Temporary test binaries and /usr/bin/ghostty remain explicit dependencies, not an
+archival or source-attestation guarantee. Checksums establish local consistency,
+not external authenticity or timing accuracy.
+
+The evidence review is now reconciled. Next engineering action is a prospectively
+bounded candidate targeting the still-deficient Unicode/ASCII path, using exact
+PTY-exported workloads, literal semantic checks and fresh source/build identities.
+A surviving candidate then needs new end-to-end Ghostty comparisons and the
+missing every-metric gates on the SAME build. The rejected witness prototypes
+must not be slipped into that build as already-correct fixes. This iteration
+adds an auditable measurement/provenance correction, not a speedup or world title.

@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-campaign-audit-45/verify.py", line 53, in <module>
+    print(json.dumps(verify(), indent=2, sort_keys=True))
+                     ~~~~~~^^
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-campaign-audit-45/verify.py", line 36, in verify
+    replay = module(ROOT / 'bench/replay-evidence-index.py').validate(ROOT, load(D / 'final-frozen-index.json'))
+  File "/work/frosty40/glass-repo/tree/bench/replay-evidence-index.py", line 91, in validate
+    need(manifest["schema"] in ("glass.research-evidence/v1", "glass.immutable-research-evidence/v1"),
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+         "unknown evidence manifest schema")
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/frosty40/glass-repo/tree/bench/replay-evidence-index.py", line 20, in need
+    raise ValueError(message)
+ValueError: unknown evidence manifest schema

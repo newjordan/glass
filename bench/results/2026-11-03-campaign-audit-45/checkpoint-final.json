@@ -1,0 +1,163 @@
+{
+  "championship_established": false,
+  "checker_source_counts": {
+    "invalid_coordinate_shapes": 7,
+    "record_mutations": 14,
+    "unittest_methods": 5
+  },
+  "claims": 14,
+  "final_frozen_replay": {
+    "file_references": 1980,
+    "historical_references": 29,
+    "manifest_count": 17,
+    "manifests": [
+      {
+        "bytes": 5150593,
+        "files": 120,
+        "historical_paths": 1,
+        "live_paths": 119,
+        "manifest_sha256": "4a7fc3e43ccad24f238e9f56f7391f1a9a09078486111abc83819791ee44c332",
+        "path": "bench/results/2026-11-03-pen-dispatch/evidence-sha256.json"
+      },
+      {
+        "bytes": 6766343,
+        "files": 69,
+        "historical_paths": 1,
+        "live_paths": 68,
+        "manifest_sha256": "1a6d21ec00cfa48bdb826ab812e8c46bc5b54c39727f003cf09912a14652ac37",
+        "path": "bench/results/2026-11-03-exact-corpus/evidence-sha256.json"
+      },
+      {
+        "bytes": 5620734,
+        "files": 141,
+        "historical_paths": 1,
+        "live_paths": 140,
+        "manifest_sha256": "980a4f200e93a862a96b888a7b2e6da3fcfecf0af93521eacb362df30915512d",
+        "path": "bench/results/2026-11-03-pass-samples/evidence-sha256.json"
+      },
+      {
+        "bytes": 4401981,
+        "files": 106,
+        "historical_paths": 1,
+        "live_paths": 105,
+        "manifest_sha256": "4edd7a3ab79a4cacbf31b6a5c9a2178d220169d241d80ea172c76e8dec03365e",
+        "path": "bench/results/2026-11-03-scroll-authority/evidence-sha256.json"
+      },
+      {
+        "bytes": 12816633,
+        "files": 216,
+        "historical_paths": 2,
+        "live_paths": 214,
+        "manifest_sha256": "061ac783b8f180c5687899d0af255d94e2c3ac72abae5279b241831b38822321",
+        "path": "bench/results/2026-11-03-movement-authority/evidence-sha256.json"
+      },
+      {
+        "bytes": 34438193,
+        "files": 112,
+        "historical_paths": 4,
+        "live_paths": 108,
+        "manifest_sha256": "67a1f65fc4a3653480a9798ffa93141d04aeab0006f4ffb157057fd5fd3ae210",
+        "path": "bench/results/2026-11-03-height-snapshot/evidence-sha256.json"
+      },
+      {
+        "bytes": 84163789,
+        "files": 211,
+        "historical_paths": 3,
+        "live_paths": 208,
+        "manifest_sha256": "85418c4862e84245028720bd004ce23d1b0dd4997bc89993757b888c01d5908f",
+        "path": "bench/results/2026-11-03-origin-map/evidence-sha256.json"
+      },
+      {
+        "bytes": 197452726,
+        "files": 222,
+        "historical_paths": 3,
+        "live_paths": 219,
+        "manifest_sha256": "db0337cb75df8d9542235d093457f184476596ca919062724ff2c24f25e8e3f0",
+        "path": "bench/results/2026-11-03-blank-witness/explicit-evidence-manifest.json"
+      },
+      {
+        "bytes": 156151511,
+        "files": 157,
+        "historical_paths": 0,
+        "live_paths": 157,
+        "manifest_sha256": "3f2e2019b8d423a436c16cad17b107e1a2245a98d22bbc09211d915971bb1290",
+        "path": "bench/results/2026-11-03-persistent-witness/explicit-evidence-manifest.json"
+      },
+      {
+        "bytes": 78648008,
+        "files": 218,
+        "historical_paths": 3,
+        "live_paths": 215,
+        "manifest_sha256": "4f106801b65bcd109ed628847dcd3efb166cd807f645434e0532b22bb527e425",
+        "path": "bench/results/2026-11-03-scroll-witness/explicit-evidence-manifest.json"
+      },
+      {
+        "bytes": 26793,
+        "files": 5,
+        "historical_paths": 0,
+        "live_paths": 5,
+        "manifest_sha256": "94e45f86925749027eb93060961c16ef94c60ba5564874b602f6fdf0e48cb661",
+        "path": "bench/results/2026-11-03-scroll-witness/post-commit-evidence-manifest.json"
+      },
+      {
+        "bytes": 6933684,
+        "files": 111,
+        "historical_paths": 5,
+        "live_paths": 106,
+        "manifest_sha256": "fbc847e2a88781f9a5d12b4dd9ff76a3641ec8d281c84bd835a8842546c9869d",
+        "path": "bench/results/2026-11-03-split-witness/evidence-sha256.json"
+      },
+      {
+        "bytes": 4149240,
+        "files": 64,
+        "historical_paths": 5,
+        "live_paths": 59,
+        "manifest_sha256": "3849be2721814cbf7eda4ca0b7dd5a4f721e940e6f515ac3be49ae92a216fd88",
+        "path": "bench/results/2026-11-03-source-seams/explicit-evidence-manifest.json"
+      },
+      {
+        "bytes": 17633531,
+        "files": 67,
+        "historical_paths": 0,
+        "live_paths": 67,
+        "manifest_sha256": "b5652d1a122fbf513e905800cad58f21e6e370778c4dd7aae7d9962849b7f59a",
+        "path": "bench/results/2026-11-03-cover-transport/explicit-evidence-manifest.json"
+      },
+      {
+        "bytes": 5218317,
+        "files": 65,
+        "historical_paths": 0,
+        "live_paths": 65,
+        "manifest_sha256": "0c4add562165b477c69f720c9e1dd73fb319815d7f3bcb1de710974b4a47f961",
+        "path": "bench/results/2026-11-03-local-mark-lane/inputs-sha256.json"
+      },
+      {
+        "bytes": 5247610,
+        "files": 71,
+        "historical_paths": 0,
+        "live_paths": 71,
+        "manifest_sha256": "60b8d4350370531d25390c69a507d4c0799fd74a4bc758c94ba1da800c766dd1",
+        "path": "bench/results/2026-11-03-local-mark-lane/evidence-sha256.json"
+      },
+      {
+        "bytes": 1455710,
+        "files": 25,
+        "historical_paths": 0,
+        "live_paths": 25,
+        "manifest_sha256": "a061196b5c7f9699b5084de0f057cf580ca4849baa40f1e1a0ed344e444db63d",
+        "path": "bench/results/2026-11-03-campaign-audit-45/evidence-sha256.json"
+      }
+    ],
+    "note": "Explicit historical byte-integrity replay only; not timing, safety or championship acceptance.",
+    "schema": "glass.historical-evidence-replay/v1",
+    "unique_source_versions": 1886
+  },
+  "historical_combined_references": 1955,
+  "historical_combined_versions": 1861,
+  "note": "Recomputed stored observations and exact bytes, not new benchmark or Rust suite execution.",
+  "path_binding_mutation_rejected_by_new_check": true,
+  "preserved_paths": 9017,
+  "schema": "glass.audit45-checkpoint/v1",
+  "selected_build_corrected_throughput_leads": 3,
+  "status": "reported"
+}

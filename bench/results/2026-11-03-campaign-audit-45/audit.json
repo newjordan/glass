@@ -1,0 +1,2682 @@
+{
+  "championship_established": false,
+  "checker_correction": {
+    "actual_source_inventory": {
+      "invalid_coordinate_shapes": 7,
+      "record_mutations": 14,
+      "unittest_methods": 5
+    },
+    "correction": "14 record mutations and seven invalid shapes. Duplicate JSON key and unknown arm are separate tests. Historical file preserved.",
+    "historical_readme_claim": {
+      "invalid_coordinate_shapes": 6,
+      "record_mutations": 18
+    }
+  },
+  "claims": [
+    {
+      "checkpoint": "bench/results/2026-11-03-local-mark-lane/checkpoint-post-commit.json",
+      "classification": "rejected-performance",
+      "competitive_acceptance": false,
+      "directory": "bench/results/2026-11-03-local-mark-lane",
+      "iteration": 31,
+      "reconciled_scope": "Unicode 1.025787 paired CPU ratio; fixed engine screen false; no promotion.",
+      "report": "reports/research-1eecf9876bb302e9da10ff629e71e6d8-31.txt"
+    },
+    {
+      "checkpoint": "bench/results/2026-11-03-pen-dispatch/checkpoint-post-commit.json",
+      "classification": "rejected-performance-and-oracle-negative",
+      "competitive_acceptance": false,
+      "directory": "bench/results/2026-11-03-pen-dispatch",
+      "iteration": 32,
+      "reconciled_scope": "Truecolor 1.001550 ratio; screen false. Common FG/BG mutant accepted by 12800 differential streams, rejected by literal oracle.",
+      "report": "reports/research-1eecf9876bb302e9da10ff629e71e6d8-32.txt"
+    },
+    {
+      "checkpoint": "bench/results/2026-11-03-exact-corpus/checkpoint-post-commit.json",
+      "classification": "measurement-correction",
+      "competitive_acceptance": false,
+      "directory": "bench/results/2026-11-03-exact-corpus",
+      "iteration": 33,
+      "reconciled_scope": "Only TUI generated payload byte-identical to PTY export. Exact exported payloads validated; not a runtime speedup.",
+      "report": "reports/research-1eecf9876bb302e9da10ff629e71e6d8-33.txt"
+    },
+    {
+      "checkpoint": "bench/results/2026-11-03-pass-samples/checkpoint-post-commit.json",
+      "classification": "measurement-correction",
+      "competitive_acceptance": false,
+      "directory": "bench/results/2026-11-03-pass-samples",
+      "iteration": 34,
+      "reconciled_scope": "360 internal passes across 24 sessions; CPU and wall fastest pass differ once. Observer ratios are not a runtime candidate.",
+      "report": "reports/research-1eecf9876bb302e9da10ff629e71e6d8-34.txt"
+    },
+    {
+      "checkpoint": "bench/results/2026-11-03-scroll-authority/checkpoint-post-commit.json",
+      "classification": "rejected-correctness",
+      "competitive_acceptance": false,
+      "directory": "bench/results/2026-11-03-scroll-authority",
+      "iteration": 35,
+      "reconciled_scope": "Output-only scroll authority fails all 76 resize cases; small-history counting remains unfixed.",
+      "report": "reports/research-1eecf9876bb302e9da10ff629e71e6d8-35.txt"
+    },
+    {
+      "checkpoint": "bench/results/2026-11-03-movement-authority/checkpoint-post-commit.json",
+      "classification": "rejected-correctness",
+      "competitive_acceptance": false,
+      "directory": "bench/results/2026-11-03-movement-authority",
+      "iteration": 36,
+      "reconciled_scope": "4704 primary and 1392 inactive cases each arm; prototype zero matrix mismatches but two defect tests filtered; runtime restored.",
+      "report": "reports/research-1eecf9876bb302e9da10ff629e71e6d8-36.txt"
+    },
+    {
+      "checkpoint": "bench/results/2026-11-03-height-snapshot/checkpoint-post-commit.json",
+      "classification": "rejected-correctness",
+      "competitive_acceptance": false,
+      "directory": "bench/results/2026-11-03-height-snapshot",
+      "iteration": 37,
+      "reconciled_scope": "Zero height failures on 56160 observations does not cover 32 remaining mixed failures of 3456; runtime restored.",
+      "report": "reports/research-1eecf9876bb302e9da10ff629e71e6d8-37.txt"
+    },
+    {
+      "checkpoint": "bench/results/2026-11-03-origin-map/checkpoint-post-commit.json",
+      "classification": "rejected-correctness",
+      "competitive_acceptance": false,
+      "directory": "bench/results/2026-11-03-origin-map",
+      "iteration": 38,
+      "reconciled_scope": "Guarded Unicode finite matrix zero failures; candidate suite 388 passed, 4 failed, 16 ignored; runtime restored.",
+      "report": "reports/research-1eecf9876bb302e9da10ff629e71e6d8-38.txt"
+    },
+    {
+      "checkpoint": "bench/results/2026-11-03-blank-witness/checkpoint-post-commit.json",
+      "classification": "rejected-correctness",
+      "competitive_acceptance": false,
+      "directory": "bench/results/2026-11-03-blank-witness",
+      "iteration": 39,
+      "reconciled_scope": "Witness deletion fixes finite cases, but broad slot failures and failing full suites remain; corrected GLASS_SCROLLBACK runs authoritative, not initial suite failures.",
+      "report": "reports/research-1eecf9876bb302e9da10ff629e71e6d8-39.txt"
+    },
+    {
+      "checkpoint": "bench/results/2026-11-03-persistent-witness/checkpoint-post-commit.json",
+      "classification": "rejected-correctness",
+      "competitive_acceptance": false,
+      "directory": "bench/results/2026-11-03-persistent-witness",
+      "iteration": 40,
+      "reconciled_scope": "168296 continuously in-bounds observations pass, but 2728 broader slot failures and 3 full-suite failures remain; no runtime promotion.",
+      "report": "reports/research-1eecf9876bb302e9da10ff629e71e6d8-40.txt"
+    },
+    {
+      "checkpoint": "bench/results/2026-11-03-scroll-witness/checkpoint-post-commit.json",
+      "classification": "rejected-correctness",
+      "competitive_acceptance": false,
+      "directory": "bench/results/2026-11-03-scroll-witness",
+      "iteration": 41,
+      "reconciled_scope": "Witness-aware scrolling zero of 2880 finite matrix failures, but broad slots and 3 full-suite failures remain; research-only.",
+      "report": "reports/research-1eecf9876bb302e9da10ff629e71e6d8-41.txt"
+    },
+    {
+      "checkpoint": "bench/results/2026-11-03-split-witness/checkpoint-post-commit.json",
+      "classification": "source-fix-not-selected-build",
+      "competitive_acceptance": false,
+      "directory": "bench/results/2026-11-03-split-witness",
+      "iteration": 42,
+      "reconciled_scope": "4 shipping physical-fragment cases fail on control and pass production; prototype 1680 cases does not confer witness correctness on shipping.",
+      "report": "reports/research-1eecf9876bb302e9da10ff629e71e6d8-42.txt"
+    },
+    {
+      "checkpoint": "bench/results/2026-11-03-source-seams/checkpoint-post-commit.json",
+      "classification": "source-fix-not-selected-build",
+      "competitive_acceptance": false,
+      "directory": "bench/results/2026-11-03-source-seams",
+      "iteration": 43,
+      "reconciled_scope": "Real sixel/OSC1337 source-row merge matrix: 384 of 1536 control failures, 0 candidate; 394 tests and 14 ignored.",
+      "report": "reports/research-1eecf9876bb302e9da10ff629e71e6d8-43.txt"
+    },
+    {
+      "checkpoint": "bench/results/2026-11-03-cover-transport/checkpoint-post-commit.json",
+      "classification": "source-fix-not-selected-build",
+      "competitive_acceptance": false,
+      "directory": "bench/results/2026-11-03-cover-transport",
+      "iteration": 44,
+      "reconciled_scope": "Covered-cell oracle: 2008 of 10368 control observations fail, 0 candidate; 395 tests and 14 ignored. README checker counts require correction.",
+      "report": "reports/research-1eecf9876bb302e9da10ff629e71e6d8-44.txt"
+    }
+  ],
+  "frozen_scopes": {
+    "combined": {
+      "file_references": 1955,
+      "historical_references": 29,
+      "manifest_count": 16,
+      "manifests": [
+        {
+          "bytes": 5150593,
+          "files": 120,
+          "historical_paths": 1,
+          "live_paths": 119,
+          "manifest_sha256": "4a7fc3e43ccad24f238e9f56f7391f1a9a09078486111abc83819791ee44c332",
+          "path": "bench/results/2026-11-03-pen-dispatch/evidence-sha256.json"
+        },
+        {
+          "bytes": 6766343,
+          "files": 69,
+          "historical_paths": 1,
+          "live_paths": 68,
+          "manifest_sha256": "1a6d21ec00cfa48bdb826ab812e8c46bc5b54c39727f003cf09912a14652ac37",
+          "path": "bench/results/2026-11-03-exact-corpus/evidence-sha256.json"
+        },
+        {
+          "bytes": 5620734,
+          "files": 141,
+          "historical_paths": 1,
+          "live_paths": 140,
+          "manifest_sha256": "980a4f200e93a862a96b888a7b2e6da3fcfecf0af93521eacb362df30915512d",
+          "path": "bench/results/2026-11-03-pass-samples/evidence-sha256.json"
+        },
+        {
+          "bytes": 4401981,
+          "files": 106,
+          "historical_paths": 1,
+          "live_paths": 105,
+          "manifest_sha256": "4edd7a3ab79a4cacbf31b6a5c9a2178d220169d241d80ea172c76e8dec03365e",
+          "path": "bench/results/2026-11-03-scroll-authority/evidence-sha256.json"
+        },
+        {
+          "bytes": 12816633,
+          "files": 216,
+          "historical_paths": 2,
+          "live_paths": 214,
+          "manifest_sha256": "061ac783b8f180c5687899d0af255d94e2c3ac72abae5279b241831b38822321",
+          "path": "bench/results/2026-11-03-movement-authority/evidence-sha256.json"
+        },
+        {
+          "bytes": 34438193,
+          "files": 112,
+          "historical_paths": 4,
+          "live_paths": 108,
+          "manifest_sha256": "67a1f65fc4a3653480a9798ffa93141d04aeab0006f4ffb157057fd5fd3ae210",
+          "path": "bench/results/2026-11-03-height-snapshot/evidence-sha256.json"
+        },
+        {
+          "bytes": 84163789,
+          "files": 211,
+          "historical_paths": 3,
+          "live_paths": 208,
+          "manifest_sha256": "85418c4862e84245028720bd004ce23d1b0dd4997bc89993757b888c01d5908f",
+          "path": "bench/results/2026-11-03-origin-map/evidence-sha256.json"
+        },
+        {
+          "bytes": 197452726,
+          "files": 222,
+          "historical_paths": 3,
+          "live_paths": 219,
+          "manifest_sha256": "db0337cb75df8d9542235d093457f184476596ca919062724ff2c24f25e8e3f0",
+          "path": "bench/results/2026-11-03-blank-witness/explicit-evidence-manifest.json"
+        },
+        {
+          "bytes": 156151511,
+          "files": 157,
+          "historical_paths": 0,
+          "live_paths": 157,
+          "manifest_sha256": "3f2e2019b8d423a436c16cad17b107e1a2245a98d22bbc09211d915971bb1290",
+          "path": "bench/results/2026-11-03-persistent-witness/explicit-evidence-manifest.json"
+        },
+        {
+          "bytes": 78648008,
+          "files": 218,
+          "historical_paths": 3,
+          "live_paths": 215,
+          "manifest_sha256": "4f106801b65bcd109ed628847dcd3efb166cd807f645434e0532b22bb527e425",
+          "path": "bench/results/2026-11-03-scroll-witness/explicit-evidence-manifest.json"
+        },
+        {
+          "bytes": 26793,
+          "files": 5,
+          "historical_paths": 0,
+          "live_paths": 5,
+          "manifest_sha256": "94e45f86925749027eb93060961c16ef94c60ba5564874b602f6fdf0e48cb661",
+          "path": "bench/results/2026-11-03-scroll-witness/post-commit-evidence-manifest.json"
+        },
+        {
+          "bytes": 6933684,
+          "files": 111,
+          "historical_paths": 5,
+          "live_paths": 106,
+          "manifest_sha256": "fbc847e2a88781f9a5d12b4dd9ff76a3641ec8d281c84bd835a8842546c9869d",
+          "path": "bench/results/2026-11-03-split-witness/evidence-sha256.json"
+        },
+        {
+          "bytes": 4149240,
+          "files": 64,
+          "historical_paths": 5,
+          "live_paths": 59,
+          "manifest_sha256": "3849be2721814cbf7eda4ca0b7dd5a4f721e940e6f515ac3be49ae92a216fd88",
+          "path": "bench/results/2026-11-03-source-seams/explicit-evidence-manifest.json"
+        },
+        {
+          "bytes": 17633531,
+          "files": 67,
+          "historical_paths": 0,
+          "live_paths": 67,
+          "manifest_sha256": "b5652d1a122fbf513e905800cad58f21e6e370778c4dd7aae7d9962849b7f59a",
+          "path": "bench/results/2026-11-03-cover-transport/explicit-evidence-manifest.json"
+        },
+        {
+          "bytes": 5218317,
+          "files": 65,
+          "historical_paths": 0,
+          "live_paths": 65,
+          "manifest_sha256": "0c4add562165b477c69f720c9e1dd73fb319815d7f3bcb1de710974b4a47f961",
+          "path": "bench/results/2026-11-03-local-mark-lane/inputs-sha256.json"
+        },
+        {
+          "bytes": 5247610,
+          "files": 71,
+          "historical_paths": 0,
+          "live_paths": 71,
+          "manifest_sha256": "60b8d4350370531d25390c69a507d4c0799fd74a4bc758c94ba1da800c766dd1",
+          "path": "bench/results/2026-11-03-local-mark-lane/evidence-sha256.json"
+        }
+      ],
+      "note": "Explicit historical byte-integrity replay only; not timing, safety or championship acceptance.",
+      "schema": "glass.historical-evidence-replay/v1",
+      "unique_source_versions": 1861
+    },
+    "iteration31": {
+      "file_references": 136,
+      "historical_references": 0,
+      "manifest_count": 2,
+      "manifests": [
+        {
+          "bytes": 5218317,
+          "files": 65,
+          "historical_paths": 0,
+          "live_paths": 65,
+          "manifest_sha256": "0c4add562165b477c69f720c9e1dd73fb319815d7f3bcb1de710974b4a47f961",
+          "path": "bench/results/2026-11-03-local-mark-lane/inputs-sha256.json"
+        },
+        {
+          "bytes": 5247610,
+          "files": 71,
+          "historical_paths": 0,
+          "live_paths": 71,
+          "manifest_sha256": "60b8d4350370531d25390c69a507d4c0799fd74a4bc758c94ba1da800c766dd1",
+          "path": "bench/results/2026-11-03-local-mark-lane/evidence-sha256.json"
+        }
+      ],
+      "note": "Explicit historical byte-integrity replay only; not timing, safety or championship acceptance.",
+      "schema": "glass.historical-evidence-replay/v1",
+      "unique_source_versions": 71
+    },
+    "latest": {
+      "file_references": 1819,
+      "historical_references": 29,
+      "manifest_count": 14,
+      "manifests": [
+        {
+          "bytes": 5150593,
+          "files": 120,
+          "historical_paths": 1,
+          "live_paths": 119,
+          "manifest_sha256": "4a7fc3e43ccad24f238e9f56f7391f1a9a09078486111abc83819791ee44c332",
+          "path": "bench/results/2026-11-03-pen-dispatch/evidence-sha256.json"
+        },
+        {
+          "bytes": 6766343,
+          "files": 69,
+          "historical_paths": 1,
+          "live_paths": 68,
+          "manifest_sha256": "1a6d21ec00cfa48bdb826ab812e8c46bc5b54c39727f003cf09912a14652ac37",
+          "path": "bench/results/2026-11-03-exact-corpus/evidence-sha256.json"
+        },
+        {
+          "bytes": 5620734,
+          "files": 141,
+          "historical_paths": 1,
+          "live_paths": 140,
+          "manifest_sha256": "980a4f200e93a862a96b888a7b2e6da3fcfecf0af93521eacb362df30915512d",
+          "path": "bench/results/2026-11-03-pass-samples/evidence-sha256.json"
+        },
+        {
+          "bytes": 4401981,
+          "files": 106,
+          "historical_paths": 1,
+          "live_paths": 105,
+          "manifest_sha256": "4edd7a3ab79a4cacbf31b6a5c9a2178d220169d241d80ea172c76e8dec03365e",
+          "path": "bench/results/2026-11-03-scroll-authority/evidence-sha256.json"
+        },
+        {
+          "bytes": 12816633,
+          "files": 216,
+          "historical_paths": 2,
+          "live_paths": 214,
+          "manifest_sha256": "061ac783b8f180c5687899d0af255d94e2c3ac72abae5279b241831b38822321",
+          "path": "bench/results/2026-11-03-movement-authority/evidence-sha256.json"
+        },
+        {
+          "bytes": 34438193,
+          "files": 112,
+          "historical_paths": 4,
+          "live_paths": 108,
+          "manifest_sha256": "67a1f65fc4a3653480a9798ffa93141d04aeab0006f4ffb157057fd5fd3ae210",
+          "path": "bench/results/2026-11-03-height-snapshot/evidence-sha256.json"
+        },
+        {
+          "bytes": 84163789,
+          "files": 211,
+          "historical_paths": 3,
+          "live_paths": 208,
+          "manifest_sha256": "85418c4862e84245028720bd004ce23d1b0dd4997bc89993757b888c01d5908f",
+          "path": "bench/results/2026-11-03-origin-map/evidence-sha256.json"
+        },
+        {
+          "bytes": 197452726,
+          "files": 222,
+          "historical_paths": 3,
+          "live_paths": 219,
+          "manifest_sha256": "db0337cb75df8d9542235d093457f184476596ca919062724ff2c24f25e8e3f0",
+          "path": "bench/results/2026-11-03-blank-witness/explicit-evidence-manifest.json"
+        },
+        {
+          "bytes": 156151511,
+          "files": 157,
+          "historical_paths": 0,
+          "live_paths": 157,
+          "manifest_sha256": "3f2e2019b8d423a436c16cad17b107e1a2245a98d22bbc09211d915971bb1290",
+          "path": "bench/results/2026-11-03-persistent-witness/explicit-evidence-manifest.json"
+        },
+        {
+          "bytes": 78648008,
+          "files": 218,
+          "historical_paths": 3,
+          "live_paths": 215,
+          "manifest_sha256": "4f106801b65bcd109ed628847dcd3efb166cd807f645434e0532b22bb527e425",
+          "path": "bench/results/2026-11-03-scroll-witness/explicit-evidence-manifest.json"
+        },
+        {
+          "bytes": 26793,
+          "files": 5,
+          "historical_paths": 0,
+          "live_paths": 5,
+          "manifest_sha256": "94e45f86925749027eb93060961c16ef94c60ba5564874b602f6fdf0e48cb661",
+          "path": "bench/results/2026-11-03-scroll-witness/post-commit-evidence-manifest.json"
+        },
+        {
+          "bytes": 6933684,
+          "files": 111,
+          "historical_paths": 5,
+          "live_paths": 106,
+          "manifest_sha256": "fbc847e2a88781f9a5d12b4dd9ff76a3641ec8d281c84bd835a8842546c9869d",
+          "path": "bench/results/2026-11-03-split-witness/evidence-sha256.json"
+        },
+        {
+          "bytes": 4149240,
+          "files": 64,
+          "historical_paths": 5,
+          "live_paths": 59,
+          "manifest_sha256": "3849be2721814cbf7eda4ca0b7dd5a4f721e940e6f515ac3be49ae92a216fd88",
+          "path": "bench/results/2026-11-03-source-seams/explicit-evidence-manifest.json"
+        },
+        {
+          "bytes": 17633531,
+          "files": 67,
+          "historical_paths": 0,
+          "live_paths": 67,
+          "manifest_sha256": "b5652d1a122fbf513e905800cad58f21e6e370778c4dd7aae7d9962849b7f59a",
+          "path": "bench/results/2026-11-03-cover-transport/explicit-evidence-manifest.json"
+        }
+      ],
+      "note": "Explicit historical byte-integrity replay only; not timing, safety or championship acceptance.",
+      "schema": "glass.historical-evidence-replay/v1",
+      "unique_source_versions": 1790
+    }
+  },
+  "limitations": [
+    "No fresh benchmark, build, deploy or submission.",
+    "Stored suite counts are historical executions, not newly executed Rust tests.",
+    "Hash consistency is not authenticity or timing accuracy.",
+    "Parity reciprocals are observed point gaps, not superiority margins.",
+    "Within-series Holm correction does not correct campaign-wide adaptive search or establish independent serial signs.",
+    "Selected executable is unchanged; source fixes have not been competitively measured in that executable.",
+    "No acceptance command is bound. Startup, resources, displayed key/frame latency and supported-platform scope remain unresolved."
+  ],
+  "negative_results": {
+    "blank_witness": {
+      "control": {
+        "deleted_eligible": 1632,
+        "deleted_failures": 320,
+        "slot_failures": 45880
+      },
+      "physical": {
+        "deleted_eligible": 1632,
+        "deleted_failures": 0,
+        "slot_failures": 32224
+      },
+      "witness": {
+        "deleted_eligible": 1632,
+        "deleted_failures": 0,
+        "slot_failures": 10584
+      }
+    },
+    "exact-corpus": {
+      "limits": "Shared host, sequential balance does not establish independent fair signs. Reported speed rates rounded and best CPU/wall internal passes minimized independently. No PTY/Ghostty comparison or championship acceptance.",
+      "pairs": 12,
+      "runtime_promotion": false,
+      "schema": "glass.exact-corpus-analysis/v1",
+      "sessions": 24,
+      "summary": {
+        "ascii": {
+          "cpu_ratios": [
+            1.0068607764390898,
+            1.0039659050550491,
+            0.9379925569176883,
+            1.0548246852238723,
+            1.019402818161485,
+            0.9832884097035041,
+            1.0834620476610768,
+            0.9664657534246575,
+            0.9648807579222476,
+            0.997702009405729,
+            1.008720485491356,
+            0.9902095681625741
+          ],
+          "holm_p": 1.0,
+          "losses": 6,
+          "max_cpu_ratio": 1.0834620476610768,
+          "median_cpu_ratio": 1.000833957230389,
+          "median_wall_ratio": 1.000996988310788,
+          "min_cpu_ratio": 0.9379925569176883,
+          "sign_p_two_sided": 1.0,
+          "wins": 6
+        },
+        "cursor_motion": {
+          "cpu_ratios": [
+            1.0117831893165752,
+            0.9925665101721439,
+            1.0106048703849175,
+            1.0054880439043512,
+            0.9956607495069034,
+            0.9921996879875196,
+            1.0160910518053374,
+            1.000776096235933,
+            1.0034870205346764,
+            0.9961464354527938,
+            0.9929879236462797,
+            1.0023391812865499
+          ],
+          "holm_p": 1.0,
+          "losses": 5,
+          "max_cpu_ratio": 1.0160910518053374,
+          "median_cpu_ratio": 1.0015576387612415,
+          "median_wall_ratio": 1.0015609793407738,
+          "min_cpu_ratio": 0.9921996879875196,
+          "sign_p_two_sided": 0.7744140625,
+          "wins": 7
+        },
+        "scroll_region": {
+          "cpu_ratios": [
+            1.0146671681083115,
+            1.080169014084507,
+            0.9756997846816365,
+            0.9395702052027791,
+            1.0229897761812654,
+            1.0028963020429273,
+            0.9350200968772545,
+            1.0109873024099507,
+            0.9916726637195435,
+            1.0189211791762491,
+            1.0034548548445315,
+            1.012945659550034
+          ],
+          "holm_p": 1.0,
+          "losses": 4,
+          "max_cpu_ratio": 1.080169014084507,
+          "median_cpu_ratio": 1.007221078627241,
+          "median_wall_ratio": 1.0075782760332799,
+          "min_cpu_ratio": 0.9350200968772545,
+          "sign_p_two_sided": 0.3876953125,
+          "wins": 8
+        },
+        "truecolor": {
+          "cpu_ratios": [
+            1.0150848522941547,
+            1.0097270160025102,
+            1.032618825722274,
+            1.0087173100871731,
+            0.9981366459627329,
+            0.9847234952642835,
+            1.009879592466811,
+            1.0154750851129681,
+            0.9993872549019608,
+            0.98877427184466,
+            0.9929361179361179,
+            0.9963201471941121
+          ],
+          "holm_p": 1.0,
+          "losses": 6,
+          "max_cpu_ratio": 1.032618825722274,
+          "median_cpu_ratio": 1.004052282494567,
+          "median_wall_ratio": 1.003941765653045,
+          "min_cpu_ratio": 0.9847234952642835,
+          "sign_p_two_sided": 1.0,
+          "wins": 6
+        },
+        "tui_frames": {
+          "cpu_ratios": [
+            0.9953426480372587,
+            0.9993324432576768,
+            0.9827136333985649,
+            0.9970453053184504,
+            1.0187730472678511,
+            0.996349153667441,
+            1.0072487644151564,
+            0.9944571242256277,
+            0.9996714848883049,
+            0.9993489583333334,
+            1.005968169761273,
+            1.027740189445196
+          ],
+          "holm_p": 1.0,
+          "losses": 8,
+          "max_cpu_ratio": 1.027740189445196,
+          "median_cpu_ratio": 0.9993407007955051,
+          "median_wall_ratio": 0.9991767457958403,
+          "min_cpu_ratio": 0.9827136333985649,
+          "sign_p_two_sided": 0.3876953125,
+          "wins": 4
+        },
+        "unicode": {
+          "cpu_ratios": [
+            1.0372381691233512,
+            1.0296296296296297,
+            1.0174639331814732,
+            0.9809160305343512,
+            1.0045540796963945,
+            1.043832428238945,
+            1.0200302343159484,
+            0.9924213717317165,
+            1.0430934974990382,
+            1.0234165067178504,
+            1.0570767450829155,
+            0.987706492508644
+          ],
+          "holm_p": 0.8759765625,
+          "losses": 3,
+          "max_cpu_ratio": 1.0570767450829155,
+          "median_cpu_ratio": 1.0217233705168995,
+          "median_wall_ratio": 1.0217648472315264,
+          "min_cpu_ratio": 0.9809160305343512,
+          "sign_p_two_sided": 0.14599609375,
+          "wins": 9
+        }
+      }
+    },
+    "height_snapshot": {
+      "candidate-v5": {
+        "height_failures": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "mixed_failures": 32
+      },
+      "control": {
+        "height_failures": [
+          2544,
+          3622,
+          3554,
+          3348,
+          3342,
+          3342
+        ],
+        "mixed_failures": 942
+      }
+    },
+    "local-mark-lane": {
+      "blocks": 12,
+      "engine_screen_cleared": false,
+      "note": "Operational engine screen, not proof of noninferiority, mechanism, terminal/Ghostty throughput or championship. Best-of-five invocations are not five independent trials. Sign tests assume independent fair signs; balanced sequential order does not establish independence.",
+      "point_regression_guards_failed": [],
+      "runtime_promotion": false,
+      "schema": "glass.local-mark-lane-analysis/v1",
+      "sessions": 24,
+      "summary": {
+        "ascii": {
+          "cpu_ratios": [
+            1.1347941567065074,
+            0.9511411121825778,
+            1.7130065975494815,
+            1.3454184256270176,
+            1.141407599309154,
+            2.5489795918367344,
+            2.141939769707706,
+            0.5833100363433045,
+            0.7388285024154589,
+            0.8765104235825255,
+            0.661007276358967,
+            1.4998155662117298
+          ],
+          "holm_p": 1.0,
+          "losses": 5,
+          "median_cpu_ratio": 1.1381008780078306,
+          "median_wall_ratio": 1.0184006960142988,
+          "sign_p_two_sided": 0.7744140625,
+          "wins": 7
+        },
+        "cursor_motion": {
+          "cpu_ratios": [
+            0.958477508650519,
+            1.021097046413502,
+            1.0324357405140758,
+            0.9797421731123388,
+            0.9600238663484487,
+            0.9864341085271316,
+            0.9702265372168285,
+            0.9345794392523364,
+            0.988939492517892,
+            1.0277044854881268,
+            0.9820742637644048,
+            0.9664473684210527
+          ],
+          "holm_p": 0.8759765625,
+          "losses": 9,
+          "median_cpu_ratio": 0.9809082184383717,
+          "median_wall_ratio": 0.9621209634443115,
+          "sign_p_two_sided": 0.14599609375,
+          "wins": 3
+        },
+        "scroll_region": {
+          "cpu_ratios": [
+            0.9466467018677595,
+            0.9414537973598491,
+            1.0933296982915301,
+            1.0113506379234494,
+            1.0529310812031434,
+            1.0246422220340416,
+            1.0154944289693593,
+            1.149425287356322,
+            0.9631208141254239,
+            1.0134318939871991,
+            0.9388111888111889,
+            1.0334616795012834
+          ],
+          "holm_p": 1.0,
+          "losses": 4,
+          "median_cpu_ratio": 1.0144631614782793,
+          "median_wall_ratio": 1.0390239493536373,
+          "sign_p_two_sided": 0.3876953125,
+          "wins": 8
+        },
+        "truecolor": {
+          "cpu_ratios": [
+            0.9970674486803519,
+            1.026447105788423,
+            1.0322093608454959,
+            0.9994913530010173,
+            1.0292457670600308,
+            1.0732824427480916,
+            0.9645748987854251,
+            1.0303837953091686,
+            0.9742424242424242,
+            1.0163487738419619,
+            0.9884130982367758,
+            1.042336548767417
+          ],
+          "holm_p": 1.0,
+          "losses": 5,
+          "median_cpu_ratio": 1.0213979398151924,
+          "median_wall_ratio": 1.004521485742602,
+          "sign_p_two_sided": 0.7744140625,
+          "wins": 7
+        },
+        "tui_frames": {
+          "cpu_ratios": [
+            0.9665465774575399,
+            1.002679528403001,
+            0.9967231021299836,
+            0.9635779325120515,
+            0.9680170575692963,
+            0.9789053591790193,
+            0.988013698630137,
+            0.9972360420121614,
+            0.9532354540511148,
+            1.0209424083769634,
+            1.0045223289994347,
+            0.9872905834777586
+          ],
+          "holm_p": 0.8759765625,
+          "losses": 9,
+          "median_cpu_ratio": 0.9876521410539478,
+          "median_wall_ratio": 1.0771455474845306,
+          "sign_p_two_sided": 0.14599609375,
+          "wins": 3
+        },
+        "unicode": {
+          "cpu_ratios": [
+            0.9418789808917197,
+            1.171861836562763,
+            1.0055161544523246,
+            1.0876565295169947,
+            0.9082864038616252,
+            1.0643431635388738,
+            1.0460584588131088,
+            0.967400162999185,
+            1.0596774193548388,
+            0.9710743801652892,
+            0.9786392405063291,
+            1.0832672482157018
+          ],
+          "holm_p": 1.0,
+          "losses": 5,
+          "median_cpu_ratio": 1.0257873066327168,
+          "median_wall_ratio": 1.0112163680201656,
+          "sign_p_two_sided": 0.7744140625,
+          "wins": 7
+        }
+      },
+      "unicode_target_cleared": false
+    },
+    "movement_authority": {
+      "candidate": {
+        "inactive": {
+          "cases": 1392,
+          "mismatches": 0
+        },
+        "primary": {
+          "cases": 4704,
+          "mismatches": 0
+        }
+      },
+      "control": {
+        "inactive": {
+          "cases": 1392,
+          "mismatches": 1218
+        },
+        "primary": {
+          "cases": 4704,
+          "mismatches": 3136
+        }
+      }
+    },
+    "movement_authority_candidate_suite": {
+      "failed": 0,
+      "filtered": 2,
+      "ignored": 12,
+      "passed": 391,
+      "status": "ok"
+    },
+    "origin_map_failing_suites": {
+      "candidate-v4-terminal.log": {
+        "failed": 4,
+        "filtered": 0,
+        "ignored": 16,
+        "passed": 388,
+        "status": "FAILED"
+      }
+    },
+    "pass-samples": {
+      "captured_passes": 360,
+      "championship_established": false,
+      "different_minima": 1,
+      "limits": [
+        "Shared host, same executable compiled with recorder code in both modes; not a comparison to the old executable.",
+        "Clock-read resolution is not timing accuracy. CPU and wall clocks have adjacent, not identical, endpoints.",
+        "Does not establish terminal/Ghostty speed, rendering/input-latency/pacing, independent samples, or championship."
+      ],
+      "measured_workload_sessions": 72,
+      "pairs": 12,
+      "runtime_promotion": false,
+      "schema": "glass.pass-sample-analysis/v1",
+      "sessions": 24,
+      "status": "reported",
+      "summary": {
+        "ascii": {
+          "cpu_best_pass_histogram": [
+            0,
+            3,
+            2,
+            2,
+            5
+          ],
+          "cpu_median_over_min": [
+            1.3562751923992697,
+            1.7777340063954978,
+            1.1942486087952862,
+            1.0896053913183694,
+            1.2545652538593999,
+            1.0322195638720744,
+            1.028280593044988,
+            1.0224094221939544,
+            1.1531445648660588,
+            1.182719568268948,
+            1.2564337194223418,
+            1.1024205315570441
+          ],
+          "median_observer_cpu_ratio": 0.934536510924051,
+          "median_observer_wall_ratio": 0.9343803824204509,
+          "minima_on_different_passes": 1,
+          "observer_cpu_ratios": [
+            0.8383908045977011,
+            0.887924103553626,
+            0.8774351232837323,
+            0.7634773891735354,
+            1.1088506453595575,
+            1.0203298810893746,
+            0.9811489182944759,
+            0.991683335087904,
+            1.1216136195410806,
+            0.8684602033225887,
+            1.184072484501669,
+            0.8298584011595496
+          ],
+          "observer_wall_ratios": [
+            0.8635571745327844,
+            0.8870707722069967,
+            0.8744942196531792,
+            0.759334710051906,
+            1.1082712323705117,
+            1.020147123407993,
+            0.9816899926339051,
+            0.9918244633155757,
+            1.123161491606002,
+            0.8688595945777888,
+            1.2146761984861227,
+            0.8294005815253858
+          ],
+          "retained_cpu_ns": [
+            [
+              43006554,
+              27520344,
+              31195329,
+              34664518,
+              23000737
+            ],
+            [
+              40510279,
+              76724014,
+              51398308,
+              27040673,
+              22787593
+            ],
+            [
+              28579474,
+              20617203,
+              21447072,
+              24622066,
+              54479530
+            ],
+            [
+              24838916,
+              23570933,
+              18356920,
+              18419082,
+              20001799
+            ],
+            [
+              17500006,
+              14572409,
+              19070785,
+              13949060,
+              19767169
+            ],
+            [
+              17861854,
+              14434565,
+              13950947,
+              13710095,
+              13515484
+            ],
+            [
+              16764416,
+              15687269,
+              13849282,
+              13595959,
+              13468388
+            ],
+            [
+              16879726,
+              13956895,
+              13531187,
+              13657251,
+              13357908
+            ],
+            [
+              32999572,
+              17427303,
+              16607576,
+              19150936,
+              19499111
+            ],
+            [
+              52581983,
+              21245233,
+              22759743,
+              17963035,
+              19920245
+            ],
+            [
+              20789787,
+              14478872,
+              19765376,
+              18191743,
+              15415508
+            ],
+            [
+              18637473,
+              16905956,
+              18709596,
+              17587681,
+              19697833
+            ]
+          ],
+          "retained_wall_ns": [
+            [
+              45545934,
+              28822557,
+              34905967,
+              35875410,
+              23078307
+            ],
+            [
+              40653956,
+              78706719,
+              53222149,
+              27121659,
+              22867731
+            ],
+            [
+              28702612,
+              20793600,
+              21613983,
+              27515039,
+              55405274
+            ],
+            [
+              24971406,
+              23674166,
+              18878078,
+              18498043,
+              20081651
+            ],
+            [
+              17550451,
+              14603050,
+              19109664,
+              13985137,
+              19809599
+            ],
+            [
+              17905089,
+              14476181,
+              13980629,
+              13740287,
+              13542355
+            ],
+            [
+              16800962,
+              15723036,
+              13894587,
+              13625061,
+              13487802
+            ],
+            [
+              16956124,
+              13984957,
+              13557934,
+              13685644,
+              13383486
+            ],
+            [
+              33103948,
+              17473737,
+              16644027,
+              19203220,
+              19556233
+            ],
+            [
+              53754058,
+              21356658,
+              22821393,
+              18010266,
+              20044231
+            ],
+            [
+              20854254,
+              14520904,
+              19828916,
+              18241450,
+              15461984
+            ],
+            [
+              18681959,
+              16966733,
+              18762250,
+              17637896,
+              19758954
+            ]
+          ],
+          "wall_best_pass_histogram": [
+            0,
+            3,
+            1,
+            3,
+            5
+          ],
+          "wall_median_over_min": [
+            1.5125011986364512,
+            1.7777870484832972,
+            1.3232455659433673,
+            1.0856094885280567,
+            1.2549359366304385,
+            1.0323632041842057,
+            1.0301594729815873,
+            1.0225769280141213,
+            1.1537604451134331,
+            1.1858046960550166,
+            1.2562199984243405,
+            1.101093475096237
+          ]
+        },
+        "cursor_motion": {
+          "cpu_best_pass_histogram": [
+            4,
+            2,
+            1,
+            2,
+            3
+          ],
+          "cpu_median_over_min": [
+            1.050939149393559,
+            1.03095642672726,
+            1.167062912159719,
+            1.0674883297278834,
+            1.012411221298808,
+            1.014514451425094,
+            1.0062108469926712,
+            1.005846042724853,
+            1.0115806759830226,
+            1.3493447431292371,
+            1.0992028766586477,
+            1.0795155667620182
+          ],
+          "median_observer_cpu_ratio": 0.999434326983512,
+          "median_observer_wall_ratio": 0.9990306553173123,
+          "minima_on_different_passes": 0,
+          "observer_cpu_ratios": [
+            0.9944048830111902,
+            1.0477783086478738,
+            1.0813715455475947,
+            1.0020120724346075,
+            0.9968565815324164,
+            0.9945269741985926,
+            0.9952305246422893,
+            1.2030724915986557,
+            0.9625167336010709,
+            1.0940054495912808,
+            1.0875058493214789,
+            0.9153005464480874
+          ],
+          "observer_wall_ratios": [
+            0.9948979591836735,
+            1.0431241015812172,
+            1.092794193882841,
+            1.0012096774193548,
+            0.9968516332152696,
+            0.9945184025058731,
+            0.996414342629482,
+            1.2040423484119345,
+            0.9623992837958818,
+            1.0947176684881603,
+            1.0882214922571563,
+            0.9143862392494135
+          ],
+          "retained_cpu_ns": [
+            [
+              90182029,
+              94662357,
+              85810895,
+              88144835,
+              92912839
+            ],
+            [
+              84025837,
+              77499716,
+              78873174,
+              80196092,
+              76504857
+            ],
+            [
+              79417938,
+              86539090,
+              95504309,
+              92784467,
+              92685730
+            ],
+            [
+              72935968,
+              73972850,
+              71930754,
+              68036932,
+              67383176
+            ],
+            [
+              66135232,
+              66956051,
+              67291063,
+              66983084,
+              66543085
+            ],
+            [
+              66411000,
+              66897787,
+              67676697,
+              65940694,
+              69354257
+            ],
+            [
+              67078662,
+              67818026,
+              67966217,
+              67406933,
+              66990863
+            ],
+            [
+              66937246,
+              67383347,
+              67725560,
+              67328564,
+              67134648
+            ],
+            [
+              78697955,
+              77797013,
+              79918826,
+              84926916,
+              78262404
+            ],
+            [
+              87463943,
+              69635134,
+              95358005,
+              94042068,
+              93961802
+            ],
+            [
+              79353753,
+              79785394,
+              74023843,
+              72192090,
+              88022810
+            ],
+            [
+              71555536,
+              97668746,
+              79826060,
+              75161045,
+              77245315
+            ]
+          ],
+          "retained_wall_ns": [
+            [
+              90915126,
+              94944673,
+              86034559,
+              88355994,
+              93175927
+            ],
+            [
+              84322409,
+              79735013,
+              79368123,
+              80690529,
+              77051396
+            ],
+            [
+              79602103,
+              86761335,
+              95752032,
+              93043427,
+              93794210
+            ],
+            [
+              73207638,
+              74151284,
+              72103052,
+              68231392,
+              67564388
+            ],
+            [
+              66230549,
+              67052204,
+              67391712,
+              67103661,
+              66649938
+            ],
+            [
+              66506969,
+              66998563,
+              67785202,
+              66043157,
+              69490449
+            ],
+            [
+              67191546,
+              67928892,
+              68067494,
+              67507069,
+              67084595
+            ],
+            [
+              67057844,
+              67515515,
+              67872376,
+              67468327,
+              67278219
+            ],
+            [
+              79233029,
+              78033573,
+              80192883,
+              85394915,
+              78588046
+            ],
+            [
+              87774229,
+              69803286,
+              96099855,
+              94291043,
+              94223105
+            ],
+            [
+              80830482,
+              79962910,
+              74195005,
+              72338273,
+              88268618
+            ],
+            [
+              71735010,
+              99825660,
+              80965416,
+              75430268,
+              77677633
+            ]
+          ],
+          "wall_best_pass_histogram": [
+            4,
+            2,
+            1,
+            2,
+            3
+          ],
+          "wall_median_over_min": [
+            1.0567279829957634,
+            1.0348289212047501,
+            1.1688563931533316,
+            1.067175388312553,
+            1.0124059820189624,
+            1.014466389000756,
+            1.0062976306259284,
+            1.0061213271336311,
+            1.015371024981773,
+            1.3498376709658053,
+            1.1054025301378152,
+            1.0828413211345478
+          ]
+        },
+        "scroll_region": {
+          "cpu_best_pass_histogram": [
+            4,
+            0,
+            0,
+            3,
+            5
+          ],
+          "cpu_median_over_min": [
+            1.1596759190303425,
+            1.0702068603009576,
+            1.088112928734687,
+            1.1101130563186274,
+            1.0369513771565777,
+            1.0460925410906006,
+            1.059866569583175,
+            1.0695529951079767,
+            1.1972043667380339,
+            1.0115559484785062,
+            1.0487797528048761,
+            1.102437094134128
+          ],
+          "median_observer_cpu_ratio": 1.013951257048873,
+          "median_observer_wall_ratio": 1.014116114463611,
+          "minima_on_different_passes": 0,
+          "observer_cpu_ratios": [
+            1.2246551858489831,
+            0.869370941841793,
+            1.1374290004570085,
+            1.0072051133062174,
+            1.0206974007915286,
+            0.9841521394611727,
+            1.0597966474306129,
+            1.40986040986041,
+            0.972833970723988,
+            1.1076317269829363,
+            0.7727565415910554,
+            0.8107642746056432
+          ],
+          "observer_wall_ratios": [
+            1.326088794926004,
+            0.86909931362936,
+            1.1377955334337546,
+            1.0062317996505534,
+            1.022000429276669,
+            0.9839144928303084,
+            1.060220385674931,
+            1.41450119474313,
+            0.973654597206593,
+            1.1082690740392451,
+            0.7726178594493043,
+            0.8096801112656468
+          ],
+          "retained_cpu_ns": [
+            [
+              10675110,
+              24434122,
+              14374500,
+              12379668,
+              11892923
+            ],
+            [
+              13473199,
+              31062821,
+              15676607,
+              13742532,
+              14419110
+            ],
+            [
+              12600397,
+              21010313,
+              10478299,
+              9939751,
+              9629790
+            ],
+            [
+              10242930,
+              20318847,
+              11251065,
+              10744469,
+              9678716
+            ],
+            [
+              9555947,
+              19694419,
+              9115852,
+              8791012,
+              8819209
+            ],
+            [
+              9699371,
+              19789503,
+              9420487,
+              9153206,
+              9005405
+            ],
+            [
+              9712966,
+              19504109,
+              8989991,
+              9221279,
+              8700415
+            ],
+            [
+              9765794,
+              19710322,
+              9450151,
+              8899169,
+              8835608
+            ],
+            [
+              11371234,
+              27258671,
+              13038732,
+              13613691,
+              14910206
+            ],
+            [
+              10462001,
+              21010482,
+              9576911,
+              9467505,
+              9509331
+            ],
+            [
+              13395081,
+              28903316,
+              13329439,
+              12709474,
+              13285020
+            ],
+            [
+              11493483,
+              25876653,
+              12342517,
+              12670842,
+              12772469
+            ]
+          ],
+          "retained_wall_ns": [
+            [
+              10699409,
+              25300515,
+              15691115,
+              12416017,
+              11922109
+            ],
+            [
+              13520804,
+              31174470,
+              16443991,
+              13946686,
+              14474297
+            ],
+            [
+              12630169,
+              21051785,
+              10502589,
+              9965349,
+              9657290
+            ],
+            [
+              10273498,
+              20378269,
+              11281964,
+              10779961,
+              9710530
+            ],
+            [
+              9572460,
+              19758213,
+              9130930,
+              8808874,
+              8834372
+            ],
+            [
+              9718094,
+              19828044,
+              9438559,
+              9170424,
+              9022686
+            ],
+            [
+              9731779,
+              19538169,
+              9005353,
+              9243922,
+              8718864
+            ],
+            [
+              9787765,
+              19750759,
+              9484875,
+              8932537,
+              8856894
+            ],
+            [
+              11406529,
+              27361660,
+              13069887,
+              13664224,
+              14973416
+            ],
+            [
+              10490216,
+              21065501,
+              9596515,
+              9490576,
+              9531332
+            ],
+            [
+              13434573,
+              28975184,
+              13368879,
+              12748432,
+              13354531
+            ],
+            [
+              11527566,
+              25947682,
+              12374830,
+              12701363,
+              12806481
+            ]
+          ],
+          "wall_best_pass_histogram": [
+            4,
+            0,
+            0,
+            3,
+            5
+          ],
+          "wall_median_over_min": [
+            1.1604395158648482,
+            1.0705204365065863,
+            1.0875296278769717,
+            1.1101310639069135,
+            1.0365604048826218,
+            1.0460919287227772,
+            1.0602209186884897,
+            1.070903072792787,
+            1.1979300626860283,
+            1.011162546930766,
+            1.0486684950745315,
+            1.101825224856661
+          ]
+        },
+        "truecolor": {
+          "cpu_best_pass_histogram": [
+            1,
+            0,
+            3,
+            4,
+            4
+          ],
+          "cpu_median_over_min": [
+            1.0962254096059854,
+            1.0563955471002067,
+            1.0721771837021568,
+            1.0075713703292126,
+            1.0058198588281673,
+            1.0120850715313383,
+            1.0097704671259993,
+            1.0077694436843987,
+            1.0480864585683412,
+            1.1591670665240867,
+            1.1895059870526323,
+            1.0987291708977942
+          ],
+          "median_observer_cpu_ratio": 1.0082269358683136,
+          "median_observer_wall_ratio": 1.0088532241466108,
+          "minima_on_different_passes": 0,
+          "observer_cpu_ratios": [
+            1.0132780082987551,
+            1.003175863437872,
+            1.0464629552113855,
+            1.035702693930542,
+            1.001565435190983,
+            0.9867570064675084,
+            0.9928125,
+            1.2395303326810176,
+            1.0314724615961035,
+            0.9784984138174129,
+            1.1849960722702277,
+            0.8803232825613926
+          ],
+          "observer_wall_ratios": [
+            1.013322231473772,
+            1.00438421681945,
+            1.0470193115029387,
+            1.0361093038386469,
+            1.0021957340025094,
+            0.9879592466810745,
+            0.9931099279674288,
+            1.2475325700750097,
+            1.030451127819549,
+            0.979137199434229,
+            1.1826771653543307,
+            0.8791653690439115
+          ],
+          "retained_cpu_ns": [
+            [
+              114294253,
+              116166223,
+              112981961,
+              109259388,
+              103064534
+            ],
+            [
+              100655618,
+              114595363,
+              99588767,
+              105577011,
+              105205130
+            ],
+            [
+              113653596,
+              106866133,
+              113113620,
+              107922454,
+              100657294
+            ],
+            [
+              79906706,
+              79467290,
+              78870135,
+              78919037,
+              81281269
+            ],
+            [
+              79689933,
+              80248474,
+              78658609,
+              78777209,
+              79116391
+            ],
+            [
+              84489004,
+              80204630,
+              78767925,
+              78543267,
+              79492468
+            ],
+            [
+              80727891,
+              79997385,
+              79307808,
+              79223336,
+              80103434
+            ],
+            [
+              80218268,
+              80202587,
+              79727684,
+              79476218,
+              80093704
+            ],
+            [
+              97334336,
+              95274375,
+              102517258,
+              95825152,
+              91428671
+            ],
+            [
+              90663567,
+              105094221,
+              105485112,
+              96672715,
+              114232024
+            ],
+            [
+              110948635,
+              99235259,
+              100165669,
+              89674002,
+              83425607
+            ],
+            [
+              114742299,
+              90133633,
+              97649610,
+              88875050,
+              107619755
+            ]
+          ],
+          "retained_wall_ns": [
+            [
+              114735858,
+              116649086,
+              113496057,
+              110765012,
+              103393240
+            ],
+            [
+              100925048,
+              114894727,
+              99850317,
+              105860660,
+              105642890
+            ],
+            [
+              116954891,
+              107178737,
+              113450911,
+              108227049,
+              100921432
+            ],
+            [
+              80115188,
+              79658268,
+              79026079,
+              79095701,
+              81475977
+            ],
+            [
+              79806407,
+              80392539,
+              78769557,
+              78905042,
+              79231466
+            ],
+            [
+              84674511,
+              80350310,
+              78903870,
+              78654551,
+              79620627
+            ],
+            [
+              80848015,
+              80103696,
+              79421142,
+              79364046,
+              80243499
+            ],
+            [
+              80349588,
+              80362823,
+              79884003,
+              79639382,
+              80275178
+            ],
+            [
+              97619111,
+              95555591,
+              104094587,
+              96096448,
+              91829534
+            ],
+            [
+              90890198,
+              105377750,
+              107216628,
+              96998955,
+              114644456
+            ],
+            [
+              111344280,
+              99535224,
+              100410059,
+              89878927,
+              83766884
+            ],
+            [
+              115107175,
+              90369890,
+              97889089,
+              89138545,
+              107905804
+            ]
+          ],
+          "wall_best_pass_histogram": [
+            1,
+            0,
+            3,
+            4,
+            4
+          ],
+          "wall_median_over_min": [
+            1.0977125487120822,
+            1.0580125649475904,
+            1.072389153178088,
+            1.0079997515756791,
+            1.005864054814984,
+            1.0122825187826703,
+            1.0093197113463697,
+            1.0079834371391783,
+            1.0464655956982205,
+            1.1593961980366683,
+            1.1882407372345376,
+            1.09816790256112
+          ]
+        },
+        "tui_frames": {
+          "cpu_best_pass_histogram": [
+            3,
+            0,
+            1,
+            6,
+            2
+          ],
+          "cpu_median_over_min": [
+            1.2412108352105955,
+            1.029552225886832,
+            1.1450062476011478,
+            1.05561821984075,
+            1.006569385846115,
+            1.0097790021589337,
+            1.0016093954445613,
+            1.0032115675654638,
+            1.0653390442876534,
+            1.144775691730665,
+            1.0302339909151172,
+            1.182500309759599
+          ],
+          "median_observer_cpu_ratio": 1.0040877994366038,
+          "median_observer_wall_ratio": 1.0037656606243206,
+          "minima_on_different_passes": 0,
+          "observer_cpu_ratios": [
+            1.3942583732057414,
+            0.9812014711892113,
+            1.0522227017695296,
+            0.9933730947647449,
+            1.0071942446043165,
+            1.000981354268891,
+            0.9848184818481848,
+            1.245663574021783,
+            0.8873027798647634,
+            1.1227330240404891,
+            1.0207162921348314,
+            0.9079333986287953
+          ],
+          "observer_wall_ratios": [
+            1.395583293326932,
+            0.979926259729619,
+            1.0510601471224579,
+            0.9923664122137404,
+            1.006876227897839,
+            1.0006550933508025,
+            0.9851141250413497,
+            1.2545824847250509,
+            0.8865435356200527,
+            1.1394251394251396,
+            1.021119324181626,
+            0.9077526987242395
+          ],
+          "retained_cpu_ns": [
+            [
+              89040203,
+              89221821,
+              92618206,
+              85690687,
+              71736566
+            ],
+            [
+              87062782,
+              87386257,
+              89635681,
+              95248110,
+              96031914
+            ],
+            [
+              85733706,
+              110281878,
+              98165629,
+              98853978,
+              94043207
+            ],
+            [
+              73930182,
+              70195641,
+              69726054,
+              74699680,
+              73604093
+            ],
+            [
+              69989907,
+              68801526,
+              67880707,
+              67856267,
+              68302041
+            ],
+            [
+              69593159,
+              68966889,
+              69138244,
+              68298993,
+              68542448
+            ],
+            [
+              70165756,
+              70241542,
+              70054162,
+              70053013,
+              70658853
+            ],
+            [
+              69523232,
+              67912956,
+              67732626,
+              67677231,
+              67894581
+            ],
+            [
+              88481184,
+              94570895,
+              94262460,
+              96940006,
+              91589582
+            ],
+            [
+              95149002,
+              89883167,
+              81176900,
+              78515964,
+              102281678
+            ],
+            [
+              74075291,
+              72429937,
+              97630760,
+              71901424,
+              97088513
+            ],
+            [
+              86128176,
+              88870877,
+              103411431,
+              108057706,
+              75155056
+            ]
+          ],
+          "retained_wall_ns": [
+            [
+              89293286,
+              89454018,
+              92866275,
+              85898403,
+              71890643
+            ],
+            [
+              87377323,
+              87621533,
+              89949410,
+              95574197,
+              96352761
+            ],
+            [
+              86051601,
+              110570416,
+              98455394,
+              99172162,
+              94278049
+            ],
+            [
+              74157344,
+              70394880,
+              69910218,
+              74886586,
+              73821744
+            ],
+            [
+              70119141,
+              68922742,
+              68075899,
+              67972144,
+              68401491
+            ],
+            [
+              69708289,
+              69070139,
+              69248113,
+              68408505,
+              68649728
+            ],
+            [
+              70280624,
+              70366126,
+              70220943,
+              70177120,
+              70784462
+            ],
+            [
+              69680426,
+              68090947,
+              67905518,
+              67865763,
+              68025724
+            ],
+            [
+              88864749,
+              94903284,
+              96794160,
+              99005308,
+              92157622
+            ],
+            [
+              95394127,
+              90104400,
+              81347705,
+              78700958,
+              102848394
+            ],
+            [
+              74223308,
+              73015967,
+              99121947,
+              72047015,
+              97332502
+            ],
+            [
+              86350641,
+              89090043,
+              103675860,
+              108329280,
+              75322525
+            ]
+          ],
+          "wall_best_pass_histogram": [
+            3,
+            0,
+            1,
+            6,
+            2
+          ],
+          "wall_median_over_min": [
+            1.2420710439326577,
+            1.0294365507169405,
+            1.1441436632887283,
+            1.055950705231673,
+            1.0063165140119752,
+            1.0096718090828034,
+            1.001474896661476,
+            1.002357020578992,
+            1.0679519727220521,
+            1.1448958473923532,
+            1.0302065671978222,
+            1.182780887921641
+          ]
+        },
+        "unicode": {
+          "cpu_best_pass_histogram": [
+            0,
+            4,
+            3,
+            3,
+            2
+          ],
+          "cpu_median_over_min": [
+            1.1709944793492317,
+            1.2795288113824328,
+            1.029882583905864,
+            1.0104644849959792,
+            1.0156082406681697,
+            1.0345678695782774,
+            1.0047571781537181,
+            1.017855541797588,
+            1.2290899273636506,
+            1.537785772363863,
+            1.5747847166999147,
+            1.108285328889663
+          ],
+          "median_observer_cpu_ratio": 1.104756655449055,
+          "median_observer_wall_ratio": 1.1049169579770735,
+          "minima_on_different_passes": 0,
+          "observer_cpu_ratios": [
+            0.9565508021390374,
+            1.5708908406524467,
+            0.8906361686919227,
+            1.1640260950605779,
+            1.0022632968691059,
+            1.0733695652173911,
+            1.0018261504747992,
+            2.2283849918433933,
+            1.1361437456807189,
+            1.271694214876033,
+            1.1751442055584689,
+            0.622803738317757
+          ],
+          "observer_wall_ratios": [
+            0.9577464788732396,
+            1.5720578980490876,
+            0.8927285817134629,
+            1.1640953716690041,
+            1.0018896447467875,
+            1.0731232983274988,
+            1.0025641025641026,
+            2.229950900163666,
+            1.1367106176266484,
+            1.2974115161119915,
+            1.1756970015781167,
+            0.6257530120481927
+          ],
+          "retained_cpu_ns": [
+            [
+              131752492,
+              139222655,
+              117224767,
+              137269555,
+              141404528
+            ],
+            [
+              124869273,
+              130862495,
+              74766471,
+              66999666,
+              85728003
+            ],
+            [
+              138735412,
+              138133430,
+              134691331,
+              138716256,
+              141758280
+            ],
+            [
+              81380554,
+              81294294,
+              67836609,
+              67164796,
+              67867641
+            ],
+            [
+              68634864,
+              64781595,
+              63151384,
+              63382340,
+              64137066
+            ],
+            [
+              66520925,
+              62780322,
+              66761951,
+              62574348,
+              60682652
+            ],
+            [
+              63417251,
+              61454325,
+              62288651,
+              61163360,
+              61270341
+            ],
+            [
+              64446833,
+              61421379,
+              62518091,
+              62805423,
+              61975809
+            ],
+            [
+              129908680,
+              136168711,
+              125396994,
+              114875687,
+              102024263
+            ],
+            [
+              79274889,
+              68131107,
+              104771047,
+              147326755,
+              116064904
+            ],
+            [
+              117920878,
+              74880634,
+              133474336,
+              131669452,
+              100755790
+            ],
+            [
+              148018844,
+              100677138,
+              104028509,
+              121153140,
+              111578995
+            ]
+          ],
+          "retained_wall_ns": [
+            [
+              132336023,
+              143028670,
+              117525754,
+              137929341,
+              141816611
+            ],
+            [
+              125282380,
+              131278666,
+              74953041,
+              67171518,
+              85951963
+            ],
+            [
+              139708998,
+              138636470,
+              135337878,
+              140335065,
+              143034400
+            ],
+            [
+              81633332,
+              81565545,
+              68016538,
+              67390620,
+              68050552
+            ],
+            [
+              68802345,
+              64908263,
+              63284058,
+              63518870,
+              64259423
+            ],
+            [
+              66706464,
+              62899335,
+              66896351,
+              62702244,
+              60800178
+            ],
+            [
+              63538376,
+              61576578,
+              62407400,
+              61299727,
+              61537364
+            ],
+            [
+              64601887,
+              61563774,
+              62665295,
+              63042093,
+              62076367
+            ],
+            [
+              130402807,
+              136547411,
+              126260418,
+              115450160,
+              102403347
+            ],
+            [
+              79536820,
+              68313856,
+              105043412,
+              147812954,
+              116379307
+            ],
+            [
+              118304527,
+              75059360,
+              133857422,
+              132013255,
+              101069669
+            ],
+            [
+              148434053,
+              100947410,
+              104331263,
+              121502340,
+              111948796
+            ]
+          ],
+          "wall_best_pass_histogram": [
+            0,
+            4,
+            3,
+            3,
+            2
+          ],
+          "wall_median_over_min": [
+            1.1736094966895512,
+            1.2795894087133777,
+            1.032297831653604,
+            1.0097926387975062,
+            1.0154124914050233,
+            1.0345255074746655,
+            1.0045163496405132,
+            1.0178923566316775,
+            1.232971594180413,
+            1.537658948720447,
+            1.5761462261335561,
+            1.1089813597000655
+          ]
+        }
+      }
+    },
+    "pen-dispatch": {
+      "blocks": 12,
+      "engine_screen_cleared": false,
+      "note": "Operational engine screen, not proof of noninferiority, mechanism, terminal/Ghostty throughput or championship. Best-of-five invocations are not five independent trials. Sign tests assume independent fair signs; balanced sequential order does not establish independence.",
+      "point_regression_guards_failed": [],
+      "runtime_promotion": false,
+      "schema": "glass.pen-dispatch-analysis/v1",
+      "sessions": 24,
+      "summary": {
+        "ascii": {
+          "cpu_ratios": [
+            0.730136128040098,
+            0.8580380143424077,
+            1.0762022959975177,
+            0.9763350905340362,
+            0.9862271393090992,
+            1.0391511761802927,
+            1.1017257039055404,
+            0.9739859383450514,
+            0.9547566903477379,
+            1.0024252649338323,
+            0.9808326787117047,
+            0.9994726572799663
+          ],
+          "holm_p": 1.0,
+          "losses": 8,
+          "median_cpu_ratio": 0.9835299090104019,
+          "median_wall_ratio": 0.9841997605779826,
+          "sign_p_two_sided": 0.3876953125,
+          "wins": 4
+        },
+        "cursor_motion": {
+          "cpu_ratios": [
+            0.8234592445328032,
+            1.0307480495640202,
+            1.0977212971078003,
+            1.0167530913442362,
+            1.0126532226176355,
+            1.0027440219521757,
+            1.0015661707126078,
+            1.016882606988614,
+            1.0109674892283589,
+            1.0128755364806867,
+            0.9976780185758515,
+            1.0172888015717092
+          ],
+          "holm_p": 0.19287109375,
+          "losses": 2,
+          "median_cpu_ratio": 1.0127643795491612,
+          "median_wall_ratio": 1.0131831019785342,
+          "sign_p_two_sided": 0.03857421875,
+          "wins": 10
+        },
+        "scroll_region": {
+          "cpu_ratios": [
+            0.8853993574831062,
+            1.1029232251847094,
+            1.0308235294117647,
+            0.9872878983031864,
+            1.0000528122524426,
+            1.0184288121314238,
+            0.9291326372376719,
+            0.998657925979456,
+            1.002694719386433,
+            0.9807751461088896,
+            0.9969637710992177,
+            1.0138558577189536
+          ],
+          "holm_p": 1.0,
+          "losses": 6,
+          "median_cpu_ratio": 0.9993553691159494,
+          "median_wall_ratio": 0.9988812864134539,
+          "sign_p_two_sided": 1.0,
+          "wins": 6
+        },
+        "truecolor": {
+          "cpu_ratios": [
+            0.8225298930144744,
+            1.0003847633705272,
+            1.174496644295302,
+            1.0168951227287217,
+            0.9909909909909911,
+            1.0045998160073597,
+            1.011049723756906,
+            1.012646514497224,
+            0.9941860465116278,
+            1.0027157513578757,
+            0.9870520927431496,
+            1.0003066544004906
+          ],
+          "holm_p": 1.0,
+          "losses": 4,
+          "median_cpu_ratio": 1.0015502573642014,
+          "median_wall_ratio": 1.0021239682895797,
+          "sign_p_two_sided": 0.3876953125,
+          "wins": 8
+        },
+        "tui_frames": {
+          "cpu_ratios": [
+            0.9049740163325911,
+            1.009874667679453,
+            1.0206043956043955,
+            1.0192043895747598,
+            1.009686038744155,
+            1.0157401205626255,
+            1.0052945069490404,
+            1.0108019639934533,
+            1.020604852110336,
+            1.014158709252552,
+            1.0157119476268412,
+            1.0013016596160103
+          ],
+          "holm_p": 0.0380859375,
+          "losses": 1,
+          "median_cpu_ratio": 1.0124803366230026,
+          "median_wall_ratio": 1.0121291260315597,
+          "sign_p_two_sided": 0.00634765625,
+          "wins": 11
+        },
+        "unicode": {
+          "cpu_ratios": [
+            0.5903987611304684,
+            1.4431818181818183,
+            1.339653304442037,
+            0.9743090696769172,
+            0.9926725800231391,
+            0.9732277526395174,
+            1.0339384372533544,
+            1.0115651503469545,
+            0.9748214956783162,
+            0.9884068810770382,
+            0.9646882043576259,
+            0.9687383699292893
+          ],
+          "holm_p": 1.0,
+          "losses": 8,
+          "median_cpu_ratio": 0.9816141883776772,
+          "median_wall_ratio": 0.9824937852110086,
+          "sign_p_two_sided": 0.3876953125,
+          "wins": 4
+        }
+      },
+      "truecolor_target_cleared": false
+    },
+    "persistent_witness": {
+      "broader_slot_failures": 2728,
+      "continuous_in_bounds_failures": 0,
+      "suite": {
+        "failed": 3,
+        "filtered": 0,
+        "ignored": 21,
+        "passed": 389,
+        "status": "FAILED"
+      }
+    },
+    "scroll_authority": {
+      "candidate_history_count": 11997,
+      "candidate_resize_mismatches": 76,
+      "configured_history_cases_per_arm": 4,
+      "control_history_counts": {
+        "no_picture": 3,
+        "unknown_picture_extent": 10664
+      },
+      "control_resize_mismatches": 0,
+      "expected_history_count": 11997,
+      "literal_cases_per_arm": 662,
+      "resize_cases_per_arm": 76
+    },
+    "scroll_witness": {
+      "matrices": {
+        "aware": {
+          "cases": 2880,
+          "failures": 0
+        },
+        "stale": {
+          "cases": 2880,
+          "failures": 2232
+        },
+        "transport": {
+          "cases": 2880,
+          "failures": 144
+        }
+      },
+      "suite": {
+        "failed": 3,
+        "filtered": 0,
+        "ignored": 23,
+        "passed": 389,
+        "status": "FAILED"
+      }
+    },
+    "shared_handler_mutation": {
+      "differential_streams": 12800,
+      "differential_sweep_accepted": true,
+      "explicit_oracle_rejected": true,
+      "limits": "One deliberate common-handler defect, not a benchmark candidate, broad mutation coverage, proof of independence or compatibility guarantee.",
+      "mutant_sha256": "0f04d52727160518ee231c6702a1a87c8395120b2c0d1141668629bef0eafcad",
+      "oracle_exit": 101,
+      "schema": "glass.pen-oracle-mutation-result/v1",
+      "sweep_exit": 0
+    }
+  },
+  "preserved_paths": 9017,
+  "provenance_sensitivity": {
+    "existing_checkpoint_accepts_in_memory_mutation": true,
+    "mutation": "candidate argv[0] replaced with retained control executable path; claimed hash and logs unchanged",
+    "new_binding_rejects": true,
+    "scope": "Decoded-metadata semantic sensitivity only. Ordinary on-disk changes remain protected by manifests; no falsified timing or execution alleged."
+  },
+  "runtime_promotion": false,
+  "schema": "glass.campaign-audit45/v1",
+  "source_fixes": {
+    "cover_transport": {
+      "candidate": {
+        "cases": 2592,
+        "failures_by_step": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "observations": 10368,
+        "total_by_step": [
+          2592,
+          2592,
+          2592,
+          2592
+        ]
+      },
+      "control": {
+        "cases": 2592,
+        "failures_by_step": [
+          0,
+          968,
+          520,
+          520
+        ],
+        "observations": 10368,
+        "total_by_step": [
+          2592,
+          2592,
+          2592,
+          2592
+        ]
+      }
+    },
+    "production_suite": {
+      "failed": 0,
+      "filtered": 0,
+      "ignored": 14,
+      "passed": 395,
+      "status": "ok"
+    },
+    "source_seams": {
+      "candidate": {
+        "cases": 1536,
+        "failures": 0
+      },
+      "control": {
+        "cases": 1536,
+        "failures": 384
+      }
+    },
+    "split_fragments": {
+      "control": {
+        "cases": 4,
+        "failures": 4
+      },
+      "production": {
+        "cases": 4,
+        "failures": 0
+      },
+      "prototype": {
+        "cases": 1680,
+        "failures": 0,
+        "repeat_cases": 4
+      }
+    }
+  },
+  "status": "reported",
+  "target": {
+    "binaries": {
+      "ghostty": {
+        "path": "/usr/bin/ghostty",
+        "sha256": "ef28bf3a0f6ead69014da86ab0c9a2ef30fcf3bf297a6a27c4c18dfc80a56a62"
+      },
+      "glass": {
+        "path": "/work/frosty40/glass-repo/tree/target/release/glass",
+        "sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c"
+      }
+    },
+    "raw_replay": {
+      "binaries_checked": true,
+      "directory": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-role-partition/shipping-vs-ghostty",
+      "geometry": [
+        [
+          154,
+          39
+        ]
+      ],
+      "note": "Read-only integrity replay, not timing accuracy.",
+      "report_sha256": "8496b67d97cd8c404dff862116564162d1b774ff6c010f3930a50b43bd1bd6e0",
+      "rounds": 30,
+      "sessions": 60
+    },
+    "rounds": 30,
+    "rows": {
+      "ascii": {
+        "corrected_positive_lead": false,
+        "holm_p": 0.19747429341077805,
+        "losses": 20,
+        "own_gain_to_observed_parity_percent": 5.583643743930877,
+        "paired_median": 0.9471163946806691,
+        "sign_p": 0.09873714670538902,
+        "wins": 10
+      },
+      "cursor_motion": {
+        "corrected_positive_lead": true,
+        "holm_p": 1.1175870895385742e-08,
+        "losses": 0,
+        "own_gain_to_observed_parity_percent": 0.0,
+        "paired_median": 1.0987249970010438,
+        "sign_p": 1.862645149230957e-09,
+        "wins": 30
+      },
+      "scroll_region": {
+        "corrected_positive_lead": false,
+        "holm_p": 0.584664711728692,
+        "losses": 17,
+        "own_gain_to_observed_parity_percent": 1.0831083907846706,
+        "paired_median": 0.9892849714652877,
+        "sign_p": 0.584664711728692,
+        "wins": 13
+      },
+      "truecolor": {
+        "corrected_positive_lead": true,
+        "holm_p": 1.1175870895385742e-08,
+        "losses": 0,
+        "own_gain_to_observed_parity_percent": 0.0,
+        "paired_median": 1.1818022477228065,
+        "sign_p": 1.862645149230957e-09,
+        "wins": 30
+      },
+      "tui_frames": {
+        "corrected_positive_lead": true,
+        "holm_p": 2.3096799850463867e-07,
+        "losses": 1,
+        "own_gain_to_observed_parity_percent": 0.0,
+        "paired_median": 1.0621654240229184,
+        "sign_p": 5.774199962615967e-08,
+        "wins": 29
+      },
+      "unicode": {
+        "corrected_positive_lead": false,
+        "holm_p": 2.5290995836257935e-05,
+        "losses": 27,
+        "own_gain_to_observed_parity_percent": 7.629620626715039,
+        "paired_median": 0.9291122594106658,
+        "sign_p": 8.430331945419312e-06,
+        "wins": 3
+      }
+    },
+    "scope": "Historical selected binary only; not latest runtime sources, latency, memory, platforms or championship.",
+    "sessions": 60
+  }
+}
