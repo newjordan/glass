@@ -1,0 +1,123 @@
+diff --git i/crates/alacritty-terminal/src/term/mod.rs w/crates/alacritty-terminal/src/term/mod.rs
+index 38b0937..1290214 100644
+--- i/crates/alacritty-terminal/src/term/mod.rs
++++ w/crates/alacritty-terminal/src/term/mod.rs
+@@ -1090,6 +1090,61 @@ impl<T> Dimensions for Term<T> {
+     }
+ }
+ 
++impl<T: EventListener> Term<T> {
++    // Keep uncommon attributes out of the hot foreground/background pen path.
++    #[inline(never)]
++    fn terminal_attribute_cold(&mut self, attr: Attr) {
++        let cursor = &mut self.grid.cursor;
++        match attr {
++            Attr::Foreground(color) => cursor.template.fg = color,
++            Attr::Background(color) => cursor.template.bg = color,
++            Attr::UnderlineColor(color) => cursor.template.set_underline_color(color),
++            Attr::Reset => {
++                cursor.template.fg = Color::Named(NamedColor::Foreground);
++                cursor.template.bg = Color::Named(NamedColor::Background);
++                cursor.template.flags = Flags::empty();
++                cursor.template.set_underline_color(None);
++            },
++            Attr::Reverse => cursor.template.flags.insert(Flags::INVERSE),
++            Attr::CancelReverse => cursor.template.flags.remove(Flags::INVERSE),
++            Attr::Bold => cursor.template.flags.insert(Flags::BOLD),
++            Attr::CancelBold => cursor.template.flags.remove(Flags::BOLD),
++            Attr::Dim => cursor.template.flags.insert(Flags::DIM),
++            Attr::CancelBoldDim => cursor.template.flags.remove(Flags::BOLD | Flags::DIM),
++            Attr::Italic => cursor.template.flags.insert(Flags::ITALIC),
++            Attr::CancelItalic => cursor.template.flags.remove(Flags::ITALIC),
++            Attr::Underline => {
++                cursor.template.flags.remove(Flags::ALL_UNDERLINES);
++                cursor.template.flags.insert(Flags::UNDERLINE);
++            },
++            Attr::DoubleUnderline => {
++                cursor.template.flags.remove(Flags::ALL_UNDERLINES);
++                cursor.template.flags.insert(Flags::DOUBLE_UNDERLINE);
++            },
++            Attr::Undercurl => {
++                cursor.template.flags.remove(Flags::ALL_UNDERLINES);
++                cursor.template.flags.insert(Flags::UNDERCURL);
++            },
++            Attr::DottedUnderline => {
++                cursor.template.flags.remove(Flags::ALL_UNDERLINES);
++                cursor.template.flags.insert(Flags::DOTTED_UNDERLINE);
++            },
++            Attr::DashedUnderline => {
++                cursor.template.flags.remove(Flags::ALL_UNDERLINES);
++                cursor.template.flags.insert(Flags::DASHED_UNDERLINE);
++            },
++            Attr::CancelUnderline => cursor.template.flags.remove(Flags::ALL_UNDERLINES),
++            Attr::Hidden => cursor.template.flags.insert(Flags::HIDDEN),
++            Attr::CancelHidden => cursor.template.flags.remove(Flags::HIDDEN),
++            Attr::Strike => cursor.template.flags.insert(Flags::STRIKEOUT),
++            Attr::CancelStrike => cursor.template.flags.remove(Flags::STRIKEOUT),
++            _ => {
++                debug!("Term got unhandled attr: {attr:?}");
++            },
++        }
++    }
++}
++
+ impl<T: EventListener> Handler for Term<T> {
+     /// A character to be displayed.
+     #[inline(never)]
+@@ -1914,53 +1969,10 @@ impl<T: EventListener> Handler for Term<T> {
+     #[inline]
+     fn terminal_attribute(&mut self, attr: Attr) {
+         trace!("Setting attribute: {attr:?}");
+-        let cursor = &mut self.grid.cursor;
+         match attr {
+-            Attr::Foreground(color) => cursor.template.fg = color,
+-            Attr::Background(color) => cursor.template.bg = color,
+-            Attr::UnderlineColor(color) => cursor.template.set_underline_color(color),
+-            Attr::Reset => {
+-                cursor.template.fg = Color::Named(NamedColor::Foreground);
+-                cursor.template.bg = Color::Named(NamedColor::Background);
+-                cursor.template.flags = Flags::empty();
+-                cursor.template.set_underline_color(None);
+-            },
+-            Attr::Reverse => cursor.template.flags.insert(Flags::INVERSE),
+-            Attr::CancelReverse => cursor.template.flags.remove(Flags::INVERSE),
+-            Attr::Bold => cursor.template.flags.insert(Flags::BOLD),
+-            Attr::CancelBold => cursor.template.flags.remove(Flags::BOLD),
+-            Attr::Dim => cursor.template.flags.insert(Flags::DIM),
+-            Attr::CancelBoldDim => cursor.template.flags.remove(Flags::BOLD | Flags::DIM),
+-            Attr::Italic => cursor.template.flags.insert(Flags::ITALIC),
+-            Attr::CancelItalic => cursor.template.flags.remove(Flags::ITALIC),
+-            Attr::Underline => {
+-                cursor.template.flags.remove(Flags::ALL_UNDERLINES);
+-                cursor.template.flags.insert(Flags::UNDERLINE);
+-            },
+-            Attr::DoubleUnderline => {
+-                cursor.template.flags.remove(Flags::ALL_UNDERLINES);
+-                cursor.template.flags.insert(Flags::DOUBLE_UNDERLINE);
+-            },
+-            Attr::Undercurl => {
+-                cursor.template.flags.remove(Flags::ALL_UNDERLINES);
+-                cursor.template.flags.insert(Flags::UNDERCURL);
+-            },
+-            Attr::DottedUnderline => {
+-                cursor.template.flags.remove(Flags::ALL_UNDERLINES);
+-                cursor.template.flags.insert(Flags::DOTTED_UNDERLINE);
+-            },
+-            Attr::DashedUnderline => {
+-                cursor.template.flags.remove(Flags::ALL_UNDERLINES);
+-                cursor.template.flags.insert(Flags::DASHED_UNDERLINE);
+-            },
+-            Attr::CancelUnderline => cursor.template.flags.remove(Flags::ALL_UNDERLINES),
+-            Attr::Hidden => cursor.template.flags.insert(Flags::HIDDEN),
+-            Attr::CancelHidden => cursor.template.flags.remove(Flags::HIDDEN),
+-            Attr::Strike => cursor.template.flags.insert(Flags::STRIKEOUT),
+-            Attr::CancelStrike => cursor.template.flags.remove(Flags::STRIKEOUT),
+-            _ => {
+-                debug!("Term got unhandled attr: {attr:?}");
+-            },
++            Attr::Foreground(color) => self.grid.cursor.template.fg = color,
++            Attr::Background(color) => self.grid.cursor.template.bg = color,
++            _ => self.terminal_attribute_cold(attr),
+         }
+     }
+ 

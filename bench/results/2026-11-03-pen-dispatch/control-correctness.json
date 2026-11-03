@@ -1,0 +1,25 @@
+{
+  "arm": "control",
+  "executable": "/tmp/glass-i32-control-test",
+  "sha256": "3c806347ef0c850d40224db5da24657c5f9282e4087d1621104ca9f3f3e37296",
+  "checks": [
+    {
+      "task": "terminal-tests",
+      "exit_code": 0,
+      "log": "control-terminal-tests.log",
+      "sha256": "a5797cbe8537d68d8f73a4a14266e8fb182bb4bf0a4ece0b0ea87425ffff52cc"
+    },
+    {
+      "task": "oracle",
+      "exit_code": 0,
+      "log": "control-oracle.log",
+      "sha256": "6d3b90660d731cee385ee6bdf95a6ea3de5050d87217b8c85d00f25a25763294"
+    },
+    {
+      "task": "sweep",
+      "exit_code": 0,
+      "log": "control-sweep.log",
+      "sha256": "a5435e203baa32a298256bb3659834cb356643c28d24f2340c31b7a189a43b45"
+    }
+  ]
+}

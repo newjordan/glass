@@ -1,0 +1,2 @@
+usage: build.py [-h] --out OUT --receipt-dir RECEIPT_DIR
+build.py: error: the following arguments are required: --out

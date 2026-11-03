@@ -1,0 +1,25 @@
+{
+  "arm": "candidate",
+  "executable": "/tmp/glass-i32-candidate-test",
+  "sha256": "67879e4acff68305eac06c16af75388cd7a49d627d456762001657a1b4ffecdf",
+  "checks": [
+    {
+      "task": "terminal-tests",
+      "exit_code": 0,
+      "log": "candidate-terminal-tests.log",
+      "sha256": "c8a84da041f8686e7f9dae42b0d0f260a38c79b7294aefc185a1e8e362b52ff8"
+    },
+    {
+      "task": "oracle",
+      "exit_code": 0,
+      "log": "candidate-oracle.log",
+      "sha256": "6d3b90660d731cee385ee6bdf95a6ea3de5050d87217b8c85d00f25a25763294"
+    },
+    {
+      "task": "sweep",
+      "exit_code": 0,
+      "log": "candidate-sweep.log",
+      "sha256": "414bdc9ce40a6887df9f4c61ab881266b2481a401ee6eb5c395c511c5af44e6a"
+    }
+  ]
+}

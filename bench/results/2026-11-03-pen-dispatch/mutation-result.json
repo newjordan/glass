@@ -1,0 +1,10 @@
+{
+  "schema": "glass.pen-oracle-mutation-result/v1",
+  "mutant_sha256": "0f04d52727160518ee231c6702a1a87c8395120b2c0d1141668629bef0eafcad",
+  "explicit_oracle_rejected": true,
+  "differential_sweep_accepted": true,
+  "differential_streams": 12800,
+  "oracle_exit": 101,
+  "sweep_exit": 0,
+  "limits": "One deliberate common-handler defect, not a benchmark candidate, broad mutation coverage, proof of independence or compatibility guarantee."
+}

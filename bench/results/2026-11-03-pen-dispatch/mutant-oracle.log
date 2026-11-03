@@ -1,0 +1,24 @@
+
+running 1 test
+
+thread 'engine::tests::pen_dispatch_preserves_template_and_color_boundaries' (3622662) panicked at crates/term/src/engine.rs:3808:21:
+assertion `left == right` failed
+  left: Cell { c: ' ', fg: Named(Foreground), bg: Named(Foreground), flags: Flags(BOLD | ITALIC | DOTTED_UNDERLINE), extra: Some(CellExtra { zerowidth: ['\u{301}'], underline_color: Some(Indexed(137)), hyperlink: None }) }
+ right: Cell { c: ' ', fg: Named(Foreground), bg: Named(Background), flags: Flags(BOLD | ITALIC | DOTTED_UNDERLINE), extra: Some(CellExtra { zerowidth: ['\u{301}'], underline_color: Some(Indexed(137)), hyperlink: None }) }
+stack backtrace:
+   0: __rustc::rust_begin_unwind
+   1: core::panicking::panic_fmt
+   2: core::panicking::assert_failed_inner
+   3: core::panicking::assert_failed::<alacritty_terminal::term::cell::Cell, alacritty_terminal::term::cell::Cell>
+   4: glass::engine::tests::pen_dispatch_preserves_template_and_color_boundaries
+   5: <glass::engine::tests::pen_dispatch_preserves_template_and_color_boundaries::{closure#0} as core::ops::function::FnOnce<()>>::call_once
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+test engine::tests::pen_dispatch_preserves_template_and_color_boundaries ... FAILED
+
+failures:
+
+failures:
+    engine::tests::pen_dispatch_preserves_template_and_color_boundaries
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 394 filtered out; finished in 0.00s
+

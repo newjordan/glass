@@ -1,0 +1,15 @@
+diff --git i/crates/alacritty-terminal/src/term/mod.rs w/crates/alacritty-terminal/src/term/mod.rs
+index 38b0937..453d289 100644
+--- i/crates/alacritty-terminal/src/term/mod.rs
++++ w/crates/alacritty-terminal/src/term/mod.rs
+@@ -1916,8 +1916,8 @@ impl<T: EventListener> Handler for Term<T> {
+         trace!("Setting attribute: {attr:?}");
+         let cursor = &mut self.grid.cursor;
+         match attr {
+-            Attr::Foreground(color) => cursor.template.fg = color,
+-            Attr::Background(color) => cursor.template.bg = color,
++            Attr::Foreground(color) => cursor.template.bg = color,
++            Attr::Background(color) => cursor.template.fg = color,
+             Attr::UnderlineColor(color) => cursor.template.set_underline_color(color),
+             Attr::Reset => {
+                 cursor.template.fg = Color::Named(NamedColor::Foreground);

@@ -1,0 +1,153 @@
+Glass campaign iteration 32 — rejected pen-dispatch split; verified oracle blindspot
+Date: 2026-11-03
+Status: reported, not independently audited or accepted
+
+RESULT
+No runtime promotion and no new Ghostty comparison or championship claim.
+A materially distinct candidate split foreground/background pen assignments from
+Term's generic attribute dispatcher. Both release arms passed correctness, but
+its predeclared truecolor screen failed. Retain only the new test in production
+source. An untimed deliberate shared-handler mutation then demonstrated an
+important validation gap: the existing fast/plain sweep accepts 12,800 streams
+with foreground/background destinations swapped; the explicit pen oracle rejects
+that same executable immediately.
+
+PREREQUISITES AND DISTINCTION
+The previous iteration31 checkpoint replay passed before edits; its exact JSON
+is saved as prior-checkpoint.json. Its frozen index replay still passes with
+136 references. Labyrinth frontier reported uninitialized, so no recorded door
+or campaign claim was fabricated. Inspected original generic handler and exact
+iteration31 assembly, which calls an 824-byte attribute dispatcher from apply.
+This change does not repeat mark-row fusion, decoder changes, parser ownership,
+width caching or scanner outlining. Trace logging is still once per attribute;
+the original reset/underline/flags match remains in an out-of-line helper.
+
+The source was edited directly, exact arm snapshots retained, then the runtime
+source was restored after builds. The intended local screen does not address
+the latest selected-build ASCII/Unicode/scroll-region competitive gaps. Truecolor
+is already competitive in that series; this local lead was tested for attribute
+cost and possible extra headroom, not misrepresented as closing all gaps.
+
+PROSPECTIVE DESIGN AND BUILD IDENTITIES
+protocol.json predates compilation and all timing. Exactly 12 balanced sequential
+pairs / 24 sessions; alternating control-candidate/candidate-control order.
+Engine scale 2, 5 internal rounds, read size 4095, six workloads. Each invocation
+reports its fastest internal pass; five passes are NOT five independent trials.
+Primary: truecolor median paired CPU-rate ratio >=1.02, wins > losses, Holm-
+adjusted two-sided sign p<.05 across six workloads; all six point medians >=.98.
+No timing pilot, exclusions, extra pairs, retry/rescue variant, pooling, changed
+threshold or optional stopping. All 24 sessions retained, including extremes.
+
+Exact release-test builds use Cargo JSON; require non-fresh glass/vte/terminal
+artifacts, opt_level=3, debug assertions false, and successful build completion.
+Local build.py adds the changed terminal source to the content/mmtime guard and
+identity receipt. All five explicit source hashes match their arm snapshots.
+The final corrected oracle source is identical in candidate/control/mutant.
+Timing executables:
+ control   /tmp/glass-i32-control-test
+ SHA256    3c806347ef0c850d40224db5da24657c5f9282e4087d1621104ca9f3f3e37296
+ candidate /tmp/glass-i32-candidate-test
+ SHA256    67879e4acff68305eac06c16af75388cd7a49d627d456762001657a1b4ffecdf
+These test binaries are not the selected shipping executable.
+
+CORRECTNESS AND FIXED ENGINE RESULTS
+Per arm: 384 nonignored terminal tests (11 ignored), an explicit 1,659-case pen
+oracle, and 64 seeds x 200 differential streams = 12,800 streams. The explicit
+oracle covers 264 selected colors, each FG/BG under three nondefault template
+styles, preservation of extras/marks, flag and underline operations/reset, and
+a selected mixed truecolor/indexed SGR at every single split boundary. It is
+not complete named-color, terminal, Unicode, platform or logging coverage.
+
+Median candidate/control CPU-rate ratio (higher is better):
+ workload        ratio         wins/12   Holm two-sided sign p
+ ascii           0.983530       4         1.000000
+ unicode         0.981614       4         1.000000
+ truecolor       1.001550       8         1.000000
+ cursor_motion   1.012764      10         0.192871
+ scroll_region   0.999355       6         1.000000
+ tui_frames      1.012480      11         0.038086
+
+Truecolor fails both the >=2% magnitude and significance primary gates; reject.
+All operational point guards pass, but this does NOT prove noninferiority.
+The favorable TUI observation does not replace the failed primary. Shared host
+was busy with unrelated CPU work before protocol; no other process was killed
+or reconfigured. First three Unicode ratios are .5904 / 1.4432 / 1.3397, exposing
+substantial variability; none was excluded or used to justify a timing rerun.
+Balanced sequential order does not establish independent fair signs. No CPU
+stall causality, real-terminal throughput, latency, startup/resource or competitive
+superiority follows from this screen.
+
+STATIC CODEGEN
+Exact symbols/disassembly replay from the timing ELFs:
+                         control              candidate
+ Engine::apply          9774 bytes/2048 insn  10174 bytes/2104 insn
+ attribute dispatcher    824 bytes/203 insn     577 bytes/138 insn (cold helper)
+ Watch::print_utf8       8524 bytes/1967 insn   8524 bytes/1967 insn
+apply grew 400 bytes / 56 instructions. Combined apply+attribute size grew from
+10,598 to 10,751 bytes. This is consistent with an inlining/footprint tradeoff,
+not causal proof of measured cost. Code layout changed as well. UTF8 equal size
+and instruction count is not a claim of byte-identical relocation-masked code.
+
+NEW VERIFIABLE ORACLE COVERAGE RESULT
+mutation-protocol.json was frozen AFTER rejection, BEFORE the untimed mutation
+build. This is validation research, not a rescue candidate or more timing.
+Using the original generic handler, deliberately swap only FG/BG destination
+fields. Both parsers call this common handler; no parser modification.
+ /tmp/glass-i32-mutant-test
+ SHA256 0f04d52727160518ee231c6702a1a87c8395120b2c0d1141668629bef0eafcad
+Explicit pen oracle: exit 101; foreground template differs at its first affected
+case. Shared fast/plain sweep: exit 0, all 12,800 streams pass. Thus prior large
+sweep counts alone do not validate common attribute semantics. This is one
+concrete demonstrated blindspot, not a claim that all oracle independence or
+semantic risks are resolved. Production terminal handler restored before the
+mutation checks; mutant source/executable retained only as named evidence.
+
+FAILURES RETAINED AND CORRECTED ADDITIVELY
+1. Two setup extraction assertions failed before source write or compilation.
+2. --output instead of --out failed argparse before build.
+3. Initial compilation failed: new test lacked Handler/Flags imports.
+4. First candidate executable passed all 383 existing tests but failed new test:
+   repeated fixture initialization assumed reset clears zero-width extras; SGR
+   reset preserves them, so second fixture had two marks. Original control
+   reproduced the same exit101/assertion. Fixed only fixture initialization,
+   identically in both arms. Final reset expectation still preserves extras.
+   First failed arm binaries retained under *-oracle-fixture-failure-test;
+   original logs/build source identities remain intact. No timing yet existed.
+5. Copied analyzer binary path corrected from i31 to i32 before its first run.
+
+No failure was deleted, relabeled as a passing run, or used to omit timed data.
+The final runtime candidate remained unchanged across the test fixture repair.
+
+REPLAY AND PRESERVATION
+python3 -B bench/results/2026-11-03-pen-dispatch/verify.py
+python3 -B bench/results/2026-11-03-pen-dispatch/mutation-check.py
+python3 -B bench/replay-evidence-index.py \
+  bench/results/2026-11-03-pen-dispatch/final-frozen-index.json
+
+Read-only checkpoint reconstructs exact oracle and runtime patches from frozen
+originals, matches all final Cargo/build/executable/source hashes, correctness
+logs, raw analysis, mutation receipts, and static disassembly. Analyzer rejected
+23 synthetic corruptions of real evidence. Corruptions test replay validation,
+not measurement accuracy or source semantics. Final index pins explicit sources;
+no discovery, fallback rebuilding, historical evidence rewriting or silent repair.
+Historical /tmp ELFs are required dependencies; missing is failure, not rebuild
+permission to attach old scores to a new executable.
+
+All 6,783 prior tracked evidence/report files and four shared docs unchanged.
+All 120 production Rust sources unchanged except a test-only addition to
+crates/term/src/engine.rs. 301 other tracked .rs files (including archived arm
+sources) remain byte-identical. All runtime candidate/mutant edits reverted.
+Selected target/release/glass remains SHA256
+ d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c
+Test code is cfg(test); the selected executable was not rebuilt or promoted.
+Pre-existing unrelated untracked files were not adopted or modified.
+
+DECISION AND NEXT REQUIREMENT
+Do not retune this rejected pen-dispatch split from the favorable TUI slice.
+Keep the mutation-checked explicit semantic guard; common-handler changes need
+explicit expected-state checks, not only shared-model differentials. The campaign
+still requires fresh selected-build end-to-end superiority on ASCII, Unicode,
+scroll-region, plus agreed startup, memory/VRAM, displayed key/frame latency,
+correctness/features/platform scope. No acceptance command or agreed all-metric
+championship definition is bound. This report is concrete local progress, not
+completion or a self-authorized world-champion declaration.

@@ -1,0 +1,11 @@
+{
+  "schema": "glass.historical-evidence-index/v1",
+  "manifests": [
+    {
+      "path": "bench/results/2026-11-03-pen-dispatch/evidence-sha256.json",
+      "sha256": "4a7fc3e43ccad24f238e9f56f7391f1a9a09078486111abc83819791ee44c332",
+      "source_root": ".",
+      "snapshots": {}
+    }
+  ]
+}

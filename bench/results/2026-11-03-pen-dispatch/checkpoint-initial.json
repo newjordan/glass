@@ -1,0 +1,78 @@
+{
+  "schema": "glass.pen-dispatch-checkpoint/v1",
+  "status": "reported",
+  "pairs": 12,
+  "sessions": 24,
+  "cpu_ratios": {
+    "ascii": 0.9835299090104019,
+    "cursor_motion": 1.0127643795491612,
+    "scroll_region": 0.9993553691159494,
+    "truecolor": 1.0015502573642014,
+    "tui_frames": 1.0124803366230026,
+    "unicode": 0.9816141883776772
+  },
+  "engine_screen_cleared": false,
+  "terminal_tests_per_arm": 384,
+  "differential_streams_per_arm": 12800,
+  "oracle_cases_per_arm": 1659,
+  "rejected_corruptions": 23,
+  "static_codegen": {
+    "control": {
+      "apply": {
+        "address": "0x2593b0",
+        "bytes": 9774,
+        "instructions": 2048,
+        "asm_sha256": "4b20f7f3a4a5d5e91216c09022b50be61c5ab9efd066297f57c76f2a118cae5b",
+        "attribute_calls": [
+          "25a4ed:\tcall   34e510 <<alacritty_terminal::term::Term<glass::engine::Listener> as vte::ansi::Handler>::terminal_attribute>"
+        ]
+      },
+      "print_utf8": {
+        "address": "0x263410",
+        "bytes": 8524,
+        "instructions": 1967,
+        "asm_sha256": "d5d1900fe3c78048d6354aa537f7f9fc041cfd74a1d25c4488bd75861b55c6b3",
+        "attribute_calls": []
+      },
+      "attribute": {
+        "address": "0x34e510",
+        "bytes": 824,
+        "instructions": 203,
+        "asm_sha256": "ef2544d37080a6403703d7044d771097722974c1bcc224c2c3c2521c5f8ea019",
+        "attribute_calls": []
+      }
+    },
+    "candidate": {
+      "apply": {
+        "address": "0x259690",
+        "bytes": 10174,
+        "instructions": 2104,
+        "asm_sha256": "d9cf620a995fd569ea4dd5ffed652ccb46e963172167ce4d496b71104c190c84",
+        "attribute_calls": [
+          "25a968:\tcall   2929a0 <<alacritty_terminal::term::Term<glass::engine::Listener>>::terminal_attribute_cold>"
+        ]
+      },
+      "print_utf8": {
+        "address": "0x263880",
+        "bytes": 8524,
+        "instructions": 1967,
+        "asm_sha256": "99408eb0358a34a80f1367b2d4fa0c03a00e0589489ef67304f5eb01fb39356b",
+        "attribute_calls": []
+      },
+      "attribute_cold": {
+        "address": "0x2929a0",
+        "bytes": 577,
+        "instructions": 138,
+        "asm_sha256": "45f5bfcf80974dfdf155ef2400a192483b9400172d75e66603f092483aa56270",
+        "attribute_calls": []
+      }
+    }
+  },
+  "unchanged_prior_evidence_files": 6783,
+  "unchanged_other_rust_sources": 301,
+  "retained_test_source": "crates/term/src/engine.rs",
+  "selected_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "runtime_promotion": false,
+  "championship_established": false,
+  "note": "Local exact-source/evidence replay only, not fresh timing, causal attribution, Ghostty comparison, independent audit or acceptance."
+}

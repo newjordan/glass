@@ -1,0 +1,113 @@
+diff --git i/crates/term/src/engine.rs w/crates/term/src/engine.rs
+index 4987a85..42432eb 100644
+--- i/crates/term/src/engine.rs
++++ w/crates/term/src/engine.rs
+@@ -3771,6 +3771,108 @@ mod tests {
+         term.take_effects().replies
+     }
+ 
++    /// Explicit template expectations, not the fast/plain shared-handler oracle.
++    #[test]
++    fn pen_dispatch_preserves_template_and_color_boundaries() {
++        use alacritty_terminal::vte::ansi::Handler;
++        use alacritty_terminal::term::cell::Flags;
++        let mut e = engine();
++        let mut colors = vec![
++            AnsiColor::Named(NamedColor::Foreground),
++            AnsiColor::Named(NamedColor::Background),
++            AnsiColor::Named(NamedColor::Red),
++            AnsiColor::Named(NamedColor::BrightBlue),
++        ];
++        colors.extend((0..=255).map(AnsiColor::Indexed));
++        for rgb in [[0, 0, 0], [255, 255, 255], [1, 128, 254], [254, 1, 128]] {
++            colors.push(AnsiColor::Spec(Rgb { r: rgb[0], g: rgb[1], b: rgb[2] }));
++        }
++        let mut cases = 0;
++        for style in 0..3 {
++            e.term.terminal_attribute(Attr::Reset);
++            e.term.terminal_attribute(Attr::UnderlineColor(Some(AnsiColor::Indexed(137))));
++            e.term.grid_mut().cursor.template.push_zerowidth('\u{301}');
++            e.term.grid_mut().cursor.template.flags = match style {
++                0 => Flags::BOLD | Flags::ITALIC | Flags::DOTTED_UNDERLINE,
++                1 => Flags::INVERSE | Flags::STRIKEOUT | Flags::DIM,
++                _ => Flags::HIDDEN | Flags::DOUBLE_UNDERLINE,
++            };
++            for &color in &colors {
++                for foreground in [true, false] {
++                    let before = e.term.grid().cursor.template.clone();
++                    let mut expected = before.clone();
++                    if foreground { expected.fg = color; } else { expected.bg = color; }
++                    let attr = if foreground { Attr::Foreground(color) } else { Attr::Background(color) };
++                    e.term.terminal_attribute(attr);
++                    assert_eq!(e.term.grid().cursor.template, expected);
++                    // Clone remains unchanged even if a handler accidentally mutates shared extras.
++                    assert_eq!(before.underline_color(), Some(AnsiColor::Indexed(137)));
++                    assert_eq!(before.zerowidth(), Some(&['\u{301}'][..]));
++                    cases += 1;
++                }
++            }
++        }
++        let mut flag_cases = vec![
++            (Attr::Reverse, Flags::INVERSE, true), (Attr::CancelReverse, Flags::INVERSE, false),
++            (Attr::Bold, Flags::BOLD, true), (Attr::CancelBold, Flags::BOLD, false),
++            (Attr::Dim, Flags::DIM, true), (Attr::CancelItalic, Flags::ITALIC, false),
++            (Attr::CancelBoldDim, Flags::BOLD | Flags::DIM, false),
++            (Attr::Italic, Flags::ITALIC, true), (Attr::Hidden, Flags::HIDDEN, true),
++            (Attr::CancelHidden, Flags::HIDDEN, false), (Attr::Strike, Flags::STRIKEOUT, true),
++            (Attr::CancelStrike, Flags::STRIKEOUT, false),
++        ];
++        for (attr, flags, set) in flag_cases.drain(..) {
++            e.term.grid_mut().cursor.template.flags = if set { Flags::ITALIC } else { Flags::all() };
++            let mut expected = e.term.grid().cursor.template.clone();
++            if set { expected.flags.insert(flags); } else { expected.flags.remove(flags); }
++            e.term.terminal_attribute(attr);
++            assert_eq!(e.term.grid().cursor.template, expected);
++            cases += 1;
++        }
++        for (attr, flag) in [
++            (Attr::Underline, Flags::UNDERLINE), (Attr::DoubleUnderline, Flags::DOUBLE_UNDERLINE),
++            (Attr::Undercurl, Flags::UNDERCURL), (Attr::DottedUnderline, Flags::DOTTED_UNDERLINE),
++            (Attr::DashedUnderline, Flags::DASHED_UNDERLINE), (Attr::CancelUnderline, Flags::empty()),
++        ] {
++            e.term.grid_mut().cursor.template.flags = Flags::BOLD | Flags::UNDERCURL;
++            let mut expected = e.term.grid().cursor.template.clone();
++            expected.flags.remove(Flags::ALL_UNDERLINES);
++            expected.flags.insert(flag);
++            e.term.terminal_attribute(attr);
++            assert_eq!(e.term.grid().cursor.template, expected);
++            cases += 1;
++        }
++        for color in [Some(AnsiColor::Indexed(0)), Some(AnsiColor::Spec(Rgb { r: 1, g: 128, b: 255 })), None] {
++            let mut expected = e.term.grid().cursor.template.clone();
++            expected.set_underline_color(color);
++            e.term.terminal_attribute(Attr::UnderlineColor(color));
++            assert_eq!(e.term.grid().cursor.template, expected);
++            cases += 1;
++        }
++        let mut expected = e.term.grid().cursor.template.clone();
++        expected.fg = AnsiColor::Named(NamedColor::Foreground);
++        expected.bg = AnsiColor::Named(NamedColor::Background);
++        expected.flags = Flags::empty();
++        expected.set_underline_color(None);
++        e.term.terminal_attribute(Attr::Reset);
++        assert_eq!(e.term.grid().cursor.template, expected);
++        cases += 1;
++        // Streamed SGRs must yield the explicit expected color/flags at every byte cut.
++        let stream = b"\x1b[1;3;4:3;58:2::1:128:255m\x1b[38;2;0;128;255;48;5;231m";
++        for cut in 0..=stream.len() {
++            let mut e = engine();
++            e.process(&stream[..cut]);
++            e.process(&stream[cut..]);
++            let pen = &e.term.grid().cursor.template;
++            assert_eq!(pen.fg, AnsiColor::Spec(Rgb { r: 0, g: 128, b: 255 }));
++            assert_eq!(pen.bg, AnsiColor::Indexed(231));
++            assert_eq!(pen.flags, Flags::BOLD | Flags::ITALIC | Flags::UNDERCURL);
++            assert_eq!(pen.underline_color(), Some(AnsiColor::Spec(Rgb { r: 1, g: 128, b: 255 })));
++            cases += 1;
++        }
++        eprintln!("pen dispatch explicit oracle: {cases} cases matched");
++    }
++
+     #[test]
+     fn startup_queries_are_answered() {
+         assert_eq!(answers(b"\x1b[c"), b"\x1b[?62;4;22c");

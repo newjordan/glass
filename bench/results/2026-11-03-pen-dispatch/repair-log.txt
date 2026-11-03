@@ -1,0 +1,6 @@
+Iteration 32 retained failures
+1. Two setup assertions before any source mutation/build: function boundary extraction accidentally included next inline attribute. Exact delimiter fixed.
+2. Build invocation used --output rather than --out; argparse failed before build.
+3. First compilation failed: explicit oracle needed Handler and Flags imports; runtime candidate unchanged.
+4. First compiled candidate passed 383 pre-existing tests and failed the new oracle: reset preserves zero-width extras, so repeated fixture setup accumulated combining marks. Unmodified control reproduced exactly the same failure (exit 101). Fixture corrected to initialize a fresh template at each style; expectation of reset behavior later still explicitly preserves extras. Both final arms use the corrected identical oracle. No timing before all corrections/correctness.
+5. Local analyzer path copied from iteration31 was corrected to iteration32 before its first run.

@@ -1,0 +1,10 @@
+{
+  "control": {
+    "path": "/tmp/glass-i32-control-test",
+    "sha256": "3c806347ef0c850d40224db5da24657c5f9282e4087d1621104ca9f3f3e37296"
+  },
+  "candidate": {
+    "path": "/tmp/glass-i32-candidate-test",
+    "sha256": "67879e4acff68305eac06c16af75388cd7a49d627d456762001657a1b4ffecdf"
+  }
+}

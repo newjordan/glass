@@ -1,0 +1,12 @@
+{
+  "schema": "glass.pen-oracle-mutation-protocol/v1",
+  "created_utc": "2026-11-03T12:58:48.595651+00:00",
+  "purpose": "Demonstrate new explicit oracle sensitivity to a shared Handler defect, not a runtime optimization or timing retry.",
+  "mutation": "Swap foreground and background destination fields in the original generic handler. Keep parser and explicit test unchanged.",
+  "expectations": {
+    "explicit_oracle": "nonzero exit and assert_eq failure in pen_dispatch_preserves_template_and_color_boundaries",
+    "differential_sweep": "64 seeds x 200 streams passes despite the common-handler defect; if not, report actual output rather than claim blindspot"
+  },
+  "timing": "none",
+  "production": "restore original terminal handler immediately after exact build; keep mutated snapshot and exact test executable only as evidence"
+}

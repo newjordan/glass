@@ -1,0 +1,1 @@
+Two setup attempts failed assertions before source write/compile: first trailing blank line assumption, second captured next function inline attribute. Corrected with exact next-attribute+function delimiter; baseline/protocol unchanged. No timing.

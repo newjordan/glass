@@ -1,0 +1,52 @@
+{
+  "control": {
+    "apply": {
+      "address": "0x2593b0",
+      "bytes": 9774,
+      "instructions": 2048,
+      "asm_sha256": "4b20f7f3a4a5d5e91216c09022b50be61c5ab9efd066297f57c76f2a118cae5b",
+      "attribute_calls": [
+        "25a4ed:\tcall   34e510 <<alacritty_terminal::term::Term<glass::engine::Listener> as vte::ansi::Handler>::terminal_attribute>"
+      ]
+    },
+    "print_utf8": {
+      "address": "0x263410",
+      "bytes": 8524,
+      "instructions": 1967,
+      "asm_sha256": "d5d1900fe3c78048d6354aa537f7f9fc041cfd74a1d25c4488bd75861b55c6b3",
+      "attribute_calls": []
+    },
+    "attribute": {
+      "address": "0x34e510",
+      "bytes": 824,
+      "instructions": 203,
+      "asm_sha256": "ef2544d37080a6403703d7044d771097722974c1bcc224c2c3c2521c5f8ea019",
+      "attribute_calls": []
+    }
+  },
+  "candidate": {
+    "apply": {
+      "address": "0x259690",
+      "bytes": 10174,
+      "instructions": 2104,
+      "asm_sha256": "d9cf620a995fd569ea4dd5ffed652ccb46e963172167ce4d496b71104c190c84",
+      "attribute_calls": [
+        "25a968:\tcall   2929a0 <<alacritty_terminal::term::Term<glass::engine::Listener>>::terminal_attribute_cold>"
+      ]
+    },
+    "print_utf8": {
+      "address": "0x263880",
+      "bytes": 8524,
+      "instructions": 1967,
+      "asm_sha256": "99408eb0358a34a80f1367b2d4fa0c03a00e0589489ef67304f5eb01fb39356b",
+      "attribute_calls": []
+    },
+    "attribute_cold": {
+      "address": "0x2929a0",
+      "bytes": 577,
+      "instructions": 138,
+      "asm_sha256": "45f5bfcf80974dfdf155ef2400a192483b9400172d75e66603f092483aa56270",
+      "attribute_calls": []
+    }
+  }
+}

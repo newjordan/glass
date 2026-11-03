@@ -1,0 +1,37 @@
+{
+  "schema": "glass.pen-dispatch-protocol/v1",
+  "created_utc": "2026-11-03T12:44:54.676449+00:00",
+  "hypothesis": "Split foreground/background pen stores from the generic Term attribute dispatcher; retain trace logging once and all other attributes in an out-of-line cold helper. Remove generic dispatcher call for hot color attributes, not parser work.",
+  "arms": [
+    "control",
+    "candidate"
+  ],
+  "correctness": "Both release arms get the same new explicit template oracle test; nonignored terminal tests, then 64 seeds x 200 streams differential sweep. Correctness before any timing. The shared parser oracle is not independent for Handler behavior.",
+  "engine": {
+    "blocks": 12,
+    "scale": 2,
+    "rounds": 5,
+    "read": 4095,
+    "workloads": [
+      "ascii",
+      "unicode",
+      "truecolor",
+      "cursor_motion",
+      "scroll_region",
+      "tui_frames"
+    ],
+    "orders": [
+      [
+        "control",
+        "candidate"
+      ],
+      [
+        "candidate",
+        "control"
+      ]
+    ],
+    "primary": "truecolor median paired CPU-rate ratio >=1.02, wins>losses, six-workload Holm-adjusted two-sided sign p<.05, and all six point medians >=.98. Point guards do not establish noninferiority.",
+    "stop": "Exactly 12 pairs. No pilot, exclusions, retry, rescue variant, score pooling or threshold change. Fail closed on incomplete run. Engine diagnostic only; no runtime promotion before new end-to-end/all-metric gates."
+  },
+  "limits": "Unpinned shared-host processes; busy host observed before protocol. Balanced sequential order does not prove independent signs. Same logging semantics retained. Static disassembly is not causal cost attribution."
+}

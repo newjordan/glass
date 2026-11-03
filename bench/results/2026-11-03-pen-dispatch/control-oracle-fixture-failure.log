@@ -1,0 +1,24 @@
+
+running 1 test
+
+thread 'engine::tests::pen_dispatch_preserves_template_and_color_boundaries' (3585701) panicked at crates/term/src/engine.rs:3810:21:
+assertion `left == right` failed
+  left: Some(['\u{301}', '\u{301}'])
+ right: Some(['\u{301}'])
+stack backtrace:
+   0: __rustc::rust_begin_unwind
+   1: core::panicking::panic_fmt
+   2: core::panicking::assert_failed_inner
+   3: core::panicking::assert_failed::<core::option::Option<&[char]>, core::option::Option<&[char]>>
+   4: glass::engine::tests::pen_dispatch_preserves_template_and_color_boundaries
+   5: <glass::engine::tests::pen_dispatch_preserves_template_and_color_boundaries::{closure#0} as core::ops::function::FnOnce<()>>::call_once
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+test engine::tests::pen_dispatch_preserves_template_and_color_boundaries ... FAILED
+
+failures:
+
+failures:
+    engine::tests::pen_dispatch_preserves_template_and_color_boundaries
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 394 filtered out; finished in 0.01s
+
