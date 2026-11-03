@@ -1021,3 +1021,24 @@ keys. Zero-test filters, history-zero suite failures, and checker setup mistakes
 are retained and not treated as gate evidence. No new timing or Ghostty comparison.
 See `bench/results/2026-11-03-blank-witness/README.md` and
 `reports/research-1eecf9876bb302e9da10ff629e71e6d8-39.txt`.
+
+## Witness-only event authority is required after resize (2026-11-03, iteration 41)
+
+This is correctness research, not a timing measurement. A saved resize witness
+can lie in a scroll band while its picture lies above the band. Picture-only
+`motion_end` then suppresses the event needed to transport witness identity.
+Three same-source-test arms across six settings show 372 -> 24 -> 0 failures
+per 480 cases: stale state, independent point/offset transport, then inclusion
+of witness rows in the authority endpoint. The 24 residuals are exactly the
+witness-only-band configurations, not unexplained aggregate failures.
+
+Research scope: one-cell primary attachments, one interleaved scroll operation,
+10 -> 7 -> 10 width, both parser lanes and active/inactive primary resize.
+Separate RIS prototype metadata leak reproduced and cleaned. Existing resize
+matrices and actual 12,800-stream differential sweep retained; candidate still
+fails three shipping-defect characterization tests and broad slot lifetime
+cases. Shipping sources/release executable restored, 392 tests pass (14 ignored).
+Performance cost of wider event authority and O(placements) metadata cleanup is
+unmeasured. No memory bound, runtime promotion or Ghostty superiority claim.
+Details, immutable observations and independent checker:
+`bench/results/2026-11-03-scroll-witness/README.md`.

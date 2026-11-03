@@ -1,0 +1,11 @@
+test_bad_shapes (__main__.Evidence.test_bad_shapes) ... ok
+test_complete (__main__.Evidence.test_complete) ... ok
+test_duplicate_json_keys (__main__.Evidence.test_duplicate_json_keys) ... ok
+test_record_corruptions (__main__.Evidence.test_record_corruptions) ... ok
+test_residual_corruptions (__main__.Evidence.test_residual_corruptions) ... ok
+test_unknown_arm (__main__.Evidence.test_unknown_arm) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.132s
+
+OK

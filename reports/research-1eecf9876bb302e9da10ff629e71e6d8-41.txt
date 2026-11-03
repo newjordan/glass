@@ -1,0 +1,42 @@
+Iteration 41: independent witness transport + event authority
+
+New measured result: real picture intake, both parser lanes and active/inactive
+primary resize, SU/SD/IL/DL/RI/LF, five marker rows, offsets 0/3/8/-8. Each of six
+capacity settings executes 480 observations per arm:
+  stale persistent resize-only control: 372 failures (2232/2880 aggregate)
+  independent witness transport: 24 failures (144/2880 aggregate)
+  transport + witness-aware motion authority: zero failures (0/2880).
+Residual controls exactly match pictures above the affected band whose selected
+witness is inside it. Fix updates signed offset by independently transporting
+both physical points; event authority must cover witness rows as well as images.
+
+A prototype RIS lifecycle bug is separately reproduced: placements=0, saved
+witness entries=1 in the prior arm. Both corrected arms show zero saved entries
+in both parser lanes. This is not evidence of a shipping memory leak.
+
+Candidate retained all previous finite bounds: 56160 height, 20736 mixed,
+124416 Unicode, 1632 eligible deleted-witness checks with zero failures.
+168296 continuously-in-bounds slots have zero failures; broader slot failures
+remain unchanged (560/400/424/448/448/448 per capacity). 64 identity/right-offset/
+wide roundtrip observations pass. Candidate full suite remains 389 pass, three
+shipping-defect characterization failures, 23 ignored; not a clean suite.
+
+Restored shipping: 392 tests pass, 14 ignored. 12800 actual differential streams
+pass in candidate and restored arms. Shipping sources and selected release
+executable unchanged. Prior tracked evidence unchanged; docs append-only.
+Six Python evidence tests pass: 24 record corruptions, seven coordinate shapes,
+duplicate keys and unknown arm rejected. First compiler/checker failures and
+zero-test-filter mistakes retained and excluded from reported evidence.
+
+Scope limits: these cases do not fill history, have one operation between
+width changes and one-cell primary pictures. Arbitrary writes, full lifecycle,
+split-picture identity, all history eviction, memory/performance and competitive
+metrics remain unvalidated. No runtime promotion or championship claim.
+
+Exact source/measurement inventory and replay instructions:
+bench/results/2026-11-03-scroll-witness/README.md
+python3 -B bench/results/2026-11-03-scroll-witness/verify.py
+python3 -B bench/results/2026-11-03-scroll-witness/test-verify.py
+python3 -B bench/replay-evidence-index.py bench/results/2026-11-03-scroll-witness/final-frozen-index.json
+
+The report is a worker claim, not independent verification or campaign acceptance.

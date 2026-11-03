@@ -1,0 +1,71 @@
+
+running 1 test
+roundtrip-case alt=false fast=false name=tail step=0 pictures=[(1, 0)] expected=(1, 0) anchor={3: Witness { line: 0, column: 0.0, delta: 3.0 }}
+roundtrip-case alt=false fast=false name=tail step=1 pictures=[(0, 3)] expected=(0, 3) anchor={3: Witness { line: 0, column: 0.0, delta: 3.0 }}
+roundtrip-case alt=false fast=false name=tail step=2 pictures=[(1, 0)] expected=(1, 0) anchor={3: Witness { line: 0, column: 0.0, delta: 3.0 }}
+roundtrip-case alt=false fast=false name=tail step=3 pictures=[(0, 3)] expected=(0, 3) anchor={3: Witness { line: 0, column: 0.0, delta: 3.0 }}
+roundtrip-case alt=false fast=false name=blank step=0 pictures=[(1, 0)] expected=(1, 0) anchor={3: Physical}
+roundtrip-case alt=false fast=false name=blank step=1 pictures=[(1, 0)] expected=(1, 0) anchor={3: Physical}
+roundtrip-case alt=false fast=false name=blank step=2 pictures=[(1, 0)] expected=(1, 0) anchor={3: Physical}
+roundtrip-case alt=false fast=false name=blank step=3 pictures=[(1, 0)] expected=(1, 0) anchor={3: Physical}
+roundtrip-case alt=false fast=false name=right step=0 pictures=[(-1, 1)] expected=(-1, 1) anchor={3: Witness { line: 2, column: 0.0, delta: -2.0 }}
+roundtrip-case alt=false fast=false name=right step=1 pictures=[(-1, 4)] expected=(-1, 4) anchor={3: Witness { line: 1, column: 6.0, delta: -2.0 }}
+roundtrip-case alt=false fast=false name=right step=2 pictures=[(-1, 4)] expected=(-1, 4) anchor={3: Witness { line: 1, column: 6.0, delta: -2.0 }}
+roundtrip-case alt=false fast=false name=right step=3 pictures=[(-1, 4)] expected=(-1, 4) anchor={3: Witness { line: 1, column: 6.0, delta: -2.0 }}
+roundtrip-case alt=false fast=false name=wide step=0 pictures=[(1, 0)] expected=(1, 0) anchor={3: Witness { line: 1, column: 0.0, delta: 3.0 }}
+roundtrip-case alt=false fast=false name=wide step=1 pictures=[(-1, 5)] expected=(-1, 5) anchor={3: Witness { line: 0, column: 2.0, delta: 3.0 }}
+roundtrip-case alt=false fast=false name=wide step=2 pictures=[(-1, 5)] expected=(-1, 5) anchor={3: Witness { line: 0, column: 2.0, delta: 3.0 }}
+roundtrip-case alt=false fast=false name=wide step=3 pictures=[(-1, 5)] expected=(-1, 5) anchor={3: Witness { line: 0, column: 2.0, delta: 3.0 }}
+roundtrip-case alt=false fast=true name=tail step=0 pictures=[(1, 0)] expected=(1, 0) anchor={3: Witness { line: 0, column: 0.0, delta: 3.0 }}
+roundtrip-case alt=false fast=true name=tail step=1 pictures=[(0, 3)] expected=(0, 3) anchor={3: Witness { line: 0, column: 0.0, delta: 3.0 }}
+roundtrip-case alt=false fast=true name=tail step=2 pictures=[(1, 0)] expected=(1, 0) anchor={3: Witness { line: 0, column: 0.0, delta: 3.0 }}
+roundtrip-case alt=false fast=true name=tail step=3 pictures=[(0, 3)] expected=(0, 3) anchor={3: Witness { line: 0, column: 0.0, delta: 3.0 }}
+roundtrip-case alt=false fast=true name=blank step=0 pictures=[(1, 0)] expected=(1, 0) anchor={3: Physical}
+roundtrip-case alt=false fast=true name=blank step=1 pictures=[(1, 0)] expected=(1, 0) anchor={3: Physical}
+roundtrip-case alt=false fast=true name=blank step=2 pictures=[(1, 0)] expected=(1, 0) anchor={3: Physical}
+roundtrip-case alt=false fast=true name=blank step=3 pictures=[(1, 0)] expected=(1, 0) anchor={3: Physical}
+roundtrip-case alt=false fast=true name=right step=0 pictures=[(-1, 1)] expected=(-1, 1) anchor={3: Witness { line: 2, column: 0.0, delta: -2.0 }}
+roundtrip-case alt=false fast=true name=right step=1 pictures=[(-1, 4)] expected=(-1, 4) anchor={3: Witness { line: 1, column: 6.0, delta: -2.0 }}
+roundtrip-case alt=false fast=true name=right step=2 pictures=[(-1, 4)] expected=(-1, 4) anchor={3: Witness { line: 1, column: 6.0, delta: -2.0 }}
+roundtrip-case alt=false fast=true name=right step=3 pictures=[(-1, 4)] expected=(-1, 4) anchor={3: Witness { line: 1, column: 6.0, delta: -2.0 }}
+roundtrip-case alt=false fast=true name=wide step=0 pictures=[(1, 0)] expected=(1, 0) anchor={3: Witness { line: 1, column: 0.0, delta: 3.0 }}
+roundtrip-case alt=false fast=true name=wide step=1 pictures=[(-1, 5)] expected=(-1, 5) anchor={3: Witness { line: 0, column: 2.0, delta: 3.0 }}
+roundtrip-case alt=false fast=true name=wide step=2 pictures=[(-1, 5)] expected=(-1, 5) anchor={3: Witness { line: 0, column: 2.0, delta: 3.0 }}
+roundtrip-case alt=false fast=true name=wide step=3 pictures=[(-1, 5)] expected=(-1, 5) anchor={3: Witness { line: 0, column: 2.0, delta: 3.0 }}
+roundtrip-case alt=true fast=false name=tail step=0 pictures=[(1, 0)] expected=(1, 0) anchor={3: Witness { line: 0, column: 0.0, delta: 3.0 }}
+roundtrip-case alt=true fast=false name=tail step=1 pictures=[(0, 3)] expected=(0, 3) anchor={3: Witness { line: 0, column: 0.0, delta: 3.0 }}
+roundtrip-case alt=true fast=false name=tail step=2 pictures=[(1, 0)] expected=(1, 0) anchor={3: Witness { line: 0, column: 0.0, delta: 3.0 }}
+roundtrip-case alt=true fast=false name=tail step=3 pictures=[(0, 3)] expected=(0, 3) anchor={3: Witness { line: 0, column: 0.0, delta: 3.0 }}
+roundtrip-case alt=true fast=false name=blank step=0 pictures=[(1, 0)] expected=(1, 0) anchor={3: Physical}
+roundtrip-case alt=true fast=false name=blank step=1 pictures=[(1, 0)] expected=(1, 0) anchor={3: Physical}
+roundtrip-case alt=true fast=false name=blank step=2 pictures=[(1, 0)] expected=(1, 0) anchor={3: Physical}
+roundtrip-case alt=true fast=false name=blank step=3 pictures=[(1, 0)] expected=(1, 0) anchor={3: Physical}
+roundtrip-case alt=true fast=false name=right step=0 pictures=[(-1, 1)] expected=(-1, 1) anchor={3: Witness { line: 2, column: 0.0, delta: -2.0 }}
+roundtrip-case alt=true fast=false name=right step=1 pictures=[(-1, 4)] expected=(-1, 4) anchor={3: Witness { line: 1, column: 6.0, delta: -2.0 }}
+roundtrip-case alt=true fast=false name=right step=2 pictures=[(-1, 4)] expected=(-1, 4) anchor={3: Witness { line: 1, column: 6.0, delta: -2.0 }}
+roundtrip-case alt=true fast=false name=right step=3 pictures=[(-1, 4)] expected=(-1, 4) anchor={3: Witness { line: 1, column: 6.0, delta: -2.0 }}
+roundtrip-case alt=true fast=false name=wide step=0 pictures=[(1, 0)] expected=(1, 0) anchor={3: Witness { line: 1, column: 0.0, delta: 3.0 }}
+roundtrip-case alt=true fast=false name=wide step=1 pictures=[(-1, 5)] expected=(-1, 5) anchor={3: Witness { line: 0, column: 2.0, delta: 3.0 }}
+roundtrip-case alt=true fast=false name=wide step=2 pictures=[(-1, 5)] expected=(-1, 5) anchor={3: Witness { line: 0, column: 2.0, delta: 3.0 }}
+roundtrip-case alt=true fast=false name=wide step=3 pictures=[(-1, 5)] expected=(-1, 5) anchor={3: Witness { line: 0, column: 2.0, delta: 3.0 }}
+roundtrip-case alt=true fast=true name=tail step=0 pictures=[(1, 0)] expected=(1, 0) anchor={3: Witness { line: 0, column: 0.0, delta: 3.0 }}
+roundtrip-case alt=true fast=true name=tail step=1 pictures=[(0, 3)] expected=(0, 3) anchor={3: Witness { line: 0, column: 0.0, delta: 3.0 }}
+roundtrip-case alt=true fast=true name=tail step=2 pictures=[(1, 0)] expected=(1, 0) anchor={3: Witness { line: 0, column: 0.0, delta: 3.0 }}
+roundtrip-case alt=true fast=true name=tail step=3 pictures=[(0, 3)] expected=(0, 3) anchor={3: Witness { line: 0, column: 0.0, delta: 3.0 }}
+roundtrip-case alt=true fast=true name=blank step=0 pictures=[(1, 0)] expected=(1, 0) anchor={3: Physical}
+roundtrip-case alt=true fast=true name=blank step=1 pictures=[(1, 0)] expected=(1, 0) anchor={3: Physical}
+roundtrip-case alt=true fast=true name=blank step=2 pictures=[(1, 0)] expected=(1, 0) anchor={3: Physical}
+roundtrip-case alt=true fast=true name=blank step=3 pictures=[(1, 0)] expected=(1, 0) anchor={3: Physical}
+roundtrip-case alt=true fast=true name=right step=0 pictures=[(-1, 1)] expected=(-1, 1) anchor={3: Witness { line: 2, column: 0.0, delta: -2.0 }}
+roundtrip-case alt=true fast=true name=right step=1 pictures=[(-1, 4)] expected=(-1, 4) anchor={3: Witness { line: 1, column: 6.0, delta: -2.0 }}
+roundtrip-case alt=true fast=true name=right step=2 pictures=[(-1, 4)] expected=(-1, 4) anchor={3: Witness { line: 1, column: 6.0, delta: -2.0 }}
+roundtrip-case alt=true fast=true name=right step=3 pictures=[(-1, 4)] expected=(-1, 4) anchor={3: Witness { line: 1, column: 6.0, delta: -2.0 }}
+roundtrip-case alt=true fast=true name=wide step=0 pictures=[(1, 0)] expected=(1, 0) anchor={3: Witness { line: 1, column: 0.0, delta: 3.0 }}
+roundtrip-case alt=true fast=true name=wide step=1 pictures=[(-1, 5)] expected=(-1, 5) anchor={3: Witness { line: 0, column: 2.0, delta: 3.0 }}
+roundtrip-case alt=true fast=true name=wide step=2 pictures=[(-1, 5)] expected=(-1, 5) anchor={3: Witness { line: 0, column: 2.0, delta: 3.0 }}
+roundtrip-case alt=true fast=true name=wide step=3 pictures=[(-1, 5)] expected=(-1, 5) anchor={3: Witness { line: 0, column: 2.0, delta: 3.0 }}
+roundtrip-summary cases=64
+test intake::position_tests::persistent_witness_roundtrips ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 414 filtered out; finished in 0.00s
+

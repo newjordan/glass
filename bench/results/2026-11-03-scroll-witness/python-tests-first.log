@@ -1,0 +1,33 @@
+test_bad_shapes (__main__.Evidence.test_bad_shapes) ... ok
+test_complete (__main__.Evidence.test_complete) ... ok
+test_duplicate_json_keys (__main__.Evidence.test_duplicate_json_keys) ... ok
+test_record_corruptions (__main__.Evidence.test_record_corruptions) ... 
+  test_record_corruptions (__main__.Evidence.test_record_corruptions) (name='final_m=[]') ... FAIL
+test_residual_corruptions (__main__.Evidence.test_residual_corruptions) ... FAIL
+test_unknown_arm (__main__.Evidence.test_unknown_arm) ... ok
+
+======================================================================
+FAIL: test_record_corruptions (__main__.Evidence.test_record_corruptions) (name='final_m=[]')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-scroll-witness/test-verify.py", line 23, in test_record_corruptions
+    with self.subTest(name=name):self.reject(changed)
+                                 ~~~~~~~~~~~^^^^^^^^^
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-scroll-witness/test-verify.py", line 12, in reject
+    with self.assertRaises(ValueError):v.matrix(text,arm)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_residual_corruptions (__main__.Evidence.test_residual_corruptions)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-scroll-witness/test-verify.py", line 27, in test_residual_corruptions
+    self.assertIn(old,line)
+    ~~~~~~~~~~~~~^^^^^^^^^^
+AssertionError: 'got=[(1, 0)]' not found in 'scroll-witness fast=false alt=false row=1 delta=-8 op=SU before_m=[(1, 1)] before_p=[(0, 0)] after_m=[] after_p=[(0, 0)] final_m=[] got=[(0, 0)] expected=[] pass=false'
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.149s
+
+FAILED (failures=2)

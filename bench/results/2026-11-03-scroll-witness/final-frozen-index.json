@@ -1,0 +1,85 @@
+{
+  "schema": "glass.historical-evidence-index/v1",
+  "manifests": [
+    {
+      "path": "bench/results/2026-11-03-pen-dispatch/evidence-sha256.json",
+      "sha256": "4a7fc3e43ccad24f238e9f56f7391f1a9a09078486111abc83819791ee44c332",
+      "source_root": ".",
+      "snapshots": {
+        "crates/term/src/engine.rs": "bench/results/2026-11-03-scroll-authority/original-crates_term_src_engine.rs"
+      }
+    },
+    {
+      "path": "bench/results/2026-11-03-exact-corpus/evidence-sha256.json",
+      "sha256": "1a6d21ec00cfa48bdb826ab812e8c46bc5b54c39727f003cf09912a14652ac37",
+      "source_root": ".",
+      "snapshots": {
+        "crates/term/src/speed.rs": "bench/results/2026-11-03-pass-samples/original-speed.rs"
+      }
+    },
+    {
+      "path": "bench/results/2026-11-03-pass-samples/evidence-sha256.json",
+      "sha256": "980a4f200e93a862a96b888a7b2e6da3fcfecf0af93521eacb362df30915512d",
+      "source_root": ".",
+      "snapshots": {}
+    },
+    {
+      "path": "bench/results/2026-11-03-scroll-authority/evidence-sha256.json",
+      "sha256": "4edd7a3ab79a4cacbf31b6a5c9a2178d220169d241d80ea172c76e8dec03365e",
+      "source_root": ".",
+      "snapshots": {
+        "crates/term/src/engine.rs": "bench/results/2026-11-03-movement-authority/original-crates_term_src_engine.rs"
+      }
+    },
+    {
+      "path": "bench/results/2026-11-03-movement-authority/evidence-sha256.json",
+      "sha256": "061ac783b8f180c5687899d0af255d94e2c3ac72abae5279b241831b38822321",
+      "source_root": ".",
+      "snapshots": {
+        "crates/term/src/intake/position_tests.rs": "bench/results/2026-11-03-height-snapshot/original-crates_term_src_intake_position_tests.rs"
+      }
+    },
+    {
+      "path": "bench/results/2026-11-03-height-snapshot/evidence-sha256.json",
+      "sha256": "67a1f65fc4a3653480a9798ffa93141d04aeab0006f4ffb157057fd5fd3ae210",
+      "source_root": ".",
+      "snapshots": {
+        "CHANGELOG.md": "bench/results/2026-11-03-origin-map/original-CHANGELOG.md",
+        "bench/README.md": "bench/results/2026-11-03-origin-map/original-bench_README.md",
+        "docs/PERFORMANCE.md": "bench/results/2026-11-03-origin-map/original-docs_PERFORMANCE.md"
+      }
+    },
+    {
+      "path": "bench/results/2026-11-03-origin-map/evidence-sha256.json",
+      "sha256": "85418c4862e84245028720bd004ce23d1b0dd4997bc89993757b888c01d5908f",
+      "source_root": ".",
+      "snapshots": {
+        "CHANGELOG.md": "bench/results/2026-11-03-blank-witness/original-CHANGELOG.md",
+        "docs/PERFORMANCE.md": "bench/results/2026-11-03-blank-witness/original-docs_PERFORMANCE.md",
+        "bench/README.md": "bench/results/2026-11-03-blank-witness/original-bench_README.md"
+      }
+    },
+    {
+      "path": "bench/results/2026-11-03-blank-witness/explicit-evidence-manifest.json",
+      "sha256": "db0337cb75df8d9542235d093457f184476596ca919062724ff2c24f25e8e3f0",
+      "source_root": ".",
+      "snapshots": {
+        "CHANGELOG.md": "bench/results/2026-11-03-scroll-witness/original-CHANGELOG.md",
+        "bench/README.md": "bench/results/2026-11-03-scroll-witness/original-bench_README.md",
+        "docs/PERFORMANCE.md": "bench/results/2026-11-03-scroll-witness/original-docs_PERFORMANCE.md"
+      }
+    },
+    {
+      "path": "bench/results/2026-11-03-persistent-witness/explicit-evidence-manifest.json",
+      "sha256": "3f2e2019b8d423a436c16cad17b107e1a2245a98d22bbc09211d915971bb1290",
+      "source_root": ".",
+      "snapshots": {}
+    },
+    {
+      "path": "bench/results/2026-11-03-scroll-witness/explicit-evidence-manifest.json",
+      "sha256": "4f106801b65bcd109ed628847dcd3efb166cd807f645434e0532b22bb527e425",
+      "source_root": ".",
+      "snapshots": {}
+    }
+  ]
+}

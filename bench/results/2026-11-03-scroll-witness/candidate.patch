@@ -1,0 +1,825 @@
+--- a/crates/alacritty-terminal/src/grid/mod.rs
++++ b/crates/alacritty-terminal/src/grid/mod.rs
+@@ -11,6 +11,7 @@
+ use crate::vte::ansi::{CharsetIndex, StandardCharset};
+ 
+ pub mod resize;
++mod origin;
+ mod row;
+ mod storage;
+ #[cfg(test)]
+--- a/crates/alacritty-terminal/src/grid/origin.rs
++++ b/crates/alacritty-terminal/src/grid/origin.rs
+@@ -0,0 +1,89 @@
++//! Experimental resize-only provenance. No tags enter the live grid or Cell.
++use super::{Cursor, Dimensions, Grid, GridCell, Row};
++use crate::index::{Column, Line, Point};
++use crate::term::cell::{Flags, ResetDiscriminant};
++
++#[derive(Clone, Debug, Default)]
++struct Tagged<T> {
++    cell: T,
++    origin: Option<Point>,
++}
++
++// Provenance must not affect any resize branch, including blank-row trimming.
++impl<T: PartialEq> PartialEq for Tagged<T> {
++    fn eq(&self, other: &Self) -> bool { self.cell == other.cell }
++}
++impl<T: GridCell> GridCell for Tagged<T> {
++    fn is_empty(&self) -> bool { self.cell.is_empty() }
++    fn reset(&mut self, template: &Self) {
++        self.cell.reset(&template.cell);
++        self.origin = None;
++    }
++    fn flags(&self) -> &Flags { self.cell.flags() }
++    fn flags_mut(&mut self) -> &mut Flags { self.cell.flags_mut() }
++    fn strip_stale(&mut self) { self.cell.strip_stale(); self.origin = None; }
++    fn has_extra(&self) -> bool { self.cell.has_extra() }
++    fn style_eq(&self, other: &Self) -> bool { self.cell.style_eq(&other.cell) }
++}
++impl<T: ResetDiscriminant<D>, D> ResetDiscriminant<D> for Tagged<T> {
++    fn discriminant(&self) -> D { self.cell.discriminant() }
++}
++
++fn cursor<T: Clone>(old: &Cursor<T>) -> Cursor<Tagged<T>> {
++    Cursor {
++        point: old.point,
++        template: Tagged { cell: old.template.clone(), origin: None },
++        charsets: old.charsets,
++        input_needs_wrap: old.input_needs_wrap,
++    }
++}
++
++impl<T: GridCell + Default + PartialEq + std::fmt::Debug> Grid<T> {
++    /// Replay primary-grid resize with origin tags ignored by cell semantics.
++    /// Absent destination means the actual resize erased/trimmed that old cell.
++    /// Research only: allocates O(retained cells) and does not meet a latency gate.
++    pub fn resize_origins<D>(&self, lines: usize, columns: usize) -> Vec<Option<(i32, usize)>>
++    where T: ResetDiscriminant<D>, D: PartialEq,
++    {
++        let mut shadow = Grid {
++            raw: self.raw.map_rows(|row| Row::from_vec(
++                row.observable().cloned().map(|cell| Tagged { cell, origin: None }).collect(),
++                row.occ,
++            )),
++            columns: self.columns,
++            lines: self.lines,
++            display_offset: self.display_offset,
++            max_scroll_limit: self.max_scroll_limit,
++            cursor: cursor(&self.cursor),
++            saved_cursor: cursor(&self.saved_cursor),
++        };
++        let history = self.history_size();
++        for row in -(history as i32)..self.lines as i32 {
++            let source = &self.raw[Line(row)];
++            shadow.raw[Line(row)] = Row::from_vec(source.observable().cloned().enumerate().map(|(col, cell)| Tagged {
++                cell, origin: Some(Point::new(Line(row), Column(col))),
++            }).collect(), source.occ);
++        }
++        shadow.resize(true, lines, columns);
++        // Active differential guard: tags must never alter the real cell result.
++        let mut reference = self.clone();
++        reference.resize(true, lines, columns);
++        assert_eq!(reference.history_size(), shadow.history_size(), "shadow history diverged");
++        assert_eq!(reference.display_offset, shadow.display_offset, "shadow display diverged");
++        assert_eq!(reference.cursor.point, shadow.cursor.point, "shadow cursor diverged");
++        assert_eq!(reference.cursor.input_needs_wrap, shadow.cursor.input_needs_wrap);
++        assert_eq!(reference.saved_cursor.point, shadow.saved_cursor.point);
++        let mut destinations = vec![None; (history + self.lines) * self.columns];
++        for row in -(shadow.history_size() as i32)..lines as i32 {
++            for (col, tagged) in shadow.raw[Line(row)].observable().enumerate() {
++                assert_eq!(&tagged.cell, &reference.raw[Line(row)][Column(col)], "shadow cell diverged");
++                if let Some(origin) = tagged.origin {
++                    let index = (origin.line.0 + history as i32) as usize * self.columns + origin.column.0;
++                    assert!(destinations[index].is_none(), "origin duplicated");
++                    destinations[index] = Some((row, col));
++                }
++            }
++        }
++        destinations
++    }
++}
+--- a/crates/alacritty-terminal/src/grid/storage.rs
++++ b/crates/alacritty-terminal/src/grid/storage.rs
+@@ -62,6 +62,15 @@
+ }
+ 
+ impl<T> Storage<T> {
++    pub(super) fn map_rows<U>(&self, f: impl FnMut(&Row<T>) -> Row<U>) -> Storage<U> {
++        Storage {
++            inner: self.inner.iter().map(f).collect(),
++            zero: self.zero,
++            visible_lines: self.visible_lines,
++            len: self.len,
++        }
++    }
++
+     #[inline]
+     pub fn with_capacity(visible_lines: usize, columns: usize) -> Storage<T>
+     where
+--- a/crates/alacritty-terminal/src/term/mod.rs
++++ b/crates/alacritty-terminal/src/term/mod.rs
+@@ -658,6 +658,11 @@
+     /// Access to the raw grid data structure.
+     pub fn grid(&self) -> &Grid<Cell> {
+         &self.grid
++    }
++
++    /// The primary grid, even while the alternate screen is active.
++    pub fn primary_grid(&self) -> &Grid<Cell> {
++        if self.mode.contains(TermMode::ALT_SCREEN) { &self.inactive_grid } else { &self.grid }
+     }
+ 
+     /// Mutable access to the raw grid data structure.
+--- a/crates/term/src/engine.rs
++++ b/crates/term/src/engine.rs
+@@ -889,27 +889,50 @@
+         let rows = rows.max(1);
+         let cols = cols.max(2);
+         let old_cols = self.term.columns();
+-        let on_alt = self.term.mode().contains(TermMode::ALT_SCREEN);
+-        let before = if old_cols != cols {
+-            if on_alt { self.primary_snap.clone() } else { Some(self.snap_grid()) }
++        let before = if old_cols != cols || self.term.screen_lines() != rows {
++            Some(snap_primary(&self.term, self.scrolled_off_top as u64))
+         } else {
+             None
+         };
++        let old_grid = self.term.primary_grid();
++        let height_shift = if rows > old_grid.screen_lines() {
++            old_grid.history_size().min(rows - old_grid.screen_lines()) as i64
++        } else {
++            -((old_grid.cursor.point.line.0 as usize + 1).saturating_sub(rows) as i64)
++        };
++        let origin_map = before.as_ref().map(|_| self.term.primary_grid().resize_origins(rows, cols));
++        let mut content = Vec::new();
++        if let Some(before) = &before {
++            for row in -(before.history as i32)..before.screen as i32 {
++                for col in 0..before.cols {
++                    let cell = &self.term.primary_grid()[Line(row)][Column(col)];
++                    if !cell.c.is_whitespace() && !cell.flags.intersects(CellFlags::WIDE_CHAR_SPACER | CellFlags::LEADING_WIDE_CHAR_SPACER) {
++                        content.push(((row + before.history as i32) as usize) * before.cols + col);
++                    }
++                }
++            }
++        }
+         self.term.resize(Size { columns: cols, lines: rows });
+         self.region_top = 0;
+         self.region_bottom = rows as i32;
+         if let Some(before) = before {
+-            let after = if on_alt {
+-                simulated_after(&before, rows, cols)
++            let after = snap_primary(&self.term, self.scrolled_off_top as u64);
++            let mut reflow = crate::intake::motion::reflow_of(&before, &after);
++            reflow.new_scrolled = if old_cols == cols {
++                reflow.height = Some((height_shift, rows));
++                (before.scrolled as i64 - height_shift).max(0) as u64
+             } else {
+-                self.snap_grid()
++                crate::intake::motion::scrolled_after(&reflow)
+             };
+-            let mut reflow = crate::intake::motion::reflow_of(&before, &after);
+-            reflow.new_scrolled = crate::intake::motion::scrolled_after(&reflow);
++            reflow.new_scrolled = reflow.new_scrolled.max(after.history as u64);
++            reflow.exact = origin_map;
++            reflow.content = content;
+             self.scrolled_off_top = reflow.new_scrolled as usize;
+             self.pending_reflow = Some(reflow);
+         }
+-        self.fold_sentinel();
++        // The snapshot mapping already accounts for this resize. The old
++        // selection carries the same displacement and must not count it again.
++        self.plant_sentinel();
+         if self.term.mode().contains(TermMode::ALT_SCREEN) {
+             // The primary grid reflowed out of sight. Keep the prediction,
+             // including the scroll count, so the next width change maps
+@@ -1294,12 +1317,19 @@
+ /// pictures on the same text. Called when the alternate screen is
+ /// entered and when the live grid is resized, not after every chunk.
+ fn snap_term(term: &Term<Listener>, scrolled: u64) -> crate::intake::motion::GridSnap {
++    snap_raw_grid(term.grid(), scrolled)
++}
++
++fn snap_primary(term: &Term<Listener>, scrolled: u64) -> crate::intake::motion::GridSnap {
++    snap_raw_grid(term.primary_grid(), scrolled)
++}
++
++fn snap_raw_grid(grid: &alacritty_terminal::grid::Grid<alacritty_terminal::term::cell::Cell>, scrolled: u64) -> crate::intake::motion::GridSnap {
+     use alacritty_terminal::index::{Column, Line};
+     use alacritty_terminal::term::cell::Flags;
+-    let cols = term.columns();
+-    let screen = term.screen_lines();
+-    let history = term.history_size();
+-    let grid = term.grid();
++    let cols = grid.columns();
++    let screen = grid.screen_lines();
++    let history = grid.history_size();
+     let mut lines = Vec::with_capacity(history + screen);
+     for i in -(history as i32)..(screen as i32) {
+         let row = &grid[Line(i)];
+--- a/crates/term/src/intake/mod.rs
++++ b/crates/term/src/intake/mod.rs
+@@ -1727,6 +1727,8 @@
+ pub struct Intake {
+     pictures: Vec<Kept>,
+     placements: Vec<Put>,
++    resize_anchors: HashMap<u64, motion::ResizeAnchor>,
++    resize_columns: usize,
+     /// Half-finished chunked transmissions: at most one is open, keyed
+     /// by a token the store mints, never by a dialect's image id.
+     chunks: HashMap<u32, Vec<u8>>,
+@@ -1878,6 +1880,8 @@
+         Self {
+             pictures: Vec::new(),
+             placements: Vec::new(),
++            resize_anchors: HashMap::new(),
++            resize_columns: 0,
+             chunks: HashMap::new(),
+             chunk_heads: HashMap::new(),
+             chunk_key: 0,
+@@ -2105,6 +2109,7 @@
+     /// A width change reflowed the primary grid. Anchored showings stay
+     /// on the same text, at the same character offset.
+     pub fn reflow(&mut self, reflow: &motion::Reflow) {
++        self.resize_columns = reflow.new_cols;
+         self.reflow_placements(reflow);
+         self.expansion.reflow_text(reflow);
+     }
+@@ -2136,6 +2141,12 @@
+                 height: put.height,
+                 source: put.source,
+             };
++            if let Some(anchor) = self.resize_anchors.get_mut(&put.seq)
++                && !motion::scroll_resize_anchor(anchor, band, self.resize_columns) {
++                gone.push(showing_key(put));
++                continue;
++            }
++            let old_line = put.line;
+             match motion::scroll_rect(rect, band, image) {
+                 motion::Fate::Keep(next) => apply_moved(put, &next),
+                 motion::Fate::Split(first, rest) => {
+@@ -2151,6 +2162,9 @@
+                 }
+                 motion::Fate::Gone => gone.push(showing_key(put)),
+             }
++            if let Some(motion::ResizeAnchor::Witness { delta, .. }) = self.resize_anchors.get_mut(&put.seq) {
++                *delta += ((put.line as i128 - old_line as i128) as f64 * self.resize_columns as f64) as f32;
++            }
+         }
+         for (index, born) in extra.into_iter().rev() {
+             let at = (index + 1).min(self.placements.len());
+@@ -2168,16 +2182,18 @@
+             if put.virtual_place || put.parent.is_some() || put.alternate {
+                 continue;
+             }
+-            match motion::map_anchor(reflow, put.line, put.column) {
++            let anchor = self.resize_anchors.entry(put.seq).or_insert_with(|| motion::choose_resize_anchor(reflow, put.line, put.column));
++            match motion::move_resize_anchor(reflow, anchor, put.line, put.column) {
+                 Some((line, column)) => {
+                     put.line = line;
+                     put.column = column;
+                 }
+-                None => gone.push(showing_key(put)),
+-            }
+-        }
++                None => gone.push(put.seq),
++            }
++        }
++        self.resize_anchors.retain(|seq,_| self.placements.iter().any(|p| p.seq == *seq) && !gone.contains(seq));
+         if !gone.is_empty() {
+-            let removed = self.retain_showings(|p| !gone.contains(&showing_key(p)));
++            let removed = self.retain_showings(|p| !gone.contains(&p.seq));
+             self.drop_parentless_if_removed(removed);
+         }
+     }
+@@ -2194,6 +2210,9 @@
+             }
+             let bottom = p.line.saturating_add(p.height.max(1.0).ceil() as u64);
+             end = Some(end.unwrap_or(0).max(bottom));
++            if !alternate && let Some(motion::ResizeAnchor::Witness { line, .. }) = self.resize_anchors.get(&p.seq) {
++                end = Some(end.unwrap_or(0).max(line.saturating_add(1)));
++            }
+         }
+         if let Some(layer_end) = self.expansion.anchored_end(alternate) {
+             end = Some(end.unwrap_or(0).max(layer_end));
+@@ -2253,6 +2272,8 @@
+     pub fn reset(&mut self) {
+         self.pictures.clear();
+         self.placements.clear();
++        self.resize_anchors.clear();
++        self.resize_columns = 0;
+         self.chunks.clear();
+         self.chunk_heads.clear();
+         self.chunk_key = 0;
+@@ -2345,6 +2366,7 @@
+                 p.space == placement.space && p.picture == placement.picture && p.placement_id == Some(pid)
+             })
+         {
++            self.resize_anchors.remove(&put.seq);
+             put.picture = placement.picture;
+             put.line = placement.line;
+             put.column = placement.column;
+@@ -2734,6 +2756,7 @@
+     fn retain_showings(&mut self, mut keep: impl FnMut(&Put) -> bool) -> Vec<ShowingKey> {
+         if !showing_has_parent(&self.placements) {
+             self.placements.retain(keep);
++            self.resize_anchors.retain(|seq, _| self.placements.iter().any(|p| p.seq == *seq));
+             return Vec::new();
+         }
+         let mut removed = Vec::new();
+@@ -2745,6 +2768,7 @@
+                 false
+             }
+         });
++        self.resize_anchors.retain(|seq, _| self.placements.iter().any(|p| p.seq == *seq));
+         removed
+     }
+ 
+--- a/crates/term/src/intake/motion.rs
++++ b/crates/term/src/intake/motion.rs
+@@ -366,6 +366,9 @@
+         new_history: after.history,
+         old_rows: before.lines.clone(),
+         new_rows: after.lines.clone(),
++        height: None,
++        exact: None,
++        content: Vec::new(),
+     }
+ }
+ /// how many columns of it hold the line.
+@@ -380,6 +383,10 @@
+ /// character is now.
+ #[derive(Clone, Debug)]
+ pub struct Reflow {
++    /// Old row-major printable glyph cells, excluding wide spacers. Research only.
++    pub content: Vec<usize>,
++    /// Old row-major cells to surviving new screen-relative cells. Research arm.
++    pub exact: Option<Vec<Option<(i32, usize)>>>,
+     pub old_cols: usize,
+     pub new_cols: usize,
+     pub old_scrolled: u64,
+@@ -388,6 +395,9 @@
+     pub new_history: usize,
+     pub old_rows: Vec<RowSnap>,
+     pub new_rows: Vec<RowSnap>,
++    /// Height-only resize: exact screen-row displacement and new screen size.
++    /// Unlike width reflow this is geometry, not a logical-length match.
++    pub height: Option<(i64, usize)>,
+ }
+ 
+ /// Where `(line, column)` lands after `reflow`, or `None` when that
+@@ -409,6 +419,22 @@
+     if index < 0 || index >= reflow.old_rows.len() as i64 {
+         // Already outside the grid. A reflow does not scroll it.
+         return Some((line, column));
++    }
++    if let Some(exact) = &reflow.exact {
++        if !column.is_finite() || column < 0.0 || column.floor() >= reflow.old_cols as f32 {
++            return None;
++        }
++        let (row, col) = exact.get(index as usize * reflow.old_cols + column.floor() as usize).copied().flatten()?;
++        let raw = reflow.new_scrolled as i64 + i64::from(row);
++        return (raw >= 0).then_some((raw as u64, col as f32 + column.fract()));
++    }
++    if let Some((shift, screen)) = reflow.height {
++        let row = line as i64 - reflow.old_scrolled as i64 + shift;
++        if row < -(reflow.new_history as i64) || row >= screen as i64 {
++            return None;
++        }
++        let raw = reflow.new_scrolled as i64 + row;
++        return (raw >= 0).then_some((raw as u64, column));
+     }
+     let placed = place(reflow);
+     let (old_logical, row_in) = logical_at(&reflow.old_rows, index as usize);
+@@ -590,3 +616,66 @@
+     }
+     (logical, row_in)
+ }
++
++/// Persistent state for resize-only research. None in the map means uninitialized;
++/// Physical is explicit and must never silently reacquire from a collapsed cell.
++#[derive(Clone, Debug)]
++pub enum ResizeAnchor {
++    Physical,
++    Witness { line: u64, column: f32, delta: f32 },
++}
++
++pub fn choose_resize_anchor(reflow: &Reflow, line: u64, column: f32) -> ResizeAnchor {
++    let index = line as i64 - reflow.old_scrolled as i64 + reflow.old_history as i64;
++    if index < 0 || index >= reflow.old_rows.len() as i64 || !column.is_finite() {
++        return ResizeAnchor::Physical;
++    }
++    let row = index as usize;
++    let mut first = row;
++    while first > 0 && reflow.old_rows[first - 1].wrap { first -= 1; }
++    let mut end = row + 1;
++    while end < reflow.old_rows.len() && reflow.old_rows[end - 1].wrap { end += 1; }
++    let flat = row as f64 * reflow.old_cols as f64 + f64::from(column);
++    let witness = reflow.content.iter().copied().filter(|&i| i >= first * reflow.old_cols && i < end * reflow.old_cols)
++        .min_by(|a,b| ((*a as f64 - flat).abs()).total_cmp(&(*b as f64 - flat).abs()).then(a.cmp(b)));
++    let Some(witness) = witness else { return ResizeAnchor::Physical };
++    let raw = reflow.old_scrolled as i64 - reflow.old_history as i64 + (witness / reflow.old_cols) as i64;
++    if raw < 0 { return ResizeAnchor::Physical; }
++    ResizeAnchor::Witness { line: raw as u64, column: (witness % reflow.old_cols) as f32, delta: (flat - witness as f64) as f32 }
++}
++
++pub fn move_resize_anchor(reflow: &Reflow, anchor: &mut ResizeAnchor, line: u64, column: f32) -> Option<(u64,f32)> {
++    match anchor {
++        ResizeAnchor::Physical => map_anchor(reflow, line, column),
++        ResizeAnchor::Witness { line: witness_line, column: witness_col, delta } => {
++            let (new_line, new_col) = map_anchor(reflow, *witness_line, *witness_col)?;
++            *witness_line = new_line;
++            *witness_col = new_col;
++            let relative = new_line as i64 - reflow.new_scrolled as i64;
++            let flat = relative as f64 * reflow.new_cols as f64 + f64::from(new_col + *delta);
++            let row = (flat / reflow.new_cols as f64).floor() as i64;
++            let col = (flat - row as f64 * reflow.new_cols as f64) as f32;
++            let screen = reflow.new_rows.len() - reflow.new_history;
++            if row < -(reflow.new_history as i64) || row >= screen as i64 { return None; }
++            let raw = reflow.new_scrolled as i64 + row;
++            (raw >= 0).then_some((raw as u64, col))
++        }
++    }
++}
++
++/// A selected glyph is a one-cell point. Reuse the physical band contract,
++/// but do not use the picture's location to decide whether the glyph moved.
++pub fn scroll_resize_anchor(anchor: &mut ResizeAnchor, band: &BandScroll, columns: usize) -> bool {
++    let ResizeAnchor::Witness { line, column, delta } = anchor else { return true; };
++    let old = *line;
++    let rect = Rect { line: *line, column: *column, width: 1.0, height: 1.0, source: None };
++    match scroll_rect(rect, band, (1, 1)) {
++        Fate::Keep(next) => {
++            *line = next.line;
++            *delta -= ((*line as i128 - old as i128) as f64 * columns as f64) as f32;
++            true
++        },
++        Fate::Gone => false,
++        Fate::Split(_, _) => unreachable!("one-cell point cannot split at integer bands"),
++    }
++}
+--- a/crates/term/src/intake/position_tests.rs
++++ b/crates/term/src/intake/position_tests.rs
+@@ -792,3 +792,361 @@
+     let complete = reflow_of(&old, &new);
+     assert_eq!(map_anchor(&complete, 9, 3.0), Some((9, 3.0)));
+ }
++
++/// Independent cell-position oracle, not a line-length or provenance-map oracle.
++#[test]
++#[ignore = "research diagnostic: wide glyph anchors through real resize"]
++fn origin_map_unicode_marker_matrix() {
++    let mut cases = 0;
++    let mut failures = 0;
++    for rows in [4usize, 6] {
++        for target in [2usize, 4, 8] {
++            for width in [3usize, 7, 14] {
++                for cursor in [0usize, rows - 1] {
++                    for marker_row in [0usize, rows - 1] {
++                        for (kind, glyph) in [('a','M'),('c','漢'),('e','🚀'),('z','M')] {
++                            for column in [0usize, 3, 8] {
++                                for records in [0usize, 12] {
++                                    for alt in [false, true] {
++                                        for fast in [false, true] {
++                                            let mut engine = engine(rows, 10);
++                                            engine.set_fast(fast);
++                                            let mut intake = Intake::new(8);
++                                            intake.set_cell((10, 20));
++                                            for _ in 0..records { feed(&mut engine, &mut intake, b"x\r\n"); }
++                                            for r in 0..rows { feed(&mut engine, &mut intake, format!("\x1b[{};1Ha界e\u{301}🦀bcde",r+1).as_bytes()); }
++                                            feed(&mut engine, &mut intake, format!("\x1b[{};{}H{glyph}{}\x1b[{};{}H",marker_row+1,column+1,if kind=='z' {"\u{301}"} else {""},marker_row+1,column+1).as_bytes());
++                                            feed(&mut engine, &mut intake, &picture(994));
++                                            feed(&mut engine, &mut intake, format!("\x1b[{};1H",cursor+1).as_bytes());
++                                            for (step,(height,cols)) in [(target,width),(rows,10),(target,width)].into_iter().enumerate() {
++                                                if alt { feed(&mut engine,&mut intake,b"\x1b[?1049h"); }
++                                                engine.resize(height,cols);
++                                                if let Some(reflow)=engine.take_reflow() {
++                                                    intake.reflow(&reflow);
++                                                    intake.set_scrolled_primary(engine.scrolled_off_top() as u64,engine.history_size(),height as u16);
++                                                }
++                                                if alt { feed(&mut engine,&mut intake,b"\x1b[?1049l"); }
++                                                let text:Vec<(i32,i32)>=(-(engine.history_size() as i32)..height as i32).flat_map(|r| {
++                                                    engine.grid_line(r).chars().enumerate().filter_map(move |(c,ch)|(ch==glyph).then_some((r,c as i32))).collect::<Vec<_>>()
++                                                }).collect();
++                                                let top=engine.scrolled_off_top().saturating_sub(engine.history_size()) as u64;
++                                                let shown=intake.describe(View{top,rows:(engine.history_size()+height) as u16,alternate:false});
++                                                let pics:Vec<(i32,i32)>=shown.placements.iter().map(|p|(p.row.round() as i32+top as i32-engine.scrolled_off_top() as i32,p.column.round() as i32)).collect();
++                                                let ok=text==pics;
++                                                cases+=1; failures+=usize::from(!ok);
++                                                eprintln!("unicode-case rows={rows} target={target} width={width} cursor={cursor} marker={marker_row} kind={kind} column={column} records={records} alt={alt} fast={fast} step={step} text={text:?} pictures={pics:?} ok={ok}");
++                                            }
++                                        }
++                                    }
++                                }
++                            }
++                        }
++                    }
++                }
++            }
++        }
++    }
++    eprintln!("unicode-summary cases={cases} failures={failures}");
++    assert_eq!(failures,0,"unique real glyphs agree with their picture anchors");
++}
++
++#[test]
++#[ignore = "research diagnostic: blank logical slot must not die with trimmed padding"]
++fn origin_map_blank_slot_diagnostic() {
++    let mut engine=engine(6,10);
++    let mut intake=Intake::new(8);
++    feed(&mut engine,&mut intake,b"0123456789MARK\x1b[2;5H");
++    feed(&mut engine,&mut intake,&picture(995));
++    for cols in [20usize,10] {
++        engine.resize(6,cols);
++        let reflow=engine.take_reflow().expect("changed width");
++        let source_line=if cols==20 {1} else {0};
++        let source_column=if cols==20 {4.0} else {14.0};
++        let exact=crate::intake::motion::map_anchor(&reflow,source_line,source_column);
++        let mut legacy=reflow.clone(); legacy.exact=None;
++        let inferred=crate::intake::motion::map_anchor(&legacy,source_line,source_column);
++        eprintln!("blank-slot width={cols} exact={exact:?} inferred={inferred:?} text={:?}",engine.grid_line(0));
++        intake.reflow(&reflow);
++        intake.set_scrolled_primary(engine.scrolled_off_top() as u64,engine.history_size(),6);
++    }
++    assert_eq!(engine.grid_line(1).chars().take(4).collect::<String>(),"MARK");
++    let shown=intake.describe(View{top:engine.top_line(),rows:6,alternate:false});
++    assert_eq!(shown.placements.len(),1,"blank slot after MARK is a semantic anchor");
++}
++
++/// Blank slots are checked against the actual unique glyph, not either mapper.
++/// A missing glyph is tracked separately: no invented destination is asserted.
++#[test]
++#[ignore = "research diagnostic: trailing blank slots need a content witness"]
++fn blank_witness_marker_matrix() {
++    let mut cases=0; let mut failures=0; let mut absent=0;
++    for rows in [4usize,6] { for width in [3usize,7,14,20] { for target in [2usize,4,8] { for cursor in [0usize,rows-1] {
++    for marker_row in [0usize,rows-1] { for column in [0usize,3] {
++    for (kind,glyph,extent) in [('a','M',1usize),('c','漢',2),('e','🚀',2),('z','M',1)] {
++    for gap in [0usize,2] { for records in [0usize,12] { for alt in [false,true] { for fast in [false,true] {
++        let mut engine=engine(rows,10); engine.set_fast(fast);
++        let mut intake=Intake::new(8); intake.set_cell((10,20));
++        for _ in 0..records { feed(&mut engine,&mut intake,b"x\r\n"); }
++        feed(&mut engine,&mut intake,format!("\x1b[{};{}H{glyph}{}\x1b[{};{}H",marker_row+1,column+1,if kind=='z' {"\u{301}"} else {""},marker_row+1,column+extent+gap+1).as_bytes());
++        feed(&mut engine,&mut intake,&picture(996));
++        feed(&mut engine,&mut intake,format!("\x1b[{};1H",cursor+1).as_bytes());
++        for (step,(height,cols)) in [(target,width),(rows,10),(target,width)].into_iter().enumerate() {
++            if alt { feed(&mut engine,&mut intake,b"\x1b[?1049h"); }
++            engine.resize(height,cols);
++            if let Some(reflow)=engine.take_reflow() { intake.reflow(&reflow); intake.set_scrolled_primary(engine.scrolled_off_top() as u64,engine.history_size(),height as u16); }
++            if alt { feed(&mut engine,&mut intake,b"\x1b[?1049l"); }
++            let text:Vec<(i32,i32)>=(-(engine.history_size() as i32)..height as i32).flat_map(|r| engine.grid_line(r).chars().enumerate().filter_map(move |(c,ch)|(ch==glyph).then_some((r,c as i32))).collect::<Vec<_>>()).collect();
++            let top=engine.scrolled_off_top().saturating_sub(engine.history_size()) as u64;
++            let shown=intake.describe(View{top,rows:(engine.history_size()+height) as u16,alternate:false});
++            let pics:Vec<(i32,i32)>=shown.placements.iter().map(|p|(p.row.round() as i32+top as i32-engine.scrolled_off_top() as i32,p.column.round() as i32)).collect();
++            let expected:Vec<(i32,i32)>=text.iter().filter_map(|&(r,c)| {
++                let flat=r*cols as i32+c+(extent+gap) as i32;
++                let dest=(flat.div_euclid(cols as i32),flat.rem_euclid(cols as i32));
++                (dest.0>=-(engine.history_size() as i32) && dest.0<height as i32).then_some(dest)
++            }).collect();
++            // Only observations with a surviving glyph specify a logical slot.
++            let checked=!text.is_empty(); let ok=!checked || pics==expected;
++            cases+=1; absent+=usize::from(!checked); failures+=usize::from(!ok);
++            eprintln!("slot-case rows={rows} target={target} cursor={cursor} width={width} marker={marker_row} column={column} kind={kind} gap={gap} records={records} alt={alt} fast={fast} step={step} text={text:?} expected={expected:?} pictures={pics:?} checked={checked} ok={ok}");
++        }
++    }}}}}}}}}}}
++    eprintln!("slot-summary cases={cases} absent={absent} failures={failures}");
++    assert_eq!(failures,0,"surviving unique glyph witnesses its trailing logical slot");
++}
++
++/// Negative control: a surviving glyph on ANOTHER line cannot revive a slot
++/// whose own content was discarded by height/history truncation.
++#[test]
++#[ignore = "research diagnostic: deleted own-line witnesses never borrow neighbours"]
++fn blank_witness_deleted_line_matrix() {
++    let mut cases=0; let mut eligible=0; let mut failures=0;
++    for rows in [4usize,6] { for target in [2usize,4,8] { for cols in [3usize,7,14] {
++    for marker_row in [0usize,rows-1] { for cursor in [0usize,rows-1] {
++    for column in [0usize,6] { for records in [0usize,12] { for alt in [false,true] { for fast in [false,true] {
++        let mut engine=engine(rows,10); engine.set_fast(fast);
++        let mut intake=Intake::new(8); intake.set_cell((10,20));
++        for _ in 0..records { feed(&mut engine,&mut intake,b"x\r\n"); }
++        for r in 0..rows { feed(&mut engine,&mut intake,format!("\x1b[{};1Habcdefghij",r+1).as_bytes()); }
++        feed(&mut engine,&mut intake,format!("\x1b[{};{}HM\x1b[K\x1b[{};{}H",marker_row+1,column+1,marker_row+1,column+2).as_bytes());
++        feed(&mut engine,&mut intake,&picture(997));
++        let other=if marker_row==0 {rows-1} else {0};
++        feed(&mut engine,&mut intake,format!("\x1b[{};1HW\x1b[{};1H",other+1,cursor+1).as_bytes());
++        if alt { feed(&mut engine,&mut intake,b"\x1b[?1049h"); }
++        engine.resize(target,cols);
++        let reflow=engine.take_reflow();
++        if let Some(reflow)=reflow { intake.reflow(&reflow); intake.set_scrolled_primary(engine.scrolled_off_top() as u64,engine.history_size(),target as u16); }
++        if alt { feed(&mut engine,&mut intake,b"\x1b[?1049l"); }
++        let mut own=0; let mut unrelated=0;
++        for r in -(engine.history_size() as i32)..target as i32 {
++            for ch in engine.grid_line(r).chars() { own+=usize::from(ch=='M'); unrelated+=usize::from(ch=='W'); }
++        }
++        let checked=own==0 && unrelated==1;
++        let top=engine.scrolled_off_top().saturating_sub(engine.history_size()) as u64;
++        let shown=intake.describe(View{top,rows:(engine.history_size()+target) as u16,alternate:false});
++        let pictures=shown.placements.len(); let ok=!checked || pictures==0;
++        cases+=1; eligible+=usize::from(checked); failures+=usize::from(!ok);
++        eprintln!("deleted-case rows={rows} target={target} cols={cols} marker={marker_row} cursor={cursor} column={column} records={records} alt={alt} fast={fast} own={own} unrelated={unrelated} pictures={pictures} checked={checked} ok={ok}");
++    }}}}}}}}}
++    eprintln!("deleted-summary cases={cases} eligible={eligible} failures={failures}");
++    assert!(eligible>0,"negative-control configurations execute");
++    assert_eq!(failures,0,"an unrelated surviving glyph cannot revive the deleted line");
++}
++
++/// Two histories collapse to the same row/column and reflow input. A stateless
++/// cell-destination map cannot reconstruct whether a blank belonged to M's
++/// logical tail or the next hard row. This test characterizes, not resolves, it.
++#[test]
++#[ignore = "research diagnostic: blank-slot identity is absent after collapse"]
++fn blank_witness_indistinguishable_histories() {
++    fn run(cup: &[u8]) -> (String,Vec<(i32,i32)>,Vec<(i32,i32)>,String,String) {
++        let mut engine=engine(4,10);
++        let mut intake=Intake::new(8);intake.set_cell((10,20));
++        feed(&mut engine,&mut intake,b"M");
++        feed(&mut engine,&mut intake,cup);
++        feed(&mut engine,&mut intake,&picture(998));
++        feed(&mut engine,&mut intake,b"\x1b[1;1H");
++        let mut states=Vec::new(); let mut positions=Vec::new(); let mut maps=Vec::new();
++        for (height,cols) in [(2usize,3usize),(4,10)] {
++            engine.resize(height,cols);
++            let reflow=engine.take_reflow().expect("width changes");
++            maps.push(format!("{reflow:?}"));
++            intake.reflow(&reflow);
++            intake.set_scrolled_primary(engine.scrolled_off_top() as u64,engine.history_size(),height as u16);
++            states.push((-(engine.history_size() as i32)..height as i32).map(|r|engine.grid_line(r)).collect::<Vec<_>>().join("\n"));
++            let top=engine.scrolled_off_top().saturating_sub(engine.history_size()) as u64;
++            let shown=intake.describe(View{top,rows:(engine.history_size()+height) as u16,alternate:false});
++            positions.push(shown.placements.iter().map(|p|(p.row.round() as i32+top as i32-engine.scrolled_off_top() as i32,p.column.round() as i32)).collect::<Vec<_>>());
++        }
++        (states[0].clone(),positions[0].clone(),positions[1].clone(),maps[1].clone(),states[1].clone())
++    }
++    let a=run(b"\x1b[1;4H"); let b=run(b"\x1b[2;1H");
++    eprintln!("identity-case a_mid={:?} b_mid={:?} a_final={:?} b_final={:?} same_text={} same_map={}",a.1,b.1,a.2,b.2,a.0==b.0,a.3==b.3);
++    assert_eq!(a.0,b.0,"same narrowed text");
++    assert_eq!(a.1,b.1,"same narrowed picture position");
++    assert_eq!(a.3,b.3,"identical full next Reflow including exact destinations");
++    assert_eq!(a.4,b.4,"same final text");
++    assert_eq!(a.2,b.2,"identical current input necessarily yields identical destination");
++    assert_eq!(a.1,vec![(1,0)]);
++    assert_eq!(a.2,vec![(1,0)]);
++    assert_ne!(a.2,vec![(0,3)],"original marker-relative blank slot is no longer representable");
++}
++
++/// Independent explicit destinations for resize-only state, including the two
++/// histories that the previous stateless mapper collapsed. No output of the
++/// mapper is used to construct expected coordinates.
++#[test]
++#[ignore = "research diagnostic: persistent witness roundtrips"]
++fn persistent_witness_roundtrips() {
++    fn position(engine: &Engine, intake: &mut Intake) -> Vec<(i32,i32)> {
++        let top=engine.scrolled_off_top().saturating_sub(engine.history_size()) as u64;
++        let view=intake.describe(View {top,rows:(engine.history_size()+16) as u16,alternate:false});
++        view.placements.iter().map(|p|(p.row.round() as i32+top as i32-engine.scrolled_off_top() as i32,p.column.round() as i32)).collect()
++    }
++    fn resize(engine: &mut Engine,intake: &mut Intake,height: usize,width: usize,alt: bool) {
++        if alt {feed(engine,intake,b"\x1b[?1049h");}
++        engine.resize(height,width);
++        if let Some(r)=engine.take_reflow(){intake.reflow(&r);intake.set_scrolled_primary(engine.scrolled_off_top() as u64,engine.history_size(),height as u16);}
++        if alt {feed(engine,intake,b"\x1b[?1049l");}
++    }
++    let mut cases=0;
++    for alt in [false,true] { for fast in [false,true] {
++        let mut states=Vec::new();
++        for (name,cup,expected) in [("tail",b"\x1b[1;4H".as_slice(),(0,3)),("blank",b"\x1b[2;1H".as_slice(),(1,0))] {
++            let mut e=engine(4,10);e.set_fast(fast);let mut i=Intake::new(8);i.set_cell((10,20));
++            feed(&mut e,&mut i,b"M");feed(&mut e,&mut i,cup);feed(&mut e,&mut i,&picture(1001));feed(&mut e,&mut i,b"\x1b[1;1H");
++            let mut positions=Vec::new();let mut anchors=Vec::new();let mut text=Vec::new();
++            for (step,(height,width)) in [(2,3),(4,10),(2,3),(4,10)].into_iter().enumerate() {
++                resize(&mut e,&mut i,height,width,alt);
++                let got=position(&e,&mut i);let want=if step%2==0 {(1,0)} else {expected};
++                eprintln!("roundtrip-case alt={alt} fast={fast} name={name} step={step} pictures={got:?} expected={want:?} anchor={:?}",i.resize_anchors);
++                assert_eq!(got,vec![want]);
++                positions.push(got);anchors.push(format!("{:?}",i.resize_anchors));
++                text.push((-(e.history_size() as i32)..height as i32).map(|r|e.grid_line(r)).collect::<Vec<_>>());
++                cases+=1;
++            }
++            states.push((positions,anchors,text));
++        }
++        assert_eq!(states[0].0[0],states[1].0[0],"same collapsed picture");
++        assert_eq!(states[0].2,states[1].2,"same grid throughout");
++        assert_ne!(states[0].1[0],states[1].1[0],"persistent identity differs at collapse");
++        assert_ne!(states[0].0[1],states[1].0[1],"both original slots return, neither deleted");
++        // A right-hand witness gives a negative offset; full-width Unicode
++        // spacers must not be selected in preference to the actual glyph.
++        for (name,bytes,column) in [("right",b"\x1b[1;7HM\x1b[1;5H".as_slice(),4),("wide","\x1b[1;3H漢\x1b[1;6H".as_bytes(),5)] {
++            let mut e=engine(6,10);e.set_fast(fast);let mut i=Intake::new(8);i.set_cell((10,20));
++            feed(&mut e,&mut i,bytes);feed(&mut e,&mut i,&picture(1002));feed(&mut e,&mut i,b"\x1b[1;1H");
++            for (step,width) in [3,10,7,10].into_iter().enumerate() {
++                resize(&mut e,&mut i,6,width,alt);
++                // Oracle is the unique text glyph plus a fixed initial signed
++                // offset, independently scanning actual text (not Reflow).
++                // Width changes can push the marker into retained history.
++                let needle=if name=="right" {'M'} else {'漢'};
++                let markers:Vec<_>=(-(e.history_size() as i32)..6).flat_map(|row|e.grid_line(row).chars().enumerate().filter_map(move |(col,ch)|(ch==needle).then_some((row,col as i32))).collect::<Vec<_>>()).collect();
++                assert_eq!(markers.len(),1);
++                let delta=if name=="right" {-2} else {3};
++                let flat=markers[0].0*width as i32+markers[0].1+delta;
++                let want=(flat.div_euclid(width as i32),flat.rem_euclid(width as i32));
++                let _ = column; // Screen-relative row is not roundtrip-invariant: text can enter history.
++                let got=position(&e,&mut i);
++                eprintln!("roundtrip-case alt={alt} fast={fast} name={name} step={step} pictures={got:?} expected={want:?} anchor={:?}",i.resize_anchors);
++                assert_eq!(got,vec![want]);cases+=1;
++            }
++        }
++    }}
++    eprintln!("roundtrip-summary cases={cases}");assert_eq!(cases,64);
++}
++
++/// Deliberate out-of-scope falsification. Moving the witness's text by a band
++/// scroll between resizes must not be misreported as a successful anchor.
++#[test]
++#[ignore = "research diagnostic: intervening scroll invalidates prototype state"]
++fn persistent_witness_intervening_scroll_characterization() {
++    for fast in [false,true] {
++        let mut e=engine(6,10);e.set_fast(fast);let mut i=Intake::new(8);i.set_cell((10,20));
++        feed(&mut e,&mut i,b"\x1b[3;1HM\x1b[3;4H");feed(&mut e,&mut i,&picture(1003));feed(&mut e,&mut i,b"\x1b[1;1H");
++        e.resize(6,7);let r=e.take_reflow().unwrap();i.reflow(&r);i.set_scrolled_primary(e.scrolled_off_top() as u64,e.history_size(),6);
++        feed(&mut e,&mut i,b"\x1b[2;5r\x1b[1S");
++        e.resize(6,10);let r=e.take_reflow().unwrap();i.reflow(&r);i.set_scrolled_primary(e.scrolled_off_top() as u64,e.history_size(),6);
++        let markers:Vec<_>=(0..6).flat_map(|row|e.grid_line(row).chars().enumerate().filter_map(move |(col,ch)|(ch=='M').then_some((row,col as i32))).collect::<Vec<_>>()).collect();
++        let view=i.describe(View{top:e.top_line(),rows:6,alternate:false});
++        let pics:Vec<_>=view.placements.iter().map(|p|(p.row.round() as i32,p.column.round() as i32)).collect();
++        eprintln!("scroll-characterization fast={fast} markers={markers:?} pictures={pics:?}");
++        assert_eq!(markers,vec![(1,0)]);
++        assert_ne!(pics,vec![(1,3)],"known out-of-scope prototype failure");
++    }
++}
++/// Scroll oracle models the two physical points independently; it never calls
++/// Reflow or either mapping helper to produce an expected destination.
++#[test]
++#[ignore = "research: interleaved resize/scroll witness transport"]
++fn scroll_witness_matrix() {
++    fn markers(e: &Engine) -> Vec<(i32,i32)> {
++        (-(e.history_size() as i32)..8).flat_map(|r| e.grid_line(r).chars().enumerate()
++            .filter_map(move |(c,ch)| (ch=='M').then_some((r,c as i32))).collect::<Vec<_>>()).collect()
++    }
++    fn pictures(e: &Engine, i: &mut Intake) -> Vec<(i32,i32)> {
++        let top=e.scrolled_off_top().saturating_sub(e.history_size()) as u64;
++        i.describe(View {top,rows:(e.history_size()+8) as u16,alternate:false}).placements.iter()
++            .map(|p|(p.row.round() as i32+top as i32-e.scrolled_off_top() as i32,p.column.round() as i32)).collect()
++    }
++    fn resize(e: &mut Engine,i: &mut Intake,w: usize,alt: bool) {
++        if alt {feed(e,i,b"\x1b[?1049h");}
++        e.resize(8,w);if let Some(r)=e.take_reflow(){i.reflow(&r);i.set_scrolled_primary(e.scrolled_off_top() as u64,e.history_size(),8);}
++        if alt {feed(e,i,b"\x1b[?1049l");}
++    }
++    fn shift(row: i32,top: i32,down: bool) -> Option<i32> {
++        if row<top || row>=7 {Some(row)} else if down { (row<6).then_some(row+1) } else { (row>top).then_some(row-1) }
++    }
++    let mut cases=0;let mut failures=0;
++    for fast in [false,true] {for alt in [false,true] {for row in 1..6 {for delta in [0,3,8,-8] {
++        for (op,bytes,top,down) in [
++            ("SU",b"\x1b[2;7r\x1b[1S".as_slice(),1,false),
++            ("SD",b"\x1b[2;7r\x1b[1T".as_slice(),1,true),
++            ("IL",b"\x1b[2;7r\x1b[4;1H\x1b[1L".as_slice(),3,true),
++            ("DL",b"\x1b[2;7r\x1b[4;1H\x1b[1M".as_slice(),3,false),
++            ("RI",b"\x1b[2;7r\x1b[2;1H\x1bM".as_slice(),1,true),
++            ("LF",b"\x1b[2;7r\x1b[7;1H\n".as_slice(),1,false),
++        ] {
++            let mc=if delta<0 {8} else {0};let pc=mc+delta;
++            let mut e=engine(8,10);e.set_fast(fast);let mut i=Intake::new(8);i.set_cell((10,20));
++            feed(&mut e,&mut i,format!("\x1b[{};{}HM\x1b[{};{}H",row+1,mc+1,row+1,pc+1).as_bytes());
++            feed(&mut e,&mut i,&picture(1101));feed(&mut e,&mut i,b"\x1b[1;1H");
++            resize(&mut e,&mut i,7,alt);
++            let before_m=markers(&e);let before_p=pictures(&e,&mut i);
++            assert_eq!(before_m.len(),1);assert_eq!(before_p.len(),1);
++            let m=before_m[0];let p=before_p[0];assert_eq!((p.0-m.0)*7+p.1-m.1,delta);
++            let sm=shift(m.0,top,down);let sp=shift(p.0,top,down);
++            let next_delta=sm.zip(sp).map(|(a,b)|(b-a)*7+p.1-m.1);
++            feed(&mut e,&mut i,bytes);
++            let after_m=markers(&e);let after_p=pictures(&e,&mut i);
++            assert_eq!(after_m,sm.map(|r|vec![(r,m.1)]).unwrap_or_default(),"text oracle {op}");
++            if sm.is_some() {assert_eq!(after_p,sp.map(|r|vec![(r,p.1)]).unwrap_or_default(),"physical picture oracle {op}");}
++            resize(&mut e,&mut i,10,alt);
++            let final_m=markers(&e);let got=pictures(&e,&mut i);
++            let expected=match (next_delta,final_m.first()) {
++                (Some(d),Some(&(r,c))) => {let flat=r*10+c+d;let rr=flat.div_euclid(10);let cc=flat.rem_euclid(10);
++                    if rr>=-(e.history_size() as i32) && rr<8 {vec![(rr,cc)]} else {vec![]}},
++                _ => vec![],
++            };
++            let pass=got==expected;if !pass {failures+=1;}
++            eprintln!("scroll-witness fast={fast} alt={alt} row={row} delta={delta} op={op} before_m={before_m:?} before_p={before_p:?} after_m={after_m:?} after_p={after_p:?} final_m={final_m:?} got={got:?} expected={expected:?} pass={pass}");
++            cases+=1;
++        }
++    }}}}
++    eprintln!("scroll-witness-summary cases={cases} failures={failures}");
++    assert_eq!(cases,480);assert_eq!(failures,0,"interleaved scroll transport failures");
++}
++
++#[test]
++#[ignore = "research: saved state must not leak after RIS"]
++fn scroll_witness_reset_lifetime() {
++    for fast in [false,true] {
++        let mut e=engine(8,10);e.set_fast(fast);let mut i=Intake::new(8);i.set_cell((10,20));
++        feed(&mut e,&mut i,b"M\x1b[1;4H");feed(&mut e,&mut i,&picture(1102));
++        e.resize(8,7);i.reflow(&e.take_reflow().unwrap());
++        assert_eq!(i.resize_anchors.len(),1);
++        feed(&mut e,&mut i,b"\x1bc");
++        eprintln!("reset-lifetime fast={fast} placements={} saved={}",i.placements.len(),i.resize_anchors.len());
++        assert!(i.placements.is_empty());assert!(i.resize_anchors.is_empty(),"saved witness leaked after RIS");
++    }
++}

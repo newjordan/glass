@@ -1,0 +1,53 @@
+[
+  {
+    "arm": "stale",
+    "argv": [
+      "/tmp/glass-i41-stale-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::scroll_witness_reset_lifetime"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 101,
+    "log": "stale-reset-final.log",
+    "sha256": "d71eec8a631157a0740511b4c2dea12d226fef3b11ce679332838e524c544924",
+    "binary_sha256": "2c5be472a8bf7ab528789206ad929f2cae1138b4f9fabc3ac13a7b0d5887020c"
+  },
+  {
+    "arm": "transport",
+    "argv": [
+      "/tmp/glass-i41-transport-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::scroll_witness_reset_lifetime"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "transport-reset-final.log",
+    "sha256": "c390977b18d99bf8ce95ec34e6f2351ca9dd0b695141cc7462e8dc8c0f16a799",
+    "binary_sha256": "1208360872335bdddeb7fe882221a1caf600ab6894e93af967a8120c2ec1d6ca"
+  },
+  {
+    "arm": "aware",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::scroll_witness_reset_lifetime"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "aware-reset-final.log",
+    "sha256": "c390977b18d99bf8ce95ec34e6f2351ca9dd0b695141cc7462e8dc8c0f16a799",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  }
+]

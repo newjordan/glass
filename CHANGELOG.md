@@ -390,3 +390,17 @@ These are one machine's numbers, not a general claim.
 - Restore runtime and selected executable; 392 Rust tests, 12,800 streams pass.
   Five Python tests reject 36 record mutations, seven invalid coordinate shapes
   and duplicate keys. Retain setup/checker mistakes. No speed or Ghostty claim.
+
+### Research: independent witness motion and event authority (2026-11-03, iteration 41)
+
+No runtime promotion. Three controlled arms on the same final test source show
+372 -> 24 -> 0 failures per 480 interleaved resize/scroll cases, at each of six
+history-capacity settings. Transport picture and selected witness independently;
+include witness-only rows in motion authority or the engine suppresses required
+events. Real APC intake, both parser lanes, active/inactive primary resize, six
+scroll operations, signed offsets. Prototype RIS cleanup also reproduced/fixed.
+Full scope, failed builds/zero-test receipts, source snapshots and replay:
+`bench/results/2026-11-03-scroll-witness/README.md`. Candidate still has the prior
+three shipping-defect characterization failures and broad out-of-bounds slot
+failures; no universal anchor, performance, memory or Ghostty win claim. Restored
+shipping: 392 tests pass, 14 ignored; 12,800 differential streams pass per arm.

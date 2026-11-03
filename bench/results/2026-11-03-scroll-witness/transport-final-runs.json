@@ -1,0 +1,92 @@
+[
+  {
+    "capacity": 0,
+    "test": "scroll_witness_matrix",
+    "argv": [
+      "/tmp/glass-i41-transport-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::scroll_witness_matrix"
+    ],
+    "exit": 101,
+    "log": "transport-final-scroll_witness_matrix-0.log",
+    "log_sha256": "58b24a31be00f0123bac17d3f5cc0d9eed5d12b52bbe0c16948518adfc9a70d1",
+    "binary_sha256": "1208360872335bdddeb7fe882221a1caf600ab6894e93af967a8120c2ec1d6ca"
+  },
+  {
+    "capacity": 1,
+    "test": "scroll_witness_matrix",
+    "argv": [
+      "/tmp/glass-i41-transport-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::scroll_witness_matrix"
+    ],
+    "exit": 101,
+    "log": "transport-final-scroll_witness_matrix-1.log",
+    "log_sha256": "96edeea4f3436398d164066539e7935c353a6baf66a9c2c869a28e58b56b9ace",
+    "binary_sha256": "1208360872335bdddeb7fe882221a1caf600ab6894e93af967a8120c2ec1d6ca"
+  },
+  {
+    "capacity": 2,
+    "test": "scroll_witness_matrix",
+    "argv": [
+      "/tmp/glass-i41-transport-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::scroll_witness_matrix"
+    ],
+    "exit": 101,
+    "log": "transport-final-scroll_witness_matrix-2.log",
+    "log_sha256": "8c316828f0165c130c0f8c4476eecfccbe64d090c33b3555bedbbca3958d5346",
+    "binary_sha256": "1208360872335bdddeb7fe882221a1caf600ab6894e93af967a8120c2ec1d6ca"
+  },
+  {
+    "capacity": 8,
+    "test": "scroll_witness_matrix",
+    "argv": [
+      "/tmp/glass-i41-transport-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::scroll_witness_matrix"
+    ],
+    "exit": 101,
+    "log": "transport-final-scroll_witness_matrix-8.log",
+    "log_sha256": "c9ded836bd07eb240a1fb0cc722bc31673a632e4ea1920781a29ed165c2ff884",
+    "binary_sha256": "1208360872335bdddeb7fe882221a1caf600ab6894e93af967a8120c2ec1d6ca"
+  },
+  {
+    "capacity": 32,
+    "test": "scroll_witness_matrix",
+    "argv": [
+      "/tmp/glass-i41-transport-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::scroll_witness_matrix"
+    ],
+    "exit": 101,
+    "log": "transport-final-scroll_witness_matrix-32.log",
+    "log_sha256": "09f8435282212fd84679a878aa1a59f386f429652df9ab572e4daa72ef9863fb",
+    "binary_sha256": "1208360872335bdddeb7fe882221a1caf600ab6894e93af967a8120c2ec1d6ca"
+  },
+  {
+    "capacity": 10000,
+    "test": "scroll_witness_matrix",
+    "argv": [
+      "/tmp/glass-i41-transport-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::scroll_witness_matrix"
+    ],
+    "exit": 101,
+    "log": "transport-final-scroll_witness_matrix-10000.log",
+    "log_sha256": "7ea59cef37aaf66a60250f9c96e3e37f62f9d882c9dd70d6ff8239fb5f872c9d",
+    "binary_sha256": "1208360872335bdddeb7fe882221a1caf600ab6894e93af967a8120c2ec1d6ca"
+  }
+]

@@ -1,0 +1,39 @@
+{
+  "hypothesis": "Transport a saved resize witness independently through band scrolls, then recompute its signed offset from the actual surviving picture; witness-only regions must contribute to event authority.",
+  "scope": "Research only: scrolls interleaved with width resizes, no intervening writes or dormant placement resurrection. Existing picture geometry and cuts remain authoritative during scroll. Selected witness deletion deletes this attachment.",
+  "arms": [
+    "stale persistent resize-only control",
+    "transport with picture-only motion authority",
+    "transport with witness-aware motion authority"
+  ],
+  "settings": {
+    "capacities": [
+      0,
+      1,
+      2,
+      8,
+      32,
+      10000
+    ],
+    "fast": [
+      false,
+      true
+    ],
+    "operations": [
+      "SU",
+      "SD",
+      "IL",
+      "DL",
+      "RI",
+      "LF"
+    ],
+    "deltas": [
+      0,
+      3,
+      8,
+      -8
+    ]
+  },
+  "oracle": "Scan unique M independently. Before scroll save picture and marker coordinates; explicitly model each band at screen rows 1..6 (or origin for IL/DL/RI/LF), transport each row separately, compute new signed flat offset with width 7; expected final coordinate at width 10 comes from actual M plus that offset. Boundary delete if either picture or selected M discarded. No Reflow output constructs expectations.",
+  "shipping": "Restore all sources byte-for-byte; leave selected target/release/glass unchanged. No timing or superiority claim."
+}

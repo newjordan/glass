@@ -972,3 +972,24 @@ whole-suite history must be 10000 (initial history-zero failures retained).
 Replay and limitations in the result README; no timing/memory/Ghostty win claim.
 Historical document-only replay adapters bind retained pre-iteration notes;
 current notes remain separately sealed. No runtime/raw measurement redirection.
+
+### Independent witness movement bound (2026-11-03, iteration 41)
+
+Research only: `results/2026-11-03-scroll-witness/`. At six capacity settings,
+480 cases each: prior persistent witness fails 372, independently transported
+witness fails 24, witness-aware event authority fails zero. Residual controls
+exactly identify pictures above the affected band with witnesses inside it.
+Real intake, both lanes, active/inactive primary resize, SU/SD/IL/DL/RI/LF.
+These cases do not fill history and do not validate general write/lifetime or
+split-picture behavior. Prototype RIS leaves one saved entry; corrected arms
+clear it. Read-only checker and six Python tests reject 24 record corruptions,
+seven coordinate shapes, duplicate JSON keys and an unknown arm.
+
+Prior exact matrices remain checked: 56,160 height, 20,736 mixed, 124,416 Unicode
+and 1,632 eligible deletion observations with zero failures; 168,296 continuous
+slot observations with zero failures, broader slot failures unchanged. Candidate
+full suite remains 389 pass / three defect-characterization failures / 23 ignored.
+Restored shipping 392 pass / 14 ignored; actual 12,800-stream sweep passes in
+both arms. First compiler failure, zero-test filter mistakes and initial checker
+mutation failure retained; final replay explicitly excludes zero-test evidence.
+No runtime promotion, benchmark or competitive superiority claim.

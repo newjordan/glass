@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-scroll-witness/verify.py", line 136, in <module>
+    if __name__=='__main__':print(json.dumps(verify(),indent=2))
+                                             ~~~~~~^^
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-scroll-witness/verify.py", line 105, in verify
+    summary,oracle=matrix(p.read_text(),arm);aggregate.append({'capacity':cap,**summary})
+                   ~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-scroll-witness/verify.py", line 42, in matrix
+    need(ap==want_ap,'independent picture scroll')
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-scroll-witness/verify.py", line 7, in need
+    if not ok:raise ValueError(why)
+              ^^^^^^^^^^^^^^^^^^^^^
+ValueError: independent picture scroll

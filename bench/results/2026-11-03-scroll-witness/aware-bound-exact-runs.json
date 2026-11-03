@@ -1,0 +1,452 @@
+[
+  {
+    "capacity": 0,
+    "test": "height_snapshot_marker_picture_matrix",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "exit": 0,
+    "log": "aware-bound-exact-height_snapshot_marker_picture_matrix-0.log",
+    "log_sha256": "34db0c274fcb135db2babeb427ef9db9455a48e21ad0d4388946b83ef517fc77",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  },
+  {
+    "capacity": 0,
+    "test": "mixed_snapshot_marker_picture_matrix",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "exit": 0,
+    "log": "aware-bound-exact-mixed_snapshot_marker_picture_matrix-0.log",
+    "log_sha256": "9b33ddc2885c7ce88582b8fe18b4dc1633ddce9e2f903492907b548ffc36ade5",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  },
+  {
+    "capacity": 0,
+    "test": "origin_map_unicode_marker_matrix",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::origin_map_unicode_marker_matrix"
+    ],
+    "exit": 0,
+    "log": "aware-bound-exact-origin_map_unicode_marker_matrix-0.log",
+    "log_sha256": "a29804a4133af5b572096ff3d97b0db6f18aba36a773200161fd2afe6e56cb69",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  },
+  {
+    "capacity": 0,
+    "test": "blank_witness_marker_matrix",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "exit": 101,
+    "log": "aware-bound-exact-blank_witness_marker_matrix-0.log",
+    "log_sha256": "b8af087d88114e5df18d9305e6e19d57217b7f76d5d63e70db5f9cd8f7d2699b",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  },
+  {
+    "capacity": 0,
+    "test": "blank_witness_deleted_line_matrix",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "exit": 0,
+    "log": "aware-bound-exact-blank_witness_deleted_line_matrix-0.log",
+    "log_sha256": "9d19e18cbea33ead86ac43f30de259c23907acfccce4b89b435c291c08315d09",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  },
+  {
+    "capacity": 1,
+    "test": "height_snapshot_marker_picture_matrix",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "exit": 0,
+    "log": "aware-bound-exact-height_snapshot_marker_picture_matrix-1.log",
+    "log_sha256": "4fa103d93a1bbabe0f693dde4c4e3ba09d45758d41d6e9c448c686f62b847846",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  },
+  {
+    "capacity": 1,
+    "test": "mixed_snapshot_marker_picture_matrix",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "exit": 0,
+    "log": "aware-bound-exact-mixed_snapshot_marker_picture_matrix-1.log",
+    "log_sha256": "bc36266a113dfcb0fd1f2f4b580c3060130219bf4998fc9eb846af75b96da1bb",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  },
+  {
+    "capacity": 1,
+    "test": "origin_map_unicode_marker_matrix",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::origin_map_unicode_marker_matrix"
+    ],
+    "exit": 0,
+    "log": "aware-bound-exact-origin_map_unicode_marker_matrix-1.log",
+    "log_sha256": "11687e5c9cf1a54dd3f219aee2eea66282e41409d09146c29ece097a81199d9c",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  },
+  {
+    "capacity": 1,
+    "test": "blank_witness_marker_matrix",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "exit": 101,
+    "log": "aware-bound-exact-blank_witness_marker_matrix-1.log",
+    "log_sha256": "0c612f32c42c6f661db21327c91227dfe87fe133f09e903a458782131423a1cb",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  },
+  {
+    "capacity": 1,
+    "test": "blank_witness_deleted_line_matrix",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "exit": 0,
+    "log": "aware-bound-exact-blank_witness_deleted_line_matrix-1.log",
+    "log_sha256": "a048acb37fdaddb48c4da7abfe0af4df0b0dd58314bca2ad44643525cd57d39b",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  },
+  {
+    "capacity": 2,
+    "test": "height_snapshot_marker_picture_matrix",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "exit": 0,
+    "log": "aware-bound-exact-height_snapshot_marker_picture_matrix-2.log",
+    "log_sha256": "dba147381a49bbd43b6823242d1cc8d85945deb5046bfb65b261fa08c678a3ec",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  },
+  {
+    "capacity": 2,
+    "test": "mixed_snapshot_marker_picture_matrix",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "exit": 0,
+    "log": "aware-bound-exact-mixed_snapshot_marker_picture_matrix-2.log",
+    "log_sha256": "f492dd1cebf8736d004d2d7d14451a56165a565347a41f5650d5af10d4ad8234",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  },
+  {
+    "capacity": 2,
+    "test": "origin_map_unicode_marker_matrix",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::origin_map_unicode_marker_matrix"
+    ],
+    "exit": 0,
+    "log": "aware-bound-exact-origin_map_unicode_marker_matrix-2.log",
+    "log_sha256": "d463b13e51d330a5013b3af27e72a4f003a54a79df13ef3a4fcfc4fdc8f524f1",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  },
+  {
+    "capacity": 2,
+    "test": "blank_witness_marker_matrix",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "exit": 101,
+    "log": "aware-bound-exact-blank_witness_marker_matrix-2.log",
+    "log_sha256": "595ed2f529e2b41d2aedf2588f625f15b94bdc6dc101765d4e628dc8f7a0fe64",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  },
+  {
+    "capacity": 2,
+    "test": "blank_witness_deleted_line_matrix",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "exit": 0,
+    "log": "aware-bound-exact-blank_witness_deleted_line_matrix-2.log",
+    "log_sha256": "1fe2fd7fb5f5012eed93e52d447d0e019acc2576a9790d19ed786a7e5caa47df",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  },
+  {
+    "capacity": 8,
+    "test": "height_snapshot_marker_picture_matrix",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "exit": 0,
+    "log": "aware-bound-exact-height_snapshot_marker_picture_matrix-8.log",
+    "log_sha256": "568e32e36527a531716ee65a556ce909cd521930a4b1e824872366e0a90af022",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  },
+  {
+    "capacity": 8,
+    "test": "mixed_snapshot_marker_picture_matrix",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "exit": 0,
+    "log": "aware-bound-exact-mixed_snapshot_marker_picture_matrix-8.log",
+    "log_sha256": "ddbadca74b78deda45c8fcc7cb3b5db6a41afaeb8a6add4cd86088c33dc934d9",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  },
+  {
+    "capacity": 8,
+    "test": "origin_map_unicode_marker_matrix",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::origin_map_unicode_marker_matrix"
+    ],
+    "exit": 0,
+    "log": "aware-bound-exact-origin_map_unicode_marker_matrix-8.log",
+    "log_sha256": "b3e1d7f8dcf83771278f59695aa8940b3d5f958465d4430101f2de6782fbc855",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  },
+  {
+    "capacity": 8,
+    "test": "blank_witness_marker_matrix",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "exit": 101,
+    "log": "aware-bound-exact-blank_witness_marker_matrix-8.log",
+    "log_sha256": "576b1acbdb9fbd31a519eb5a3d0b3015aeb0ca03ec4676d977e6eddbfd808e1f",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  },
+  {
+    "capacity": 8,
+    "test": "blank_witness_deleted_line_matrix",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "exit": 0,
+    "log": "aware-bound-exact-blank_witness_deleted_line_matrix-8.log",
+    "log_sha256": "6b43c77df199b5ed94abbd6a652fe6768f6929e458394eff744775ca0db23115",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  },
+  {
+    "capacity": 32,
+    "test": "height_snapshot_marker_picture_matrix",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "exit": 0,
+    "log": "aware-bound-exact-height_snapshot_marker_picture_matrix-32.log",
+    "log_sha256": "436d78790ac246013c4fd034236206dc977e71b1008bc03d5fabc1049ac620d9",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  },
+  {
+    "capacity": 32,
+    "test": "mixed_snapshot_marker_picture_matrix",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "exit": 0,
+    "log": "aware-bound-exact-mixed_snapshot_marker_picture_matrix-32.log",
+    "log_sha256": "94528a793f10f9aba34da75a519863e24d1337cc4e91174374d9579b60282b01",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  },
+  {
+    "capacity": 32,
+    "test": "origin_map_unicode_marker_matrix",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::origin_map_unicode_marker_matrix"
+    ],
+    "exit": 0,
+    "log": "aware-bound-exact-origin_map_unicode_marker_matrix-32.log",
+    "log_sha256": "dec9f72b12bfee64fc144a49a874a298ebef0a2f4d70a5485ab9cf2a0ac72f1d",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  },
+  {
+    "capacity": 32,
+    "test": "blank_witness_marker_matrix",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "exit": 101,
+    "log": "aware-bound-exact-blank_witness_marker_matrix-32.log",
+    "log_sha256": "21405b8b7ceed31b07edcf6867c9cffe86a0db06aee0697290065bb73b698f9f",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  },
+  {
+    "capacity": 32,
+    "test": "blank_witness_deleted_line_matrix",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "exit": 0,
+    "log": "aware-bound-exact-blank_witness_deleted_line_matrix-32.log",
+    "log_sha256": "3264add078d7330c970b8fe0ca7290b4117b51b35d05a6b407a605db7bf0c721",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  },
+  {
+    "capacity": 10000,
+    "test": "height_snapshot_marker_picture_matrix",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "exit": 0,
+    "log": "aware-bound-exact-height_snapshot_marker_picture_matrix-10000.log",
+    "log_sha256": "b53463f70bbed0822313ff2d0c7681194d1324a89a6348edbee987f8237f58b1",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  },
+  {
+    "capacity": 10000,
+    "test": "mixed_snapshot_marker_picture_matrix",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "exit": 0,
+    "log": "aware-bound-exact-mixed_snapshot_marker_picture_matrix-10000.log",
+    "log_sha256": "94528a793f10f9aba34da75a519863e24d1337cc4e91174374d9579b60282b01",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  },
+  {
+    "capacity": 10000,
+    "test": "origin_map_unicode_marker_matrix",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::origin_map_unicode_marker_matrix"
+    ],
+    "exit": 0,
+    "log": "aware-bound-exact-origin_map_unicode_marker_matrix-10000.log",
+    "log_sha256": "9232384c058fac25ad9f8007460d002baa7573b6896fdc43c605242b92f8174d",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  },
+  {
+    "capacity": 10000,
+    "test": "blank_witness_marker_matrix",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "exit": 101,
+    "log": "aware-bound-exact-blank_witness_marker_matrix-10000.log",
+    "log_sha256": "ce2c04bd5bf90dfdb545fe473b38104af9c960bf7d25c70852f33653068a50c0",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  },
+  {
+    "capacity": 10000,
+    "test": "blank_witness_deleted_line_matrix",
+    "argv": [
+      "/tmp/glass-i41-aware-final",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "exit": 0,
+    "log": "aware-bound-exact-blank_witness_deleted_line_matrix-10000.log",
+    "log_sha256": "2b1dd1b8b6fbc894f4cabae43d51b227a73da8621c985c488b5d6e26d5c6635d",
+    "binary_sha256": "6a18a0b57914eeec74be06ff103339cbc8ca3d7cbd9458acbaa62998825df238"
+  }
+]

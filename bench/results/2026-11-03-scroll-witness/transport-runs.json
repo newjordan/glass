@@ -1,0 +1,10 @@
+[
+  {
+    "test": "scroll_witness_matrix",
+    "exit": 101
+  },
+  {
+    "test": "scroll_witness_reset_lifetime",
+    "exit": 0
+  }
+]

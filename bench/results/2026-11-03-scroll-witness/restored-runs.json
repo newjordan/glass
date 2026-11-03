@@ -1,0 +1,29 @@
+[
+  {
+    "label": "terminal",
+    "args": [],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "restored-terminal.log",
+    "sha256": "642e369da2d346142b615c863a33f25f47d1247cd15effb40dca9cedbeddaf3d"
+  },
+  {
+    "label": "sweep",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "speed::plain_runs_match_the_parser_over_seeds"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000",
+      "GLASS_SWEEP_SEEDS": "64",
+      "GLASS_SWEEP_ROUNDS": "200"
+    },
+    "exit": 0,
+    "log": "restored-sweep.log",
+    "sha256": "487ad79c3a28e3666db6aef4baf7eae11a3c3d6f9e55259a18adfd9187337e40"
+  }
+]

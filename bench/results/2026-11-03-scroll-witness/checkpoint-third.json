@@ -1,0 +1,114 @@
+{
+  "schema": "glass.scroll-witness-replay/v1",
+  "matrices": {
+    "stale": [
+      {
+        "capacity": 0,
+        "cases": 480,
+        "failures": 372
+      },
+      {
+        "capacity": 1,
+        "cases": 480,
+        "failures": 372
+      },
+      {
+        "capacity": 2,
+        "cases": 480,
+        "failures": 372
+      },
+      {
+        "capacity": 8,
+        "cases": 480,
+        "failures": 372
+      },
+      {
+        "capacity": 32,
+        "cases": 480,
+        "failures": 372
+      },
+      {
+        "capacity": 10000,
+        "cases": 480,
+        "failures": 372
+      }
+    ],
+    "transport": [
+      {
+        "capacity": 0,
+        "cases": 480,
+        "failures": 24
+      },
+      {
+        "capacity": 1,
+        "cases": 480,
+        "failures": 24
+      },
+      {
+        "capacity": 2,
+        "cases": 480,
+        "failures": 24
+      },
+      {
+        "capacity": 8,
+        "cases": 480,
+        "failures": 24
+      },
+      {
+        "capacity": 32,
+        "cases": 480,
+        "failures": 24
+      },
+      {
+        "capacity": 10000,
+        "cases": 480,
+        "failures": 24
+      }
+    ],
+    "aware": [
+      {
+        "capacity": 0,
+        "cases": 480,
+        "failures": 0
+      },
+      {
+        "capacity": 1,
+        "cases": 480,
+        "failures": 0
+      },
+      {
+        "capacity": 2,
+        "cases": 480,
+        "failures": 0
+      },
+      {
+        "capacity": 8,
+        "cases": 480,
+        "failures": 0
+      },
+      {
+        "capacity": 32,
+        "cases": 480,
+        "failures": 0
+      },
+      {
+        "capacity": 10000,
+        "cases": 480,
+        "failures": 0
+      }
+    ]
+  },
+  "prior_bounds": {
+    "height": 56160,
+    "mixed": 20736,
+    "unicode": 124416,
+    "deleted_eligible": 1632,
+    "slots_continuous": 168296
+  },
+  "reset_saved_control": 1,
+  "reset_saved_candidate": 0,
+  "restored_tests": 392,
+  "differential_streams_per_arm": 12800,
+  "shipping_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "note": "Research-only finite scope; broad slots and three defect-characterization tests still fail. No timing, memory, general-write or competitive acceptance."
+}
