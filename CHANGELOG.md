@@ -13,6 +13,17 @@ A program runs in a pseudo-terminal, and what it writes comes in through
 No dialect is the reference one; each is an adapter onto one shared
 description of what to show.
 
+### Unicode row-edge regression and exclusive-column research
+
+- Add parser-differential coverage for pending wrap across narrow/wide/combining
+  successors, read cuts, REP, modes, stale wide cells and malformed UTF-8.
+  A built semantic mutant that drops pending wrap is caught by the new test.
+- Reject an exclusive-column `put_row` rewrite after a prospectively frozen
+  11-pair engine screen: Unicode candidate/control CPU-throughput 0.979261,
+  3/11 wins. Restore runtime; retain raw results and read-only replay. No new
+  Ghostty claim. 380 terminal tests, 12,800 differential streams and 49 Python
+  tests pass; nine report corruptions reject without changing evidence.
+
 ### Reciprocal same-L3 hot placement (research only)
 
 - Measure reader/parser sibling versus distinct-core pins on the unchanged

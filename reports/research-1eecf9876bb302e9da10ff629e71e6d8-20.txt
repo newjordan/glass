@@ -1,0 +1,138 @@
+ITERATION 20 — Exclusive-column row lane: rejected optimization, retained wrap oracle
+Reported local research. No production optimization, new Ghostty run or world-title claim.
+
+Question and intervention
+-------------------------
+Starting HEAD: 38faaa9.
+Selected terminal SHA256:
+d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c
+
+The preceding 30-round exact-build comparison still showed Glass/Ghostty
+Unicode 0.929112, ASCII 0.947116, region 0.989285. Those are PRIOR evidence,
+not observations made here. This iteration asks a new, narrow codegen question:
+can put_row's per-glyph clamped cursor/end/wrap update be replaced with an
+exclusive internal column and one exit normalization? Width selection, UTF-8
+decoding, mark fallback, cell writes, wide-cell guards and REP remain intact.
+Unlike prior row continuation, mark ownership, width composition or CPU mask
+experiments, this changes only the cursor-state representation inside a lane.
+
+Candidate invariant: internal column <= columns, advanced only by a committed
+width 1 or 2. Fit-check short circuit prevents indexing a full row. Exit sets
+pending wrap iff column == columns, and observable cursor becomes column-1
+only in that case. No-write/early-decode exit leaves the cursor unchanged.
+The frozen candidate.patch and candidate-engine.rs retain the actual change;
+the final crates/term/src/engine.rs is byte-identical to its pre-edit snapshot.
+
+Prospective screen
+------------------
+Protocol hash: 4d2e0bba19791526db56773f0fb44cf759b0f41bd07ca4502f885cd6d03c5c52
+Frozen before control build and candidate edit. Fresh baseline and candidate
+release test executables, identical cargo profile/locked dependency flags;
+both include the same new non-ignored regression. Same six engine workloads,
+scale 2, fastest of five internal repetitions, 11 outer pairs with alternating
+AB/BA launch order. No benchmarking concurrently with our own builds. Other
+host jobs were not terminated or controlled. No affinity/governor policy.
+
+Screen requires Unicode median candidate/control CPU-throughput >=1.02,
+positive win direction and six-workload Holm p<.05; every paired point median
+must be >=.98. Engine-only success cannot promote a terminal. A conditional
+real-PTY gate and separate replication were prospectively specified, but are
+NOT RUN after this failed screen. No second candidate, rescue series, optional
+extra pairs, pooling with older results or discarded pair.
+
+Complete engine results (candidate/control; >1 favors candidate)
+---------------------------------------------------------------
+workload        paired CPU median    wins/losses    raw sign p    Holm p
+ASCII                   0.989569          1/10        .011719       .070313
+Unicode                 0.979261          3/8         .226563      1.000000
+Truecolor               1.000625          6/5        1.000000      1.000000
+Cursor motion           0.994981          3/8         .226563      1.000000
+Scroll region           0.999534          5/6        1.000000      1.000000
+TUI frames              0.999354          4/7         .548828      1.000000
+
+All 22 engine runs and their parsed/raw rates replay with exact executable
+hashes. Unicode point estimate is 2.074% worse, not the required >=2% gain;
+it also misses the .98 point regression guard. Reject the candidate. No
+six-workload Holm rejection licenses a proven population slowdown, and the
+point estimate is not an equivalence bound. Balanced launch order does not
+establish independent fair signs. Shared-host load, code layout, fastest-of-N
+selection, printed-rate rounding and fixed workload order remain limitations.
+This is engine CPU-throughput evidence, not through-PTY, latency, power or GPU
+performance evidence. No new competitive superiority claim is supported.
+
+Concrete retained correctness improvement
+------------------------------------------
+Added speed::unicode_row_edges_preserve_pending_wrap directly to the existing
+terminal test target. It compares fast execution to parser-only execution:
+cells, cursor, history, replies and alternate-screen state. Four geometries
+(3x2, 3x3, 4x10, 39x154), five setups, seven suffix families and six chunk-size
+entries give 840 oracle invocations (some chunk sizes repeat on small streams).
+Each constructed stream sweeps all starting columns and includes stale wide
+cells, narrow/wide/combining successors, explicit pending-wrap boundaries,
+REP, line feeds, scroll region, alternate screen, colored template, invalid
+UTF-8, a valid UTF-8 C1 byte sequence and DSR observations. This is not an
+exhaustive parser conformance proof. It passes on control and candidate.
+
+A separately frozen positive-control protocol deliberately changes only
+production put_row's input_needs_wrap assignment to false. It BUILDS, then the
+new test fails with exit 101, Some("cells") vs None at 39x154, empty setup,
+suffix "x", chunk size 155. This is a semantic assertion failure, not a compile
+failure. Build EXIT trap restores the exact production source even on error.
+Mutant source, build receipt, executable hash and failure log are retained.
+The canonical verifier re-executes control, candidate and mutant tests.
+
+Restored verification
+---------------------
+- 380 terminal tests passed, 11 intentionally ignored (fresh control with test).
+- Existing ignored differential sweep: 12,800 streams / 64 seeds, no divergence.
+- 49 existing Python tests passed.
+- 9 real-report corruptions rejected: missing pair, altered summary, parsed/raw
+  mismatch, duplicate row, launch order, binary identity, nonzero exit, workload
+  shape, duplicate JSON key. Canonical engine report bytes remain unchanged.
+- Exact restored-source cargo invocation passes the new boundary regression.
+- 119/120 Rust source files unchanged; the sole edit is the appended regression
+  in speed.rs. No production-runtime source edit remains.
+- All 5,826 tracked prior bench/results and reports files unchanged by hash.
+- Exact selected terminal executable unchanged by hash; no release terminal
+  binary was replaced to measure this diagnostic test target.
+
+Failures and evidence continuity
+-------------------------------
+The first candidate verifier used --lib, but this package is a binary target:
+"no library targets found". It failed before compilation. The corrected
+pre-existing cargo test entry point passes. Both receipts remain retained.
+
+Direct replay of iteration 19's old frozen index correctly rejects the evolved
+speed.rs test source. We did NOT rewrite its manifest, weaken its checker or
+silently accept the mismatch. The new prior-frozen-index.json binds that one
+old path explicitly to control-speed.rs, whose hash matches the old manifest.
+All 535 old file references replay: 534 live, one exact historical snapshot.
+Earlier sources, manifests and reports remain unchanged. Historical integrity
+is not proof of timing accuracy or competitive acceptance.
+
+Read-only commands (from repo root)
+-----------------------------------
+D=bench/results/2026-11-03-exclusive-column
+python3 -B "$D/verify.py"
+python3 -B "$D/analyze.py"
+python3 -B "$D/check-corruption.py"
+python3 -B bench/replay-evidence-index.py "$D/prior-frozen-index.json"
+python3 -B bench/replay-evidence-index.py "$D/frozen-index.json"
+cargo test --release -p glass-term --locked speed::unicode_row_edges_preserve_pending_wrap -- --exact --nocapture
+
+verify.py needs the exact retained /tmp/glass-i20-{control,candidate,mutant}-test
+executables. It fails closed if those binaries disappear/change. Do not rebuild
+and pretend new bytes are the measured originals. It reruns correctness and
+report/checker replay, not the timing experiment; it never repairs evidence.
+
+Next necessary action / open objective
+--------------------------------------
+Do not revisit this cursor representation without independent new evidence.
+The next optimization should be chosen from a measured ownership/call-cost
+breakdown of the unchanged Unicode path, not another unmeasured decoder or
+cursor rewrite. Any winning candidate still needs frozen full terminal
+comparison against fresh control and Ghostty, independent replication, startup,
+CPU/memory, real key-to-screen latency, loaded latency and correctness gates.
+The latest competitive series still has only three of six throughput leads.
+The user's every-metric/world-champion objective remains OPEN; no acceptance
+command is bound and this iteration does not declare the campaign complete.

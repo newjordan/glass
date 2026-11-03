@@ -1201,3 +1201,38 @@ fn ascii_crlf_records_match_parser() {
         }
     }
 }
+
+/// A row lane may use an exclusive internal column, but the observable
+/// cursor must stay on the final cell with pending wrap until actual input.
+/// Compare against parser-only execution at exact row edges and read splits.
+#[test]
+fn unicode_row_edges_preserve_pending_wrap() {
+    for (rows, cols) in [(3, 2), (3, 3), (4, 10), (39, 154)] {
+        for setup in ["", "\x1b[?7l", "\x1b[2;3r", "\x1b[?1049h", "\x1b[31;44m"] {
+            for suffix in ["x", "漢", "e\u{301}", "\u{301}Z", "\x1b[3b", "\r\nq", "\x1b[6n"] {
+                let mut stream = setup.as_bytes().to_vec();
+                // Every starting column, both final-cell and penultimate-cell
+                // wide writes, stale wide flags, wraps, marks and held REP.
+                for start in 1..=cols {
+                    stream.extend_from_slice(format!("\x1b[1;1H漢字\x1b[1;{start}H").as_bytes());
+                    stream.extend(std::iter::repeat_n(b'a', cols - start));
+                    stream.extend_from_slice("漢é".as_bytes());
+                    stream.extend_from_slice(suffix.as_bytes());
+                    stream.extend_from_slice(b"\x1b[6n\r\n");
+                    stream.extend(std::iter::repeat_n(b'z', cols));
+                    stream.extend_from_slice(suffix.as_bytes());
+                    // Invalid/partial UTF-8 and a valid UTF-8 C1 control
+                    // terminate the lane without consuming its held scalar.
+                    stream.extend_from_slice(b"\xc3\x1b[6n\xc2\x85\xff\r\n");
+                }
+                stream.extend_from_slice(b"\x1b[6n\x1b[r\x1b[?1049l");
+                for step in [1, 2, 3, cols + 1, 4095, stream.len()] {
+                    let mut cuts: Vec<_> = (0..stream.len()).step_by(step).collect();
+                    cuts.push(stream.len());
+                    assert_eq!(plain_runs_first_difference(rows, cols, &stream, &cuts), None,
+                        "{rows}x{cols}, setup {setup:?}, suffix {suffix:?}, chunk {step}");
+                }
+            }
+        }
+    }
+}

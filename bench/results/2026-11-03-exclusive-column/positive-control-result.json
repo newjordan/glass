@@ -1,0 +1,6 @@
+{
+  "schema": "glass.row-wrap-positive-control/v1",
+  "exit": 101,
+  "expected_assertion_seen": true,
+  "mutant_sha256": "5f768570ac159ece81a563936dc37adc9f3e6e73e39fe1ad881da5227c02078c"
+}

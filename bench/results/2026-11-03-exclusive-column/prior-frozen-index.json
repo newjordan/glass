@@ -1,0 +1,13 @@
+{
+  "schema": "glass.historical-evidence-index/v1",
+  "manifests": [
+    {
+      "path": "bench/results/2026-11-03-role-partition/evidence-sha256.json",
+      "sha256": "b6fc3f92c51d48478872282b45ea32fd3f289f831c6446fde933f23bb771b014",
+      "source_root": ".",
+      "snapshots": {
+        "crates/term/src/speed.rs": "bench/results/2026-11-03-exclusive-column/control-speed.rs"
+      }
+    }
+  ]
+}

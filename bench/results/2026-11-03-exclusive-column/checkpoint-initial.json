@@ -1,0 +1,34 @@
+{
+  "schema": "glass.exclusive-column-checkpoint/v1",
+  "engine_pairs": 11,
+  "engine_runs": 22,
+  "engine_screen_cleared": false,
+  "runtime_promotion": false,
+  "unchanged_rust_sources": 119,
+  "regression_only_rust_sources": 1,
+  "unchanged_prior_artifacts": 5826,
+  "selected_binary_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "terminal_tests": 380,
+  "ignored_terminal_tests": 11,
+  "python_tests": 49,
+  "reported_parser_sweep_streams": 12800,
+  "report_corruptions_rejected": 9,
+  "regression_runs": [
+    {
+      "binary": "glass-i20-control-test",
+      "exit": 0
+    },
+    {
+      "binary": "glass-i20-candidate-test",
+      "exit": 0
+    },
+    {
+      "binary": "glass-i20-mutant-test",
+      "exit": 101
+    }
+  ],
+  "historical_file_references": 535,
+  "historical_source_snapshots": 1,
+  "canonical_evidence_unchanged": true,
+  "note": "Integrity and executable local correctness checkpoint, not a timing rerun, statistical effect proof, runtime promotion or championship acceptance."
+}

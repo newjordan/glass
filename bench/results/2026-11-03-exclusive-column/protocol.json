@@ -1,0 +1,23 @@
+{
+  "schema": "glass.exclusive-column-protocol/v1",
+  "hypothesis": "Keep put_row internal cursor one past last committed cell; normalize pending wrap only on exit. Preserve widths, marks fallback, UTF8 validation, underlying guards and REP. No runtime policy or workload change.",
+  "engine": {
+    "pairs": 11,
+    "scale": 2,
+    "rounds": 5,
+    "order": "AB/BA alternating",
+    "screen": "Unicode paired CPU-throughput median >=1.02 with wins>losses and six-workload Holm p<.05; all six paired medians >=.98. Diagnostic only; no engine-only promotion."
+  },
+  "follow_on": {
+    "rounds": 30,
+    "arms": [
+      "candidate",
+      "fresh-control",
+      "ghostty"
+    ],
+    "orders": "all six permutations cycling",
+    "gate": "If engine screen clears, freeze exact terminal binary identities before real-PTY series. Require simultaneous one-sided alpha=.05/6 order-statistic median lower bounds candidate/control >.98 ASCII and all other controls, >1.03 Unicode. All six candidate/Ghostty paired medians >1 and Holm-corrected six-workload sign p<.05 with positive direction. If primary fails stop, no rescue replication. If passes separately frozen replication required. Other user-facing metrics still unbound."
+  },
+  "stop": "If engine screen fails, restore engine.rs and exact selected terminal executable remains unchanged; retain independent parser boundary regression and source patch. No search over variants in this series.",
+  "limits": "Shared host; no governors, host pinning, other job termination, filtering, pooling with prior runs, or benchmarking concurrently with own builds. iid signs not established by alternation. A failed promotion criterion does not establish no effect."
+}

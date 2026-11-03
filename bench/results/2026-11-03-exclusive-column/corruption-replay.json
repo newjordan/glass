@@ -1,0 +1,52 @@
+{
+  "schema": "glass.exclusive-column-corruption/v1",
+  "cases": [
+    {
+      "case": "truncated_pairs",
+      "rejected": true,
+      "reason": "unexpected pair count"
+    },
+    {
+      "case": "summary_ratio",
+      "rejected": true,
+      "reason": "summary mismatch or incomplete report"
+    },
+    {
+      "case": "parsed_without_raw",
+      "rejected": true,
+      "reason": "raw/parsed mismatch: 0/candidate"
+    },
+    {
+      "case": "duplicate_row",
+      "rejected": true,
+      "reason": "missing/duplicate rows: 0/candidate"
+    },
+    {
+      "case": "wrong_order",
+      "rejected": true,
+      "reason": "wrong order: pair 0"
+    },
+    {
+      "case": "changed_binary_hash",
+      "rejected": true,
+      "reason": "changed binary: candidate"
+    },
+    {
+      "case": "nonzero_exit",
+      "rejected": true,
+      "reason": "nonzero exit: 0/candidate"
+    },
+    {
+      "case": "workload_shape",
+      "rejected": true,
+      "reason": "raw/parsed mismatch: 0/candidate"
+    },
+    {
+      "case": "duplicate_json_key",
+      "rejected": true,
+      "reason": "duplicate JSON key: pairs"
+    }
+  ],
+  "report_sha256": "ae92af878e03462348ec6b4a0f500af922597b2f0b54041bebfca658c389f229",
+  "canonical_report_unchanged": true
+}

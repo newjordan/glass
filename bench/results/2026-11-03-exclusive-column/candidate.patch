@@ -1,0 +1,57 @@
+diff --git i/crates/term/src/engine.rs w/crates/term/src/engine.rs
+index 4987a85..516d3da 100644
+--- i/crates/term/src/engine.rs
++++ w/crates/term/src/engine.rs
+@@ -1896,7 +1896,6 @@ impl Watch<'_> {
+         let mut column = grid.cursor.point.column.0;
+         let (fg, bg, flags) = (grid.cursor.template.fg, grid.cursor.template.bg, grid.cursor.template.flags);
+         let underneath = CellFlags::WIDE_CHAR | CellFlags::WIDE_CHAR_SPACER;
+-        let mut wrap = false;
+         let mut written = 0;
+         let row = &mut grid[line];
+         // This run's writes all land at or past `column` through the
+@@ -1979,8 +1978,7 @@ impl Watch<'_> {
+                 // `guard_from` (above it the observable cell is the
+                 // blank, which carries no wide flags).
+                 let at_col = column - start_column;
+-                if wrap
+-                    || column + width > columns
++                if column + width > columns
+                     || (column < guard_from
+                         && (cells[at_col].flags.intersects(underneath)
+                             || (width == 2
+@@ -2003,27 +2001,23 @@ impl Watch<'_> {
+                     span_clean = false;
+                     cells[at_col + 1] = spacer.clone();
+                 }
+-                occ_to = column + width;
+-                let end = column + width - 1;
+-                if end + 1 < columns {
+-                    column = end + 1;
+-                } else {
+-                    column = end;
+-                    wrap = true;
+-                }
++                // Use an exclusive end inside the lane, even on a full
++                // row. Normalize to the final-cell cursor only on exit.
++                column += width;
++                occ_to = column;
+                 written += 1;
+             }
+             held = Some((c, at));
+             at += len;
+         }
++        let wrap = column == columns;
+         if occ_to > start_column {
+             row.occ_bump(occ_to - 1);
+         }
+         if span_clean && written >= 8 {
+-            let end = if wrap { column + 1 } else { column };
+-            note_uniform_span(row, span_start, end, &narrow);
++            note_uniform_span(row, span_start, column, &narrow);
+         }
+-        grid.cursor.point.column = Column(column);
++        grid.cursor.point.column = Column(column - usize::from(wrap));
+         grid.cursor.input_needs_wrap = wrap;
+         self.drained += written;
+         (at, held)

@@ -613,3 +613,28 @@ orders; separate six-workload secondary families do not rescue failed primary
 analyses. Run-to-run stability, controlled load and full competitor/startup/
 key-to-screen gates remain necessary. Do not rerun capture/fault harnesses into
 frozen output directories. No new Ghostty sessions or world-title claim.
+
+
+### Exclusive-column row lane and pending-wrap oracle (2026-11-03)
+
+The [iteration-20 bundle](results/2026-11-03-exclusive-column/README.md) freezes
+11 fresh control/candidate engine pairs and rejects an internal cursor
+representation rewrite. Unicode paired CPU-throughput is 0.979261, 3/11 wins:
+not the prospective >=1.02 target; no full terminal candidate gate was run.
+Only the new parser-differential boundary regression remains. A built mutation
+that loses pending wrap fails that test semantically; source is restored.
+
+```sh
+D=bench/results/2026-11-03-exclusive-column
+python3 -B "$D/verify.py"
+python3 -B "$D/analyze.py"
+python3 -B "$D/check-corruption.py"
+python3 -B bench/replay-evidence-index.py "$D/prior-frozen-index.json"
+python3 -B bench/replay-evidence-index.py "$D/frozen-index.json"
+cargo test --release -p glass-term --locked speed::unicode_row_edges_preserve_pending_wrap -- --exact --nocapture
+```
+
+Replay requires the exact retained test executables and checks their hashes;
+correctness re-execution is not a timing rerun. Nine corruptions reject. The
+new prior index binds the old `speed.rs` hash to an exact pre-edit snapshot;
+it does not edit or weaken old manifests. No new competitive/runtime gain.

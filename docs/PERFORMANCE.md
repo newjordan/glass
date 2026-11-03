@@ -656,3 +656,25 @@ worthwhile-benefit and regression bounds, then fresh complete competitor,
 startup, real key-to-screen and correctness gates. The all-metric goal remains
 open. Full numbers, exclusions, assumptions and read-only commands are in the
 [report](../reports/research-1eecf9876bb302e9da10ff629e71e6d8-18.txt).
+
+
+### Exclusive-column Unicode lane screen (2026-11-03)
+
+A separate prospective 11-pair engine diagnostic changed only `put_row`'s
+internal cursor representation to one-past-the-last-written cell. Unicode
+candidate/control CPU-throughput was **0.979261** (3/11 wins, six-workload Holm
+p=1), failing the >=1.02 target and .98 point-regression guard. The runtime
+change is rejected/restored; no terminal candidate/competitor run followed.
+This is not a statistically proven slowdown, equivalence result or new
+Ghostty score. Alternating launch orders do not establish independent signs.
+
+The retained change is a pending-wrap parser-differential regression. A built
+mutant that drops pending wrap fails on actual cells at 154x39/chunk 155; both
+correct executables pass. Restored verification: 380 terminal tests (11 ignored),
+12,800 differential streams, 49 Python tests, nine evidence-corruption rejections
+and 535 historical file references. Production source and selected executable
+are unchanged; only test source evolves, with one explicit historical snapshot
+for old evidence. All 5,826 tracked prior result/report files remain unchanged.
+See the [full report](../reports/research-1eecf9876bb302e9da10ff629e71e6d8-20.txt)
+and [replay commands](../bench/results/2026-11-03-exclusive-column/README.md).
+The every-metric/world-title objective remains open.
