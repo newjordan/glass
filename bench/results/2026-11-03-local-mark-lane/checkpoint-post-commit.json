@@ -1,0 +1,43 @@
+{
+  "census": {
+    "bytes": 33554476,
+    "fallback": 17455,
+    "local": 490113,
+    "marks": 507568
+  },
+  "championship_established": false,
+  "cpu_ratios": {
+    "ascii": 1.1381008780078306,
+    "cursor_motion": 0.9809082184383717,
+    "scroll_region": 1.0144631614782793,
+    "truecolor": 1.0213979398151924,
+    "tui_frames": 0.9876521410539478,
+    "unicode": 1.0257873066327168
+  },
+  "differential_streams_per_arm": 12800,
+  "engine_screen_cleared": false,
+  "frozen_file_references": 65,
+  "mark_scenarios_per_arm": 1728,
+  "note": "Local evidence integrity and exact-source replay, not fresh timing, causal attribution, Ghostty comparison or championship acceptance.",
+  "pairs": 12,
+  "print_utf8": {
+    "candidate": {
+      "address": "0x262620",
+      "bytes": 9905,
+      "instructions": 2293
+    },
+    "control": {
+      "address": "0x2625a0",
+      "bytes": 8524,
+      "instructions": 1967
+    }
+  },
+  "runtime_promotion": false,
+  "schema": "glass.local-mark-lane-checkpoint/v1",
+  "selected_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "sessions": 24,
+  "status": "reported",
+  "terminal_tests_per_arm": 384,
+  "unchanged_prior_evidence_files": 6697,
+  "unchanged_rust_sources": 290
+}

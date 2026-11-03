@@ -1,0 +1,15 @@
+{
+  "schema": "glass.local-mark-lane-post-commit/v1",
+  "commit": "dcb33dc9fb729db5825fd0c574287238cfea4dee",
+  "checkpoint_matches": true,
+  "frozen_replay_matches": true,
+  "file_references": 142,
+  "sha256": {
+    "bench/results/2026-11-03-local-mark-lane/checkpoint-post-commit.json": "2cf3ecf3a808cce3679bd7ed284d33db851df871b30f781268a065feb3774626",
+    "bench/results/2026-11-03-local-mark-lane/checkpoint-post-commit.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bench/results/2026-11-03-local-mark-lane/frozen-replay-post-commit.json": "7cea4a5995462318b2b6b936370d189312fae70739be81c9e26a9366da222d7f",
+    "bench/results/2026-11-03-local-mark-lane/complete-frozen-replay.json": "7cea4a5995462318b2b6b936370d189312fae70739be81c9e26a9366da222d7f",
+    "bench/results/2026-11-03-local-mark-lane/scoped-whitespace.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "note": "Stored-data replay and byte preservation, not fresh timings or championship acceptance."
+}
