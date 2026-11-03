@@ -1,0 +1,36 @@
+[
+  {
+    "label": "established",
+    "args": [
+      "--exact",
+      "intake::position_tests::a_reflow_keeps_a_picture_on_the_same_text"
+    ],
+    "settings": {},
+    "exit": 0,
+    "log": "candidate-v2-established.log",
+    "sha256": "fb0bf01199ea773087f7f6871aaeb9cc4cdfc7dd93942159a958bd24c0ba4e26"
+  },
+  {
+    "label": "terminal",
+    "args": [],
+    "settings": {},
+    "exit": 101,
+    "log": "candidate-v2-terminal.log",
+    "sha256": "cee5aad41a397b3d23be3406876b60b4d82a6163def2c440805fb79d605a8741"
+  },
+  {
+    "label": "deletion",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "0"
+    },
+    "exit": 0,
+    "log": "candidate-v2-deletion.log",
+    "sha256": "d86c5e12af8864fcff0f94a629e65057f1c7507e623f4277124dcc2627f6f748"
+  }
+]

@@ -1,0 +1,26 @@
+
+running 1 test
+test intake::position_tests::a_reflow_keeps_a_picture_on_the_same_text ... FAILED
+
+failures:
+
+---- intake::position_tests::a_reflow_keeps_a_picture_on_the_same_text stdout ----
+
+thread 'intake::position_tests::a_reflow_keeps_a_picture_on_the_same_text' (189567) panicked at crates/term/src/intake/position_tests.rs:82:5:
+assertion `left == right` failed
+  left: 0
+ right: 1
+stack backtrace:
+   0: __rustc::rust_begin_unwind
+   1: core::panicking::panic_fmt
+   2: core::panicking::assert_failed_inner
+   3: core::panicking::assert_failed::<usize, usize>
+   4: <glass::intake::position_tests::a_reflow_keeps_a_picture_on_the_same_text::{closure#0} as core::ops::function::FnOnce<()>>::call_once
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+
+
+failures:
+    intake::position_tests::a_reflow_keeps_a_picture_on_the_same_text
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 410 filtered out; finished in 0.00s
+

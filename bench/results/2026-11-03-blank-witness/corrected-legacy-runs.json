@@ -1,0 +1,182 @@
+[
+  {
+    "capacity": 0,
+    "test": "height_snapshot_marker_picture_matrix",
+    "argv": [
+      "/tmp/glass-i39-witness-v4",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "exit": 0,
+    "log": "witness-height_snapshot_marker_picture_matrix-0.log",
+    "log_sha256": "234ef0c067c875054131f5fecedd32d9314fd6b99698e2a7f7d9306f491a9d67",
+    "binary_sha256": "343ae7b91db783c1850c11eecf9d7cee2e3ca7482a6656bba9e12a647e13199c"
+  },
+  {
+    "capacity": 0,
+    "test": "mixed_snapshot_marker_picture_matrix",
+    "argv": [
+      "/tmp/glass-i39-witness-v4",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "exit": 0,
+    "log": "witness-mixed_snapshot_marker_picture_matrix-0.log",
+    "log_sha256": "cbb6914b3017a52ecb2b483c29e466fe3ebd92196de1b2903b318d314f9e3c43",
+    "binary_sha256": "343ae7b91db783c1850c11eecf9d7cee2e3ca7482a6656bba9e12a647e13199c"
+  },
+  {
+    "capacity": 1,
+    "test": "height_snapshot_marker_picture_matrix",
+    "argv": [
+      "/tmp/glass-i39-witness-v4",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "exit": 0,
+    "log": "witness-height_snapshot_marker_picture_matrix-1.log",
+    "log_sha256": "f2e4884364c6bce6c393f50233419ddb19ba1f6201999635db00d57fed11a578",
+    "binary_sha256": "343ae7b91db783c1850c11eecf9d7cee2e3ca7482a6656bba9e12a647e13199c"
+  },
+  {
+    "capacity": 1,
+    "test": "mixed_snapshot_marker_picture_matrix",
+    "argv": [
+      "/tmp/glass-i39-witness-v4",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "exit": 0,
+    "log": "witness-mixed_snapshot_marker_picture_matrix-1.log",
+    "log_sha256": "d60bf8300bf0a19bf4326f6ddd25240912974892e85a32128e191ec37c11528a",
+    "binary_sha256": "343ae7b91db783c1850c11eecf9d7cee2e3ca7482a6656bba9e12a647e13199c"
+  },
+  {
+    "capacity": 2,
+    "test": "height_snapshot_marker_picture_matrix",
+    "argv": [
+      "/tmp/glass-i39-witness-v4",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "exit": 0,
+    "log": "witness-height_snapshot_marker_picture_matrix-2.log",
+    "log_sha256": "03528be4e0a7da4b1f0a29a54aabe8cc15c32306bfef8870f55dd89624a93317",
+    "binary_sha256": "343ae7b91db783c1850c11eecf9d7cee2e3ca7482a6656bba9e12a647e13199c"
+  },
+  {
+    "capacity": 2,
+    "test": "mixed_snapshot_marker_picture_matrix",
+    "argv": [
+      "/tmp/glass-i39-witness-v4",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "exit": 0,
+    "log": "witness-mixed_snapshot_marker_picture_matrix-2.log",
+    "log_sha256": "2ec127c34211aeaf23b9d18b1161579c4038bf7da5b7697319832f929611ee12",
+    "binary_sha256": "343ae7b91db783c1850c11eecf9d7cee2e3ca7482a6656bba9e12a647e13199c"
+  },
+  {
+    "capacity": 8,
+    "test": "height_snapshot_marker_picture_matrix",
+    "argv": [
+      "/tmp/glass-i39-witness-v4",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "exit": 0,
+    "log": "witness-height_snapshot_marker_picture_matrix-8.log",
+    "log_sha256": "5e1e4a1216a6e77fa3fa3801130b77db19af71cbf6ded5d6eaea427f56d918a9",
+    "binary_sha256": "343ae7b91db783c1850c11eecf9d7cee2e3ca7482a6656bba9e12a647e13199c"
+  },
+  {
+    "capacity": 8,
+    "test": "mixed_snapshot_marker_picture_matrix",
+    "argv": [
+      "/tmp/glass-i39-witness-v4",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "exit": 0,
+    "log": "witness-mixed_snapshot_marker_picture_matrix-8.log",
+    "log_sha256": "993aa082b460338c40e549ae6e41de018bea3cbcfe959b35926a56c514958882",
+    "binary_sha256": "343ae7b91db783c1850c11eecf9d7cee2e3ca7482a6656bba9e12a647e13199c"
+  },
+  {
+    "capacity": 32,
+    "test": "height_snapshot_marker_picture_matrix",
+    "argv": [
+      "/tmp/glass-i39-witness-v4",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "exit": 0,
+    "log": "witness-height_snapshot_marker_picture_matrix-32.log",
+    "log_sha256": "1db67227b2e8ed91b789a8d3448f905748f841940fdbb669090c551672c77f56",
+    "binary_sha256": "343ae7b91db783c1850c11eecf9d7cee2e3ca7482a6656bba9e12a647e13199c"
+  },
+  {
+    "capacity": 32,
+    "test": "mixed_snapshot_marker_picture_matrix",
+    "argv": [
+      "/tmp/glass-i39-witness-v4",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "exit": 0,
+    "log": "witness-mixed_snapshot_marker_picture_matrix-32.log",
+    "log_sha256": "5110302f1236b935e870c7cc437ed86aa550810f79ac4080cd81857ea9c93efe",
+    "binary_sha256": "343ae7b91db783c1850c11eecf9d7cee2e3ca7482a6656bba9e12a647e13199c"
+  },
+  {
+    "capacity": 10000,
+    "test": "height_snapshot_marker_picture_matrix",
+    "argv": [
+      "/tmp/glass-i39-witness-v4",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "exit": 0,
+    "log": "witness-height_snapshot_marker_picture_matrix-10000.log",
+    "log_sha256": "c3df3b8244193b8de6f514586ee1e1ce4dcbf706e968e8474fb91cf4acd30a7b",
+    "binary_sha256": "343ae7b91db783c1850c11eecf9d7cee2e3ca7482a6656bba9e12a647e13199c"
+  },
+  {
+    "capacity": 10000,
+    "test": "mixed_snapshot_marker_picture_matrix",
+    "argv": [
+      "/tmp/glass-i39-witness-v4",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "exit": 0,
+    "log": "witness-mixed_snapshot_marker_picture_matrix-10000.log",
+    "log_sha256": "5110302f1236b935e870c7cc437ed86aa550810f79ac4080cd81857ea9c93efe",
+    "binary_sha256": "343ae7b91db783c1850c11eecf9d7cee2e3ca7482a6656bba9e12a647e13199c"
+  }
+]

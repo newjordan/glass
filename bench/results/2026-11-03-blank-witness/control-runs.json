@@ -1,0 +1,182 @@
+[
+  {
+    "capacity": 0,
+    "test": "blank_witness_marker_matrix",
+    "argv": [
+      "/tmp/glass-i39-control",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "exit": 101,
+    "log": "control-blank_witness_marker_matrix-0.log",
+    "log_sha256": "91d4e27b1aff655ef5735978a7faa6e528fa060fb14c125e0606972052d2fa4f",
+    "binary_sha256": "fa439d71cc8f55cb653e08d5fe95762828f5e3961d625f3dbf84243780d7ca9d"
+  },
+  {
+    "capacity": 0,
+    "test": "blank_witness_deleted_line_matrix",
+    "argv": [
+      "/tmp/glass-i39-control",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "exit": 101,
+    "log": "control-blank_witness_deleted_line_matrix-0.log",
+    "log_sha256": "162a8b62fe7bd885c929d58a3690c1e6e6afab547e5f909b72c02b49bf6103ad",
+    "binary_sha256": "fa439d71cc8f55cb653e08d5fe95762828f5e3961d625f3dbf84243780d7ca9d"
+  },
+  {
+    "capacity": 1,
+    "test": "blank_witness_marker_matrix",
+    "argv": [
+      "/tmp/glass-i39-control",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "exit": 101,
+    "log": "control-blank_witness_marker_matrix-1.log",
+    "log_sha256": "156377171aff3acf072cd962cd7aa75a2ccda04bae8468e1f9ddaf32c4c88aba",
+    "binary_sha256": "fa439d71cc8f55cb653e08d5fe95762828f5e3961d625f3dbf84243780d7ca9d"
+  },
+  {
+    "capacity": 1,
+    "test": "blank_witness_deleted_line_matrix",
+    "argv": [
+      "/tmp/glass-i39-control",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "exit": 101,
+    "log": "control-blank_witness_deleted_line_matrix-1.log",
+    "log_sha256": "17a9f2e52fb312d96875ff2d6b0d8e2be675909ffaf75f2e04a0ca6165481a57",
+    "binary_sha256": "fa439d71cc8f55cb653e08d5fe95762828f5e3961d625f3dbf84243780d7ca9d"
+  },
+  {
+    "capacity": 2,
+    "test": "blank_witness_marker_matrix",
+    "argv": [
+      "/tmp/glass-i39-control",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "exit": 101,
+    "log": "control-blank_witness_marker_matrix-2.log",
+    "log_sha256": "4eb19d916d24209e03a36ac08c163b1f83fdbba17be05038667a8c587ec5f69e",
+    "binary_sha256": "fa439d71cc8f55cb653e08d5fe95762828f5e3961d625f3dbf84243780d7ca9d"
+  },
+  {
+    "capacity": 2,
+    "test": "blank_witness_deleted_line_matrix",
+    "argv": [
+      "/tmp/glass-i39-control",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "exit": 101,
+    "log": "control-blank_witness_deleted_line_matrix-2.log",
+    "log_sha256": "b6a1ec18f658891fc0b6d3e480bc118841a51bf546ebb3ead592392e623eb6f4",
+    "binary_sha256": "fa439d71cc8f55cb653e08d5fe95762828f5e3961d625f3dbf84243780d7ca9d"
+  },
+  {
+    "capacity": 8,
+    "test": "blank_witness_marker_matrix",
+    "argv": [
+      "/tmp/glass-i39-control",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "exit": 101,
+    "log": "control-blank_witness_marker_matrix-8.log",
+    "log_sha256": "b6e2ba65596dd1a94ede4d945d846c368634dc38f3d88a43aafaf68454039f85",
+    "binary_sha256": "fa439d71cc8f55cb653e08d5fe95762828f5e3961d625f3dbf84243780d7ca9d"
+  },
+  {
+    "capacity": 8,
+    "test": "blank_witness_deleted_line_matrix",
+    "argv": [
+      "/tmp/glass-i39-control",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "exit": 101,
+    "log": "control-blank_witness_deleted_line_matrix-8.log",
+    "log_sha256": "369dcdccd8847f136968bd3b227e9798f929145f1a3904278b2ad8f399b9ae01",
+    "binary_sha256": "fa439d71cc8f55cb653e08d5fe95762828f5e3961d625f3dbf84243780d7ca9d"
+  },
+  {
+    "capacity": 32,
+    "test": "blank_witness_marker_matrix",
+    "argv": [
+      "/tmp/glass-i39-control",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "exit": 101,
+    "log": "control-blank_witness_marker_matrix-32.log",
+    "log_sha256": "5af1587c471ebb2200780458223bfcd5133d079ca2c4705a91d5b745173907cf",
+    "binary_sha256": "fa439d71cc8f55cb653e08d5fe95762828f5e3961d625f3dbf84243780d7ca9d"
+  },
+  {
+    "capacity": 32,
+    "test": "blank_witness_deleted_line_matrix",
+    "argv": [
+      "/tmp/glass-i39-control",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "exit": 101,
+    "log": "control-blank_witness_deleted_line_matrix-32.log",
+    "log_sha256": "7f087cbd63b6611fee103bfa852bc7fa773330b677810bf145bd6ad102946c2c",
+    "binary_sha256": "fa439d71cc8f55cb653e08d5fe95762828f5e3961d625f3dbf84243780d7ca9d"
+  },
+  {
+    "capacity": 10000,
+    "test": "blank_witness_marker_matrix",
+    "argv": [
+      "/tmp/glass-i39-control",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "exit": 101,
+    "log": "control-blank_witness_marker_matrix-10000.log",
+    "log_sha256": "3092be4b15d1123148b49cdf4d68cd2668525baa677401a28e16aa5d32314745",
+    "binary_sha256": "fa439d71cc8f55cb653e08d5fe95762828f5e3961d625f3dbf84243780d7ca9d"
+  },
+  {
+    "capacity": 10000,
+    "test": "blank_witness_deleted_line_matrix",
+    "argv": [
+      "/tmp/glass-i39-control",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "exit": 101,
+    "log": "control-blank_witness_deleted_line_matrix-10000.log",
+    "log_sha256": "199e7def39a4ec951bddcde0655b1b8752e805fbf7201f17f7730c9a1f3b9467",
+    "binary_sha256": "fa439d71cc8f55cb653e08d5fe95762828f5e3961d625f3dbf84243780d7ca9d"
+  }
+]

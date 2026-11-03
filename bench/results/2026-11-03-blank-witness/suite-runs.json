@@ -1,0 +1,164 @@
+[
+  {
+    "arm": "control",
+    "label": "terminal",
+    "argv": [
+      "/tmp/glass-i39-control"
+    ],
+    "exit": 101,
+    "log": "control-final-terminal.log",
+    "log_sha256": "0cfc4ec2c749b595593b49b9f7093e1fe67b116c4ab288aee30f6888049fc9e3",
+    "binary_sha256": "fa439d71cc8f55cb653e08d5fe95762828f5e3961d625f3dbf84243780d7ca9d"
+  },
+  {
+    "arm": "control",
+    "label": "sweep",
+    "argv": [
+      "/tmp/glass-i39-control",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "speed::differential_sweep"
+    ],
+    "exit": 0,
+    "log": "control-final-sweep.log",
+    "log_sha256": "c6f0212864b042b47115be64697fbb80a2750e9910d504b9eaeddf80c4d281ed",
+    "binary_sha256": "fa439d71cc8f55cb653e08d5fe95762828f5e3961d625f3dbf84243780d7ca9d"
+  },
+  {
+    "arm": "control",
+    "label": "established",
+    "argv": [
+      "/tmp/glass-i39-control",
+      "--exact",
+      "intake::position_tests::a_reflow_keeps_a_picture_on_the_same_text"
+    ],
+    "exit": 101,
+    "log": "control-final-established.log",
+    "log_sha256": "2a75c459e1b735922598c6966fa1fe3b5753ce7f8ac1739ea8f6fa4d9ad38b8e",
+    "binary_sha256": "fa439d71cc8f55cb653e08d5fe95762828f5e3961d625f3dbf84243780d7ca9d"
+  },
+  {
+    "arm": "control",
+    "label": "indistinguishable",
+    "argv": [
+      "/tmp/glass-i39-control",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_indistinguishable_histories"
+    ],
+    "exit": 0,
+    "log": "control-final-indistinguishable.log",
+    "log_sha256": "8cdc080c1ae2ca791959dd57de932594d9b425e5ebd0332c117f23569079bb36",
+    "binary_sha256": "fa439d71cc8f55cb653e08d5fe95762828f5e3961d625f3dbf84243780d7ca9d"
+  },
+  {
+    "arm": "physical",
+    "label": "terminal",
+    "argv": [
+      "/tmp/glass-i39-physical"
+    ],
+    "exit": 101,
+    "log": "physical-final-terminal.log",
+    "log_sha256": "3a10e2f696be9a709fa09de21f2eb440f309d6ab321ec19b6a636199e4c028e5",
+    "binary_sha256": "f6fe70901ced2c624a7ab65d452f099cdca44a2c077c92d0095d06c0f4e9d50b"
+  },
+  {
+    "arm": "physical",
+    "label": "sweep",
+    "argv": [
+      "/tmp/glass-i39-physical",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "speed::differential_sweep"
+    ],
+    "exit": 0,
+    "log": "physical-final-sweep.log",
+    "log_sha256": "453d813fab1ac158619b79285e4ffe38260f027822909008aa02c0dbc655b59d",
+    "binary_sha256": "f6fe70901ced2c624a7ab65d452f099cdca44a2c077c92d0095d06c0f4e9d50b"
+  },
+  {
+    "arm": "physical",
+    "label": "established",
+    "argv": [
+      "/tmp/glass-i39-physical",
+      "--exact",
+      "intake::position_tests::a_reflow_keeps_a_picture_on_the_same_text"
+    ],
+    "exit": 101,
+    "log": "physical-final-established.log",
+    "log_sha256": "d4a78104ba2a9d04f07732b63767c4dfed8b37f8835d06c5d5a24e225bf3a799",
+    "binary_sha256": "f6fe70901ced2c624a7ab65d452f099cdca44a2c077c92d0095d06c0f4e9d50b"
+  },
+  {
+    "arm": "physical",
+    "label": "indistinguishable",
+    "argv": [
+      "/tmp/glass-i39-physical",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_indistinguishable_histories"
+    ],
+    "exit": 101,
+    "log": "physical-final-indistinguishable.log",
+    "log_sha256": "c83dc901c3539ad73c9e55e68459cdec28313dd3efddb7a68fe92d51f11c6aca",
+    "binary_sha256": "f6fe70901ced2c624a7ab65d452f099cdca44a2c077c92d0095d06c0f4e9d50b"
+  },
+  {
+    "arm": "witness",
+    "label": "terminal",
+    "argv": [
+      "/tmp/glass-i39-witness-v4"
+    ],
+    "exit": 101,
+    "log": "witness-final-terminal.log",
+    "log_sha256": "3be7c8cb25e7be3338b6c983a05ab30c219ae9e7cd40412876eca6552abecee6",
+    "binary_sha256": "343ae7b91db783c1850c11eecf9d7cee2e3ca7482a6656bba9e12a647e13199c"
+  },
+  {
+    "arm": "witness",
+    "label": "sweep",
+    "argv": [
+      "/tmp/glass-i39-witness-v4",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "speed::differential_sweep"
+    ],
+    "exit": 0,
+    "log": "witness-final-sweep.log",
+    "log_sha256": "453d813fab1ac158619b79285e4ffe38260f027822909008aa02c0dbc655b59d",
+    "binary_sha256": "343ae7b91db783c1850c11eecf9d7cee2e3ca7482a6656bba9e12a647e13199c"
+  },
+  {
+    "arm": "witness",
+    "label": "established",
+    "argv": [
+      "/tmp/glass-i39-witness-v4",
+      "--exact",
+      "intake::position_tests::a_reflow_keeps_a_picture_on_the_same_text"
+    ],
+    "exit": 0,
+    "log": "witness-final-established.log",
+    "log_sha256": "bb5035bba59ba08c597f290dbcb04683b1653d96444badc3266ba9d907d9dbc6",
+    "binary_sha256": "343ae7b91db783c1850c11eecf9d7cee2e3ca7482a6656bba9e12a647e13199c"
+  },
+  {
+    "arm": "witness",
+    "label": "indistinguishable",
+    "argv": [
+      "/tmp/glass-i39-witness-v4",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_indistinguishable_histories"
+    ],
+    "exit": 0,
+    "log": "witness-final-indistinguishable.log",
+    "log_sha256": "2246e370464df9ad8f9f0ca35c0bf4071b2345e21b596b1ba7130becca60e6d2",
+    "binary_sha256": "343ae7b91db783c1850c11eecf9d7cee2e3ca7482a6656bba9e12a647e13199c"
+  }
+]

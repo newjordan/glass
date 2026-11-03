@@ -1,0 +1,70 @@
+Blank-slot witness bounds and inactive-primary ghost picture — iteration 39
+2026-11-03. Local correctness research, not an external ranking or speed result.
+
+New experiment rescues trimmed trailing blank cells with a surviving nonempty
+origin on their OWN old unwrapped physical row. It extends the prior guarded
+physical mapper in one runtime source. Real picture intake and actual glyph
+positions provide a marker-relative oracle. Shipping executable never replaced.
+
+Observed across capacities 0/1/2/8/32/10000, both parser lanes and primary modes:
+221,184 slot observations per arm. Shipping fails 45,880; guarded physical fails
+32,224; witness fails 10,584. A stricter no-resurrection lens has 168,296 observations
+with glyph/slot continuously in bounds, failing 42,984 / 29,496 / 7,856 respectively.
+These are finite correlated configurations, not statistical independence or proof.
+6,912 deletion configurations execute, including 1,632 where own glyph vanished
+but unrelated glyph survives: shipping retains 320 ghost pictures, both experimental
+arms retain zero. Absent-glyph observations are not evidence of successful mapping.
+
+Minimal new shipping defect: four 10-col rows, row 3 overwritten with M, tail
+cleared, picture (3,1), W at (0,0), cursor (0,0), resize 2x14 with history=0.
+M is gone and W survives in both primary modes. Active primary drops picture,
+base=0; alternate-active primary retains stale picture at (1,1), base=2. Both
+parser lanes reproduce this through actual picture intake. Four exact assertions
+and complete text captures retained in control-v5-ghost.log.
+
+Minimal identity-collapse proof in candidate: one history attaches to M's blank
+slot at (0,3), another to next hard row (1,0), cursor (0,0). On 4x10 -> 2x3 both
+have identical text and picture (1,0). Next 4x10 Reflow including exact destination
+array is exactly equal, yielding (1,0) for both, not original M slot (0,3). Runtime
+asserts equality of both intermediate text and coordinates, complete next mapper
+inputs, and final text/coordinates. Equal inputs cannot restore the two distinct
+original-slot contracts. This is bounded to the existing stateless mapper API,
+not an impossibility claim about persistent stateful anchor designs.
+
+Witness clears 6,144 width-only observations and established MARK blank-slot test.
+It also passes 124,416 Unicode nonblank, 56,160 height-only, 20,736 mixed nonblank
+observations. Default-history suite: 389 pass, three failures of existing shipping
+bug characterizations, 19 ignored. Reject promotion: independent blank-slot
+counterexamples remain even after excluding all out-of-bounds lifetime histories.
+
+Restored exact shipping runtime sources: 392 Rust tests pass, 14 ignored; 12,800
+streams over 64 seeds pass. Each experiment arm also passes 12,800 streams. Five
+Python tests reject 36 record corruptions, 7 coordinate type/shape violations,
+and duplicate JSON keys. Previous iteration checkpoint unchanged; all earlier
+tracked evidence preserved except explicit append-only research documentation.
+
+Retained mistakes: two legacy matrix filters and one sweep filter initially run
+zero tests (never counted as passing evidence); suite with history=0 violates
+existing test assumptions (23 failures retained); corrected suite history=10000.
+Verifier used wrong build-identity field then missed exact candidate storage
+snapshot lookup; corrected without changing runtime results. Python mutation
+counter said 21 rather than 20; original failure and test source retained.
+
+Evidence and read-only replay:
+  bench/results/2026-11-03-blank-witness/README.md
+  python3 -B bench/results/2026-11-03-blank-witness/verify.py
+  python3 -B bench/results/2026-11-03-blank-witness/test-verify.py
+  python3 -B bench/replay-evidence-index.py \
+    bench/results/2026-11-03-blank-witness/final-frozen-index.json
+
+No Ghostty measurement, latency, throughput, memory or world-champion claim.
+Next prerequisite is persistent logical-anchor provenance and an own-line deletion
+policy (or explicit contract revision), not another stateless matching fallback.
+
+Historical replay detail: appending research notes invalidated the previous
+checker’s live document seals. That failure is retained. The current checker
+maps ONLY its three explicitly sealed old document names to their retained
+pre-iteration snapshots; no runtime/raw-evidence lookup is redirected, and
+current document bytes remain independently sealed. Final independent replay
+covers 1,197 file references / 1,187 source versions in eight manifests. These
+are byte-integrity checks, not measurement truth or external acceptance.

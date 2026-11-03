@@ -1,0 +1,19 @@
+test_complete (__main__.Evidence.test_complete) ... ok
+test_coordinate_types (__main__.Evidence.test_coordinate_types) ... ok
+test_deletion_reject_mutations (__main__.Evidence.test_deletion_reject_mutations) ... ok
+test_duplicate_keys (__main__.Evidence.test_duplicate_keys) ... ok
+test_slots_reject_mutations (__main__.Evidence.test_slots_reject_mutations) ... FAIL
+
+======================================================================
+FAIL: test_slots_reject_mutations (__main__.Evidence.test_slots_reject_mutations)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-blank-witness/test-verify.py", line 27, in test_slots_reject_mutations
+    self.assertEqual(len(mutations),21)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+AssertionError: 20 != 21
+
+----------------------------------------------------------------------
+Ran 5 tests in 18.129s
+
+FAILED (failures=1)

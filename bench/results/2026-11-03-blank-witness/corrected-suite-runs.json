@@ -1,0 +1,110 @@
+[
+  {
+    "arm": "control",
+    "label": "terminal",
+    "argv": [
+      "/tmp/glass-i39-control"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000",
+      "GLASS_SWEEP_SEEDS": "64",
+      "GLASS_SWEEP_ROUNDS": "200"
+    },
+    "exit": 0,
+    "log": "control-corrected-terminal.log",
+    "log_sha256": "1574c5173ce911f3a59051e3d5803090128f7459f29f7da0914bf25218501094",
+    "binary_sha256": "fa439d71cc8f55cb653e08d5fe95762828f5e3961d625f3dbf84243780d7ca9d"
+  },
+  {
+    "arm": "control",
+    "label": "sweep",
+    "argv": [
+      "/tmp/glass-i39-control",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "speed::plain_runs_match_the_parser_over_seeds"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000",
+      "GLASS_SWEEP_SEEDS": "64",
+      "GLASS_SWEEP_ROUNDS": "200"
+    },
+    "exit": 0,
+    "log": "control-corrected-sweep.log",
+    "log_sha256": "d2e0a8db2ab750ac4604a1f3fcee6f9833ebcaf5377140de2c07aaebddff2b2a",
+    "binary_sha256": "fa439d71cc8f55cb653e08d5fe95762828f5e3961d625f3dbf84243780d7ca9d"
+  },
+  {
+    "arm": "physical",
+    "label": "terminal",
+    "argv": [
+      "/tmp/glass-i39-physical"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000",
+      "GLASS_SWEEP_SEEDS": "64",
+      "GLASS_SWEEP_ROUNDS": "200"
+    },
+    "exit": 101,
+    "log": "physical-corrected-terminal.log",
+    "log_sha256": "f2bfb2a253ca330cc32f215e27974f6f2238aa573e4c6ffeb562389db70477c9",
+    "binary_sha256": "f6fe70901ced2c624a7ab65d452f099cdca44a2c077c92d0095d06c0f4e9d50b"
+  },
+  {
+    "arm": "physical",
+    "label": "sweep",
+    "argv": [
+      "/tmp/glass-i39-physical",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "speed::plain_runs_match_the_parser_over_seeds"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000",
+      "GLASS_SWEEP_SEEDS": "64",
+      "GLASS_SWEEP_ROUNDS": "200"
+    },
+    "exit": 0,
+    "log": "physical-corrected-sweep.log",
+    "log_sha256": "81794aedeb240c0a3e3637fc7069ae0eab4ee1e0f317eacf05fc139d038a6e38",
+    "binary_sha256": "f6fe70901ced2c624a7ab65d452f099cdca44a2c077c92d0095d06c0f4e9d50b"
+  },
+  {
+    "arm": "witness",
+    "label": "terminal",
+    "argv": [
+      "/tmp/glass-i39-witness-v4"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000",
+      "GLASS_SWEEP_SEEDS": "64",
+      "GLASS_SWEEP_ROUNDS": "200"
+    },
+    "exit": 101,
+    "log": "witness-corrected-terminal.log",
+    "log_sha256": "930cc66bf04721e22baf74b6663bd456f4e2c45fe8e7fe2dfc7a469b8133b9ca",
+    "binary_sha256": "343ae7b91db783c1850c11eecf9d7cee2e3ca7482a6656bba9e12a647e13199c"
+  },
+  {
+    "arm": "witness",
+    "label": "sweep",
+    "argv": [
+      "/tmp/glass-i39-witness-v4",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "speed::plain_runs_match_the_parser_over_seeds"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000",
+      "GLASS_SWEEP_SEEDS": "64",
+      "GLASS_SWEEP_ROUNDS": "200"
+    },
+    "exit": 0,
+    "log": "witness-corrected-sweep.log",
+    "log_sha256": "162887a84bbef887f213c329692a7fabc54ae546f44b96c194e4904816b265e4",
+    "binary_sha256": "343ae7b91db783c1850c11eecf9d7cee2e3ca7482a6656bba9e12a647e13199c"
+  }
+]

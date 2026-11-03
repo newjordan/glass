@@ -1,0 +1,10 @@
+
+running 1 test
+ghost-case alt=false fast=false text=["Wbcdefghij    ", "abcdefghij    "] own=false unrelated=true pictures=[] base=0 history=0
+ghost-case alt=false fast=true text=["Wbcdefghij    ", "abcdefghij    "] own=false unrelated=true pictures=[] base=0 history=0
+ghost-case alt=true fast=false text=["Wbcdefghij    ", "abcdefghij    "] own=false unrelated=true pictures=[(1, 1)] base=2 history=0
+ghost-case alt=true fast=true text=["Wbcdefghij    ", "abcdefghij    "] own=false unrelated=true pictures=[(1, 1)] base=2 history=0
+test intake::position_tests::blank_witness_shipping_ghost_characterization ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 409 filtered out; finished in 0.00s
+

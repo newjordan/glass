@@ -1,0 +1,17 @@
+{
+  "hypothesis": "Absent trailing blank cell origins can be rescued by the last surviving nonempty origin on the same old unwrapped physical row, without global length matching.",
+  "boundaries": [
+    "real picture intake; no promotion or timing before semantic success",
+    "never rescue a nonblank origin, wrapped row, fully blank row, or row without its own surviving witness",
+    "test independent marker-relative slot destinations and own-line deletion; retain failures"
+  ],
+  "history_capacities": [
+    0,
+    1,
+    2,
+    8,
+    32,
+    10000
+  ],
+  "shipping": "unchanged; restore exact source bytes after experiment"
+}

@@ -1,0 +1,7 @@
+
+running 1 test
+identity-case a_mid=[(1, 0)] b_mid=[(1, 0)] a_final=[(1, 0)] b_final=[(1, 0)] same_text=true same_map=true
+test intake::position_tests::blank_witness_indistinguishable_histories ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 410 filtered out; finished in 0.00s
+

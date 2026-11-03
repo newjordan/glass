@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-blank-witness/verify.py", line 163, in <module>
+    if __name__=='__main__':print(json.dumps(check(),indent=2,sort_keys=True))
+                                             ~~~~~^^
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-blank-witness/verify.py", line 93, in check
+    need(prior.check()==load(D/'prior-checkpoint.json')==load(D/'restored-prior-checkpoint.json'),'prior checkpoint unchanged')
+         ~~~~~~~~~~~^^
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-origin-map/verify.py", line 126, in check
+    seal()
+    ~~~~^^
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-origin-map/verify.py", line 123, in seal
+    need(sha(ROOT/p)==digest,'sealed evidence changed '+name)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-origin-map/verify.py", line 20, in need
+    raise ValueError(why)
+ValueError: sealed evidence changed CHANGELOG.md

@@ -991,3 +991,33 @@ performance claim. All runtime sources/selected executable restored unchanged;
 failed compile, raw observations, build bindings and corrected failure retained
 in `bench/results/2026-11-03-origin-map/`; full report
 `reports/research-1eecf9876bb302e9da10ff629e71e6d8-38.txt`.
+
+### Blank-slot witness limit and ghost pictures (2026-11-03, iteration 39)
+
+**No runtime promotion or performance claim.** A single-source witness extension
+rescues trimmed trailing blanks using only their own unwrapped row's last
+surviving nonempty origin. 221,184 slot observations/arm across six capacities:
+shipping fails 45,880, guarded physical 32,224, witness 10,584. Excluding all
+histories with earlier out-of-bounds glyph/slot still leaves 7,856/168,296 witness
+failures. The established MARK regression and 6,144 width-only observations pass;
+124,416 Unicode, 56,160 height-only, 20,736 mixed nonblank observations also pass.
+
+New identity-collapse test asserts equal full next Reflow/text/anchor inputs for
+original M-tail (0,3) versus next hard row (1,0) after 4x10 -> 2x3. Both widen to
+(1,0), not M's (0,3). Stateless mapping lacks the identity to implement both
+original-slot contracts. This is a prerequisite for persistent logical-anchor
+state, not proof against every stateful implementation.
+
+New shipping deletion defect: 4x10 -> 2x14 with history 0, cursor top, picture
+beside bottom-row M. M disappears, W on another line survives. Active primary
+removes the picture; alternate-active primary retains a ghost at (1,1), base 2.
+Both parser lanes reproduce it. 320/1,632 eligible deletion controls ghost in
+shipping, zero in the two experimental arms (6,912 configurations total).
+
+All source/executable restoration and previous checkpoint checks pass; restored
+392 Rust tests and 12,800 differential streams pass. Five Python checker tests
+reject 36 record corruptions, seven invalid coordinate shapes and duplicate JSON
+keys. Zero-test filters, history-zero suite failures, and checker setup mistakes
+are retained and not treated as gate evidence. No new timing or Ghostty comparison.
+See `bench/results/2026-11-03-blank-witness/README.md` and
+`reports/research-1eecf9876bb302e9da10ff629e71e6d8-39.txt`.

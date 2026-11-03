@@ -954,3 +954,21 @@ Seven Python tests reject 27 evidence corruptions and 7 invalid configurations.
 Zero-test setup runs, an auxiliary compile failure, an initially wrong row
 assertion and its corrected blank-slot probe are retained, never counted as
 passing coverage. Earlier evidence sources remain untouched.
+
+### Blank-slot witness bound (2026-11-03, iteration 39)
+
+Research only, no promotion: `results/2026-11-03-blank-witness/`. Narrow same-row
+content witness clears MARK blank-slot regression but still fails 10,584/221,184
+logical-slot observations (7,856/168,296 continuously in-bounds). Physical-only
+fails 32,224; shipping 45,880. Six capacities, both lanes/modes, actual pictures.
+Equal next-Reflow input characterization demonstrates lost original slot identity;
+new shipping own-row deletion test reproduces a ghost only when alternate active.
+No ghosts in 1,632 eligible deletion controls for physical/witness; shipping 320.
+
+Restored shipping: 392 tests, 14 ignored; 12,800 streams pass. Five Python tests
+reject 36 record corruptions, seven invalid coordinate shapes and duplicate keys.
+Corrected exact test filters run real matrices after retained zero-test mistakes;
+whole-suite history must be 10000 (initial history-zero failures retained).
+Replay and limitations in the result README; no timing/memory/Ghostty win claim.
+Historical document-only replay adapters bind retained pre-iteration notes;
+current notes remain separately sealed. No runtime/raw measurement redirection.

@@ -1,0 +1,32 @@
+[
+  {
+    "capacity": 0,
+    "exit": 101,
+    "log": "candidate-v3-slot-0.log"
+  },
+  {
+    "capacity": 1,
+    "exit": 101,
+    "log": "candidate-v3-slot-1.log"
+  },
+  {
+    "capacity": 2,
+    "exit": 101,
+    "log": "candidate-v3-slot-2.log"
+  },
+  {
+    "capacity": 8,
+    "exit": 101,
+    "log": "candidate-v3-slot-8.log"
+  },
+  {
+    "capacity": 32,
+    "exit": 101,
+    "log": "candidate-v3-slot-32.log"
+  },
+  {
+    "capacity": 10000,
+    "exit": 101,
+    "log": "candidate-v3-slot-10000.log"
+  }
+]

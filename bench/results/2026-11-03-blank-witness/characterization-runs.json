@@ -1,0 +1,38 @@
+[
+  {
+    "arm": "control-v5",
+    "argv": [
+      "/tmp/glass-i39-control-v5",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_shipping_ghost_characterization"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "0"
+    },
+    "exit": 0,
+    "log": "control-v5-reexecuted-blank_witness_shipping_ghost_characterization.log",
+    "log_sha256": "728cb162a4a842df2b78f82cacdfb4b7aca80ea3c57e80fd55ad8034ea88b56e",
+    "binary_sha256": "dab6a2e5e839b740a49679c011d0aad7fc50559c1a0a683bf6eb65a8a89dc324",
+    "test_source_sha256": "c6b3f42dfa1164a04be00b96f98cb58a193a3fc858187cabc2b55cb2b18f3404"
+  },
+  {
+    "arm": "candidate-v4",
+    "argv": [
+      "/tmp/glass-i39-witness-v4",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_indistinguishable_histories"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "0"
+    },
+    "exit": 0,
+    "log": "candidate-v4-reexecuted-blank_witness_indistinguishable_histories.log",
+    "log_sha256": "2246e370464df9ad8f9f0ca35c0bf4071b2345e21b596b1ba7130becca60e6d2",
+    "binary_sha256": "343ae7b91db783c1850c11eecf9d7cee2e3ca7482a6656bba9e12a647e13199c",
+    "test_source_sha256": "6894650946d5b32512d85f5935a91263f483f38a901f7c0653b5520372bcb92a"
+  }
+]

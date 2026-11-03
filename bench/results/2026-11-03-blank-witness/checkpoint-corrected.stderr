@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-blank-witness/verify.py", line 147, in <module>
+    if __name__=='__main__':print(json.dumps(check(),indent=2,sort_keys=True))
+                                             ~~~~~^^
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-blank-witness/verify.py", line 135, in check
+    need(sha(snapshot if snapshot.exists() else ROOT/p)==digest,'candidate source binding '+p)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-blank-witness/verify.py", line 11, in need
+    if not ok:raise ValueError(why)
+              ^^^^^^^^^^^^^^^^^^^^^
+ValueError: candidate source binding crates/alacritty-terminal/src/grid/storage.rs

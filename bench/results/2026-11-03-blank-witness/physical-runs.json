@@ -1,0 +1,182 @@
+[
+  {
+    "capacity": 0,
+    "test": "blank_witness_marker_matrix",
+    "argv": [
+      "/tmp/glass-i39-physical",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "exit": 101,
+    "log": "physical-blank_witness_marker_matrix-0.log",
+    "log_sha256": "bc27229028820ad0552d003c84a60cfbd7854e20b3328832c98d9f830213a727",
+    "binary_sha256": "f6fe70901ced2c624a7ab65d452f099cdca44a2c077c92d0095d06c0f4e9d50b"
+  },
+  {
+    "capacity": 0,
+    "test": "blank_witness_deleted_line_matrix",
+    "argv": [
+      "/tmp/glass-i39-physical",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "exit": 0,
+    "log": "physical-blank_witness_deleted_line_matrix-0.log",
+    "log_sha256": "f78ac53f36449f4aacf7703dc8facc6c8d5f6895501e46add74f772093852344",
+    "binary_sha256": "f6fe70901ced2c624a7ab65d452f099cdca44a2c077c92d0095d06c0f4e9d50b"
+  },
+  {
+    "capacity": 1,
+    "test": "blank_witness_marker_matrix",
+    "argv": [
+      "/tmp/glass-i39-physical",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "exit": 101,
+    "log": "physical-blank_witness_marker_matrix-1.log",
+    "log_sha256": "28a50cd845342c4957a9855b044b566c8e129bf9286a049b637ecb28d10c9a47",
+    "binary_sha256": "f6fe70901ced2c624a7ab65d452f099cdca44a2c077c92d0095d06c0f4e9d50b"
+  },
+  {
+    "capacity": 1,
+    "test": "blank_witness_deleted_line_matrix",
+    "argv": [
+      "/tmp/glass-i39-physical",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "exit": 0,
+    "log": "physical-blank_witness_deleted_line_matrix-1.log",
+    "log_sha256": "3a50bbbf90fd90f8eb4d2b02475ca25931ec353a7720f0c21f8993b2d2da6f03",
+    "binary_sha256": "f6fe70901ced2c624a7ab65d452f099cdca44a2c077c92d0095d06c0f4e9d50b"
+  },
+  {
+    "capacity": 2,
+    "test": "blank_witness_marker_matrix",
+    "argv": [
+      "/tmp/glass-i39-physical",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "exit": 101,
+    "log": "physical-blank_witness_marker_matrix-2.log",
+    "log_sha256": "704a584e13d2f48281818b68f88c8c6e7d458024029a829813b98728ea2d46b2",
+    "binary_sha256": "f6fe70901ced2c624a7ab65d452f099cdca44a2c077c92d0095d06c0f4e9d50b"
+  },
+  {
+    "capacity": 2,
+    "test": "blank_witness_deleted_line_matrix",
+    "argv": [
+      "/tmp/glass-i39-physical",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "exit": 0,
+    "log": "physical-blank_witness_deleted_line_matrix-2.log",
+    "log_sha256": "aa88b2da223f951c776bbc4e55ac8d2ffd2021ab8a10a3730a9303a353c32232",
+    "binary_sha256": "f6fe70901ced2c624a7ab65d452f099cdca44a2c077c92d0095d06c0f4e9d50b"
+  },
+  {
+    "capacity": 8,
+    "test": "blank_witness_marker_matrix",
+    "argv": [
+      "/tmp/glass-i39-physical",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "exit": 101,
+    "log": "physical-blank_witness_marker_matrix-8.log",
+    "log_sha256": "97a59dbd54f701ef771b7ae8f5f045cbc2f0cf8b5087c66cd0f0fffb8ab59fb5",
+    "binary_sha256": "f6fe70901ced2c624a7ab65d452f099cdca44a2c077c92d0095d06c0f4e9d50b"
+  },
+  {
+    "capacity": 8,
+    "test": "blank_witness_deleted_line_matrix",
+    "argv": [
+      "/tmp/glass-i39-physical",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "exit": 0,
+    "log": "physical-blank_witness_deleted_line_matrix-8.log",
+    "log_sha256": "b214d01b684a32419260ff8c42313e986366b241a2377076521509f8c3f91395",
+    "binary_sha256": "f6fe70901ced2c624a7ab65d452f099cdca44a2c077c92d0095d06c0f4e9d50b"
+  },
+  {
+    "capacity": 32,
+    "test": "blank_witness_marker_matrix",
+    "argv": [
+      "/tmp/glass-i39-physical",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "exit": 101,
+    "log": "physical-blank_witness_marker_matrix-32.log",
+    "log_sha256": "8c5a43942ef47ee4df59e3fceb4ae31bcdcffcb7e820d0dada76caaf8f2a117e",
+    "binary_sha256": "f6fe70901ced2c624a7ab65d452f099cdca44a2c077c92d0095d06c0f4e9d50b"
+  },
+  {
+    "capacity": 32,
+    "test": "blank_witness_deleted_line_matrix",
+    "argv": [
+      "/tmp/glass-i39-physical",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "exit": 0,
+    "log": "physical-blank_witness_deleted_line_matrix-32.log",
+    "log_sha256": "3fa4e02ec73e84eb63dbc980cddd51e98829587a04d65dd556ca3cc62f9ae05f",
+    "binary_sha256": "f6fe70901ced2c624a7ab65d452f099cdca44a2c077c92d0095d06c0f4e9d50b"
+  },
+  {
+    "capacity": 10000,
+    "test": "blank_witness_marker_matrix",
+    "argv": [
+      "/tmp/glass-i39-physical",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "exit": 101,
+    "log": "physical-blank_witness_marker_matrix-10000.log",
+    "log_sha256": "31677ce68bd85b98a29d19c11f99d0b08a8130a1ecb50c322b7ab51d4d64cdd9",
+    "binary_sha256": "f6fe70901ced2c624a7ab65d452f099cdca44a2c077c92d0095d06c0f4e9d50b"
+  },
+  {
+    "capacity": 10000,
+    "test": "blank_witness_deleted_line_matrix",
+    "argv": [
+      "/tmp/glass-i39-physical",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "exit": 0,
+    "log": "physical-blank_witness_deleted_line_matrix-10000.log",
+    "log_sha256": "ed5134c7dd702a878dd82be8bca20b68cdeb391491965314f3b83f1098841205",
+    "binary_sha256": "f6fe70901ced2c624a7ab65d452f099cdca44a2c077c92d0095d06c0f4e9d50b"
+  }
+]

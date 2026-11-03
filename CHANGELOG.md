@@ -379,3 +379,14 @@ These are one machine's numbers, not a general claim.
 - Shipping runtime/executable unchanged; 392 tests and 12,800 differential
   streams pass. Seven Python tests reject 27 evidence corruptions and 7 invalid
   configurations. No Ghostty comparison or latency/memory claim.
+
+## Research — 2026-11-03 (blank-witness, iteration 39)
+- Bound same-row trailing-blank witness rescue: slot failures 45,880 shipping,
+  32,224 physical, 10,584 witness over 221,184 observations/arm. Even continuous
+  in-bounds subset leaves 7,856 candidate failures; no runtime promotion.
+- Prove two anchor histories collapse to identical next mapper inputs with
+  different original logical-slot contracts. Reproduce new inactive-primary
+  ghost picture after its own glyph/row is deleted (both parser lanes).
+- Restore runtime and selected executable; 392 Rust tests, 12,800 streams pass.
+  Five Python tests reject 36 record mutations, seven invalid coordinate shapes
+  and duplicate keys. Retain setup/checker mistakes. No speed or Ghostty claim.
