@@ -1,0 +1,14 @@
+{
+  "bench/results/2026-11-03-instruction-attribution/checkpoint-initial-failure.json": "de5450ce0ca7a9094a0ad07d466cde4d6450a71be2381ee348030490163eda82",
+  "bench/results/2026-11-03-instruction-attribution/checkpoint-initial.json": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "bench/results/2026-11-03-instruction-attribution/prior-CHANGELOG.md": "693b50d91a38239b254cbd05ec3d9ed3e6a3ff4fb4ac8971cc56d6e67853a554",
+  "bench/results/2026-11-03-instruction-attribution/prior-bench_README.md": "1eefd0a325d1a3e86188f490e0b27d8491f77ff684cd178f4905065f264f8476",
+  "bench/results/2026-11-03-instruction-attribution/prior-docs_PERFORMANCE.md": "4c30f762c0e3f76ac6317d93d7526bb67f716cb39ff1650c8a7b987255287d9d",
+  "bench/results/2026-11-03-instruction-attribution/prior-own-remapped-index.json": "7ba8146e2b42cd39f8a9df98d3d97e3690ec45bd80b96e2a6c17f22a1a4a29d4",
+  "bench/results/2026-11-03-instruction-attribution/prior-remapped-checkpoint.json": "2b5fe3eb3bbd40da2bbf749208213499cc6940164e3fbc0e30570a5453cff1ac",
+  "bench/results/2026-11-03-instruction-attribution/prior-remapped-index.json": "3fffdc5a148895ef564ce6c398f05d1da45d58f04fad4b42f5e94e1575521098",
+  "bench/results/2026-11-03-instruction-attribution/prior-remapped-replay.json": "cab06f34892122bf78c0dbb7bf1a6734ab03d53615a156083b1561b4241db292",
+  "bench/results/2026-11-03-instruction-attribution/replay-prior.py": "834a21489cae9203e24220771ab57288296602ed2fe32dd745d19d4cbe1562b2",
+  "bench/results/2026-11-03-instruction-attribution/verify-current.py": "9ed7c928e7c0cd06fa9b10a4b5aad3e20d7acd3dd7b5643a069550df6fe926a8",
+  "reports/research-1eecf9876bb302e9da10ff629e71e6d8-25b.txt": "26e999d1940bbb4eb72dcf1aa33c4490085513dae7fa441cb2bec0bab2bf34bb"
+}

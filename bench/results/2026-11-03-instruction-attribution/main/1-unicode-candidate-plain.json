@@ -1,0 +1,34 @@
+{
+  "round": 1,
+  "workload": "unicode",
+  "arm": "candidate",
+  "observer": "plain",
+  "label": "candidate-plain",
+  "command": [
+    "/tmp/glass-i24-candidate-test",
+    "--ignored",
+    "--exact",
+    "--nocapture",
+    "speed::speed"
+  ],
+  "settings": {
+    "GLASS_BENCH_SCALE": "12",
+    "GLASS_BENCH_ROUNDS": "5",
+    "GLASS_BENCH_ONLY": "unicode"
+  },
+  "pid": 2950330,
+  "begin_ns": 159878529160133,
+  "end_ns": 159882337444581,
+  "exit": 0,
+  "stdout": "1-unicode-candidate-plain.stdout",
+  "stderr": "1-unicode-candidate-plain.stderr",
+  "stdout_sha256": "9f2c93a678943ad946411714e5230ceaaef93f05aac2bd9080760ff9143eb286",
+  "stderr_sha256": "bf0cd7b316969dade1a4bc8d5fba70569f1c057713c41b4e485351ffa8736a85",
+  "binary_sha256": "cfa915a6247d228696fdf0438d7ea2aaa30e40024d80df81dfb3e65b5a955ccd",
+  "result": {
+    "mb_s": 282.0,
+    "mb_cpu_s": 282.6,
+    "bytes": 201326611,
+    "read": 4095
+  }
+}

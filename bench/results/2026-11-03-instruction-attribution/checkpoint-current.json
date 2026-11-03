@@ -1,0 +1,90 @@
+{
+  "schema": "glass.instruction-attribution-checkpoint/v2",
+  "runtime_promotion": false,
+  "sessions": 24,
+  "sampled_sessions": 12,
+  "excluded_pilot_sessions": 1,
+  "confirmatory_samples": 53067,
+  "crosscheck": {
+    "schema": "glass.instruction-attribution-crosscheck/v1",
+    "traces": 13,
+    "executable_samples": 49910,
+    "apply_and_print_utf8_instruction_samples": 31142,
+    "existing_symbol_reader_matched": true,
+    "saved_instruction_starts_matched": true,
+    "limits": "Shared ELF address formula; cross-check is integrity/implementation consistency, not independent timing or causality."
+  },
+  "own_frozen_file_references": 132,
+  "unchanged_tracked_rust_sources": 120,
+  "unchanged_prior_result_report_files": 6182,
+  "selected_binary_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "existing_engine_replay_tests": 5,
+  "prior_checkpoint_replayed_with_explicit_doc_snapshots": true,
+  "plain_cpu_rate_ratios": {
+    "truecolor": {
+      "plain_candidate_over_control": {
+        "ratios": [
+          0.8929110105580694,
+          0.9382940108892921,
+          0.9151891252955083
+        ],
+        "min": 0.8929110105580694,
+        "median": 0.9151891252955083,
+        "max": 0.9382940108892921
+      },
+      "control_profiled_over_plain": {
+        "ratios": [
+          1.0147812971342383,
+          0.9897156684815486,
+          0.9893617021276597
+        ],
+        "min": 0.9893617021276597,
+        "median": 0.9897156684815486,
+        "max": 1.0147812971342383
+      },
+      "candidate_profiled_over_plain": {
+        "ratios": [
+          1.0520270270270269,
+          0.9945196647324307,
+          0.9958023894091056
+        ],
+        "min": 0.9945196647324307,
+        "median": 0.9958023894091056,
+        "max": 1.0520270270270269
+      }
+    },
+    "unicode": {
+      "plain_candidate_over_control": {
+        "ratios": [
+          1.0163517441860466,
+          1.0180115273775217,
+          0.9803571428571428
+        ],
+        "min": 0.9803571428571428,
+        "median": 1.0163517441860466,
+        "max": 1.0180115273775217
+      },
+      "control_profiled_over_plain": {
+        "ratios": [
+          1.015625,
+          0.9945965417867435,
+          0.9875
+        ],
+        "min": 0.9875,
+        "median": 0.9945965417867435,
+        "max": 1.015625
+      },
+      "candidate_profiled_over_plain": {
+        "ratios": [
+          1.0046478369681802,
+          1.0099079971691436,
+          1.025136612021858
+        ],
+        "min": 1.0046478369681802,
+        "median": 1.0099079971691436,
+        "max": 1.025136612021858
+      }
+    }
+  },
+  "note": "Read-only diagnostic replay and integrity; not causal attribution, new timings or championship acceptance."
+}

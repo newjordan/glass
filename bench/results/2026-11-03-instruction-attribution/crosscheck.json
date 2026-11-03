@@ -1,0 +1,9 @@
+{
+  "schema": "glass.instruction-attribution-crosscheck/v1",
+  "traces": 13,
+  "executable_samples": 49910,
+  "apply_and_print_utf8_instruction_samples": 31142,
+  "existing_symbol_reader_matched": true,
+  "saved_instruction_starts_matched": true,
+  "limits": "Shared ELF address formula; cross-check is integrity/implementation consistency, not independent timing or causality."
+}

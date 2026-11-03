@@ -1,0 +1,153 @@
+Iteration 25 — exact-binary instruction attribution, not a championship claim
+==========================================================================
+Question and scope
+------------------
+The prior ground-authority handoff experiment made ASCII/scroll-region faster
+but regressed truecolor about 7.3%; it did not earn runtime promotion. Instead
+of another parser variant, locate that regression in retained machine code and
+contrast the still-open Unicode path. This is a new diagnostic experiment, not
+another optimization or a Ghostty/terminal score. No Rust source was edited and
+no engine binary was rebuilt. Prior campaign checkpoint passed before capture.
+
+Evidence directory: bench/results/2026-11-03-instruction-attribution/
+Prior experiment: bench/results/2026-11-03-authority-handoff/
+
+Frozen design and actual capture
+--------------------------------
+protocol.json was written before any pilot or confirmatory session. Reused
+/tmp/glass-i24-control-test and /tmp/glass-i24-candidate-test, binding their
+SHA-256 identities before/after each run. The exact-build origins, source
+snapshots and correctness evidence remain in the prior experiment.
+
+One pilot: control truecolor, scale 1, one internal round, excluded from all
+confirmatory aggregates. It validated sampler arming, executable mapping and
+symbolization. Then exactly 24 sessions: three sequential four-arm rotations
+for each of truecolor and Unicode. Arms: control/plain, candidate/profiled,
+candidate/plain, control/profiled; rotate left by outer round, reverse on odd
+round. Each uses the existing speed::speed test, scale 12, five internal rounds,
+read size 4095. No opportunistic additional pairs, variants or rescue pooling.
+
+The copied existing cpu-sample.c is an LD_PRELOAD leaf-IP CPU-time sampler.
+The exact executable path and speed::speed thread name arm only the Rust test
+thread. Requested 100us sampling actually delivered about 1ms median spacing
+in every confirmatory trace. Overruns are explicitly retained; buffer drops
+were zero and all 12 confirmatory traces armed. This is whole-test-thread
+sampling, including workload generation, all internal rounds and teardown,
+not just samples inside the fastest round printed by the speed test.
+
+Raw results, not title claims
+-----------------------------
+Plain candidate/control MB/cpu-s ratios (one per outer round):
+  truecolor: 0.892911, 0.938294, 0.915189; median 0.915189.
+  Unicode:   1.016352, 1.018012, 0.980357; median 1.016352.
+Thus the rejected binary's truecolor loss repeats in all three new plain
+pairs; Unicode is mixed and not a stable improvement. This diagnostic is
+separate from the prior 11-pair selection screen and is not pooled with it.
+
+Profiled/plain CPU-rate ratios, median [min,max]:
+  truecolor/control:   0.989716 [0.989362,1.014781]
+  truecolor/candidate: 0.995802 [0.994520,1.052027]
+  Unicode/control:    0.994597 [0.987500,1.015625]
+  Unicode/candidate:  1.009908 [1.004648,1.025137]
+Three sequential observations on a shared host do not bound observer overhead
+or establish equivalence. In particular, >1 ratios are not negative overhead
+or free acceleration; noise, drift, cache/order effects and signal perturbation
+remain. No confidence interval or promotion gate is inferred.
+
+New localization findings
+-------------------------
+1. Truecolor sampled Engine::apply fraction is 6159/14414 = 42.73% for control
+   and 7358/15497 = 47.48% for candidate. Within corresponding outer rounds,
+   candidate/control percentages are 45.89/43.33, 47.24/41.05 and 49.30/43.86.
+   Candidate top addresses are 0x258dc8 (975), 0x258dd3 (756), 0x258db7 (753).
+   Control top addresses are 0x258e99 (729), 0x258f28 (690), 0x258ea3 (644).
+   The hottest regions include the inlined small_csi decimal/saturation loop
+   and surrounding CSI dispatch, not merely the ground-state tracker symbol.
+   Feed/lane functions are inlined into Engine::apply in these release builds.
+
+2. Exact disassembly exposes a register-allocation difference missed by the
+   previous semantic source comparison. The control digit loop increments its
+   index in %r8 (0x258e76), uses %rsi+%r8 in the end check, and loads the next
+   byte via -1(%rbp,%r8). The candidate reloads an index at 0x28(%rsp)
+   (0x258d8f), increments it, stores it back (0x258d9e), reloads it again
+   (0x258dad), then loads the next byte via -1(%rdi,%rcx). Both perform a
+   16-bit multiply by ten, overflow branch and saturating addition.
+   This is an observed extra per-digit stack traffic difference in the
+   compiled candidate, not a proof that stack traffic caused 8.48% slower
+   CPU rate. Branch layout, allocation, aliasing and signal skid remain.
+   Saved full disassembly makes the comparison replayable without guessing
+   source line attribution from a symbol-only binary.
+
+3. Unicode is not dominated by the standalone width table/cache symbol.
+   print_utf8 accounts for 8596/11647 = 73.80% of control samples and
+   8702/11509 = 75.61% of candidate samples. Standalone
+   unicode_width::tables::lookup_width accounts for 159 (1.37%) and 133
+   (1.16%) respectively. The hottest print_utf8 address in each arm is the
+   same relative +0x563 instruction, a cmp in the inlined UTF-8 leading-byte
+   dispatch: control 0x262903 (867 samples), candidate 0x262323 (767).
+   Next major spots include the ASCII/control range dispatch and later cell
+   handling. This supports investigating decode/cell-write composition rather
+   than another standalone width-cache representation. It does not assign
+   exact cost to the comparison instruction, rule out all width work inlined
+   elsewhere, or prove a decoder optimization will win.
+
+Integrity and implementation checks
+-----------------------------------
+main-analysis.json replays raw stdout/stderr, manifests, session order,
+environment, payload bytes, read size, exact binaries, trace counts, monotonic
+sample timestamps, executable mappings and containing symbol ranges. Unknown
+DSOs are deliberately reported as [other ELF], never guessed from nearest
+Rust symbol. There were no unmapped/no-containing-symbol samples in these
+captures. Symbol tables and ELF program headers are retained.
+
+crosscheck.py uses the existing bench/linux/symbolize-cpu-sample.py ELF reader
+against the live exact binaries and compares to the saved tables and new
+reader. It checks all 13 traces (pilot plus 12 confirmatory), matching 49,910
+executable samples and confirming 31,142 apply/print_utf8 sampled IPs are
+instruction starts in the retained objdump output. Both readers share the ELF
+mapping formula: this is implementation consistency, not independent causal
+validation. There are 53,067 confirmatory samples in total.
+
+The five pre-existing test_replay_engine_pairs.py tests passed. The prior
+campaign checkpoint includes the existing 65-test Python suite, 383 terminal
+tests and 12,800 differential streams per correct arm, 2,160 handoff scenarios
+and the cell-mismatch mutant. Those are prior correctness results, not newly
+rerun full Rust suites or additional proof of speed in this iteration.
+
+Checkpoint preserves the selected target/release/glass executable, all 120
+tracked Rust source files and all 6,182 tracked pre-existing result/report
+files byte-for-byte. Prior frozen evidence is replayed unchanged. Own evidence
+has an explicit SHA-256 manifest and frozen historical index; publication is
+additive. verify.py performs read-only replay, a prior checkpoint, the existing
+five Python tests and the new attribution cross-check; it does not rebuild,
+repair, rerun timings, or promote a runtime. External /tmp exact binaries are
+explicit prerequisites: a missing binary fails, not silently rebuilds.
+
+Process issues disclosed
+-------------------------
+The initial optional reviewer timed out after 180s; its partial read-only
+notes identified inlining and whole-thread sampling. It supplied no accepted
+performance result. A write-time syntax check caught one missing parenthesis
+before analyzer execution; corrected before pilot validation. Follow-up
+inspection commands used two nonexistent summary filenames and one wrong
+profile dict key, and directory wc emitted a nonzero footer after successful
+checks. None changed captures or the frozen protocol; no benchmark was
+repeated to repair those inspection commands. Correct replay output names are
+pilot-analysis.json, main-analysis.json and crosscheck.json.
+
+Decision and bounded next door
+-------------------------------
+No runtime promotion. Preserve the selected build and the rejected candidate
+as a diagnostic, not an alleged champion. To test the new truecolor lead,
+try isolating/controlling small_csi's codegen without changing parser semantics,
+check emitted code really removes the index spill, and measure against the
+same control under the existing six-workload correctness/non-regression gate.
+If the spill disappears but truecolor does not recover, reject that causal
+hypothesis rather than retune samples. A distinct Unicode door is composing
+UTF-8 decode and cell placement; its fixed chunk-boundary/differential tests
+must remain mandatory. Do not simply retry width-cache removal or ground
+handoff on the strength of conditional sample shares.
+
+No current independent all-metric Ghostty result, cross-machine campaign win,
+or championship acceptance was established. This iteration closes an
+attribution gap and establishes testable compiled-code leads.

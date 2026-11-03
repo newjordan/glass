@@ -1,0 +1,11 @@
+{
+  "schema": "glass.checkpoint-failure/v1",
+  "command": [
+    "python3",
+    "-B",
+    "bench/results/2026-11-03-instruction-attribution/verify.py"
+  ],
+  "exit": 1,
+  "reason": "prior checkpoint failed: changed source: CHANGELOG.md (read CHANGELOG.md)",
+  "context": "Documentation evolved; immutable previous manifests bind old doc bytes. V2 uses explicit hash-checked pre-iteration snapshots; original manifests/verifier and empty v1 stdout unchanged."
+}

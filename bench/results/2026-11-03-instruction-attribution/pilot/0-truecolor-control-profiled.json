@@ -1,0 +1,41 @@
+{
+  "round": 0,
+  "workload": "truecolor",
+  "arm": "control",
+  "observer": "profiled",
+  "label": "control-profiled",
+  "command": [
+    "/tmp/glass-i24-control-test",
+    "--ignored",
+    "--exact",
+    "--nocapture",
+    "speed::speed"
+  ],
+  "settings": {
+    "GLASS_BENCH_SCALE": "1",
+    "GLASS_BENCH_ROUNDS": "1",
+    "GLASS_BENCH_ONLY": "truecolor",
+    "LD_PRELOAD": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-instruction-attribution/cpu-sample.so",
+    "GLASS_SAMPLE_EXE": "/tmp/glass-i24-control-test",
+    "GLASS_SAMPLE_THREAD": "speed::speed",
+    "GLASS_SAMPLE_OUT": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-instruction-attribution/pilot/0-truecolor-control-profiled.pcs",
+    "GLASS_SAMPLE_US": "100"
+  },
+  "pid": 2944637,
+  "begin_ns": 159694398429266,
+  "end_ns": 159694502483639,
+  "exit": 0,
+  "stdout": "0-truecolor-control-profiled.stdout",
+  "stderr": "0-truecolor-control-profiled.stderr",
+  "stdout_sha256": "da8cb944c9ba2b024d557c601272b4853c446ac4c5848dde2c61a8242a00e685",
+  "stderr_sha256": "4723b199f4a6c1bde7e354805d165bda442fe10ab5081ed5f3a442327eb3c1fd",
+  "binary_sha256": "288161ef4ed3bd64429f996878f28aa820010815c298491eaa844fbbef85766c",
+  "trace": "0-truecolor-control-profiled.pcs",
+  "trace_sha256": "242ea1c88a3b0ea6d134495fbe3d5e25edf78726b3dfd5b7eabba557c772dd19",
+  "result": {
+    "mb_s": 328.4,
+    "mb_cpu_s": 329.1,
+    "bytes": 25168645,
+    "read": 4095
+  }
+}

@@ -1,0 +1,268 @@
+{
+  "schema": "glass.instruction-attribution-analysis/v1",
+  "complete": true,
+  "mode": "pilot",
+  "sessions": 1,
+  "sampled_sessions": 1,
+  "bytes": {
+    "truecolor": 25168645
+  },
+  "profiles": [
+    {
+      "name": "0-truecolor-control-profiled",
+      "tid": 2944638,
+      "samples": 101,
+      "overruns": 908,
+      "delivered_spacing_ms": {
+        "min": 0.915811,
+        "median": 0.999869,
+        "max": 2.001742
+      },
+      "symbols": {
+        "[other ELF] /usr/lib/libc.so.6": 16,
+        "mi_free": 3,
+        "glass::speed::workloads": 1,
+        "<core::fmt::Formatter>::pad_integral": 1,
+        "alloc::fmt::format::format_inner": 1,
+        "<core::fmt::Formatter>::pad": 1,
+        "mi_page_free_list_extend": 2,
+        "<alacritty_terminal::grid::storage::Storage<alacritty_terminal::term::cell::Cell>>::initialize": 3,
+        "<glass::intake::Splitter>::split": 10,
+        "<glass::engine::Engine>::apply": 36,
+        "<alacritty_terminal::grid::storage::Storage<alacritty_terminal::term::cell::Cell> as core::ops::index::IndexMut<alacritty_terminal::index::Line>>::index_mut": 2,
+        "<glass::engine::Engine>::process": 5,
+        "<glass::engine::Mirror>::stretch": 2,
+        "memchr::arch::x86_64::memchr::memchr_raw::find_avx2": 8,
+        "glass::session::pump": 4,
+        "_mi_page_malloc_zero": 1,
+        "memchr::arch::x86_64::memchr::memrchr_raw::find_avx2": 1,
+        "glass::speed::feed": 1,
+        "<alacritty_terminal::term::Term<glass::engine::Listener> as vte::ansi::Handler>::terminal_attribute": 2,
+        "core::ptr::drop_glue::<alacritty_terminal::grid::Grid<alacritty_terminal::term::cell::Cell>>": 1
+      }
+    }
+  ],
+  "workloads": {
+    "truecolor/control": {
+      "samples": 101,
+      "symbols": [
+        {
+          "symbol": "<glass::engine::Engine>::apply",
+          "count": 36,
+          "fraction": 0.3564356435643564
+        },
+        {
+          "symbol": "[other ELF] /usr/lib/libc.so.6",
+          "count": 16,
+          "fraction": 0.15841584158415842
+        },
+        {
+          "symbol": "<glass::intake::Splitter>::split",
+          "count": 10,
+          "fraction": 0.09900990099009901
+        },
+        {
+          "symbol": "memchr::arch::x86_64::memchr::memchr_raw::find_avx2",
+          "count": 8,
+          "fraction": 0.07920792079207921
+        },
+        {
+          "symbol": "<glass::engine::Engine>::process",
+          "count": 5,
+          "fraction": 0.04950495049504951
+        },
+        {
+          "symbol": "glass::session::pump",
+          "count": 4,
+          "fraction": 0.039603960396039604
+        },
+        {
+          "symbol": "mi_free",
+          "count": 3,
+          "fraction": 0.0297029702970297
+        },
+        {
+          "symbol": "<alacritty_terminal::grid::storage::Storage<alacritty_terminal::term::cell::Cell>>::initialize",
+          "count": 3,
+          "fraction": 0.0297029702970297
+        },
+        {
+          "symbol": "mi_page_free_list_extend",
+          "count": 2,
+          "fraction": 0.019801980198019802
+        },
+        {
+          "symbol": "<alacritty_terminal::grid::storage::Storage<alacritty_terminal::term::cell::Cell> as core::ops::index::IndexMut<alacritty_terminal::index::Line>>::index_mut",
+          "count": 2,
+          "fraction": 0.019801980198019802
+        },
+        {
+          "symbol": "<glass::engine::Mirror>::stretch",
+          "count": 2,
+          "fraction": 0.019801980198019802
+        },
+        {
+          "symbol": "<alacritty_terminal::term::Term<glass::engine::Listener> as vte::ansi::Handler>::terminal_attribute",
+          "count": 2,
+          "fraction": 0.019801980198019802
+        },
+        {
+          "symbol": "glass::speed::workloads",
+          "count": 1,
+          "fraction": 0.009900990099009901
+        },
+        {
+          "symbol": "<core::fmt::Formatter>::pad_integral",
+          "count": 1,
+          "fraction": 0.009900990099009901
+        },
+        {
+          "symbol": "alloc::fmt::format::format_inner",
+          "count": 1,
+          "fraction": 0.009900990099009901
+        },
+        {
+          "symbol": "<core::fmt::Formatter>::pad",
+          "count": 1,
+          "fraction": 0.009900990099009901
+        },
+        {
+          "symbol": "_mi_page_malloc_zero",
+          "count": 1,
+          "fraction": 0.009900990099009901
+        },
+        {
+          "symbol": "memchr::arch::x86_64::memchr::memrchr_raw::find_avx2",
+          "count": 1,
+          "fraction": 0.009900990099009901
+        },
+        {
+          "symbol": "glass::speed::feed",
+          "count": 1,
+          "fraction": 0.009900990099009901
+        },
+        {
+          "symbol": "core::ptr::drop_glue::<alacritty_terminal::grid::Grid<alacritty_terminal::term::cell::Cell>>",
+          "count": 1,
+          "fraction": 0.009900990099009901
+        }
+      ]
+    }
+  },
+  "hotspots": {
+    "truecolor/control/<glass::engine::Engine>::apply": [
+      {
+        "elf_va": "0x258ea3",
+        "count": 7,
+        "fraction_of_symbol": 0.19444444444444445
+      },
+      {
+        "elf_va": "0x258f28",
+        "count": 5,
+        "fraction_of_symbol": 0.1388888888888889
+      },
+      {
+        "elf_va": "0x258e6f",
+        "count": 2,
+        "fraction_of_symbol": 0.05555555555555555
+      },
+      {
+        "elf_va": "0x258e90",
+        "count": 2,
+        "fraction_of_symbol": 0.05555555555555555
+      },
+      {
+        "elf_va": "0x259a7a",
+        "count": 2,
+        "fraction_of_symbol": 0.05555555555555555
+      },
+      {
+        "elf_va": "0x258f8f",
+        "count": 2,
+        "fraction_of_symbol": 0.05555555555555555
+      },
+      {
+        "elf_va": "0x258ea6",
+        "count": 2,
+        "fraction_of_symbol": 0.05555555555555555
+      },
+      {
+        "elf_va": "0x258da9",
+        "count": 1,
+        "fraction_of_symbol": 0.027777777777777776
+      },
+      {
+        "elf_va": "0x258ed2",
+        "count": 1,
+        "fraction_of_symbol": 0.027777777777777776
+      },
+      {
+        "elf_va": "0x2598c3",
+        "count": 1,
+        "fraction_of_symbol": 0.027777777777777776
+      },
+      {
+        "elf_va": "0x259aa8",
+        "count": 1,
+        "fraction_of_symbol": 0.027777777777777776
+      },
+      {
+        "elf_va": "0x259053",
+        "count": 1,
+        "fraction_of_symbol": 0.027777777777777776
+      },
+      {
+        "elf_va": "0x258f38",
+        "count": 1,
+        "fraction_of_symbol": 0.027777777777777776
+      },
+      {
+        "elf_va": "0x259d43",
+        "count": 1,
+        "fraction_of_symbol": 0.027777777777777776
+      },
+      {
+        "elf_va": "0x258e89",
+        "count": 1,
+        "fraction_of_symbol": 0.027777777777777776
+      },
+      {
+        "elf_va": "0x25a4cd",
+        "count": 1,
+        "fraction_of_symbol": 0.027777777777777776
+      },
+      {
+        "elf_va": "0x259a1d",
+        "count": 1,
+        "fraction_of_symbol": 0.027777777777777776
+      },
+      {
+        "elf_va": "0x258eba",
+        "count": 1,
+        "fraction_of_symbol": 0.027777777777777776
+      },
+      {
+        "elf_va": "0x258ec9",
+        "count": 1,
+        "fraction_of_symbol": 0.027777777777777776
+      },
+      {
+        "elf_va": "0x258e73",
+        "count": 1,
+        "fraction_of_symbol": 0.027777777777777776
+      },
+      {
+        "elf_va": "0x258e99",
+        "count": 1,
+        "fraction_of_symbol": 0.027777777777777776
+      }
+    ]
+  },
+  "pilot_valid": true,
+  "limits": [
+    "Diagnostic leaf instruction pointers over whole test thread, including setup and all internal passes; not only the fastest timed round.",
+    "Requested 100us period is coalesced by CPU timer delivery; overruns are retained, not missing buffer records.",
+    "Profiles are conditional sample shares, not instructions retired, cycles, call stacks or causal lost time. Layout and signal perturbation can alias.",
+    "Three sessions per exact arm/workload on shared host; no significance, optimization promotion, terminal/Ghostty timing or championship claim."
+  ]
+}

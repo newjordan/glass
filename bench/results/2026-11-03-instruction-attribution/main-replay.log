@@ -1,0 +1,1285 @@
+{
+  "schema": "glass.instruction-attribution-analysis/v1",
+  "complete": true,
+  "mode": "main",
+  "sessions": 24,
+  "sampled_sessions": 12,
+  "bytes": {
+    "truecolor": 301991890,
+    "unicode": 201326611
+  },
+  "workloads": {
+    "truecolor/candidate": {
+      "samples": 15497,
+      "symbols": [
+        {
+          "symbol": "<glass::engine::Engine>::apply",
+          "count": 7358,
+          "fraction": 0.47480157449828997
+        },
+        {
+          "symbol": "<glass::intake::Splitter>::split",
+          "count": 2786,
+          "fraction": 0.1797767309801897
+        },
+        {
+          "symbol": "memchr::arch::x86_64::memchr::memchr_raw::find_avx2",
+          "count": 1598,
+          "fraction": 0.10311673227076208
+        },
+        {
+          "symbol": "[other ELF] /usr/lib/libc.so.6",
+          "count": 1010,
+          "fraction": 0.06517390462670195
+        },
+        {
+          "symbol": "<alacritty_terminal::term::Term<glass::engine::Listener> as vte::ansi::Handler>::terminal_attribute",
+          "count": 752,
+          "fraction": 0.048525521068593924
+        },
+        {
+          "symbol": "glass::session::pump",
+          "count": 695,
+          "fraction": 0.04484738981738401
+        },
+        {
+          "symbol": "<glass::engine::Engine>::process",
+          "count": 545,
+          "fraction": 0.03516809705104214
+        },
+        {
+          "symbol": "glass::speed::feed",
+          "count": 204,
+          "fraction": 0.013163838162224946
+        },
+        {
+          "symbol": "<glass::intake::Splitter>::step",
+          "count": 118,
+          "fraction": 0.0076143769761889395
+        },
+        {
+          "symbol": "<alacritty_terminal::grid::storage::Storage<alacritty_terminal::term::cell::Cell> as core::ops::index::IndexMut<alacritty_terminal::index::Line>>::index_mut",
+          "count": 96,
+          "fraction": 0.006194747370458799
+        },
+        {
+          "symbol": "[other ELF] [vdso]",
+          "count": 60,
+          "fraction": 0.0038717171065367493
+        },
+        {
+          "symbol": "glass::speed::workloads",
+          "count": 41,
+          "fraction": 0.002645673356133445
+        },
+        {
+          "symbol": "mi_free",
+          "count": 28,
+          "fraction": 0.0018068013163838163
+        },
+        {
+          "symbol": "_mi_page_malloc_zero",
+          "count": 17,
+          "fraction": 0.0010969865135187456
+        },
+        {
+          "symbol": "mi_theap_malloc_aligned",
+          "count": 17,
+          "fraction": 0.0010969865135187456
+        },
+        {
+          "symbol": "<alacritty_terminal::term::Term<glass::engine::Listener>>::scroll_up_relative",
+          "count": 11,
+          "fraction": 0.0007098148028650707
+        },
+        {
+          "symbol": "<alacritty_terminal::selection::Selection>::to_range::<glass::engine::Listener>",
+          "count": 11,
+          "fraction": 0.0007098148028650707
+        },
+        {
+          "symbol": "<alacritty_terminal::grid::Grid<alacritty_terminal::term::cell::Cell>>::scroll_up::<vte::ansi::Color>",
+          "count": 10,
+          "fraction": 0.0006452861844227915
+        },
+        {
+          "symbol": "_mi_theap_realloc_zero",
+          "count": 10,
+          "fraction": 0.0006452861844227915
+        },
+        {
+          "symbol": "<vte::Parser<1024>>::advance_ground::<vte::ansi::Performer<glass::engine::Watch, vte::ansi::StdSyncHandler>>",
+          "count": 10,
+          "fraction": 0.0006452861844227915
+        },
+        {
+          "symbol": "core::str::converts::from_utf8",
+          "count": 8,
+          "fraction": 0.0005162289475382332
+        },
+        {
+          "symbol": "<glass::engine::Engine>::collect",
+          "count": 8,
+          "fraction": 0.0005162289475382332
+        },
+        {
+          "symbol": "<alacritty_terminal::grid::row::Row<alacritty_terminal::term::cell::Cell> as core::ops::index::IndexMut<alacritty_terminal::index::Column>>::index_mut",
+          "count": 7,
+          "fraction": 0.0004517003290959541
+        },
+        {
+          "symbol": "mi_malloc_aligned",
+          "count": 6,
+          "fraction": 0.0003871717106536749
+        },
+        {
+          "symbol": "<alacritty_terminal::grid::storage::Storage<alacritty_terminal::term::cell::Cell>>::initialize",
+          "count": 6,
+          "fraction": 0.0003871717106536749
+        },
+        {
+          "symbol": "<alloc::vec::Vec<glass::intake::Piece>>::push_mut",
+          "count": 6,
+          "fraction": 0.0003871717106536749
+        },
+        {
+          "symbol": "<alacritty_terminal::selection::Selection>::range_simple",
+          "count": 6,
+          "fraction": 0.0003871717106536749
+        },
+        {
+          "symbol": "mi_page_free_list_extend",
+          "count": 5,
+          "fraction": 0.00032264309221139575
+        },
+        {
+          "symbol": "glass::session::tell_the_store",
+          "count": 5,
+          "fraction": 0.00032264309221139575
+        },
+        {
+          "symbol": "<glass::engine::Watch as vte::ansi::Handler>::linefeed",
+          "count": 5,
+          "fraction": 0.00032264309221139575
+        },
+        {
+          "symbol": "<alloc::raw_vec::RawVec<u8>>::grow_one",
+          "count": 5,
+          "fraction": 0.00032264309221139575
+        },
+        {
+          "symbol": "mi_theap_umalloc",
+          "count": 4,
+          "fraction": 0.0002581144737691166
+        },
+        {
+          "symbol": "<vte::Parser<1024>>::advance_until_terminated::<vte::ansi::Performer<glass::engine::Watch, vte::ansi::StdSyncHandler>>",
+          "count": 4,
+          "fraction": 0.0002581144737691166
+        },
+        {
+          "symbol": "<vte::ansi::Performer<glass::engine::Watch, vte::ansi::StdSyncHandler> as vte::Perform>::execute",
+          "count": 4,
+          "fraction": 0.0002581144737691166
+        },
+        {
+          "symbol": "<glass::engine::Watch>::note_scroll_up",
+          "count": 3,
+          "fraction": 0.00019358585532683746
+        },
+        {
+          "symbol": "<alacritty_terminal::term::cell::Cell>::set_underline_color",
+          "count": 3,
+          "fraction": 0.00019358585532683746
+        },
+        {
+          "symbol": "alloc::fmt::format::format_inner",
+          "count": 3,
+          "fraction": 0.00019358585532683746
+        },
+        {
+          "symbol": "mi_good_size",
+          "count": 2,
+          "fraction": 0.0001290572368845583
+        },
+        {
+          "symbol": "_mi_page_retire",
+          "count": 2,
+          "fraction": 0.0001290572368845583
+        },
+        {
+          "symbol": "<usize as core::fmt::Display>::fmt",
+          "count": 2,
+          "fraction": 0.0001290572368845583
+        },
+        {
+          "symbol": "core::ptr::drop_glue::<glass::intake::State>",
+          "count": 2,
+          "fraction": 0.0001290572368845583
+        },
+        {
+          "symbol": "<glass::intake::Intake>::in_cell_areas",
+          "count": 2,
+          "fraction": 0.0001290572368845583
+        },
+        {
+          "symbol": "core::ptr::drop_glue::<alacritty_terminal::grid::Grid<alacritty_terminal::term::cell::Cell>>",
+          "count": 2,
+          "fraction": 0.0001290572368845583
+        },
+        {
+          "symbol": "<alloc::raw_vec::RawVecInner<_>>::reserve::do_reserve_and_handle::<alloc::alloc::Global>",
+          "count": 2,
+          "fraction": 0.0001290572368845583
+        },
+        {
+          "symbol": "<glass::engine::Engine>::fold_sentinel",
+          "count": 2,
+          "fraction": 0.0001290572368845583
+        },
+        {
+          "symbol": "<alloc::raw_vec::RawVecInner>::finish_grow",
+          "count": 2,
+          "fraction": 0.0001290572368845583
+        },
+        {
+          "symbol": "_mi_malloc_generic",
+          "count": 1,
+          "fraction": 6.452861844227915e-05
+        },
+        {
+          "symbol": "<alloc::string::String as core::fmt::Write>::write_str",
+          "count": 1,
+          "fraction": 6.452861844227915e-05
+        },
+        {
+          "symbol": "mi_theap_malloc_zero_aligned_at_overalloc",
+          "count": 1,
+          "fraction": 6.452861844227915e-05
+        },
+        {
+          "symbol": "_mi_theap_malloc_zero",
+          "count": 1,
+          "fraction": 6.452861844227915e-05
+        },
+        {
+          "symbol": "core::fmt::write",
+          "count": 1,
+          "fraction": 6.452861844227915e-05
+        },
+        {
+          "symbol": "mi_arena_try_alloc_at",
+          "count": 1,
+          "fraction": 6.452861844227915e-05
+        },
+        {
+          "symbol": "<glass::engine::Watch as vte::ansi::Handler>::input",
+          "count": 1,
+          "fraction": 6.452861844227915e-05
+        },
+        {
+          "symbol": "mi_theap_malloc_zero_aligned_at_generic",
+          "count": 1,
+          "fraction": 6.452861844227915e-05
+        },
+        {
+          "symbol": "<core::fmt::Formatter>::pad_integral",
+          "count": 1,
+          "fraction": 6.452861844227915e-05
+        },
+        {
+          "symbol": "__mi_stat_decrease",
+          "count": 1,
+          "fraction": 6.452861844227915e-05
+        },
+        {
+          "symbol": "glass::engine::plain_c0",
+          "count": 1,
+          "fraction": 6.452861844227915e-05
+        },
+        {
+          "symbol": "<alacritty_terminal::term::Term<glass::engine::Listener> as vte::ansi::Handler>::linefeed",
+          "count": 1,
+          "fraction": 6.452861844227915e-05
+        },
+        {
+          "symbol": "<std::sys::pal::unix::time::Timespec>::now",
+          "count": 1,
+          "fraction": 6.452861844227915e-05
+        },
+        {
+          "symbol": "_mi_arenas_collect",
+          "count": 1,
+          "fraction": 6.452861844227915e-05
+        }
+      ]
+    },
+    "truecolor/control": {
+      "samples": 14414,
+      "symbols": [
+        {
+          "symbol": "<glass::engine::Engine>::apply",
+          "count": 6159,
+          "fraction": 0.427292909671153
+        },
+        {
+          "symbol": "<glass::intake::Splitter>::split",
+          "count": 2705,
+          "fraction": 0.1876647703621479
+        },
+        {
+          "symbol": "memchr::arch::x86_64::memchr::memchr_raw::find_avx2",
+          "count": 1614,
+          "fraction": 0.1119744692659914
+        },
+        {
+          "symbol": "[other ELF] /usr/lib/libc.so.6",
+          "count": 993,
+          "fraction": 0.06889135562647426
+        },
+        {
+          "symbol": "<alacritty_terminal::term::Term<glass::engine::Listener> as vte::ansi::Handler>::terminal_attribute",
+          "count": 743,
+          "fraction": 0.05154710697932566
+        },
+        {
+          "symbol": "glass::session::pump",
+          "count": 727,
+          "fraction": 0.050437075065908145
+        },
+        {
+          "symbol": "<glass::engine::Engine>::process",
+          "count": 544,
+          "fraction": 0.03774108505619537
+        },
+        {
+          "symbol": "<glass::engine::Mirror>::stretch",
+          "count": 141,
+          "fraction": 0.009782156236991814
+        },
+        {
+          "symbol": "glass::speed::feed",
+          "count": 134,
+          "fraction": 0.009296517274871652
+        },
+        {
+          "symbol": "memchr::arch::x86_64::memchr::memrchr_raw::find_avx2",
+          "count": 133,
+          "fraction": 0.009227140280283059
+        },
+        {
+          "symbol": "<glass::intake::Splitter>::step",
+          "count": 101,
+          "fraction": 0.007007076453448037
+        },
+        {
+          "symbol": "<alacritty_terminal::grid::storage::Storage<alacritty_terminal::term::cell::Cell> as core::ops::index::IndexMut<alacritty_terminal::index::Line>>::index_mut",
+          "count": 90,
+          "fraction": 0.006243929512973498
+        },
+        {
+          "symbol": "glass::speed::workloads",
+          "count": 46,
+          "fraction": 0.0031913417510753433
+        },
+        {
+          "symbol": "[other ELF] [vdso]",
+          "count": 43,
+          "fraction": 0.00298321076730956
+        },
+        {
+          "symbol": "mi_free",
+          "count": 27,
+          "fraction": 0.0018731788538920494
+        },
+        {
+          "symbol": "<alacritty_terminal::term::Term<glass::engine::Listener>>::scroll_up_relative",
+          "count": 20,
+          "fraction": 0.0013875398917718885
+        },
+        {
+          "symbol": "_mi_page_malloc_zero",
+          "count": 16,
+          "fraction": 0.0011100319134175107
+        },
+        {
+          "symbol": "_mi_theap_realloc_zero",
+          "count": 15,
+          "fraction": 0.0010406549188289164
+        },
+        {
+          "symbol": "<alacritty_terminal::grid::Grid<alacritty_terminal::term::cell::Cell>>::scroll_up::<vte::ansi::Color>",
+          "count": 15,
+          "fraction": 0.0010406549188289164
+        },
+        {
+          "symbol": "mi_theap_malloc_aligned",
+          "count": 14,
+          "fraction": 0.000971277924240322
+        },
+        {
+          "symbol": "<glass::engine::Engine>::collect",
+          "count": 10,
+          "fraction": 0.0006937699458859442
+        },
+        {
+          "symbol": "core::ptr::drop_glue::<glass::intake::State>",
+          "count": 9,
+          "fraction": 0.0006243929512973498
+        },
+        {
+          "symbol": "core::str::converts::from_utf8",
+          "count": 9,
+          "fraction": 0.0006243929512973498
+        },
+        {
+          "symbol": "<vte::Parser<1024>>::advance_ground::<vte::ansi::Performer<glass::engine::Watch, vte::ansi::StdSyncHandler>>",
+          "count": 8,
+          "fraction": 0.0005550159567087554
+        },
+        {
+          "symbol": "<alacritty_terminal::selection::Selection>::range_simple",
+          "count": 7,
+          "fraction": 0.000485638962120161
+        },
+        {
+          "symbol": "<glass::engine::Watch>::note_scroll_up",
+          "count": 7,
+          "fraction": 0.000485638962120161
+        },
+        {
+          "symbol": "mi_malloc_aligned",
+          "count": 6,
+          "fraction": 0.00041626196753156655
+        },
+        {
+          "symbol": "<alloc::raw_vec::RawVec<u8>>::grow_one",
+          "count": 6,
+          "fraction": 0.00041626196753156655
+        },
+        {
+          "symbol": "mi_bin",
+          "count": 5,
+          "fraction": 0.0003468849729429721
+        },
+        {
+          "symbol": "<alacritty_terminal::term::cell::Cell>::set_underline_color",
+          "count": 5,
+          "fraction": 0.0003468849729429721
+        },
+        {
+          "symbol": "<vte::Parser<1024>>::advance_until_terminated::<vte::ansi::Performer<glass::engine::Watch, vte::ansi::StdSyncHandler>>",
+          "count": 5,
+          "fraction": 0.0003468849729429721
+        },
+        {
+          "symbol": "mi_page_free_list_extend",
+          "count": 4,
+          "fraction": 0.0002775079783543777
+        },
+        {
+          "symbol": "<alacritty_terminal::selection::Selection>::to_range::<glass::engine::Listener>",
+          "count": 4,
+          "fraction": 0.0002775079783543777
+        },
+        {
+          "symbol": "<glass::engine::Watch as vte::ansi::Handler>::input",
+          "count": 4,
+          "fraction": 0.0002775079783543777
+        },
+        {
+          "symbol": "<alacritty_terminal::grid::storage::Storage<alacritty_terminal::term::cell::Cell>>::initialize",
+          "count": 3,
+          "fraction": 0.00020813098376578327
+        },
+        {
+          "symbol": "<alloc::vec::Vec<glass::intake::Piece>>::push_mut",
+          "count": 3,
+          "fraction": 0.00020813098376578327
+        },
+        {
+          "symbol": "mi_realloc_aligned",
+          "count": 3,
+          "fraction": 0.00020813098376578327
+        },
+        {
+          "symbol": "<glass::intake::Intake>::in_cell_areas",
+          "count": 3,
+          "fraction": 0.00020813098376578327
+        },
+        {
+          "symbol": "mi_theap_umalloc",
+          "count": 3,
+          "fraction": 0.00020813098376578327
+        },
+        {
+          "symbol": "<usize as core::fmt::Display>::fmt",
+          "count": 2,
+          "fraction": 0.00013875398917718884
+        },
+        {
+          "symbol": "mi_find_page",
+          "count": 2,
+          "fraction": 0.00013875398917718884
+        },
+        {
+          "symbol": "<std::sys::pal::unix::time::Timespec>::now",
+          "count": 2,
+          "fraction": 0.00013875398917718884
+        },
+        {
+          "symbol": "<alacritty_terminal::grid::row::Row<alacritty_terminal::term::cell::Cell> as core::ops::index::IndexMut<alacritty_terminal::index::Column>>::index_mut",
+          "count": 2,
+          "fraction": 0.00013875398917718884
+        },
+        {
+          "symbol": "<alloc::raw_vec::RawVecInner>::finish_grow",
+          "count": 2,
+          "fraction": 0.00013875398917718884
+        },
+        {
+          "symbol": "core::ptr::drop_glue::<alacritty_terminal::grid::Grid<alacritty_terminal::term::cell::Cell>>",
+          "count": 2,
+          "fraction": 0.00013875398917718884
+        },
+        {
+          "symbol": "mi_theap_malloc_zero_aligned_at_generic",
+          "count": 2,
+          "fraction": 0.00013875398917718884
+        },
+        {
+          "symbol": "_mi_bin_size",
+          "count": 2,
+          "fraction": 0.00013875398917718884
+        },
+        {
+          "symbol": "glass::engine::plain_c0",
+          "count": 2,
+          "fraction": 0.00013875398917718884
+        },
+        {
+          "symbol": "glass::session::tell_the_store",
+          "count": 2,
+          "fraction": 0.00013875398917718884
+        },
+        {
+          "symbol": "alloc::fmt::format::format_inner",
+          "count": 2,
+          "fraction": 0.00013875398917718884
+        },
+        {
+          "symbol": "<glass::engine::Watch as vte::ansi::Handler>::linefeed",
+          "count": 2,
+          "fraction": 0.00013875398917718884
+        },
+        {
+          "symbol": "<vte::ansi::Performer<glass::engine::Watch, vte::ansi::StdSyncHandler> as vte::Perform>::execute",
+          "count": 2,
+          "fraction": 0.00013875398917718884
+        },
+        {
+          "symbol": "<core::fmt::Formatter>::pad_integral",
+          "count": 1,
+          "fraction": 6.937699458859442e-05
+        },
+        {
+          "symbol": "mi_bbitmap_try_find_and_clearN_",
+          "count": 1,
+          "fraction": 6.937699458859442e-05
+        },
+        {
+          "symbol": "<core::fmt::Formatter>::pad_integral::write_prefix",
+          "count": 1,
+          "fraction": 6.937699458859442e-05
+        },
+        {
+          "symbol": "<glass::engine::Engine>::fold_sentinel",
+          "count": 1,
+          "fraction": 6.937699458859442e-05
+        }
+      ]
+    },
+    "unicode/candidate": {
+      "samples": 11509,
+      "symbols": [
+        {
+          "symbol": "<glass::engine::Watch>::print_utf8",
+          "count": 8702,
+          "fraction": 0.7561039186723434
+        },
+        {
+          "symbol": "[other ELF] /usr/lib/libc.so.6",
+          "count": 526,
+          "fraction": 0.04570336258580242
+        },
+        {
+          "symbol": "glass::engine::next_run",
+          "count": 361,
+          "fraction": 0.03136675645147276
+        },
+        {
+          "symbol": "<alacritty_terminal::term::Term<glass::engine::Listener>>::scroll_up_relative",
+          "count": 224,
+          "fraction": 0.019463028933877836
+        },
+        {
+          "symbol": "memchr::arch::x86_64::memchr::memchr_raw::find_avx2",
+          "count": 191,
+          "fraction": 0.016595707707011905
+        },
+        {
+          "symbol": "<glass::engine::Watch as vte::ansi::Handler>::input",
+          "count": 147,
+          "fraction": 0.012772612737857328
+        },
+        {
+          "symbol": "unicode_width::tables::lookup_width",
+          "count": 133,
+          "fraction": 0.011556173429489964
+        },
+        {
+          "symbol": "<alacritty_terminal::grid::row::Row<alacritty_terminal::term::cell::Cell> as core::ops::index::IndexMut<alacritty_terminal::index::Column>>::index_mut",
+          "count": 131,
+          "fraction": 0.011382396385437483
+        },
+        {
+          "symbol": "<glass::engine::Engine>::apply",
+          "count": 128,
+          "fraction": 0.011121730819358763
+        },
+        {
+          "symbol": "<alacritty_terminal::grid::Grid<alacritty_terminal::term::cell::Cell>>::scroll_up::<vte::ansi::Color>",
+          "count": 127,
+          "fraction": 0.011034842297332523
+        },
+        {
+          "symbol": "<alacritty_terminal::term::cell::CellExtra>::single_mark",
+          "count": 104,
+          "fraction": 0.009036406290728995
+        },
+        {
+          "symbol": "<alacritty_terminal::term::Term<glass::engine::Listener> as vte::ansi::Handler>::input",
+          "count": 94,
+          "fraction": 0.008167521070466591
+        },
+        {
+          "symbol": "<glass::engine::Watch>::note_scroll_up",
+          "count": 63,
+          "fraction": 0.005473976887653141
+        },
+        {
+          "symbol": "core::str::converts::from_utf8",
+          "count": 62,
+          "fraction": 0.005387088365626901
+        },
+        {
+          "symbol": "glass::engine::plain_c0",
+          "count": 54,
+          "fraction": 0.004691980189416978
+        },
+        {
+          "symbol": "<vte::Parser<1024>>::advance_ground::<vte::ansi::Performer<glass::engine::Watch, vte::ansi::StdSyncHandler>>",
+          "count": 53,
+          "fraction": 0.004605091667390738
+        },
+        {
+          "symbol": "<glass::engine::Watch>::print_wide",
+          "count": 51,
+          "fraction": 0.004431314623338257
+        },
+        {
+          "symbol": "glass::speed::workloads",
+          "count": 42,
+          "fraction": 0.003649317925102094
+        },
+        {
+          "symbol": "mi_free",
+          "count": 33,
+          "fraction": 0.002867321226865931
+        },
+        {
+          "symbol": "[other ELF] [vdso]",
+          "count": 33,
+          "fraction": 0.002867321226865931
+        },
+        {
+          "symbol": "<glass::engine::Watch as vte::ansi::Handler>::linefeed",
+          "count": 26,
+          "fraction": 0.0022591015726822487
+        },
+        {
+          "symbol": "glass::engine::note_uniform_span",
+          "count": 22,
+          "fraction": 0.0019115474845772874
+        },
+        {
+          "symbol": "<alacritty_terminal::term::Term<glass::engine::Listener> as vte::ansi::Handler>::linefeed",
+          "count": 18,
+          "fraction": 0.001563993396472326
+        },
+        {
+          "symbol": "_mi_page_malloc_zero",
+          "count": 17,
+          "fraction": 0.0014771048744460858
+        },
+        {
+          "symbol": "mi_theap_malloc_aligned",
+          "count": 16,
+          "fraction": 0.0013902163524198454
+        },
+        {
+          "symbol": "<glass::engine::Watch>::fold_sentinel",
+          "count": 15,
+          "fraction": 0.001303327830393605
+        },
+        {
+          "symbol": "<alacritty_terminal::selection::Selection>::to_range::<glass::engine::Listener>",
+          "count": 15,
+          "fraction": 0.001303327830393605
+        },
+        {
+          "symbol": "mi_malloc_aligned",
+          "count": 13,
+          "fraction": 0.0011295507863411244
+        },
+        {
+          "symbol": "glass::session::pump",
+          "count": 12,
+          "fraction": 0.001042662264314884
+        },
+        {
+          "symbol": "<alacritty_terminal::grid::storage::Storage<alacritty_terminal::term::cell::Cell> as core::ops::index::IndexMut<alacritty_terminal::index::Line>>::index_mut",
+          "count": 11,
+          "fraction": 0.0009557737422886437
+        },
+        {
+          "symbol": "<alacritty_terminal::selection::Selection>::range_simple",
+          "count": 9,
+          "fraction": 0.000781996698236163
+        },
+        {
+          "symbol": "<glass::engine::Engine>::process",
+          "count": 8,
+          "fraction": 0.0006951081762099227
+        },
+        {
+          "symbol": "<glass::engine::Engine>::collect",
+          "count": 8,
+          "fraction": 0.0006951081762099227
+        },
+        {
+          "symbol": "mi_page_free_list_extend",
+          "count": 7,
+          "fraction": 0.0006082196541836824
+        },
+        {
+          "symbol": "<alacritty_terminal::grid::storage::Storage<alacritty_terminal::term::cell::Cell>>::initialize",
+          "count": 6,
+          "fraction": 0.000521331132157442
+        },
+        {
+          "symbol": "mi_theap_malloc_zero_aligned_at_generic",
+          "count": 4,
+          "fraction": 0.00034755408810496134
+        },
+        {
+          "symbol": "_mi_bin_size",
+          "count": 3,
+          "fraction": 0.000260665566078721
+        },
+        {
+          "symbol": "mi_bin",
+          "count": 3,
+          "fraction": 0.000260665566078721
+        },
+        {
+          "symbol": "_mi_malloc_generic",
+          "count": 3,
+          "fraction": 0.000260665566078721
+        },
+        {
+          "symbol": "<vte::Parser<1024>>::advance_partial_utf8::<vte::ansi::Performer<glass::engine::Watch, vte::ansi::StdSyncHandler>>",
+          "count": 3,
+          "fraction": 0.000260665566078721
+        },
+        {
+          "symbol": "glass::speed::feed",
+          "count": 3,
+          "fraction": 0.000260665566078721
+        },
+        {
+          "symbol": "glass::session::tell_the_store",
+          "count": 3,
+          "fraction": 0.000260665566078721
+        },
+        {
+          "symbol": "<glass::intake::Splitter>::split",
+          "count": 3,
+          "fraction": 0.000260665566078721
+        },
+        {
+          "symbol": "<vte::ansi::Performer<glass::engine::Watch, vte::ansi::StdSyncHandler> as vte::Perform>::execute",
+          "count": 3,
+          "fraction": 0.000260665566078721
+        },
+        {
+          "symbol": "<usize as core::fmt::Display>::fmt",
+          "count": 2,
+          "fraction": 0.00017377704405248067
+        },
+        {
+          "symbol": "<glass::engine::Engine>::fold_sentinel",
+          "count": 2,
+          "fraction": 0.00017377704405248067
+        },
+        {
+          "symbol": "<alloc::string::String as core::fmt::Display>::fmt",
+          "count": 1,
+          "fraction": 8.688852202624034e-05
+        },
+        {
+          "symbol": "<vte::Parser<1024>>::advance_until_terminated::<vte::ansi::Performer<glass::engine::Watch, vte::ansi::StdSyncHandler>>",
+          "count": 1,
+          "fraction": 8.688852202624034e-05
+        },
+        {
+          "symbol": "<glass::intake::Intake>::in_cell_areas",
+          "count": 1,
+          "fraction": 8.688852202624034e-05
+        },
+        {
+          "symbol": "mi_find_page",
+          "count": 1,
+          "fraction": 8.688852202624034e-05
+        },
+        {
+          "symbol": "mi_realloc_aligned",
+          "count": 1,
+          "fraction": 8.688852202624034e-05
+        },
+        {
+          "symbol": "<core::fmt::Formatter>::pad_integral::write_prefix",
+          "count": 1,
+          "fraction": 8.688852202624034e-05
+        },
+        {
+          "symbol": "alloc::fmt::format::format_inner",
+          "count": 1,
+          "fraction": 8.688852202624034e-05
+        },
+        {
+          "symbol": "<alacritty_terminal::term::cell::Cell as alacritty_terminal::grid::GridCell>::style_eq",
+          "count": 1,
+          "fraction": 8.688852202624034e-05
+        },
+        {
+          "symbol": "_mi_page_free_collect",
+          "count": 1,
+          "fraction": 8.688852202624034e-05
+        },
+        {
+          "symbol": "mi_good_size",
+          "count": 1,
+          "fraction": 8.688852202624034e-05
+        },
+        {
+          "symbol": "<core::fmt::Formatter>::pad_integral",
+          "count": 1,
+          "fraction": 8.688852202624034e-05
+        },
+        {
+          "symbol": "mi_manage_os_memory_ex2",
+          "count": 1,
+          "fraction": 8.688852202624034e-05
+        },
+        {
+          "symbol": "_mi_page_retire",
+          "count": 1,
+          "fraction": 8.688852202624034e-05
+        },
+        {
+          "symbol": "<alloc::raw_vec::RawVecInner>::finish_grow",
+          "count": 1,
+          "fraction": 8.688852202624034e-05
+        },
+        {
+          "symbol": "core::ptr::drop_glue::<alacritty_terminal::grid::Grid<alacritty_terminal::term::cell::Cell>>",
+          "count": 1,
+          "fraction": 8.688852202624034e-05
+        }
+      ]
+    },
+    "unicode/control": {
+      "samples": 11647,
+      "symbols": [
+        {
+          "symbol": "<glass::engine::Watch>::print_utf8",
+          "count": 8596,
+          "fraction": 0.7380441315360179
+        },
+        {
+          "symbol": "[other ELF] /usr/lib/libc.so.6",
+          "count": 555,
+          "fraction": 0.04765175581694857
+        },
+        {
+          "symbol": "glass::engine::next_run",
+          "count": 391,
+          "fraction": 0.03357087662058899
+        },
+        {
+          "symbol": "<alacritty_terminal::term::Term<glass::engine::Listener>>::scroll_up_relative",
+          "count": 204,
+          "fraction": 0.017515239975959475
+        },
+        {
+          "symbol": "memchr::arch::x86_64::memchr::memchr_raw::find_avx2",
+          "count": 202,
+          "fraction": 0.01734352193697948
+        },
+        {
+          "symbol": "<glass::engine::Engine>::apply",
+          "count": 163,
+          "fraction": 0.01399502017686958
+        },
+        {
+          "symbol": "unicode_width::tables::lookup_width",
+          "count": 159,
+          "fraction": 0.01365158409890959
+        },
+        {
+          "symbol": "<glass::engine::Watch as vte::ansi::Handler>::input",
+          "count": 153,
+          "fraction": 0.013136429981969606
+        },
+        {
+          "symbol": "<alacritty_terminal::grid::row::Row<alacritty_terminal::term::cell::Cell> as core::ops::index::IndexMut<alacritty_terminal::index::Column>>::index_mut",
+          "count": 139,
+          "fraction": 0.011934403709109642
+        },
+        {
+          "symbol": "<alacritty_terminal::grid::Grid<alacritty_terminal::term::cell::Cell>>::scroll_up::<vte::ansi::Color>",
+          "count": 116,
+          "fraction": 0.009959646260839701
+        },
+        {
+          "symbol": "<alacritty_terminal::term::cell::CellExtra>::single_mark",
+          "count": 109,
+          "fraction": 0.009358633124409719
+        },
+        {
+          "symbol": "<alacritty_terminal::term::Term<glass::engine::Listener> as vte::ansi::Handler>::input",
+          "count": 95,
+          "fraction": 0.008156606851549755
+        },
+        {
+          "symbol": "core::str::converts::from_utf8",
+          "count": 83,
+          "fraction": 0.0071262986176697865
+        },
+        {
+          "symbol": "<glass::engine::Watch>::print_wide",
+          "count": 82,
+          "fraction": 0.007040439598179789
+        },
+        {
+          "symbol": "<glass::engine::Mirror>::stretch",
+          "count": 79,
+          "fraction": 0.0067828625397097966
+        },
+        {
+          "symbol": "<vte::Parser<1024>>::advance_ground::<vte::ansi::Performer<glass::engine::Watch, vte::ansi::StdSyncHandler>>",
+          "count": 59,
+          "fraction": 0.005065682149909848
+        },
+        {
+          "symbol": "glass::speed::workloads",
+          "count": 44,
+          "fraction": 0.0037777968575598867
+        },
+        {
+          "symbol": "<glass::engine::Watch>::note_scroll_up",
+          "count": 44,
+          "fraction": 0.0037777968575598867
+        },
+        {
+          "symbol": "glass::engine::plain_c0",
+          "count": 41,
+          "fraction": 0.0035202197990898943
+        },
+        {
+          "symbol": "memchr::arch::x86_64::memchr::memrchr_raw::find_avx2",
+          "count": 30,
+          "fraction": 0.002575770584699923
+        },
+        {
+          "symbol": "<glass::engine::Watch as vte::ansi::Handler>::linefeed",
+          "count": 28,
+          "fraction": 0.002404052545719928
+        },
+        {
+          "symbol": "mi_free",
+          "count": 22,
+          "fraction": 0.0018888984287799434
+        },
+        {
+          "symbol": "[other ELF] [vdso]",
+          "count": 22,
+          "fraction": 0.0018888984287799434
+        },
+        {
+          "symbol": "glass::engine::note_uniform_span",
+          "count": 22,
+          "fraction": 0.0018888984287799434
+        },
+        {
+          "symbol": "<alacritty_terminal::term::Term<glass::engine::Listener> as vte::ansi::Handler>::linefeed",
+          "count": 18,
+          "fraction": 0.0015454623508199537
+        },
+        {
+          "symbol": "<alacritty_terminal::selection::Selection>::to_range::<glass::engine::Listener>",
+          "count": 17,
+          "fraction": 0.0014596033313299562
+        },
+        {
+          "symbol": "<alacritty_terminal::grid::storage::Storage<alacritty_terminal::term::cell::Cell> as core::ops::index::IndexMut<alacritty_terminal::index::Line>>::index_mut",
+          "count": 17,
+          "fraction": 0.0014596033313299562
+        },
+        {
+          "symbol": "glass::session::pump",
+          "count": 15,
+          "fraction": 0.0012878852923499614
+        },
+        {
+          "symbol": "mi_theap_malloc_aligned",
+          "count": 14,
+          "fraction": 0.001202026272859964
+        },
+        {
+          "symbol": "_mi_page_malloc_zero",
+          "count": 10,
+          "fraction": 0.0008585901948999742
+        },
+        {
+          "symbol": "<alacritty_terminal::selection::Selection>::range_simple",
+          "count": 10,
+          "fraction": 0.0008585901948999742
+        },
+        {
+          "symbol": "<vte::Parser<1024>>::advance_until_terminated::<vte::ansi::Performer<glass::engine::Watch, vte::ansi::StdSyncHandler>>",
+          "count": 9,
+          "fraction": 0.0007727311754099768
+        },
+        {
+          "symbol": "mi_malloc_aligned",
+          "count": 9,
+          "fraction": 0.0007727311754099768
+        },
+        {
+          "symbol": "<glass::engine::Engine>::collect",
+          "count": 8,
+          "fraction": 0.0006868721559199793
+        },
+        {
+          "symbol": "<vte::ansi::Performer<glass::engine::Watch, vte::ansi::StdSyncHandler> as vte::Perform>::execute",
+          "count": 8,
+          "fraction": 0.0006868721559199793
+        },
+        {
+          "symbol": "<glass::engine::Watch>::fold_sentinel",
+          "count": 8,
+          "fraction": 0.0006868721559199793
+        },
+        {
+          "symbol": "<glass::engine::Engine>::process",
+          "count": 7,
+          "fraction": 0.000601013136429982
+        },
+        {
+          "symbol": "<alacritty_terminal::grid::storage::Storage<alacritty_terminal::term::cell::Cell>>::initialize",
+          "count": 6,
+          "fraction": 0.0005151541169399846
+        },
+        {
+          "symbol": "mi_bin",
+          "count": 5,
+          "fraction": 0.0004292950974499871
+        },
+        {
+          "symbol": "<alacritty_terminal::term::cell::Cell as alacritty_terminal::grid::GridCell>::style_eq",
+          "count": 5,
+          "fraction": 0.0004292950974499871
+        },
+        {
+          "symbol": "<usize as core::fmt::Display>::fmt",
+          "count": 4,
+          "fraction": 0.00034343607795998967
+        },
+        {
+          "symbol": "mi_page_free_list_extend",
+          "count": 4,
+          "fraction": 0.00034343607795998967
+        },
+        {
+          "symbol": "mi_find_page",
+          "count": 3,
+          "fraction": 0.0002575770584699923
+        },
+        {
+          "symbol": "glass::session::tell_the_store",
+          "count": 3,
+          "fraction": 0.0002575770584699923
+        },
+        {
+          "symbol": "<vte::Parser<1024>>::advance_partial_utf8::<vte::ansi::Performer<glass::engine::Watch, vte::ansi::StdSyncHandler>>",
+          "count": 3,
+          "fraction": 0.0002575770584699923
+        },
+        {
+          "symbol": "<glass::intake::Splitter>::split",
+          "count": 3,
+          "fraction": 0.0002575770584699923
+        },
+        {
+          "symbol": "core::ptr::drop_glue::<alacritty_terminal::grid::Grid<alacritty_terminal::term::cell::Cell>>",
+          "count": 3,
+          "fraction": 0.0002575770584699923
+        },
+        {
+          "symbol": "mi_good_size",
+          "count": 2,
+          "fraction": 0.00017171803897999483
+        },
+        {
+          "symbol": "<char as core::fmt::Display>::fmt",
+          "count": 2,
+          "fraction": 0.00017171803897999483
+        },
+        {
+          "symbol": "<[alacritty_terminal::grid::row::Row<alacritty_terminal::term::cell::Cell>]>::rotate_left",
+          "count": 2,
+          "fraction": 0.00017171803897999483
+        },
+        {
+          "symbol": "<glass::engine::Engine>::fold_sentinel",
+          "count": 2,
+          "fraction": 0.00017171803897999483
+        },
+        {
+          "symbol": "glass::speed::feed",
+          "count": 2,
+          "fraction": 0.00017171803897999483
+        },
+        {
+          "symbol": "mi_theap_malloc_zero_aligned_at_generic",
+          "count": 2,
+          "fraction": 0.00017171803897999483
+        },
+        {
+          "symbol": "core::fmt::write",
+          "count": 2,
+          "fraction": 0.00017171803897999483
+        },
+        {
+          "symbol": "_mi_theap_realloc_zero",
+          "count": 2,
+          "fraction": 0.00017171803897999483
+        },
+        {
+          "symbol": "alloc::fmt::format::format_inner",
+          "count": 1,
+          "fraction": 8.585901948999742e-05
+        },
+        {
+          "symbol": "mi_theap_malloc_zero_aligned_at_overalloc",
+          "count": 1,
+          "fraction": 8.585901948999742e-05
+        },
+        {
+          "symbol": "_mi_malloc_generic",
+          "count": 1,
+          "fraction": 8.585901948999742e-05
+        },
+        {
+          "symbol": "_mi_bin_size",
+          "count": 1,
+          "fraction": 8.585901948999742e-05
+        }
+      ]
+    }
+  },
+  "cpu_rate_comparisons": {
+    "truecolor": {
+      "plain_candidate_over_control": {
+        "ratios": [
+          0.8929110105580694,
+          0.9382940108892921,
+          0.9151891252955083
+        ],
+        "min": 0.8929110105580694,
+        "median": 0.9151891252955083,
+        "max": 0.9382940108892921
+      },
+      "control_profiled_over_plain": {
+        "ratios": [
+          1.0147812971342383,
+          0.9897156684815486,
+          0.9893617021276597
+        ],
+        "min": 0.9893617021276597,
+        "median": 0.9897156684815486,
+        "max": 1.0147812971342383
+      },
+      "candidate_profiled_over_plain": {
+        "ratios": [
+          1.0520270270270269,
+          0.9945196647324307,
+          0.9958023894091056
+        ],
+        "min": 0.9945196647324307,
+        "median": 0.9958023894091056,
+        "max": 1.0520270270270269
+      }
+    },
+    "unicode": {
+      "plain_candidate_over_control": {
+        "ratios": [
+          1.0163517441860466,
+          1.0180115273775217,
+          0.9803571428571428
+        ],
+        "min": 0.9803571428571428,
+        "median": 1.0163517441860466,
+        "max": 1.0180115273775217
+      },
+      "control_profiled_over_plain": {
+        "ratios": [
+          1.015625,
+          0.9945965417867435,
+          0.9875
+        ],
+        "min": 0.9875,
+        "median": 0.9945965417867435,
+        "max": 1.015625
+      },
+      "candidate_profiled_over_plain": {
+        "ratios": [
+          1.0046478369681802,
+          1.0099079971691436,
+          1.025136612021858
+        ],
+        "min": 1.0046478369681802,
+        "median": 1.0099079971691436,
+        "max": 1.025136612021858
+      }
+    }
+  },
+  "limits": [
+    "Diagnostic leaf instruction pointers over whole test thread, including setup and all internal passes; not only the fastest timed round.",
+    "Requested 100us period is coalesced by CPU timer delivery; overruns are retained, not missing buffer records.",
+    "Profiles are conditional sample shares, not instructions retired, cycles, call stacks or causal lost time. Layout and signal perturbation can alias.",
+    "Three sessions per exact arm/workload on shared host; no significance, optimization promotion, terminal/Ghostty timing or championship claim."
+  ]
+}

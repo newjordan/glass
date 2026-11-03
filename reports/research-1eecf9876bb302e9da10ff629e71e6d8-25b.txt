@@ -1,0 +1,78 @@
+Iteration 25 checkpoint addendum — explicit historical documentation closure
+============================================================================
+
+This is additive to reports/research-1eecf9876bb302e9da10ff629e71e6d8-25.txt.
+The original report, v1 verifier, first manifest and index are unchanged.
+Performance results, sample counts, attribution limits and runtime decision are
+unchanged. The first report's checkpoint command was provisional when frozen;
+the current command is:
+
+  python3 -B bench/results/2026-11-03-instruction-attribution/verify-current.py
+
+Use complete-frozen-index.json for the full two-manifest hash replay.
+Do not use the original verify.py as the current checkpoint: it deliberately
+retains the initial failure, not a repaired success.
+
+Observed failure and its scope
+-----------------------------
+The v1 checkpoint passed current preservation checks, the 120-file own hash
+index, both exact analysis replays, and the ELF/disassembly cross-check. It then
+failed when invoking the historical iteration-24 verifier, whose own manifest
+binds CHANGELOG.md, docs/PERFORMANCE.md and bench/README.md to pre-iteration
+bytes. Iteration 25 had intentionally added documentation to those live paths.
+The exact observed diagnostic was:
+
+  ValueError: changed source: CHANGELOG.md (read CHANGELOG.md)
+
+Its redirected checkpoint-initial.json is empty and remains so; the failure is
+explicitly recorded in checkpoint-initial-failure.json. No successful JSON was
+invented for the failed invocation. No captures, old manifests or historical
+sources were repaired or replaced to make the check pass.
+
+Additive resolution
+-------------------
+Three new prior-*.md files retain the documentation bytes at the exact
+starting-state commit 4935950. Each was checked against the original iteration-24
+manifest's expected hash. prior-own-remapped-index.json and
+prior-remapped-index.json explicitly map only those three evolved source names
+to those retained files; there is no path search, newest-file fallback or live
+source substitution.
+
+replay-prior.py is the original iteration-24 verifier with only its fixed
+historical directory and its own evidence index changed to those explicit
+mappings. It still performs all original arm-identity, source, mutation,
+corruption, test-log, ancestor/prior-index and live-check checks. Its returned
+JSON equals the recorded prior-checkpoint.json from before this iteration's
+documentation edits. The full prior remapped index independently replays both
+original manifests, including the supplemental evidence.
+
+verify-current.py is an additive successor of the frozen verify.py. It uses the
+two-manifest own complete index and explicit replay-prior.py. The successor
+checks its predecessor adapter's exact scope, live file preservation, own and
+historical hash closure, raw analysis replay, existing ELF reader/disassembly
+cross-check, adapted prior checkpoint, and five existing engine replay tests.
+It neither runs new timings nor rebuilds/replaces selected code. The second
+manifest binds the new checkpoint adapter, snapshots, indexes, documentation
+addendum and helper sources. Both original and supplemental manifest hashes
+are pinned by the new complete index. The initial failure and its cause remain
+visible; this is historical evidence closure, not a new performance result.
+
+Other exploratory shell diagnostics
+-----------------------------------
+An initial analyze.py write had a missing parenthesis caught by its write-time
+compiler; it was fixed before analysis execution and before any evidence freeze.
+Two inspection commands looked for a nonexistent summary.json instead of the
+actual main-analysis.json. Another looked up a nonexistent profile key. Two doc
+insertions assumed headings not present in this repository; the second appended
+the two doc summaries before failing at the changelog heading, which was then
+handled separately. A final wc over directories exited nonzero after the ELF
+cross-check and five existing tests had already completed successfully. These
+were diagnostic/inspection failures, not accepted benchmark or test verdicts.
+The immutable logs and current checkpoint, not a composite shell's last status,
+are the evidence for the reported results.
+
+Decision remains: no runtime edit, no optimization promotion, no new Ghostty
+comparison and no world-championship claim. The measured next leads remain
+CSI-loop register allocation (truecolor tradeoff) and row-local UTF-8 decoder
+composition (Unicode). Missing exact binaries fail explicitly; stored timing
+replay is not a fresh timing measurement.

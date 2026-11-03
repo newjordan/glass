@@ -1,0 +1,34 @@
+{
+  "schema": "glass.instruction-attribution-protocol/v1",
+  "question": "Locate i24 truecolor regression and contrast Unicode using exact retained binaries; no new optimization or runtime promotion.",
+  "pilot": {
+    "workload": "truecolor",
+    "arm": "control",
+    "scale": 1,
+    "rounds": 1,
+    "purpose": "Validate exact test thread arming, sample mapping, symbolization. Excluded from confirmatory summaries."
+  },
+  "measurement": {
+    "pairs": 3,
+    "workloads": [
+      "truecolor",
+      "unicode"
+    ],
+    "scale": 12,
+    "rounds": 5,
+    "sample_us": 100,
+    "arms": [
+      "control-plain",
+      "candidate-profiled",
+      "candidate-plain",
+      "control-profiled"
+    ],
+    "order": "Rotate four arms left by round index, reverse on odd round; workloads truecolor then unicode each round.",
+    "same_binaries": "retained i24 exact identities; no build",
+    "only_test": "speed::speed"
+  },
+  "attribution": "CPU-time signal samples across whole test thread, including setup and all internal rounds; report exclusive symbol shares and top exact machine-instruction addresses. Not stacks, retired instructions, kernel attribution, timed-pass attribution or causal lost time. Engine::apply conditional hotspot distribution is diagnostic.",
+  "observer": "Compare profiled/plain paired CPU-rate ratios separately per exact binary and workload, plus plain candidate/control; three pairs descriptive only. No significance/promotion gate.",
+  "limits": "Shared host; fixed AB rotations do not establish iid. Requested sample period may be below actual timer resolution. No stack sampling, source lines, runtime edit, terminal/Ghostty timing or title claim.",
+  "stop": "Exactly one pilot and 24 confirmatory sessions if pilot valid; failure retains incomplete evidence and stops, no variant/extra pairs/rescue pooling."
+}

@@ -809,3 +809,21 @@ python3 -B bench/replay-evidence-index.py \
 Full sources, frozen protocol, six-workload table, build identities, limits and
 remaining competitive gaps: `bench/results/2026-11-03-authority-handoff/README.md`
 and `reports/research-1eecf9876bb302e9da10ff629e71e6d8-24.txt`.
+
+### Exact-binary instruction attribution (2026-11-03, iteration 25)
+
+Diagnostic only, no runtime change or promotion. One excluded pilot and 24
+frozen plain/profiled sessions reused the prior ground-handoff binaries.
+Candidate/control truecolor CPU-rate ratios were 0.893/0.938/0.915. Exact
+machine code exposes extra candidate CSI digit-loop index spill/reloads;
+Engine::apply holds 42.73%/47.48% of control/candidate truecolor samples. This
+is a testable codegen lead, not established causal cost. Unicode instead holds
+73.80%/75.61% of samples in print_utf8 with hotspots in leading-byte dispatch,
+not standalone width-table lookup. Requested 100us samples arrived around 1ms
+and cover setup/all rounds. Three pairs and conditional shares establish no
+significance, observer equivalence, future optimization or competitive win.
+Selected executable, all 120 tracked Rust sources and 6,182 prior tracked
+result/report files are unchanged. Raw evidence, instruction disassembly,
+existing-ELF-reader cross-check and read-only `verify.py` are under
+`bench/results/2026-11-03-instruction-attribution/`; full report:
+`reports/research-1eecf9876bb302e9da10ff629e71e6d8-25.txt`.

@@ -5,6 +5,17 @@ All notable changes to glass are recorded here. Versions follow
 
 ## 0.1.0 - unreleased
 
+### Research — exact-binary instruction attribution (no runtime change)
+
+- Freeze 24 plain/profiled engine sessions and one excluded sampler pilot.
+  Repeated truecolor regression localizes to Engine::apply; disassembly exposes
+  extra candidate CSI digit-loop index spill/reloads. Unicode samples instead
+  concentrate in print_utf8 with leading-byte dispatch hotspots. These are
+  diagnostic codegen leads, not established causal costs or competitive wins.
+- Retain raw traces, exact ELF symbols/disassembly, observer ratios, an existing
+  ELF-reader cross-check and a read-only checkpoint. Preserve selected build,
+  all 120 tracked Rust files and 6,182 prior tracked result/report files.
+
 The first release. glass is a terminal that draws in its own GPU window
 (wgpu on Vulkan, winit, with `alacritty_terminal` as the terminal engine).
 A program runs in a pseudo-terminal, and what it writes comes in through
