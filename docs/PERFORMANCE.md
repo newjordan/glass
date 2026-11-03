@@ -742,3 +742,29 @@ python3 -B bench/results/2026-11-03-static-width-cache/verify.py
 python3 -B bench/replay-evidence-index.py \
   bench/results/2026-11-03-static-width-cache/frozen-index.json
 ```
+
+
+### Authoritative parser ground: real targets gained, truecolor guard failed
+
+A distinct 11-pair engine screen removes the shadow `Mirror` and gates runs
+and simple CSI on VTE's actual ground, partial-UTF8 and pending-sync state.
+Candidate/control median CPU-throughput: ASCII **1.064495** (11/11 wins),
+scroll-region **1.068099** (11/11), but truecolor **0.922042** (0/11). Both
+targets clear six-workload Holm p=.005859; the .98 truecolor guard fails.
+Runtime is rejected/restored; no new PTY/Ghostty timing follows. This is
+best-of-five in-process work, not terminal speed; AB/BA signs need not be
+independent, and changed parser handoff means cost is not isolated.
+
+Retain 1,092 read-boundary scenarios; a built mutant omitting partial-UTF8
+state fails with actual cell mismatch. Both correct arms pass 382 terminal
+tests and 12,800 differential streams. A stale-build incident was caught
+before timing: `copy2` restored old source mtimes and Cargo returned the mutant
+as control (equal SHA256). Fresh corrected builds pass; initial receipts remain.
+`bench/build-engine-arm.py` now requires non-fresh affected-package receipts
+and atomically publishes without clobbering. 65 Python tests and 17 report/build
+corruption challenges pass. Selected executable, 119 other crate Rust sources
+and 5,994 prior tracked artifacts are preserved. No every-metric win claimed.
+
+```sh
+python3 -B bench/results/2026-11-03-parser-authority/verify.py
+```

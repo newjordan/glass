@@ -1,0 +1,57 @@
+{
+  "schema": "glass.parser-authority-decision/v1",
+  "summary": {
+    "ascii": {
+      "median_cpu_ratio": 1.0644953240890036,
+      "wins": 11,
+      "losses": 0,
+      "sign_p_two_sided": 0.0009765625,
+      "holm_p": 0.005859375
+    },
+    "cursor_motion": {
+      "median_cpu_ratio": 1.0397070161912105,
+      "wins": 11,
+      "losses": 0,
+      "sign_p_two_sided": 0.0009765625,
+      "holm_p": 0.005859375
+    },
+    "scroll_region": {
+      "median_cpu_ratio": 1.068099258122282,
+      "wins": 11,
+      "losses": 0,
+      "sign_p_two_sided": 0.0009765625,
+      "holm_p": 0.005859375
+    },
+    "truecolor": {
+      "median_cpu_ratio": 0.922042188933048,
+      "wins": 0,
+      "losses": 11,
+      "sign_p_two_sided": 0.0009765625,
+      "holm_p": 0.005859375
+    },
+    "tui_frames": {
+      "median_cpu_ratio": 1.0315037349788894,
+      "wins": 10,
+      "losses": 1,
+      "sign_p_two_sided": 0.01171875,
+      "holm_p": 0.0234375
+    },
+    "unicode": {
+      "median_cpu_ratio": 1.0116873630387144,
+      "wins": 8,
+      "losses": 3,
+      "sign_p_two_sided": 0.2265625,
+      "holm_p": 0.2265625
+    }
+  },
+  "cleared_targets": [
+    "ascii",
+    "scroll_region"
+  ],
+  "point_regression_guards_failed": [
+    "truecolor"
+  ],
+  "engine_screen_cleared": false,
+  "runtime_promotion": false,
+  "note": "Engine diagnostic only; no equivalence, causality, terminal throughput or championship acceptance."
+}

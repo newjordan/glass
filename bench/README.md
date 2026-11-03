@@ -702,3 +702,33 @@ python3 -B bench/results/2026-11-03-static-width-cache/verify.py
 python3 -B bench/replay-evidence-index.py \
   bench/results/2026-11-03-static-width-cache/frozen-index.json
 ```
+
+
+### Authoritative parser-ground research and fresh arm builds
+
+`results/2026-11-03-parser-authority/` retains a frozen 11-pair screen with
+ASCII/scroll-region CPU gains (1.064495/1.068099) but a truecolor regression
+(.922042). Failed guard: **no runtime promotion or new Ghostty run**. Both
+correct arms pass 382 tests, 12,800 streams and 1,092 boundary scenarios;
+a real partial-UTF8 mutant fails on cells. Read-only checkpoint:
+
+```sh
+python3 -B bench/results/2026-11-03-parser-authority/verify.py
+```
+
+**Do not restore arm sources with old mtimes and trust Cargo's executable row.**
+A reproduced `copy2` restore yielded the prior mutant executable as control;
+corrected builds happened before all timing. The retained build helper touches
+explicit Rust inputs without changing bytes, requires non-fresh VTE, terminal
+library and Glass release-test receipts, hashes sources and binary, and stages
+then atomically publishes without clobbering. Caller must exclusively own source
+edits and Cargo target. Not a sandbox or cryptographic source attestation.
+
+```sh
+python3 -B bench/build-engine-arm.py --out /tmp/glass-new-arm-test \
+  --receipt-dir bench/results/NEW-RUN/build-new-arm
+```
+
+Both output path and receipt directory must be new. Do not reuse historical
+names or overwrite earlier evidence. 65 Python tests, including failed-copy
+cleanup/no-clobber checks, and 17 actual-report corruption challenges pass.

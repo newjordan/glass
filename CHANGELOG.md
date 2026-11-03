@@ -172,6 +172,18 @@ description of what to show.
 
 ### Open intake
 
+
+### Parser-ground boundary guard and fresh-build provenance
+
+- Retain 1,092 parser-differential read-boundary scenarios for partial UTF8,
+  strings, CSI, sync and REP. A compiled partial-UTF8 mutant fails on cells.
+- Reject shadow-parser removal despite 11-pair ASCII/scroll-region CPU gains
+  (1.064495/1.068099); truecolor .922042 fails the prospective regression guard.
+  Restore runtime, retain exact raw evidence; no new Ghostty score.
+- Fix a measured build-provenance hazard: old source mtimes let Cargo reuse a
+  mutant as control. New arm builder requires real recompilation, binds hashes
+  and atomically publishes without clobbering; preserve the failed receipts.
+
 ### Static width storage research — runtime rejected
 - Measured zero-initialized BSS widths against the selected heap-backed cache:
   Unicode CPU 1.001949x over 11 fresh pairs (6 wins, Holm p=1.0), failing the

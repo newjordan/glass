@@ -1,0 +1,12 @@
+test_ambiguous_package (test_build_engine_arm.BuildArmReceipts.test_ambiguous_package) ... ok
+test_failed_or_absent_completion (test_build_engine_arm.BuildArmReceipts.test_failed_or_absent_completion) ... ok
+test_missing_executable (test_build_engine_arm.BuildArmReceipts.test_missing_executable) ... ok
+test_missing_package (test_build_engine_arm.BuildArmReceipts.test_missing_package) ... ok
+test_not_release (test_build_engine_arm.BuildArmReceipts.test_not_release) ... ok
+test_stale_packages (test_build_engine_arm.BuildArmReceipts.test_stale_packages) ... ok
+test_valid_release (test_build_engine_arm.BuildArmReceipts.test_valid_release) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.000s
+
+OK

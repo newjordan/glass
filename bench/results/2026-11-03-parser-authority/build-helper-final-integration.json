@@ -1,0 +1,7 @@
+{
+  "rebuilt_sha256": "91e0d00b56592b01dcfecacda8c6d99d2c352a97929ca0d9db4776eddf7d4c22",
+  "measured_control_sha256": "91e0d00b56592b01dcfecacda8c6d99d2c352a97929ca0d9db4776eddf7d4c22",
+  "identical": true,
+  "duplicate_output_exit": 1,
+  "duplicate_output_refused_before_receipt_creation": true
+}

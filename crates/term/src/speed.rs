@@ -1264,3 +1264,40 @@ fn c1_row_runs_preserve_parser_state() {
         }
     }
 }
+
+/// A parser can be in Ground and still own an incomplete UTF-8 scalar.
+/// Exercise runs and simple lanes immediately after partial/malformed UTF-8,
+/// unfinished CSI/string payloads and synchronized output at real read cuts.
+#[test]
+fn parser_ground_chunk_boundaries() {
+    let prefixes: &[&[u8]] = &[
+        b"", b"\xc3", b"\xe6", b"\xe6\x97", b"\xf0\x9f\x99",
+        b"\xff", b"\x1b[", b"\x1b[38;2;", b"\x1b]2;", b"\x1bP0q",
+        b"\x1b_", b"\x1b[?2026h", b"\x1b[?2026h\xc3",
+    ];
+    let bodies = [
+        "A".repeat(80), "漢é🙂e\u{301}".repeat(16),
+        format!("\x1b[31m{}\x1b[3b", "Z".repeat(80)),
+        format!("\x1b[2;3H{}\x1b[6n", "q".repeat(80)),
+    ];
+    let mut scenarios = 0;
+    for (rows, cols) in [(3, 2), (4, 10), (39, 154)] {
+        for prefix in prefixes {
+            for body in &bodies {
+                let mut stream = prefix.to_vec();
+                stream.extend_from_slice(body.as_bytes());
+                stream.extend_from_slice(b"\x18\x1b\\\x1b[?2026l\x1b[3b\x1b[6n\r\nEND");
+                for step in [1, 2, 3, 23, 24, 25, stream.len()] {
+                    let mut cuts: Vec<_> = (0..stream.len()).step_by(step).collect();
+                    cuts.extend([prefix.len(), stream.len()]);
+                    cuts.sort_unstable();
+                    cuts.dedup();
+                    assert_eq!(plain_runs_first_difference(rows, cols, &stream, &cuts), None,
+                        "{rows}x{cols}, prefix {prefix:?}, body {body:?}, chunk {step}");
+                    scenarios += 1;
+                }
+            }
+        }
+    }
+    eprintln!("parser ground chunk boundaries: {scenarios} scenarios matched");
+}

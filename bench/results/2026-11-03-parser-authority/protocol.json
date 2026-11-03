@@ -1,0 +1,15 @@
+{
+  "schema": "glass.parser-authority-protocol/v1",
+  "hypothesis": "Remove the shadow Mirror and use authoritative VTE ground plus partial-UTF8 state after flushing gaps. No bypass while sync is pending. No unsafe code. If a run starts inside a parser sequence, parse the run instead of speculating about where ground begins.",
+  "engine": {
+    "pairs": 11,
+    "scale": 2,
+    "rounds": 5,
+    "order": "alternating AB/BA",
+    "screen": "At least one of ASCII/scroll_region median CPU throughput >=1.02 with positive signs and six-workload Holm p<.05; all six paired point medians >=.98. Engine diagnostic only."
+  },
+  "correctness": "Exact built candidate: terminal suite plus 64 seeds x 200 differential streams and a deterministic chunk-boundary regression. Control uses identical added regression. Real mutant must fail the regression with actual state/cell mismatch.",
+  "follow_on": "Only if screen clears, freeze fresh 30-round full-six-permutation control/candidate/Ghostty protocol and separate replication before runtime selection. No terminal timings after failed engine screen.",
+  "stop": "One implementation, exactly 11 pairs, no variants or rescue pooling. Restore runtime after screen failure. Keep correct regression on restored source.",
+  "limits": "Shared host; no builds during measurements, no host job termination or tuning. Best-of-five CPU is not PTY throughput, startup, key-to-screen or championship acceptance."
+}

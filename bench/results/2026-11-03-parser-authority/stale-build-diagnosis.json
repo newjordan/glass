@@ -1,0 +1,6 @@
+{
+  "cause": "shutil.copy2 restored old source mtimes. Cargo reported all three affected packages fresh and returned the prior mutant binary.",
+  "evidence": "Initial control-regression executable SHA equals mutant SHA; build-control-regression.log elapsed 0.12s.",
+  "correction": "Re-write exact source bytes with current mtimes before building each arm; keep all initial logs; no timing samples were captured.",
+  "no_performance_samples_before_correction": true
+}

@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/work/frosty40/glass-repo/tree/bench/build-engine-arm.py", line 98, in <module>
+    main()
+    ~~~~^^
+  File "/work/frosty40/glass-repo/tree/bench/build-engine-arm.py", line 63, in main
+    need(not out.exists(), "output already exists")
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/frosty40/glass-repo/tree/bench/build-engine-arm.py", line 31, in need
+    raise ValueError(message)
+ValueError: output already exists

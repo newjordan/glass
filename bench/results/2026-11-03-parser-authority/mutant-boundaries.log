@@ -1,0 +1,23 @@
+
+running 1 test
+
+thread 'speed::parser_ground_chunk_boundaries' (2850782) panicked at crates/term/src/speed.rs:1295:21:
+assertion `left == right` failed: 3x2, prefix [195], body "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", chunk 25
+  left: Some("cells")
+ right: None
+stack backtrace:
+   0: __rustc::rust_begin_unwind
+   1: core::panicking::panic_fmt
+   2: core::panicking::assert_failed_inner
+   3: core::panicking::assert_failed::<core::option::Option<&str>, core::option::Option<&str>>
+   4: <glass::speed::parser_ground_chunk_boundaries::{closure#0} as core::ops::function::FnOnce<()>>::call_once
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+test speed::parser_ground_chunk_boundaries ... FAILED
+
+failures:
+
+failures:
+    speed::parser_ground_chunk_boundaries
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 392 filtered out; finished in 0.00s
+
