@@ -886,3 +886,54 @@ python3 -B bench/replay-evidence-index.py \
 
 See `bench/results/2026-11-03-decoded-handoff/README.md` and
 `reports/research-1eecf9876bb302e9da10ff629e71e6d8-27.txt`.
+
+
+### Safe decoded-scalar-domain validation: screen failed (2026-11-03)
+
+The decoder now has a distinct measured counterexample: replace special
+E0/ED/F0/F4 second-byte bounds with uniform continuation-shape checks, a decoded
+minimum per length, and safe `char::from_u32`. This changes neither accepted
+UTF8 nor row/parser authority. The sole candidate passes 383 terminal tests and
+12,800 differential streams per arm but fails the prospective 12-pair screen:
+Unicode **1.005126x**, **6/12 wins**, Holm p=1, below the 1.02 target. TUI
+**.985766x (1/12)**; truecolor **.983740x (2/12)**; cursor **.981429x (2/12)**;
+ASCII **1.004250x (7/12)**; region **1.000384x (7/12)**. All median .98 point
+guards clear, not a noninferiority demonstration. No runtime/PTY escalation.
+
+Both exact `print_utf8` entries remain at 0x2623a0; code grows **8,524->8,595
+bytes**, **1,967->1,972 instructions**, while caller `apply` retains its masked
+instruction stream. Removing source-level lead-specific cases does not reduce
+compiled footprint here. Static census is not dynamic cost or unique cause.
+Early paired ratios have large excursions (Unicode .721–1.464); every pair is
+retained, with no trimming, replacement sessions or fabricated host diagnosis.
+The frozen protocol has a stale copied hypothesis sentence; an explicit
+in-flight additive clarification precedes timing-result inspection. Exact patch,
+intervention field and numeric gates were correct and unchanged throughout.
+
+The original source and rebuilt Cargo artifact are restored byte-for-byte;
+selected release executable, 120 Rust sources and 6,514 prior tracked result/
+report files are unchanged. Full local report, limitations and read-only replay:
+
+```sh
+python3 -B bench/results/2026-11-03-scalar-domain/verify-current.py
+python3 -B bench/replay-evidence-index.py \
+  bench/results/2026-11-03-scalar-domain/final-frozen-index.json
+```
+
+See `bench/results/2026-11-03-scalar-domain/README.md` and
+`reports/research-1eecf9876bb302e9da10ff629e71e6d8-28.txt`. This is a rejected
+local engine experiment, not a Ghostty comparison or a championship result.
+
+The original history adapter's broad replacement also modified a quoted template,
+so the first local checkpoint failed. Retain the original frozen scripts/failure;
+the current checker uses a statement-anchored location/index-only adapter and
+explicit pre-correction document snapshots. Timing evidence is unchanged.
+
+
+A second checkpoint also failed: while selecting the current index, the new
+checker generator changed a quoted source-template filename. The corrected
+historical adapter itself still passed. `checkpoint-correction-failure.json`
+retains this second diagnostic; `pre-final-*` snapshots preserve the frozen
+intermediate version. The final checker changes only the complete adapter and
+index lines, and the final index binds all three evidence generations. This is
+replay-tool repair, not runtime/timing repair or an excluded measurement.

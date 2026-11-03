@@ -1,0 +1,10 @@
+{
+  "schema": "glass.scalar-domain-checkpoint-receipt/v1",
+  "sha256": {
+    "bench/results/2026-11-03-scalar-domain/checkpoint-final.json": "eff5d39073cd342bec7b9ae9a0e25c3d77e3a7e9fbfcf8008035d5dd2ff45205",
+    "bench/results/2026-11-03-scalar-domain/frozen-replay-final.json": "5766da1c60b44f6a472b113b4666b8b40c48f3b2510e2e314456291771c2374c",
+    "bench/results/2026-11-03-scalar-domain/final-frozen-index.json": "9ad67516837e7cd5cb3755f16252ab7e94968d78572f85630b72af782b19026b",
+    "bench/results/2026-11-03-scalar-domain/verify-current.py": "e55138d921e4ba2ed34d8f6ff54a163b64e9df6c0941a9271196bb2897c01b19"
+  },
+  "runtime_promotion": false
+}

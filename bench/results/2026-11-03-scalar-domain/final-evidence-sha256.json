@@ -1,0 +1,12 @@
+{
+  "CHANGELOG.md": "3cff81a8e1d0f831caf43f0efad36f3d779534d2afb67c398584290a2fc182d2",
+  "bench/README.md": "c42021cb906cdc64ffe0f9831c39632061e2b8ead4fd879364d82dffbb0072eb",
+  "bench/results/2026-11-03-scalar-domain/README.md": "e8d3f3791c717fcfd6921eee547e4d3c248f39901cc4a20aa3e801f382d4ae86",
+  "bench/results/2026-11-03-scalar-domain/checkpoint-corrected.json": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "bench/results/2026-11-03-scalar-domain/checkpoint-correction-failure.json": "63b07d1d28613ec23f5cc71268ffae616d26e1e7dca5f1f6b9b391eaf981deaa",
+  "bench/results/2026-11-03-scalar-domain/current-frozen-index.json": "0d92c180e4bd62d9ae0f2ab8339200d98a7b06bec7cc99b974d9e276c3e2acc5",
+  "bench/results/2026-11-03-scalar-domain/supplemental-evidence-sha256.json": "81879fe28d7ffea12050a90b1d3d05e7dd3cd7287629ed1bd8d03163955b97b0",
+  "bench/results/2026-11-03-scalar-domain/verify-current.py": "e55138d921e4ba2ed34d8f6ff54a163b64e9df6c0941a9271196bb2897c01b19",
+  "docs/PERFORMANCE.md": "2bd0cdb7a464f7c9d09d5fa03d0712222fca5d0b6fec0e5255c6d48634c11937",
+  "reports/research-1eecf9876bb302e9da10ff629e71e6d8-28.txt": "e8d3f3791c717fcfd6921eee547e4d3c248f39901cc4a20aa3e801f382d4ae86"
+}

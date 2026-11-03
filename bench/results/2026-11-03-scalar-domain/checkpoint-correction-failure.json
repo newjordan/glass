@@ -1,0 +1,10 @@
+{
+  "argv": [
+    "python3",
+    "-B",
+    "bench/results/2026-11-03-scalar-domain/verify-current.py"
+  ],
+  "exit": 1,
+  "stdout": "",
+  "stderr": "Traceback (most recent call last):\n  File \"/work/frosty40/glass-repo/tree/bench/results/2026-11-03-scalar-domain/verify-current.py\", line 108, in <module>\n    print(json.dumps(check(), indent=2))\n                     ~~~~~^^\n  File \"/work/frosty40/glass-repo/tree/bench/results/2026-11-03-scalar-domain/verify-current.py\", line 89, in check\n    need(adapter == (D / 'replay-prior-corrected.py').read_text(), 'prior adapter exceeds location/index changes')\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/frosty40/glass-repo/tree/bench/results/2026-11-03-scalar-domain/verify-current.py\", line 27, in need\n    raise ValueError(message)\nValueError: prior adapter exceeds location/index changes\n"
+}

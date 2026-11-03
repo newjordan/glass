@@ -1,0 +1,454 @@
+{
+  "schema": "glass.scalar-domain-raw/v1",
+  "protocol_sha256": "062fbf19c00c8843b60f43911a86fed9560fb7fb120adb8cd6415f7019845843",
+  "settings": {
+    "GLASS_BENCH_SCALE": "2.0",
+    "GLASS_BENCH_ROUNDS": "5",
+    "GLASS_BENCH_READ": "4095",
+    "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames"
+  },
+  "binaries": {
+    "control": {
+      "path": "/tmp/glass-i28-control-test",
+      "sha256": "288161ef4ed3bd64429f996878f28aa820010815c298491eaa844fbbef85766c"
+    },
+    "candidate": {
+      "path": "/tmp/glass-i28-candidate-test",
+      "sha256": "6c36d2970923134e54654f882c55d0dea96a92311f74de5fa1852651fcc6cbdb"
+    }
+  },
+  "sessions": [
+    {
+      "block": 0,
+      "slot": 0,
+      "arm": "control",
+      "argv": [
+        "/tmp/glass-i28-control-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T11:15:41.584053+00:00",
+      "start_ns": 163655361316964,
+      "end_ns": 163659628809865,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 4.26s\n\n",
+      "stderr": "         ascii:  1750.9 MB/s   1754.5 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   175.0 MB/s    175.4 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   292.5 MB/s    293.3 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   230.2 MB/s    230.7 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1769.8 MB/s   1774.0 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   255.9 MB/s    256.6 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 0,
+      "slot": 1,
+      "arm": "candidate",
+      "argv": [
+        "/tmp/glass-i28-candidate-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T11:15:45.852110+00:00",
+      "start_ns": 163659629371841,
+      "end_ns": 163664377762560,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 4.75s\n\n",
+      "stderr": "         ascii:  1164.6 MB/s   1167.9 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   126.0 MB/s    126.4 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   263.6 MB/s    264.4 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   204.3 MB/s    204.9 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1448.7 MB/s   1452.3 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   248.9 MB/s    249.5 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 1,
+      "slot": 0,
+      "arm": "candidate",
+      "argv": [
+        "/tmp/glass-i28-candidate-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T11:15:50.601028+00:00",
+      "start_ns": 163664378290072,
+      "end_ns": 163668175645699,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 3.79s\n\n",
+      "stderr": "         ascii:  1390.8 MB/s   1404.0 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   191.1 MB/s    191.5 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   322.1 MB/s    322.6 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   255.5 MB/s    255.8 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1869.9 MB/s   1874.8 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   299.9 MB/s    300.5 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 1,
+      "slot": 1,
+      "arm": "control",
+      "argv": [
+        "/tmp/glass-i28-control-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T11:15:54.398800+00:00",
+      "start_ns": 163668176061420,
+      "end_ns": 163671274221632,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 3.10s\n\n",
+      "stderr": "         ascii:  1806.0 MB/s   1809.6 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   260.4 MB/s    261.0 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   321.7 MB/s    322.1 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   259.1 MB/s    259.7 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1920.7 MB/s   1925.3 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   309.1 MB/s    309.8 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 2,
+      "slot": 0,
+      "arm": "control",
+      "argv": [
+        "/tmp/glass-i28-control-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T11:15:57.497739+00:00",
+      "start_ns": 163671274997621,
+      "end_ns": 163674297706412,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 3.02s\n\n",
+      "stderr": "         ascii:  1861.7 MB/s   1865.3 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   269.6 MB/s    270.1 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   332.0 MB/s    332.5 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   259.7 MB/s    260.2 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1944.0 MB/s   1947.3 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   308.4 MB/s    308.9 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 2,
+      "slot": 1,
+      "arm": "candidate",
+      "argv": [
+        "/tmp/glass-i28-candidate-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T11:16:00.521228+00:00",
+      "start_ns": 163674298491027,
+      "end_ns": 163677334434206,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 3.03s\n\n",
+      "stderr": "         ascii:  1862.5 MB/s   1866.7 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   278.0 MB/s    278.8 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   322.8 MB/s    323.6 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   255.9 MB/s    256.8 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1944.4 MB/s   1948.1 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   303.0 MB/s    303.6 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 3,
+      "slot": 0,
+      "arm": "candidate",
+      "argv": [
+        "/tmp/glass-i28-candidate-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T11:16:03.558031+00:00",
+      "start_ns": 163677335294534,
+      "end_ns": 163680548253240,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 3.21s\n\n",
+      "stderr": "         ascii:  1842.6 MB/s   1846.6 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   279.4 MB/s    280.2 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   326.6 MB/s    327.5 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   257.6 MB/s    258.1 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1593.0 MB/s   1596.5 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   268.1 MB/s    268.7 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 3,
+      "slot": 1,
+      "arm": "control",
+      "argv": [
+        "/tmp/glass-i28-control-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T11:16:06.772033+00:00",
+      "start_ns": 163680549295880,
+      "end_ns": 163684541737127,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 3.99s\n\n",
+      "stderr": "         ascii:  1628.9 MB/s   1632.4 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   191.0 MB/s    191.4 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   276.2 MB/s    276.9 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   216.1 MB/s    216.6 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1756.8 MB/s   1760.5 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   261.8 MB/s    262.4 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 4,
+      "slot": 0,
+      "arm": "control",
+      "argv": [
+        "/tmp/glass-i28-control-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T11:16:10.766064+00:00",
+      "start_ns": 163684543324922,
+      "end_ns": 163688361286442,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 3.81s\n\n",
+      "stderr": "         ascii:  1479.9 MB/s   1483.4 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   212.6 MB/s    213.3 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   295.9 MB/s    296.7 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   234.5 MB/s    235.1 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1514.2 MB/s   1517.9 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   282.1 MB/s    282.8 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 4,
+      "slot": 1,
+      "arm": "candidate",
+      "argv": [
+        "/tmp/glass-i28-candidate-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T11:16:14.584893+00:00",
+      "start_ns": 163688362156067,
+      "end_ns": 163692160018039,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 3.80s\n\n",
+      "stderr": "         ascii:  1795.7 MB/s   1800.1 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   218.7 MB/s    219.2 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   265.0 MB/s    265.6 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   240.8 MB/s    241.2 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1585.7 MB/s   1589.5 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   278.4 MB/s    278.9 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 5,
+      "slot": 0,
+      "arm": "candidate",
+      "argv": [
+        "/tmp/glass-i28-candidate-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T11:16:18.383953+00:00",
+      "start_ns": 163692161213887,
+      "end_ns": 163695898478750,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 3.73s\n\n",
+      "stderr": "         ascii:  1801.3 MB/s   1804.3 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   221.4 MB/s    222.0 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   284.3 MB/s    284.9 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   223.2 MB/s    223.6 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1611.7 MB/s   1616.4 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   302.8 MB/s    303.5 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 5,
+      "slot": 1,
+      "arm": "control",
+      "argv": [
+        "/tmp/glass-i28-control-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T11:16:22.122064+00:00",
+      "start_ns": 163695899327084,
+      "end_ns": 163698940425052,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 3.04s\n\n",
+      "stderr": "         ascii:  1857.1 MB/s   1860.7 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   270.3 MB/s    270.9 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   324.5 MB/s    325.2 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   257.7 MB/s    258.1 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1930.8 MB/s   1934.4 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   307.8 MB/s    308.3 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 6,
+      "slot": 0,
+      "arm": "control",
+      "argv": [
+        "/tmp/glass-i28-control-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T11:16:25.163972+00:00",
+      "start_ns": 163698941234824,
+      "end_ns": 163701935714748,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 2.99s\n\n",
+      "stderr": "         ascii:  1845.5 MB/s   1848.9 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   274.5 MB/s    275.1 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   333.0 MB/s    333.8 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   261.4 MB/s    262.0 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1945.1 MB/s   1950.0 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   310.4 MB/s    311.1 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 6,
+      "slot": 1,
+      "arm": "candidate",
+      "argv": [
+        "/tmp/glass-i28-candidate-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T11:16:28.159424+00:00",
+      "start_ns": 163701936686003,
+      "end_ns": 163704961497180,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 3.02s\n\n",
+      "stderr": "         ascii:  1896.5 MB/s   1900.7 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   273.8 MB/s    274.5 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   324.7 MB/s    325.4 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   256.7 MB/s    257.4 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1949.9 MB/s   1954.6 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   308.9 MB/s    309.7 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 7,
+      "slot": 0,
+      "arm": "candidate",
+      "argv": [
+        "/tmp/glass-i28-candidate-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T11:16:31.185094+00:00",
+      "start_ns": 163704962357317,
+      "end_ns": 163708023402522,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 3.06s\n\n",
+      "stderr": "         ascii:  1844.1 MB/s   1848.7 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   268.6 MB/s    269.4 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   325.1 MB/s    326.1 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   253.6 MB/s    254.2 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1945.3 MB/s   1949.9 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   303.8 MB/s    304.6 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 7,
+      "slot": 1,
+      "arm": "control",
+      "argv": [
+        "/tmp/glass-i28-control-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T11:16:34.246935+00:00",
+      "start_ns": 163708024198268,
+      "end_ns": 163711054830229,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 3.03s\n\n",
+      "stderr": "         ascii:  1873.8 MB/s   1877.5 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   270.5 MB/s    271.0 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   331.5 MB/s    332.2 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   260.3 MB/s    260.7 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1953.2 MB/s   1956.5 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   307.0 MB/s    307.5 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 8,
+      "slot": 0,
+      "arm": "control",
+      "argv": [
+        "/tmp/glass-i28-control-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T11:16:37.278449+00:00",
+      "start_ns": 163711055712477,
+      "end_ns": 163714077917288,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 3.02s\n\n",
+      "stderr": "         ascii:  1882.3 MB/s   1885.6 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   273.5 MB/s    274.0 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   328.3 MB/s    328.9 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   258.4 MB/s    258.8 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1948.5 MB/s   1951.9 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   305.5 MB/s    305.9 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 8,
+      "slot": 1,
+      "arm": "candidate",
+      "argv": [
+        "/tmp/glass-i28-candidate-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T11:16:40.301649+00:00",
+      "start_ns": 163714078911938,
+      "end_ns": 163717117537636,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 3.04s\n\n",
+      "stderr": "         ascii:  1843.3 MB/s   1847.0 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   273.2 MB/s    273.8 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   324.6 MB/s    325.1 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   256.8 MB/s    257.2 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1959.3 MB/s   1963.3 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   303.3 MB/s    303.8 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 9,
+      "slot": 0,
+      "arm": "candidate",
+      "argv": [
+        "/tmp/glass-i28-candidate-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T11:16:43.341109+00:00",
+      "start_ns": 163717118372445,
+      "end_ns": 163720149014379,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 3.03s\n\n",
+      "stderr": "         ascii:  1908.1 MB/s   1911.6 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   278.7 MB/s    279.2 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   325.3 MB/s    325.8 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   254.9 MB/s    255.3 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1957.8 MB/s   1961.1 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   301.7 MB/s    302.1 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 9,
+      "slot": 1,
+      "arm": "control",
+      "argv": [
+        "/tmp/glass-i28-control-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T11:16:46.372537+00:00",
+      "start_ns": 163720149800066,
+      "end_ns": 163723171758808,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 3.02s\n\n",
+      "stderr": "         ascii:  1893.4 MB/s   1896.9 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   268.4 MB/s    269.1 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   327.5 MB/s    328.2 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   259.8 MB/s    260.4 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1955.8 MB/s   1960.4 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   305.9 MB/s    306.6 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 10,
+      "slot": 0,
+      "arm": "control",
+      "argv": [
+        "/tmp/glass-i28-control-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T11:16:49.395335+00:00",
+      "start_ns": 163723172598497,
+      "end_ns": 163726171114236,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 3.00s\n\n",
+      "stderr": "         ascii:  1878.0 MB/s   1882.6 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   272.7 MB/s    273.2 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   330.1 MB/s    330.8 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   263.7 MB/s    264.3 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1954.9 MB/s   1959.5 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   310.3 MB/s    311.1 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 10,
+      "slot": 1,
+      "arm": "candidate",
+      "argv": [
+        "/tmp/glass-i28-candidate-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T11:16:52.394679+00:00",
+      "start_ns": 163726171941281,
+      "end_ns": 163729190826319,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 3.02s\n\n",
+      "stderr": "         ascii:  1901.5 MB/s   1905.7 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   275.6 MB/s    276.2 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   328.8 MB/s    329.4 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   256.7 MB/s    257.2 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1966.5 MB/s   1970.0 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   303.9 MB/s    304.4 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 11,
+      "slot": 0,
+      "arm": "candidate",
+      "argv": [
+        "/tmp/glass-i28-candidate-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T11:16:55.414441+00:00",
+      "start_ns": 163729191703918,
+      "end_ns": 163732204596634,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 3.01s\n\n",
+      "stderr": "         ascii:  1886.4 MB/s   1890.2 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   279.9 MB/s    280.5 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   326.7 MB/s    327.3 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   255.9 MB/s    256.4 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1953.0 MB/s   1957.7 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   308.6 MB/s    309.4 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 11,
+      "slot": 1,
+      "arm": "control",
+      "argv": [
+        "/tmp/glass-i28-control-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T11:16:58.428166+00:00",
+      "start_ns": 163732205429640,
+      "end_ns": 163735221154099,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 3.01s\n\n",
+      "stderr": "         ascii:  1849.6 MB/s   1854.0 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   268.2 MB/s    268.8 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   331.3 MB/s    332.0 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   262.5 MB/s    263.1 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1929.1 MB/s   1934.0 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   309.6 MB/s    310.3 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+--- a/crates/term/src/engine.rs
++++ b/crates/term/src/engine.rs
+@@ -3601,31 +3601,28 @@
+     if lead < 0x80 {
+         return Some((char::from(lead), 1));
+     }
+-    let next = |k: usize, low: u8, high: u8| bytes.get(at + k).copied().filter(|b| (low..=high).contains(b));
++    // Validate continuation shape here, then the assembled scalar domain below.
++    // This makes E0/ED/F0/F4's special second-byte bounds redundant without
++    // weakening RFC 3629 or using unchecked character construction.
++    let next = |k: usize| bytes.get(at + k).copied().filter(|b| b & 0xc0 == 0x80);
+     let tail = |b: u8| u32::from(b & 0x3f);
+-    let (value, len) = match lead {
+-        0xc2..=0xdf => (u32::from(lead & 0x1f) << 6 | tail(next(1, 0x80, 0xbf)?), 2),
+-        0xe0..=0xef => {
+-            let (low, high) = match lead {
+-                0xe0 => (0xa0, 0xbf),
+-                0xed => (0x80, 0x9f),
+-                _ => (0x80, 0xbf),
+-            };
+-            let b1 = next(1, low, high)?;
+-            (u32::from(lead & 0x0f) << 12 | tail(b1) << 6 | tail(next(2, 0x80, 0xbf)?), 3)
+-        }
+-        0xf0..=0xf4 => {
+-            let (low, high) = match lead {
+-                0xf0 => (0x90, 0xbf),
+-                0xf4 => (0x80, 0x8f),
+-                _ => (0x80, 0xbf),
+-            };
+-            let b1 = next(1, low, high)?;
+-            let b2 = next(2, 0x80, 0xbf)?;
+-            (u32::from(lead & 0x07) << 18 | tail(b1) << 12 | tail(b2) << 6 | tail(next(3, 0x80, 0xbf)?), 4)
+-        }
++    let (value, len, minimum) = match lead {
++        0xc2..=0xdf => (u32::from(lead & 0x1f) << 6 | tail(next(1)?), 2, 0x80),
++        0xe0..=0xef => (
++            u32::from(lead & 0x0f) << 12 | tail(next(1)?) << 6 | tail(next(2)?),
++            3, 0x800,
++        ),
++        0xf0..=0xf4 => (
++            u32::from(lead & 0x07) << 18 | tail(next(1)?) << 12
++                | tail(next(2)?) << 6 | tail(next(3)?),
++            4, 0x10000,
++        ),
+         _ => return None,
+     };
++    if value < minimum {
++        return None;
++    }
++    // Checked construction rejects surrogates and values above U+10FFFF.
+     Some((char::from_u32(value)?, len))
+ }
+ 

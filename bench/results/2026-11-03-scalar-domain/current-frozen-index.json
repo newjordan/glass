@@ -1,0 +1,23 @@
+{
+  "schema": "glass.historical-evidence-index/v1",
+  "manifests": [
+    {
+      "path": "bench/results/2026-11-03-scalar-domain/evidence-sha256.json",
+      "sha256": "5f70855d07a096dd0e240c0e05ad4da4fd511d9118f1a24f12f35d2f232cf084",
+      "source_root": ".",
+      "snapshots": {
+        "CHANGELOG.md": "bench/results/2026-11-03-scalar-domain/pre-replay-fix-CHANGELOG.md",
+        "docs/PERFORMANCE.md": "bench/results/2026-11-03-scalar-domain/pre-replay-fix-docs_PERFORMANCE.md",
+        "bench/README.md": "bench/results/2026-11-03-scalar-domain/pre-replay-fix-bench_README.md",
+        "reports/research-1eecf9876bb302e9da10ff629e71e6d8-28.txt": "bench/results/2026-11-03-scalar-domain/pre-replay-fix-reports_research-1eecf9876bb302e9da10ff629e71e6d8-28.txt",
+        "bench/results/2026-11-03-scalar-domain/README.md": "bench/results/2026-11-03-scalar-domain/pre-replay-fix-bench_results_2026-11-03-scalar-domain_README.md"
+      }
+    },
+    {
+      "path": "bench/results/2026-11-03-scalar-domain/supplemental-evidence-sha256.json",
+      "sha256": "81879fe28d7ffea12050a90b1d3d05e7dd3cd7287629ed1bd8d03163955b97b0",
+      "source_root": ".",
+      "snapshots": {}
+    }
+  ]
+}

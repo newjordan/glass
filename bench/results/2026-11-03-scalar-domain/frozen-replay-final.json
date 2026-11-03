@@ -1,0 +1,35 @@
+{
+  "schema": "glass.historical-evidence-replay/v1",
+  "manifests": [
+    {
+      "path": "bench/results/2026-11-03-scalar-domain/evidence-sha256.json",
+      "manifest_sha256": "5f70855d07a096dd0e240c0e05ad4da4fd511d9118f1a24f12f35d2f232cf084",
+      "files": 62,
+      "live_paths": 57,
+      "historical_paths": 5,
+      "bytes": 4919131
+    },
+    {
+      "path": "bench/results/2026-11-03-scalar-domain/supplemental-evidence-sha256.json",
+      "manifest_sha256": "81879fe28d7ffea12050a90b1d3d05e7dd3cd7287629ed1bd8d03163955b97b0",
+      "files": 17,
+      "live_paths": 11,
+      "historical_paths": 6,
+      "bytes": 299679
+    },
+    {
+      "path": "bench/results/2026-11-03-scalar-domain/final-evidence-sha256.json",
+      "manifest_sha256": "6873b4e7b5c2dde98a505ca3fb6b9b02d7ed0645fbe6b7ddaf5e0c7580307660",
+      "files": 10,
+      "live_paths": 10,
+      "historical_paths": 0,
+      "bytes": 151515
+    }
+  ],
+  "manifest_count": 3,
+  "file_references": 89,
+  "historical_references": 11,
+  "unique_source_versions": 84,
+  "note": "Explicit historical byte-integrity replay only; not timing, safety or championship acceptance.",
+  "index_sha256": "9ad67516837e7cd5cb3755f16252ab7e94968d78572f85630b72af782b19026b"
+}

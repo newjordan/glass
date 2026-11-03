@@ -1,0 +1,19 @@
+{
+  "CHANGELOG.md": "3cff81a8e1d0f831caf43f0efad36f3d779534d2afb67c398584290a2fc182d2",
+  "bench/README.md": "8dded7e0b5381a68c64700d3bca86fdeb5902d53aabdba2fcce65cf27520373f",
+  "bench/results/2026-11-03-scalar-domain/README.md": "51b7217b0916114584adb47fe1414ea7aa1e5af59dc26f0ec49ef44699675e4a",
+  "bench/results/2026-11-03-scalar-domain/checkpoint-initial-failure.json": "1cb408065d95e5e8dfe3fcabc2990d3e525fa4b6a5904f975a7e351097d98d41",
+  "bench/results/2026-11-03-scalar-domain/checkpoint-initial.json": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "bench/results/2026-11-03-scalar-domain/evidence-sha256.json": "5f70855d07a096dd0e240c0e05ad4da4fd511d9118f1a24f12f35d2f232cf084",
+  "bench/results/2026-11-03-scalar-domain/frozen-index.json": "45c43779e9b76bc7b3a7e32ccddeb7dbf01c52bd6cf8f8008ebf06ce58ab5459",
+  "bench/results/2026-11-03-scalar-domain/pre-replay-fix-CHANGELOG.md": "39d5347a85cb9b8efcb005213b97d12314e1d59a71ff513c5313c1335f1f5868",
+  "bench/results/2026-11-03-scalar-domain/pre-replay-fix-bench_README.md": "d5c93a3b0007c7579be27d23a4914a02f6b69a609386f05ce056fea64a1f7521",
+  "bench/results/2026-11-03-scalar-domain/pre-replay-fix-bench_results_2026-11-03-scalar-domain_README.md": "f41ea6fb00d82f7da1998ab8b1215975188a3a1d3a0d7b2a012308bd2a3296e4",
+  "bench/results/2026-11-03-scalar-domain/pre-replay-fix-docs_PERFORMANCE.md": "dbc7882b1fff3d5d896fc65460bdddd9704e236c16f36ef9d9355e6a02d01f20",
+  "bench/results/2026-11-03-scalar-domain/pre-replay-fix-reports_research-1eecf9876bb302e9da10ff629e71e6d8-28.txt": "f41ea6fb00d82f7da1998ab8b1215975188a3a1d3a0d7b2a012308bd2a3296e4",
+  "bench/results/2026-11-03-scalar-domain/prior-remapped-checkpoint.json": "d85caa200b350096170c40914fc90cb82f2ac89be02325160bf011c15c0d17e4",
+  "bench/results/2026-11-03-scalar-domain/replay-prior-corrected.py": "a19bb85bdd98ca13ea9566ed347cafbb1b5dbc02908cc0b9854e866ac0b3f3ae",
+  "bench/results/2026-11-03-scalar-domain/verify-current.py": "869e6f17297c7de88609b37ddf87e0bc3cf1c78002f2547bcf225c0fa7a9eac1",
+  "docs/PERFORMANCE.md": "e61f45383871076453c486ae2558af7bd247d8606c32c0e1bb8df868d1d85009",
+  "reports/research-1eecf9876bb302e9da10ff629e71e6d8-28.txt": "51b7217b0916114584adb47fe1414ea7aa1e5af59dc26f0ec49ef44699675e4a"
+}

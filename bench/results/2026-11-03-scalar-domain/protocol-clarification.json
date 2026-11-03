@@ -1,0 +1,15 @@
+{
+  "schema": "glass.scalar-domain-protocol-clarification/v1",
+  "created_utc": "2026-11-03T11:16:24.909932+00:00",
+  "protocol_sha256": "062fbf19c00c8843b60f43911a86fed9560fb7fb120adb8cd6415f7019845843",
+  "error": "The copied hypothesis sentence describes iteration 27. It is obsolete template prose, not this intervention. No protocol or source was changed after the run started.",
+  "hypothesis": "Uniform continuation shape plus decoded minimum scalar and safe char::from_u32 may reduce UTF8 lead/second-byte dispatch dependencies without changing accepted encodings.",
+  "build_clarification": "Control must byte-match i27 control, transitively i26 control. Exact assertion retained in build.py.",
+  "binding_fields": [
+    "intervention",
+    "engine",
+    "correctness",
+    "mechanism"
+  ],
+  "limits": "Prospective engine decisions use unchanged numerical gates. This correction precedes inspection of timing results. No rate, session count, arm, order, source or decision gate changed."
+}

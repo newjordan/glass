@@ -1,0 +1,37 @@
+{
+  "schema": "glass.decoded-handoff-checkpoint/v1",
+  "runtime_promotion": false,
+  "engine_screen_cleared": false,
+  "pairs": 12,
+  "sessions": 24,
+  "cpu_ratios": {
+    "ascii": 1.003895457993376,
+    "cursor_motion": 0.9883149338166639,
+    "scroll_region": 1.0107250394444312,
+    "truecolor": 0.9883376427494075,
+    "tui_frames": 0.9861643244506955,
+    "unicode": 0.9181086099873994
+  },
+  "failed_point_guards": [
+    "unicode"
+  ],
+  "terminal_tests_per_arm": 383,
+  "differential_streams_per_arm": 12800,
+  "existing_python_tests_via_prior_checkpoint": 65,
+  "corruption_cases_rejected": 23,
+  "unicode_decode_attempt_ratio": 0.9586593545124713,
+  "unicode_removed_decode_attempts": 105136,
+  "instrumented_rates_used": false,
+  "print_utf8_bytes": {
+    "control": 8524,
+    "candidate": 9699
+  },
+  "same_print_utf8_entry_address": true,
+  "unchanged_runtime_rust_sources": 120,
+  "unchanged_prior_result_report_files": 6421,
+  "selected_binary_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "restored_build_byte_identical": true,
+  "prior_checkpoint_replayed": true,
+  "frozen_file_references": 84,
+  "note": "Local evidence replay, not unique causal attribution, PTY/Ghostty comparison or championship acceptance."
+}

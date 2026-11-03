@@ -1,0 +1,39 @@
+{
+  "schema": "glass.scalar-domain-protocol/v1",
+  "hypothesis": "put_row decodes a lookahead before held-glyph guards. Return the exact lookahead on row exit so print_utf8 need not decode it again. No validation/width/cache/batching/parser-authority change.",
+  "arms": [
+    "control",
+    "candidate"
+  ],
+  "build": "Fresh serial builds with build-engine-arm.py; control must byte-match retained i26 control. Sources restored in finally before measurements. Selected terminal untouched.",
+  "correctness": "Both arms: release terminal tests and 64x200 differential streams. Existing exhaustive UTF8 and guarded-tail tests included. No timing before correctness.",
+  "engine": {
+    "blocks": 12,
+    "scale": 2,
+    "rounds": 5,
+    "read": 4095,
+    "workloads": [
+      "ascii",
+      "unicode",
+      "truecolor",
+      "cursor_motion",
+      "scroll_region",
+      "tui_frames"
+    ],
+    "orders": [
+      [
+        "control",
+        "candidate"
+      ],
+      [
+        "candidate",
+        "control"
+      ]
+    ],
+    "primary": "Unicode median paired CPU ratio >=1.02, positive signs and six-workload Holm p<.05; all six median ratios >=.98. Operational screen, not equivalence.",
+    "stop": "Exactly 12 pairs, no pilots/reruns/rescue variants/pooling. If fails reject. If clears requires fresh separate prospective PTY/Ghostty gates before runtime selection."
+  },
+  "mechanism": "No instrumentation. Exact print_utf8/apply disassembly census after timing; codegen differences do not uniquely establish causality.",
+  "limits": "Shared-host engine CPU best-of-five sequential pairs, not terminal throughput, screen latency, Ghostty or championship. Codegen/layout also changes; improvement cannot uniquely be attributed to decode count.",
+  "intervention": "Only utf8_at: uniform continuation-shape checks, minimum decoded scalar for each length, checked char::from_u32. No tables, wide loads, unchecked chars, row/parser changes, call reuse or build flags."
+}

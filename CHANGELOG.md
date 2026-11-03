@@ -5,6 +5,20 @@ All notable changes to glass are recorded here. Versions follow
 
 ## 0.1.0 - unreleased
 
+### Research — safe scalar-domain UTF8 validation, rejected
+
+- Test uniform continuation checks and decoded-scalar minima, retaining safe
+  character construction. Both arms pass 383 tests and 12,800 differential
+  streams. Twelve balanced pairs yield Unicode 1.005126x, 6/12 wins: fails
+  the prospective 1.02 target. TUI loses 11/12 pairs; no runtime promotion.
+- Hot routine grows from 1,967 to 1,972 instructions at the same entry address;
+  source-level branch simplification does not shrink this compiled routine.
+  Retain complete noisy pairs, exact codegen and additive protocol-template
+  clarification. No Ghostty gate or championship claim; selected executable,
+  120 Rust sources and 6,514 earlier tracked result/report files preserved.
+- Read-only checkpoint:
+  `python3 -B bench/results/2026-11-03-scalar-domain/verify-current.py`.
+
 ### Research — scanner outlining recovers truecolor, Unicode vetoes promotion
 
 - Test one scanner inline attribute in a 12-block, four-arm factorial (48 exact
