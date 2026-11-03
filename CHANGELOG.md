@@ -5,6 +5,15 @@ All notable changes to glass are recorded here. Versions follow
 
 ## 0.1.0 - unreleased
 
+### Fix — avoid copy-on-write for no-op cell mark updates
+
+- Ignore combining marks beyond the nine-mark cap before cloning cell extras;
+  leave empty mark buffers shared when clearing wide-character data. Preserve
+  underline/hyperlink attributes and normal copy-on-write for actual changes.
+  Six ownership cases: four control detachments become zero. Eight cell tests
+  and 395 terminal tests pass (14 ignored). No throughput or Ghostty claim.
+  Evidence: `bench/results/2026-11-03-extra-noop/README.md`.
+
 ### Fix — retain original-row coverage through picture scrolling
 
 - Keep text-covered cells attached to the correct original picture rows when

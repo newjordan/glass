@@ -1,0 +1,28 @@
+   Compiling glass-alacritty-terminal v0.26.0 (/work/frosty40/glass-repo/tree/crates/alacritty-terminal)
+    Finished `release` profile [optimized] target(s) in 10.41s
+     Running unittests src/lib.rs (target/release/deps/alacritty_terminal-adde43eb4a19dee3)
+
+running 8 tests
+test term::cell::tests::cell_size_is_below_cap ... ok
+test term::cell::tests::line_length_works ... ok
+test term::cell::tests::line_length_works_with_wrapline ... ok
+test term::cell::tests::marks_preserve_existing_extra_attributes ... ok
+test term::cell::tests::noop_extra_updates_preserve_shared_and_weak_owners ... extra-noop owners=0 occupied=0 retained=true strong=true weak=true
+extra-noop owners=0 occupied=9 retained=true strong=true weak=true
+extra-noop owners=1 occupied=0 retained=true strong=true weak=true
+extra-noop owners=1 occupied=9 retained=true strong=true weak=true
+extra-noop owners=2 occupied=0 retained=true strong=true weak=true
+extra-noop owners=2 occupied=9 retained=true strong=true weak=true
+ok
+test term::cell::tests::real_extra_updates_still_isolate_shared_and_weak_owners ... ok
+test term::cell::tests::shared_mark_serializes_like_an_owned_extra ... ok
+test term::cell::tests::shared_marks_are_isolated_from_cell_mutations_and_cache_replacement ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+     Running tests/ref.rs (target/release/deps/ref-b0f7454e5425beab)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 45 filtered out; finished in 0.00s
+

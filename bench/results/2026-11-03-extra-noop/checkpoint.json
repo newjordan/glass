@@ -1,0 +1,23 @@
+{
+  "cell_tests": 8,
+  "championship_established": false,
+  "limits": "Finite shared/weak/unique ownership cases. No allocation counter, new differential sweep, throughput, memory total or competitive measurement.",
+  "ownership_matrices": {
+    "candidate": {
+      "cases": 6,
+      "ownership_detachments": 0
+    },
+    "control": {
+      "cases": 6,
+      "ownership_detachments": 4
+    }
+  },
+  "prior_frozen_references": 1980,
+  "prior_frozen_versions": 1886,
+  "schema": "glass.extra-noop-checkpoint/v1",
+  "selected_executable_unchanged": true,
+  "status": "reported",
+  "terminal_ignored": 14,
+  "terminal_tests": 395,
+  "timing_sessions": 0
+}

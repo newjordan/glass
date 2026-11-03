@@ -1,0 +1,23 @@
+{
+  "schema": "glass.extra-noop-protocol/v1",
+  "purpose": "No-op CellExtra operations must not detach shared ownership; actual mutations retain COW isolation.",
+  "arms": [
+    "control",
+    "candidate"
+  ],
+  "package": "glass-alacritty-terminal",
+  "filter": "term::cell::tests",
+  "gates": [
+    "same appended oracle tests in both arms",
+    "control expected to fail no-op identity assertions",
+    "candidate all existing and new cell tests pass",
+    "single full terminal regression gate on candidate"
+  ],
+  "timing_sessions": 0,
+  "limits": [
+    "Finite operation cases; not engine or PTY throughput",
+    "No claim to ordinary Unicode corpus improvement",
+    "Arc ownership identity is directly observable via public field; retaining it is intentional",
+    "No benchmark promotion or championship acceptance"
+  ]
+}

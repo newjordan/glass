@@ -47,6 +47,17 @@ Upstream's `lib.rs` denies clippy's warnings. Now that the library is a member o
 - **`term/mod.rs`:** a tab stop test uses `is_multiple_of` (`manual_is_multiple_of`).
 - **`tty/unix.rs`:** `ShellUser::from_env` allows `question_mark`, because the suggested `?` would move `pw`, which the later fields still read.
 
+## No-op cell-extra updates
+
+- **`term/cell.rs`:** a combining mark beyond the nine-mark cap returns before
+  copy-on-write, and clearing a cell whose mark buffer is already empty leaves
+  its extra allocation shared. Wide-flag removal and character blanking still
+  occur; actual mark mutations retain `Arc::make_mut` isolation. Six ownership
+  cases expose four unnecessary detachments on control and none after the fix.
+  Eight cell tests and 395 terminal tests pass (14 terminal tests ignored).
+  This is an allocation/ownership improvement, not a measured throughput claim.
+  Evidence: `bench/results/2026-11-03-extra-noop/README.md`.
+
 ## Measured and left as upstream
 
 - **`Row::reset`** clears a row the screen scrolls onto. On the Mac mini (M4 Pro) it takes about 13% of the unicode workload, and on the Ryzen about 3.5%.

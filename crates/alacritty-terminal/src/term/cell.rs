@@ -1,6 +1,7 @@
 // Changed for glass from alacritty_terminal 0.26.0; CHANGES.md lists every change.
 // - a cell keeps at most 9 zerowidth characters (upstream's fix, alacritty/alacritty@ede2ac14).
 // - single-mark extras share one bounded per-thread cache; mutations remain copy-on-write.
+// - no-op mark updates preserve shared extras instead of triggering copy-on-write.
 
 use std::cell::RefCell;
 use std::sync::Arc;
@@ -209,6 +210,11 @@ impl Cell {
             return;
         }
         let extra = self.extra.as_mut().unwrap();
+        // A full buffer ignores this mark. Check before `make_mut`: cloning
+        // shared attributes (or dissociating Weak owners) cannot change it.
+        if extra.zerowidth.is_full() {
+            return;
+        }
         let _ = Arc::make_mut(extra).zerowidth.try_push(character);
     }
 
@@ -216,7 +222,7 @@ impl Cell {
     #[inline(never)]
     pub fn clear_wide(&mut self) {
         self.flags.remove(Flags::WIDE_CHAR);
-        if let Some(extra) = self.extra.as_mut() {
+        if let Some(extra) = self.extra.as_mut().filter(|extra| !extra.zerowidth.is_empty()) {
             Arc::make_mut(extra).zerowidth = ArrayVec::new();
         }
         self.c = ' ';
@@ -410,6 +416,86 @@ mod tests {
         assert_eq!(cell.zerowidth(), Some(&['\u{301}'][..]));
         assert_eq!(cell.underline_color(), Some(Color::Indexed(5)));
         assert_eq!(cell.hyperlink().unwrap().id(), "other");
+    }
+
+    #[test]
+    fn noop_extra_updates_preserve_shared_and_weak_owners() {
+        let mut failures = 0;
+        for owners in [0, 1, 2] {
+            for occupied in [0, MAX_ZEROWIDTH_CHARS] {
+                let mut cell = Cell::default();
+                cell.set_underline_color(Some(Color::Indexed(5)));
+                cell.set_hyperlink(Some(Hyperlink::new(Some("noop"), "https://example.org".into())));
+                for _ in 0..occupied {
+                    cell.push_zerowidth('\u{301}');
+                }
+                cell.c = '漢';
+                cell.flags.insert(Flags::WIDE_CHAR);
+                let sibling = (owners == 2).then(|| cell.clone());
+                let weak = (owners != 0).then(|| Arc::downgrade(cell.extra.as_ref().unwrap()));
+                let before = Arc::as_ptr(cell.extra.as_ref().unwrap());
+                let strong = Arc::strong_count(cell.extra.as_ref().unwrap());
+                if occupied == MAX_ZEROWIDTH_CHARS {
+                    for _ in 0..32 {
+                        cell.push_zerowidth('\u{308}');
+                    }
+                    assert_eq!(cell.zerowidth(), Some(&['\u{301}'; MAX_ZEROWIDTH_CHARS][..]));
+                } else {
+                    for _ in 0..32 {
+                        cell.clear_wide();
+                    }
+                    assert_eq!(cell.c, ' ');
+                    assert!(!cell.flags.contains(Flags::WIDE_CHAR));
+                    assert_eq!(cell.zerowidth(), Some(&[][..]));
+                }
+                let retained = Arc::as_ptr(cell.extra.as_ref().unwrap()) == before;
+                let strong_retained = Arc::strong_count(cell.extra.as_ref().unwrap()) == strong;
+                let weak_retained = weak.as_ref().is_none_or(|w| w.as_ptr() == before && w.upgrade().is_some());
+                eprintln!("extra-noop owners={owners} occupied={occupied} retained={retained} strong={strong_retained} weak={weak_retained}");
+                failures += usize::from(!(retained && strong_retained && weak_retained));
+                assert_eq!(cell.underline_color(), Some(Color::Indexed(5)));
+                assert_eq!(cell.hyperlink().unwrap().id(), "noop");
+                if let Some(sibling) = sibling {
+                    assert_eq!(sibling.c, '漢');
+                    assert!(sibling.flags.contains(Flags::WIDE_CHAR));
+                    assert_eq!(sibling.zerowidth().unwrap().len(), occupied);
+                }
+            }
+        }
+        assert_eq!(failures, 0, "no-op updates changed ownership");
+    }
+
+    #[test]
+    fn real_extra_updates_still_isolate_shared_and_weak_owners() {
+        for weak_only in [false, true] {
+            for clear in [false, true] {
+                let mut cell = Cell::default();
+                cell.set_underline_color(Some(Color::Indexed(3)));
+                cell.set_hyperlink(Some(Hyperlink::new(Some("real"), "https://example.com".into())));
+                cell.push_zerowidth('\u{301}');
+                cell.c = '漢';
+                cell.flags.insert(Flags::WIDE_CHAR);
+                let sibling = (!weak_only).then(|| cell.clone());
+                let weak = Arc::downgrade(cell.extra.as_ref().unwrap());
+                let before = Arc::as_ptr(cell.extra.as_ref().unwrap());
+                if clear {
+                    cell.clear_wide();
+                    assert_eq!(cell.zerowidth(), Some(&[][..]));
+                } else {
+                    cell.push_zerowidth('\u{308}');
+                    assert_eq!(cell.zerowidth(), Some(&['\u{301}', '\u{308}'][..]));
+                }
+                assert_ne!(Arc::as_ptr(cell.extra.as_ref().unwrap()), before);
+                assert_eq!(cell.underline_color(), Some(Color::Indexed(3)));
+                assert_eq!(cell.hyperlink().unwrap().id(), "real");
+                if let Some(sibling) = sibling {
+                    assert_eq!(sibling.zerowidth(), Some(&['\u{301}'][..]));
+                    assert!(weak.upgrade().is_some());
+                } else {
+                    assert!(weak.upgrade().is_none());
+                }
+            }
+        }
     }
 
     #[cfg(feature = "serde")]

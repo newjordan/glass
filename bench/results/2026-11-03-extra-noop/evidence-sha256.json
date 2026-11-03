@@ -1,0 +1,28 @@
+{
+  "schema": "glass.research-evidence/v1",
+  "sha256": {
+    "bench/results/2026-11-03-extra-noop/README.md": "1454ca9438a38e045353c2efc41a5ad1540158dfed7c2b9bd90239d52468caf8",
+    "bench/results/2026-11-03-extra-noop/candidate.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "bench/results/2026-11-03-extra-noop/candidate.log": "29a92cac21c5234f83b561da48ff4c952f6363fec7af7cba54ce195772fe4812",
+    "bench/results/2026-11-03-extra-noop/control-cell-first.rs": "f7894990573db0ceb8ad3ee422f97426c6a22ec3714d7052846108f91154b0be",
+    "bench/results/2026-11-03-extra-noop/control-cell-matrix.exit": "39b8dc3fc8b44765c8e6f1adee04c5b465e555ab791cc42d0d9e810d5b64297c",
+    "bench/results/2026-11-03-extra-noop/control-cell-matrix.log": "9253d4077124dd6cc9572d437803f261930507bc2e0f24199ab80ca6820e0a09",
+    "bench/results/2026-11-03-extra-noop/control-cell-tests.exit": "39b8dc3fc8b44765c8e6f1adee04c5b465e555ab791cc42d0d9e810d5b64297c",
+    "bench/results/2026-11-03-extra-noop/control-cell-tests.log": "14e216175e1bcec26844baef1884f5bc44d4ca85660862803fd7f9d117da21f9",
+    "bench/results/2026-11-03-extra-noop/control-cell.rs": "4e14dc8979fa76ce8ceba5cd3265dc7b8c9df08f344dd333c690caf5d19ea085",
+    "bench/results/2026-11-03-extra-noop/control.exit": "39b8dc3fc8b44765c8e6f1adee04c5b465e555ab791cc42d0d9e810d5b64297c",
+    "bench/results/2026-11-03-extra-noop/control.log": "2d4b5448d8ef9128a5b848c4ec85558119bd79cd5692764cabaeecfbfbedf7ae",
+    "bench/results/2026-11-03-extra-noop/original-CHANGELOG.md": "b50e705ebbf0ada03774d9e424ed09cdf6586de8b30372c673a967e63ee40558",
+    "bench/results/2026-11-03-extra-noop/original-crates_alacritty-terminal_CHANGES.md": "90acd319bfffae980e0b8fd35da08804c69bec1a6f4f87b85a29302dd0de5834",
+    "bench/results/2026-11-03-extra-noop/original-crates_alacritty-terminal_src_term_cell.rs": "38f1d308b1043a219b54a93cf43a4e478324037c46714d7f8d37319b74dfe29e",
+    "bench/results/2026-11-03-extra-noop/prior-frozen-index.json": "72d9c4366e7c4ae1c090d97440367cb51d7b6a814ce34722eca1fb40eba42c9b",
+    "bench/results/2026-11-03-extra-noop/production-CHANGELOG.md": "af8e94504a6c524863f01caebee1b1360b97401ea65d450edd71e08e6a37ed2b",
+    "bench/results/2026-11-03-extra-noop/production-crates_alacritty-terminal_CHANGES.md": "e699cf484793e7c4b1d483c91311745e661997ab1ea18ee0e0d5785df5a31119",
+    "bench/results/2026-11-03-extra-noop/production-crates_alacritty-terminal_src_term_cell.rs": "5bcac4b94b7971f7b118c9670a3e988abe91e0c68dcbb03460e742b7a95c218a",
+    "bench/results/2026-11-03-extra-noop/protocol.json": "eebccb6955654949802b054798a855a638d25ef03b88a7c53a8b0b75a5a40394",
+    "bench/results/2026-11-03-extra-noop/starting-state.json": "d00ea69ba71fa495834fc512c21f61993df9283d86a7d0dc1970923ec3230d61",
+    "bench/results/2026-11-03-extra-noop/terminal-integration.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "bench/results/2026-11-03-extra-noop/terminal-integration.log": "3e1b6f8223c335f448f2c8dd5e401fa727effe5991dcf70aa49d333c7fac9e10",
+    "bench/results/2026-11-03-extra-noop/verify.py": "47b49500cfd30fcdbf8645287a5557326ac147365149c8f8b30204025bc3d5ed"
+  }
+}

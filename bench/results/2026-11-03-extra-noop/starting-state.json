@@ -1,0 +1,8 @@
+{
+  "head": "9d00a9156ed5b18f52f8902bd5bbd0d026b51fba",
+  "selected_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "sources": {
+    "crates/alacritty-terminal/CHANGES.md": "90acd319bfffae980e0b8fd35da08804c69bec1a6f4f87b85a29302dd0de5834",
+    "crates/alacritty-terminal/src/term/cell.rs": "38f1d308b1043a219b54a93cf43a4e478324037c46714d7f8d37319b74dfe29e"
+  }
+}
