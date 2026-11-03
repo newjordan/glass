@@ -1,0 +1,10 @@
+test_actual_results (__main__.EvidenceTests.test_actual_results) ... ok
+test_complete_checkpoint (__main__.EvidenceTests.test_complete_checkpoint) ... ok
+test_preservation_and_scope (__main__.EvidenceTests.test_preservation_and_scope) ... ok
+test_rehashed_semantic_corruptions_rejected (__main__.EvidenceTests.test_rehashed_semantic_corruptions_rejected) ... Rejected rehashed/receipt evidence corruptions: 56
+ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 2.167s
+
+OK
