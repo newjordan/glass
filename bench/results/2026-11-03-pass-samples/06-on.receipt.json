@@ -1,0 +1,29 @@
+{
+  "pair": 6,
+  "mode": "on",
+  "begin_ns": 1793713715214281905,
+  "end_ns": 1793713716761791468,
+  "started_utc": "2026-11-03T13:48:35.214282+00:00",
+  "exit": 0,
+  "argv": [
+    "/tmp/glass-i34-sample-final-test",
+    "--exact",
+    "--ignored",
+    "--nocapture",
+    "speed::speed"
+  ],
+  "settings": {
+    "GLASS_BENCH_CORPUS": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/corpus",
+    "GLASS_BENCH_SCALE": "1",
+    "GLASS_BENCH_READ": "4095",
+    "GLASS_BENCH_ROUNDS": "5",
+    "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames",
+    "GLASS_BENCH_SAMPLES": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/06-on.jsonl"
+  },
+  "stdout": "06-on.stdout",
+  "stderr": "06-on.stderr",
+  "stdout_sha256": "aae6ade406e03768e5fa12d40c4676b17064d3e98a620dabd391adfeba9d169c",
+  "stderr_sha256": "e4b4f4789f0fef21ea35f141c8246be9f6fd89d521ff847b699f306bfef64647",
+  "samples": "06-on.jsonl",
+  "samples_sha256": "1c1d63b3aae158c6cd0f626fc61f6e467c69796c6e7e77d19f21d27db60208e3"
+}

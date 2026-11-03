@@ -1,0 +1,36 @@
+{
+  "schema": "glass.pass-sample-protocol/v1",
+  "created_utc": "2026-11-03T13:45:48.745883+00:00",
+  "pairs": 12,
+  "rounds": 5,
+  "read": 4095,
+  "corpus": "bench/results/2026-11-03-pass-samples/corpus",
+  "corpus_manifest_sha256": "1151691a0b5297f188e1e1b67cfb315c3afc24d0a0666e580f5c9c47c4d5abc4",
+  "workloads": [
+    "ascii",
+    "unicode",
+    "truecolor",
+    "cursor_motion",
+    "scroll_region",
+    "tui_frames"
+  ],
+  "orders": [
+    [
+      "off",
+      "on"
+    ],
+    [
+      "on",
+      "off"
+    ]
+  ],
+  "hypothesis": "Every-pass paired integer durations expose minimum-selection sensitivity and permit future median-pass engine screens. Recording on/off uses one exact executable to bound observer cost, not a speed candidate.",
+  "primary": "Descriptive paired on/off CPU rate ratios, all captured CPU/wall minima identities and median/min duration ratios. No statistical acceptance or runtime promotion; 12 pairs, no exclusions or extensions.",
+  "stop": "Exactly 24 successful sequential sessions or incomplete evidence; do not retry failures. Five unmodified-payload passes per workload. No benchmark tuning.",
+  "limits": [
+    "Shared host, same executable compiled with recorder code in both modes; not a comparison to the old executable.",
+    "Clock-read resolution is not timing accuracy. CPU and wall clocks have adjacent, not identical, endpoints.",
+    "Does not establish terminal/Ghostty speed, rendering/input-latency/pacing, independent samples, or championship."
+  ],
+  "preflight_repair": "First invocation failed before any timed session: prior payloads exist only as .xz. Materialized byte-identical corpus locally; no timing result or order changed."
+}

@@ -1,0 +1,6 @@
+         ascii:  1895.9 MB/s   1899.8 MB/cpu-s  (25165955 bytes, read 4095)
+       unicode:   122.2 MB/s    122.6 MB/cpu-s  (16777256 bytes, read 4095)
+     truecolor:   253.3 MB/s    255.5 MB/cpu-s  (25166263 bytes, read 4095)
+ cursor_motion:   207.8 MB/s    208.3 MB/cpu-s  (16777661 bytes, read 4095)
+ scroll_region:  1339.2 MB/s   1346.8 MB/cpu-s  (16777365 bytes, read 4095)
+    tui_frames:   245.5 MB/s    247.9 MB/cpu-s  (20901616 bytes, read 4095)

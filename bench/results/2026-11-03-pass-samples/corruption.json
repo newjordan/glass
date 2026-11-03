@@ -1,0 +1,137 @@
+{
+  "schema": "glass.pass-sample-corruptions/v1",
+  "rejected": 26,
+  "cases": [
+    {
+      "case": "missing session",
+      "rejected": true,
+      "diagnostic": "incomplete/extra sessions"
+    },
+    {
+      "case": "duplicate session",
+      "rejected": true,
+      "diagnostic": "session order"
+    },
+    {
+      "case": "wrong schema",
+      "rejected": true,
+      "diagnostic": "schema"
+    },
+    {
+      "case": "changed protocol",
+      "rejected": true,
+      "diagnostic": "changed protocol"
+    },
+    {
+      "case": "changed runner",
+      "rejected": true,
+      "diagnostic": "changed runner"
+    },
+    {
+      "case": "changed parser",
+      "rejected": true,
+      "diagnostic": "changed parser"
+    },
+    {
+      "case": "changed source",
+      "rejected": true,
+      "diagnostic": "changed test source"
+    },
+    {
+      "case": "changed binary",
+      "rejected": true,
+      "diagnostic": "changed binary identity"
+    },
+    {
+      "case": "changed settings",
+      "rejected": true,
+      "diagnostic": "changed settings"
+    },
+    {
+      "case": "wrong order",
+      "rejected": true,
+      "diagnostic": "session order"
+    },
+    {
+      "case": "false pair",
+      "rejected": true,
+      "diagnostic": "session order"
+    },
+    {
+      "case": "failed session",
+      "rejected": true,
+      "diagnostic": "session failed"
+    },
+    {
+      "case": "boolean exit",
+      "rejected": true,
+      "diagnostic": "session failed"
+    },
+    {
+      "case": "empty interval",
+      "rejected": true,
+      "diagnostic": "overlap/empty interval"
+    },
+    {
+      "case": "missing UTC",
+      "rejected": true,
+      "diagnostic": "Invalid isoformat string: ''"
+    },
+    {
+      "case": "wrong UTC",
+      "rejected": true,
+      "diagnostic": "missing/mismatched UTC"
+    },
+    {
+      "case": "changed argv",
+      "rejected": true,
+      "diagnostic": "argv"
+    },
+    {
+      "case": "wrong stdout path",
+      "rejected": true,
+      "diagnostic": "changed/misnamed log"
+    },
+    {
+      "case": "changed stdout hash",
+      "rejected": true,
+      "diagnostic": "changed/misnamed log"
+    },
+    {
+      "case": "changed stderr hash",
+      "rejected": true,
+      "diagnostic": "changed/misnamed log"
+    },
+    {
+      "case": "wrong settings",
+      "rejected": true,
+      "diagnostic": "session settings"
+    },
+    {
+      "case": "off with samples",
+      "rejected": true,
+      "diagnostic": "samples in off mode"
+    },
+    {
+      "case": "overlapping sessions",
+      "rejected": true,
+      "diagnostic": "overlap/empty interval"
+    },
+    {
+      "case": "changed sample hash",
+      "rejected": true,
+      "diagnostic": "changed sample file"
+    },
+    {
+      "case": "changed sample path",
+      "rejected": true,
+      "diagnostic": "changed sample file"
+    },
+    {
+      "case": "missing sample hash",
+      "rejected": true,
+      "diagnostic": "'samples_sha256'"
+    }
+  ],
+  "limits": "Synthetic malformed receipt rejection only; not timing accuracy or independent audit."
+}

@@ -1,0 +1,84 @@
+GLASS PER-PASS CLOCK RETENTION — ITERATION 34 (2026-11-03)
+
+RETAINED CODE / MATERIAL NEW GROUND
+Added optional GLASS_BENCH_SAMPLES JSONL output to the existing cfg(test)
+speed::speed diagnostic, plus a strict shape-aware analyzer. Each in-memory
+pass retains paired integer wall/thread-CPU nanoseconds instead of only two
+separately minimized, rounded rates. Serialization and output occur after each
+workload, not in the measured pass; existing files refused. Records preserve
+payload length/read/pass identity. Unsupported PTY/stage clocks, zero rounds,
+zero read and unmatched workload fail explicitly. Production source unchanged.
+
+This turns prior retrospective median-pass/rounding limitations into directly
+inspectable future evidence. It does NOT improve runtime terminal throughput.
+
+FROZEN EXPERIMENT
+Exactly 24 sequential sessions / 12 alternating recorder off/on pairs on one
+exact final optimized test ELF, six exact Python tput payloads, 39x154, scale1,
+4095-byte reads, five internal passes. No pilot, exclusions, measured retries,
+optional stopping, threshold tuning or rescue mode. One pre-session preflight
+failure and transparent corpus-path amendment retained (see below).
+
+360 retained wall/CPU pass pairs across 72 on-mode workload sessions.
+CPU and wall minima differ in only 1/72 sessions (ASCII): cross-pass pairing
+mismatch is NOT the dominant problem in this capture. Selection sensitivity is:
+
+Workload        median on/off CPU  median on/off wall  median CPU median/min
+ASCII                  .934537            .934380                1.1679
+Unicode               1.104757           1.104917                1.0714
+truecolor             1.008227           1.008853                1.0522
+cursor-motion          .999434            .999031                1.0409
+scroll-region         1.013951           1.014116                1.0699
+TUI                   1.004088           1.003766                1.0429
+
+ASCII CPU median/min varies 1.0224–1.7777 across sessions. Pass0 is CPU best
+in 0 ASCII, 0 Unicode, 1 truecolor, 4 cursor-motion, 4 scroll-region and 3 TUI
+sessions. Counts describe this run, not a warming law.
+
+INTERPRETATION / LIMITS
+Ratios are recording on/off in-process throughput, NOT control/candidate engine
+wins. Dispersion fails to establish negligible observer cost, a causal recording
+penalty/benefit, or any correction factor. The same executable in both modes
+cannot isolate compile-time effects versus the old ELF. Shared-host scheduling,
+allocator/cache/setup and order effects remain confounded; no independence,
+noninferiority, significance or terminal/Ghostty claim. Nanosecond representation
+is not nanosecond accuracy; clock endpoints are adjacent, not identical.
+No retroactive reinterpretation of rejected candidates. Future fresh screens
+must predeclare the estimator and use the same recorder mode on both arms.
+
+VERIFICATION / PRESERVATION
+- Exact non-fresh release build, final ELF SHA256
+  afaa4ae10d8781fcc6f0df2a84f4ff1be1e4993fac76527ee1d742023e8bfa59.
+- One existing parser-equivalence test passed on final ELF. Serialization unit
+  passed on intermediate ELF; final duration/summary identity replay covers all
+  360 records. No new full terminal-suite or differential-sweep claim this time.
+- Five Python test methods (plus malformed-record subtests) pass.
+- Twenty-six synthetic raw-receipt corruptions rejected; six real entry-point
+  failure cases rejected, existing file sentinel unchanged.
+- Seven lossless archives: 128,989,204 raw bytes in 3,712,548 compressed bytes;
+  six exact payloads and final test ELF. Raw file SHA256 checked after decompress.
+- Selected executable, 119 other crate Rust sources, four shared docs and all
+  7,698 pre-existing evidence files pinned; final read-only checkpoint must match.
+- Prior speed diagnostic retained as original-speed.rs, used by explicit
+  snapshot mapping for the historical 189-reference replay. Earlier files
+  themselves not rewritten. Final/post-commit replay receipts remain the gate.
+
+FAILURES / NONRESULTS RETAINED
+Initial runner invocation failed preflight: corpus was archived .bin.xz rather
+than .bin. No timed session existed; retained preflight sources/protocol/logs,
+materialized byte-identical payloads in this directory and amended only path.
+All 24 subsequently measured sessions ran once. One apply_patch preflight failed
+without writes. Read-only advisor timed out; no unreturned proposal adopted.
+
+REPLAY
+ python3 -B bench/results/2026-11-03-pass-samples/verify.py
+ python3 -B bench/replay-evidence-index.py bench/results/2026-11-03-pass-samples/final-frozen-index.json
+
+DECISION
+Retain opt-in test-only diagnostic and evidence parser, not a runtime candidate.
+Selected executable remains SHA256
+ d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c.
+Three unresolved runtime workloads still need an actual performance candidate
+and fresh selected-build end-to-end comparison. Startup/memory/VRAM/displayed
+latency/correctness/platform scope also remains necessary for an all-metric
+championship claim. No acceptance command bound; no championship established.

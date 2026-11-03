@@ -1,0 +1,1 @@
+Preserved preflight-{run.py,protocol.json,run.log,run.stderr}. No session receipts or timing logs existed when preflight failed. Only corpus path changed to a local hash-checked decompression. Same 12 pairs, 5 rounds, one executable and fixed orders.

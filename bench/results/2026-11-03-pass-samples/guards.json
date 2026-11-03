@@ -1,0 +1,43 @@
+{
+  "schema": "glass.pass-sample-guards/v1",
+  "rejected": 6,
+  "cases": [
+    {
+      "case": "existing-file",
+      "exit": 101,
+      "expected_diagnostic": "sample path must be new and writable",
+      "rejected": true
+    },
+    {
+      "case": "zero-rounds",
+      "exit": 101,
+      "expected_diagnostic": "rounds and read must be positive",
+      "rejected": true
+    },
+    {
+      "case": "zero-read",
+      "exit": 101,
+      "expected_diagnostic": "rounds and read must be positive",
+      "rejected": true
+    },
+    {
+      "case": "pty-clock",
+      "exit": 101,
+      "expected_diagnostic": "pass samples support only the in-memory path",
+      "rejected": true
+    },
+    {
+      "case": "partial-feed",
+      "exit": 101,
+      "expected_diagnostic": "pass samples require the complete feed path",
+      "rejected": true
+    },
+    {
+      "case": "no-workloads",
+      "exit": 101,
+      "expected_diagnostic": "no workload matched GLASS_BENCH_ONLY",
+      "rejected": true
+    }
+  ],
+  "limits": "Failure-path checks only. No performance sample or runtime correctness claim."
+}

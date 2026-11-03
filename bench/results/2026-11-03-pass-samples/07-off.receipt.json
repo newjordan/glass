@@ -1,0 +1,26 @@
+{
+  "pair": 7,
+  "mode": "off",
+  "begin_ns": 1793713718310114840,
+  "end_ns": 1793713720596412767,
+  "started_utc": "2026-11-03T13:48:38.310115+00:00",
+  "exit": 0,
+  "argv": [
+    "/tmp/glass-i34-sample-final-test",
+    "--exact",
+    "--ignored",
+    "--nocapture",
+    "speed::speed"
+  ],
+  "settings": {
+    "GLASS_BENCH_CORPUS": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/corpus",
+    "GLASS_BENCH_SCALE": "1",
+    "GLASS_BENCH_READ": "4095",
+    "GLASS_BENCH_ROUNDS": "5",
+    "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames"
+  },
+  "stdout": "07-off.stdout",
+  "stderr": "07-off.stderr",
+  "stdout_sha256": "9fd41b5c032ce6881b5f4a49c172e4c3dc7bf38b38bda0c7a0c7b12bfd72403f",
+  "stderr_sha256": "d9ff316a8eb53e73813181d3a41933d0722924d8d2a538c3e6d24cdc17545025"
+}

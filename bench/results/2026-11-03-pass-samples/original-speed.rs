@@ -1,0 +1,1444 @@
+//! A headless throughput bench: the harness's workloads fed through the
+//! reader's path (splitter, pump, engine) with no window, so the parse
+//! path can be timed and profiled on its own. Ignored by default:
+//!
+//! `cargo test --release -p glass-term speed -- --ignored --nocapture`
+//!
+//! `GLASS_BENCH_SCALE` scales the workloads (1.0 is the harness's own
+//! sizes), `GLASS_BENCH_READ` is the read size the stream is cut into,
+//! and `GLASS_BENCH_ONLY` names one workload. `GLASS_BENCH_CORPUS` instead
+//! loads the six payloads exported by `bench/export-tput-corpus.py`, so an
+//! engine diagnostic can use the actual Python terminal corpus. Corpus
+//! hashes are checked by the external runner, not by this loader.
+
+use std::time::Instant;
+
+use crate::engine::{Engine, HostInfo};
+use crate::intake::{Intake, Splitter};
+use crate::intake::Piece;
+use crate::session::pump;
+
+/// The harness's full-screen grid on a 1080p output.
+pub(crate) const ROWS: usize = 39;
+pub(crate) const COLS: usize = 154;
+
+/// A small deterministic generator, so every run feeds the same bytes.
+pub(crate) struct Rng(u64);
+
+impl Rng {
+    pub(crate) fn new(seed: u64) -> Self {
+        Self(seed.wrapping_mul(0x9e37_79b9_7f4a_7c15) | 1)
+    }
+    pub(crate) fn next(&mut self) -> u64 {
+        let mut x = self.0;
+        x ^= x << 13;
+        x ^= x >> 7;
+        x ^= x << 17;
+        self.0 = x;
+        x
+    }
+    pub(crate) fn below(&mut self, n: usize) -> usize {
+        (self.next() % n.max(1) as u64) as usize
+    }
+}
+
+fn printable() -> Vec<char> {
+    (0x21u8..0x7f).map(char::from).collect()
+}
+
+fn build(target: usize, mut line: impl FnMut() -> Vec<u8>) -> Vec<u8> {
+    let mut out = Vec::with_capacity(target + 4096);
+    while out.len() < target {
+        out.extend_from_slice(&line());
+    }
+    out
+}
+
+/// The workloads of the harness's `tput.py`, by name, at `scale` of its
+/// sizes, for a `rows` by `cols` screen.
+pub(crate) fn workloads(scale: f64, rows: usize, cols: usize) -> Vec<(&'static str, Vec<u8>)> {
+    let size = |mb: usize| ((mb << 20) as f64 * scale) as usize;
+    let mut rng = Rng::new(7);
+    let print = printable();
+    let mut out = Vec::new();
+
+    let base: Vec<Vec<u8>> = (0..400)
+        .map(|_| {
+            let mut s: String = (0..cols - 1).map(|_| print[rng.below(print.len())]).collect();
+            s.push_str("\r\n");
+            s.into_bytes()
+        })
+        .collect();
+    out.push(("ascii", build(size(24), || base[rng.below(base.len())].clone())));
+
+    // Line breaks as a bare \n, the shape logs, hexdump and yes(1) write:
+    // every gap between runs is pure C0, no printable in front of it.
+    let lflines: Vec<Vec<u8>> = (0..400)
+        .map(|i| {
+            let mut s: String = (0..cols - 1).map(|_| print[rng.below(print.len())]).collect();
+            s.push('\n');
+            if i % 7 == 0 {
+                s.push('\r');
+            }
+            s.into_bytes()
+        })
+        .collect();
+    out.push(("ascii_lf", build(size(24), || lflines[rng.below(lflines.len())].clone())));
+
+    // As tput.py has them: its "á" is an "a" and a combining accent.
+    let uni = ["漢字", "テスト", "🙂", "é", "ñ", "Ж", "αβγ", "a\u{301}", "→", "█", "─"];
+    let mut pool: Vec<String> = uni.iter().map(|s| s.to_string()).collect();
+    pool.extend(print[..20].iter().map(|c| c.to_string()));
+    let ulines: Vec<Vec<u8>> = (0..400)
+        .map(|_| {
+            let mut s: String = (0..cols / 3).map(|_| pool[rng.below(pool.len())].as_str()).collect();
+            s.push_str("\r\n");
+            s.into_bytes()
+        })
+        .collect();
+    out.push(("unicode", build(size(16), || ulines[rng.below(ulines.len())].clone())));
+
+    let slines: Vec<Vec<u8>> = (0..200)
+        .map(|_| {
+            let mut s = String::new();
+            for _ in 0..cols - 1 {
+                s.push_str(&format!(
+                    "\x1b[38;2;{};{};{}m{}",
+                    rng.below(256),
+                    rng.below(256),
+                    rng.below(256),
+                    print[rng.below(print.len())]
+                ));
+            }
+            s.push_str("\x1b[0m\r\n");
+            s.into_bytes()
+        })
+        .collect();
+    out.push(("truecolor", build(size(24), || slines[rng.below(slines.len())].clone())));
+
+    let cups: Vec<Vec<u8>> = (0..400)
+        .map(|_| {
+            let mut s = String::new();
+            for _ in 0..50 {
+                let c = print[rng.below(print.len())];
+                s.push_str(&format!(
+                    "\x1b[{};{}H\x1b[3{}m{}",
+                    1 + rng.below(rows),
+                    1 + rng.below(cols - 9),
+                    rng.below(8),
+                    c.to_string().repeat(6)
+                ));
+            }
+            s.into_bytes()
+        })
+        .collect();
+    out.push(("cursor_motion", build(size(16), || cups[rng.below(cups.len())].clone())));
+
+    let mut region = format!("\x1b[2;{}r", rows - 2).into_bytes();
+    region.extend(build(size(16), || base[rng.below(base.len())].clone()));
+    region.extend_from_slice(b"\x1b[r");
+    out.push(("scroll_region", region));
+
+    let frames: Vec<Vec<u8>> = (0..4)
+        .map(|_| {
+            let mut s = String::new();
+            for r in 0..rows {
+                s.push_str(&format!("\x1b[{};1H", r + 1));
+                for c in 0..cols {
+                    s.push_str(&format!("\x1b[48;5;{}m{}", (r * 7 + c) % 256, print[(r + c) % 94]));
+                }
+            }
+            s.into_bytes()
+        })
+        .collect();
+    let nf = ((300.0 * scale) as usize).max(4);
+    let mut tui = b"\x1b[?1049h".to_vec();
+    for i in 0..nf {
+        tui.extend_from_slice(&frames[i % 4]);
+    }
+    tui.extend_from_slice(b"\x1b[?1049l");
+    out.push(("tui_frames", tui));
+    out
+}
+
+pub(crate) fn engine(rows: usize, cols: usize) -> Engine {
+    Engine::new(rows, cols, HostInfo { colors: [[0xd0; 3], [0, 0, 0], [0xff; 3]], cell_px: (10, 20) })
+}
+
+/// The reader thread's path for one stream, cut into reads of `read`
+/// bytes: split, then pump. Returns the replies, so nothing is optimized
+/// away.
+pub(crate) fn feed(engine: &mut Engine, intake: &mut Intake, splitter: &mut Splitter, stream: &[u8], read: usize) -> usize {
+    // GLASS_BENCH_STAGE brackets the reader thread's stages, so the
+    // throughput bench can say which one a workload's time went to:
+    // 0 both (the reader's real path), 1 split only, 2 pump only.
+    let stage = env("GLASS_BENCH_STAGE", 0);
+    let mut replies = 0;
+    let mut pieces = Vec::new();
+    for chunk in stream.chunks(read.max(1)) {
+        pieces.clear();
+        splitter.split(chunk, &mut pieces);
+        if stage == 1 {
+            continue;
+        }
+        if stage == 2 {
+            replies += pieces.len();
+            continue;
+        }
+        replies += pump(engine, intake, &pieces).replies.len();
+    }
+    replies
+}
+
+/// This thread's CPU time in seconds: steadier than the wall clock on a
+/// machine other work shares.
+fn cpu_seconds() -> f64 {
+    let mut t = libc::timespec { tv_sec: 0, tv_nsec: 0 };
+    // SAFETY: `t` is a valid timespec for the call to fill.
+    unsafe { libc::clock_gettime(libc::CLOCK_THREAD_CPUTIME_ID, &mut t) };
+    t.tv_sec as f64 + t.tv_nsec as f64 * 1e-9
+}
+
+/// The stream written into a pseudo-terminal by another thread and read
+/// back as the reader thread reads it: the pty's own read sizes and the
+/// system calls are part of what is timed. Returns the reader's CPU
+/// seconds.
+fn feed_pty(engine: &mut Engine, intake: &mut Intake, splitter: &mut Splitter, stream: &[u8]) -> f64 {
+    use std::io::{Read, Write};
+    use std::os::fd::FromRawFd;
+    let (mut master, mut slave) = (0, 0);
+    // SAFETY: openpty fills the two descriptors; the termios is a plain
+    // struct cfmakeraw fills before it is applied.
+    unsafe {
+        assert_eq!(libc::openpty(&mut master, &mut slave, std::ptr::null_mut(), std::ptr::null_mut(), std::ptr::null_mut()), 0);
+        let mut tio: libc::termios = std::mem::zeroed();
+        libc::tcgetattr(slave, &mut tio);
+        libc::cfmakeraw(&mut tio);
+        libc::tcsetattr(slave, libc::TCSANOW, &tio);
+    }
+    // SAFETY: both descriptors were just opened and are owned here.
+    let (reader, mut writer) = unsafe { (std::fs::File::from_raw_fd(master), std::fs::File::from_raw_fd(slave)) };
+    let fd = reader.try_clone().ok().map(std::os::fd::OwnedFd::from);
+    // 0 reads here, 1 through the read-ahead, 2 gathered; by default, as
+    // the session reads on this system.
+    let mut reader: Box<dyn Read> = match env("GLASS_BENCH_AHEAD", if cfg!(target_os = "linux") { 1 } else { 2 }) {
+        1 => Box::new(crate::read_ahead::ReadAhead::spawn(Box::new(reader), fd).unwrap()),
+        2 => Box::new(crate::gather::Gathered::spawn(Box::new(reader)).unwrap()),
+        _ => Box::new(reader),
+    };
+    let data = stream.to_vec();
+    let total = data.len();
+    let writing = std::thread::spawn(move || {
+        for chunk in data.chunks(1 << 16) {
+            writer.write_all(chunk).unwrap();
+        }
+        writer
+    });
+    let mut buf = vec![0u8; 64 * 1024];
+    let mut got = 0;
+    let c = cpu_seconds();
+    while got < total {
+        let n = reader.read(&mut buf).unwrap();
+        got += n;
+        if env("GLASS_BENCH_READ_ONLY", 0) == 1 {
+            continue;
+        }
+        let mut pieces = Vec::new();
+        splitter.split(&buf[..n], &mut pieces);
+        std::hint::black_box(pump(engine, intake, &pieces));
+    }
+    let used = cpu_seconds() - c;
+    drop(writing.join());
+    if env("GLASS_BENCH_READS", 0) == 1 {
+        eprintln!("  {got} bytes in {:.1} us of reader CPU per 4 KiB", used * 1e6 / (got as f64 / 4096.0));
+    }
+    used
+}
+
+fn env<T: std::str::FromStr>(name: &str, default: T) -> T {
+    std::env::var(name).ok().and_then(|v| v.parse().ok()).unwrap_or(default)
+}
+
+const CORPUS_NAMES: [&str; 6] = ["ascii", "unicode", "truecolor", "cursor_motion", "scroll_region", "tui_frames"];
+
+/// Fixed filenames, geometry and lengths: never follow a filename from JSON.
+/// This test-only loader does not authenticate a corpus or validate its hashes.
+fn load_corpus(dir: &std::path::Path, rows: usize, cols: usize) -> Result<Vec<(&'static str, Vec<u8>)>, String> {
+    let bytes = std::fs::read(dir.join("manifest.json")).map_err(|e| e.to_string())?;
+    let m: serde_json::Value = serde_json::from_slice(&bytes).map_err(|e| e.to_string())?;
+    if m["schema"] != "glass.tput-corpus/v1"
+        || m["rows"].as_u64() != Some(rows as u64)
+        || m["cols"].as_u64() != Some(cols as u64)
+        || m["workloads"].as_object().map(|w| w.len()) != Some(CORPUS_NAMES.len())
+    {
+        return Err("invalid corpus schema, geometry or workload set".into());
+    }
+    let mut result = Vec::new();
+    for name in CORPUS_NAMES {
+        let size = m["workloads"][name]["bytes"].as_u64().ok_or("missing corpus length")?;
+        if size == 0 || size > 256 * 1024 * 1024 {
+            return Err("invalid corpus length".into());
+        }
+        let path = dir.join(format!("{name}.bin"));
+        if std::fs::metadata(&path).map_err(|e| e.to_string())?.len() != size {
+            return Err(format!("corpus length mismatch: {name}"));
+        }
+        let data = std::fs::read(path).map_err(|e| e.to_string())?;
+        if data.len() as u64 != size {
+            return Err(format!("corpus changed while reading: {name}"));
+        }
+        result.push((name, data));
+    }
+    Ok(result)
+}
+
+#[test]
+fn corpus_loader_checks_manifest_and_lengths() {
+    // Unique create_dir, not a shared process environment variable or fixture.
+    let dir = std::env::temp_dir().join(format!("glass-corpus-{}-{:?}", std::process::id(), std::thread::current().id()));
+    std::fs::create_dir(&dir).unwrap();
+    let run = || {
+        let mut m = serde_json::json!({"schema":"glass.tput-corpus/v1", "rows":39, "cols":154, "workloads":{}});
+        for name in CORPUS_NAMES {
+            std::fs::write(dir.join(format!("{name}.bin")), name.as_bytes()).unwrap();
+            m["workloads"][name] = serde_json::json!({"bytes":name.len()});
+        }
+        let save = |m: &serde_json::Value| std::fs::write(dir.join("manifest.json"), m.to_string()).unwrap();
+        save(&m);
+        let loaded = load_corpus(&dir, 39, 154).unwrap();
+        assert_eq!(loaded.len(), 6);
+        for (name, data) in loaded { assert_eq!(data, name.as_bytes()); }
+        assert!(load_corpus(&dir, 40, 154).is_err());
+        assert!(load_corpus(&dir, 39, 80).is_err());
+        for size in [0, 1, 256 * 1024 * 1024 + 1] {
+            let mut bad = m.clone();
+            bad["workloads"]["ascii"]["bytes"] = serde_json::json!(size);
+            save(&bad);
+            assert!(load_corpus(&dir, 39, 154).is_err());
+        }
+        let mut bad = m.clone();
+        bad["schema"] = serde_json::json!("other");
+        save(&bad);
+        assert!(load_corpus(&dir, 39, 154).is_err());
+        bad = m.clone();
+        let entry = bad["workloads"].as_object_mut().unwrap().remove("ascii").unwrap();
+        bad["workloads"]["../ascii"] = entry;
+        save(&bad);
+        assert!(load_corpus(&dir, 39, 154).is_err());
+        save(&m);
+        std::fs::remove_file(dir.join("ascii.bin")).unwrap();
+        assert!(load_corpus(&dir, 39, 154).is_err());
+        std::fs::write(dir.join("manifest.json"), b"{").unwrap();
+        assert!(load_corpus(&dir, 39, 154).is_err());
+    };
+    let result = std::panic::catch_unwind(run);
+    std::fs::remove_dir_all(&dir).unwrap();
+    result.unwrap();
+}
+
+/// Export the old generated corpus for a byte-level comparison, not timing.
+#[test]
+#[ignore]
+fn dump_generated_corpus() {
+    use std::io::Write;
+    let dir = std::path::PathBuf::from(std::env::var_os("GLASS_BENCH_DUMP").expect("GLASS_BENCH_DUMP required"));
+    std::fs::create_dir(&dir).unwrap();
+    for (name, data) in workloads(1.0, ROWS, COLS) {
+        if CORPUS_NAMES.contains(&name) {
+            let mut out = std::fs::OpenOptions::new().write(true).create_new(true).open(dir.join(format!("{name}.bin"))).unwrap();
+            out.write_all(&data).unwrap();
+        }
+    }
+}
+
+#[test]
+#[ignore]
+fn speed() {
+    let scale: f64 = env("GLASS_BENCH_SCALE", 0.25);
+    let read: usize = env("GLASS_BENCH_READ", 4095);
+    let rounds: usize = env("GLASS_BENCH_ROUNDS", 3);
+    let only: String = env("GLASS_BENCH_ONLY", String::new());
+    let payloads = if let Some(dir) = std::env::var_os("GLASS_BENCH_CORPUS") {
+        assert_eq!(scale, 1.0, "a fixed corpus cannot be rescaled");
+        load_corpus(std::path::Path::new(&dir), ROWS, COLS).expect("invalid fixed corpus")
+    } else {
+        workloads(scale, ROWS, COLS)
+    };
+    for (name, stream) in payloads {
+        if !only.is_empty() && !only.split(',').any(|o| o == name) {
+            continue;
+        }
+        let mut best = f64::MAX;
+        let mut best_cpu = f64::MAX;
+        // The harness's own hot threads are placed on the largest L3
+        // (affinity.rs); this bench runs the same path on the thread it
+        // is given, which the scheduler may put on any die — on a dual-
+        // die part with one stacked cache that is a 2x spread for the
+        // identical command. Place it as the terminal would be, so the
+        // numbers are of the engine, not of where the thread landed.
+        crate::affinity::place_hot_thread();
+        // The test binary never runs main, so the env-gated parse timers
+        // and ceiling probes arm here when the bench asks for them.
+        crate::engine::timers::init();
+        crate::engine::probes::init();
+        alacritty_terminal::grid::probes_init();
+        alacritty_terminal::grid::fill_census::init();
+        // One terminal for every round, as the harness runs each workload
+        // three times in one window: after the first, the history is full
+        // and scrolling recycles rows rather than allocating them.
+        let (mut e, mut i, mut s) = (engine(ROWS, COLS), Intake::new(glass_window::LAYER_PICTURES), Splitter::default());
+        e.set_fast(env("GLASS_BENCH_SLOW", 0) == 0);
+        if env("GLASS_BENCH_COUNTERS", 0) == 1 {
+            crate::engine::counters::start();
+        }
+        for _ in 0..rounds {
+            feed(&mut e, &mut i, &mut s, b"\x1b[0m\x1b[H\x1b[2J", read);
+            let (t, c) = (Instant::now(), cpu_seconds());
+            let used = if env("GLASS_BENCH_PTY", 0) == 1 {
+                feed_pty(&mut e, &mut i, &mut s, &stream)
+            } else {
+                std::hint::black_box(feed(&mut e, &mut i, &mut s, &stream, read));
+                cpu_seconds() - c
+            };
+            best = best.min(t.elapsed().as_secs_f64());
+            best_cpu = best_cpu.min(used);
+        }
+        // What the engine's two apply paths took, when a census asked for
+        // it: the run lanes' writes against the byte-at-a-time parser's.
+        if env("GLASS_BENCH_COUNTERS", 0) == 1 {
+            // One round's own take: the counters started clear this
+            // workload and stop here.
+            let (lane, vte) = crate::engine::counters::stop();
+            let (lane, vte) = (lane / rounds as u64, vte / rounds as u64);
+            eprintln!(
+                "{:>14}: lanes {:6.1}%  vte {:6.1}%  ({} + {} of {} bytes)",
+                name,
+                100.0 * lane as f64 / stream.len() as f64,
+                100.0 * vte as f64 / stream.len() as f64,
+                lane,
+                vte,
+                stream.len()
+            );
+        }
+        eprintln!(
+            "{name:>14}: {:7.1} MB/s  {:7.1} MB/cpu-s  ({} bytes, read {read})",
+            stream.len() as f64 / best / 1e6,
+            stream.len() as f64 / best_cpu / 1e6,
+            stream.len()
+        );
+        // The parse-path timers, when the bench asked for them, so the
+        // test's own exit (no main Drop) still reports.
+        crate::engine::timers::report();
+        // The lazy-fill census (post-rounds, unlike the in-loop placement
+        // that once read pre-feed zeros).
+        alacritty_terminal::grid::fill_census::report();
+    }
+}
+
+/// A random stream of what programs write: text, UTF-8, controls, CSI
+/// and plain escapes, pass-through and lifted strings of every dialect,
+/// torn and aborted sequences, and stray bytes.
+pub(crate) fn random_stream(rng: &mut Rng, len: usize) -> Vec<u8> {
+    const PARTS: &[&[u8]] = &[
+        b"hello", b"world ", b"\r\n", b"\n", b"\r", b"\t", b"\x08", b"\x07", b"x", b"0123456789",
+        "漢字".as_bytes(), "🙂".as_bytes(), "é".as_bytes(), b"\xe6\x97", b"\xff", b"\xc3",
+        b"\x1b[31m", b"\x1b[0m", b"\x1b[38;2;10;20;30m", b"\x1b[48;5;200m", b"\x1b[1;4:3m",
+        b"\x1b[H", b"\x1b[5;7H", b"\x1b[2J", b"\x1b[3J", b"\x1b[K", b"\x1b[2K", b"\x1b[1J",
+        b"\x1b[3;8r", b"\x1b[r", b"\x1b[2S", b"\x1b[3T", b"\x1b[2L", b"\x1b[2M", b"\x1b[4@", b"\x1b[3P",
+        b"\x1b[5X", b"\x1b[3b", b"\x1b[?25l", b"\x1b[?25h", b"\x1b[?7l", b"\x1b[?7h", b"\x1b[4h", b"\x1b[4l",
+        b"\x1b[?1049h", b"\x1b[?1049l", b"\x1b[?47h", b"\x1b[?47l", b"\x1b[?2026h", b"\x1b[?2026l",
+        b"\x1b[c", b"\x1b[0c", b"\x1b[>c", b"\x1b[>q", b"\x1b[6n", b"\x1b[5n", b"\x1b[16t", b"\x1b[18t",
+        b"\x1b[?2026$p", b"\x1b[?1;1S", b"\x1b[?2;1S", b"\x1b[?25$p", b"\x1b[>1u", b"\x1b[?u", b"\x1b[<u",
+        b"\x1bM", b"\x1bD", b"\x1bE", b"\x1b7", b"\x1b8", b"\x1b(0", b"\x1b(B", b"\x1b)0", b"\x0e", b"\x0f",
+        b"\x1b#8", b"\x1b=", b"\x1b>", b"\x1bc", b"\x1b\x1b", b"\x1b", b"\x1b[", b"\x1b[1;", b"\x18", b"\x1a",
+        b"\x1b]0;title\x07", b"\x1b]2;name\x1b\\", b"\x1b]8;;http://x\x1b\\", b"\x1b]8;;\x1b\\",
+        b"\x1b]52;c;aGk=\x07", b"\x1b]11;?\x07", b"\x1b]1337;CurrentDir=/tmp\x07",
+        b"\x1b]1337;File=inline=1;size=4:AAAA\x07", b"\x1b]133;A\x07",
+        b"\x1b_Gi=31,s=1,v=1,a=T,f=24;AAAA\x1b\\", b"\x1b_Ga=d\x1b\\", b"\x1b_Gi=5,a=q;\x07",
+        b"\x1b_glass;layer id=1\x1b\\", b"\x1b_other\x1b\\", b"\x1b_gla\x07",
+        b"\x1bPq#0;2;0;0;0#0~~@@\x1b\\", b"\x1bP$qm\x1b\\", b"\x1bP+q6d74\x1b\\", b"\x1bP1$r0m\x1b\\",
+        b"\x1bPtmux;\x1b\x1b[31mred\x1b\x1b[0m\x1b\\", b"\x1bPtmux;\x1b\x1b_Gi=9,a=q;\x1b\x1b\\\x1b\\",
+        b"\x1bX sos \x1b\\", b"\x1b^ pm \x1b\\", b"\x1b[?1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19h",
+        b"\x1b[58;2;1;2;3m", b"\x1b[59m", b"\x1b[4:3m", b"\x1b[7m", b"\x1b[24m", b"\x1b[3D", b"\x1b[2C", b"\x1b[G",
+        b"\x1b[20G", b"\x1b[999C", b"\x1b[A", b"\x1b[B", b"\x1b[1;1H", b"\x1b[0K", b"\x1b[1K", b"\x1b[12X",
+        "漢字漢字漢字漢字".as_bytes(), "\u{301}".as_bytes(), b"\x1bP0q\x1b\\", b"\x1b]8;id=1;file:///x\x07",
+        b"\x1b]0;\xe6\x97\xa5\x07", b"\x1bP1;2|abc\x9c", b"\x9c", b"\xc2\x9b", b"\x1b[?2026hpart\x1b[?2026l",
+    ];
+    let mut out = Vec::with_capacity(len + 64);
+    while out.len() < len {
+        match rng.below(12) {
+            0 => out.push(rng.below(256) as u8),
+            // A CSI near and past the head cap, ended or not.
+            2 => {
+                out.extend_from_slice(b"\x1b[");
+                out.extend((0..250 + rng.below(20)).map(|i| if i % 4 == 3 { b';' } else { b'1' }));
+                if rng.below(2) == 0 {
+                    out.push(b'm');
+                }
+            }
+            1 => out.extend((0..rng.below(40)).map(|_| 0x20 + rng.below(95) as u8)),
+            // A long run, as plain output is: across lines, wrapping.
+            3 => out.extend((0..rng.below(400)).map(|_| 0x20 + rng.below(95) as u8)),
+            // A long run of text past ASCII: wide, narrow, marks that join
+            // the cell before, a C1 control, and ASCII between.
+            4 => {
+                const TEXT: [&str; 12] = ["漢", "字", "é", "Ж", "🙂", "\u{301}", "─", "\u{85}", "a", "b c", "\u{200b}", "\u{ff21}"];
+                for _ in 0..rng.below(120) {
+                    out.extend_from_slice(TEXT[rng.below(TEXT.len())].as_bytes());
+                }
+            }
+            _ => out.extend_from_slice(PARTS[rng.below(PARTS.len())]),
+        }
+    }
+    out
+}
+
+/// A random stream of what full-screen programs write: colours and cursor
+/// moves between their characters, in the plain forms the engine applies
+/// itself and in every form next to them that it must leave to the parser
+/// (colon parts, private markers, intermediates, controls inside, too
+/// many parameters, values past a byte or past 65535, a sequence cut
+/// off), with REP, wide characters, half-read UTF-8, regions, scrolls and
+/// synchronized updates between them.
+pub(crate) fn random_painting(rng: &mut Rng, len: usize) -> Vec<u8> {
+    const AROUND: &[&[u8]] = &[
+        b"\x1b[3b", b"\x1b[b", b"\x1b[0b", b"\r\n", b"\n", b"\r", b"\x08", b"\t", "漢".as_bytes(), "🙂".as_bytes(),
+        "é".as_bytes(), "\u{301}".as_bytes(), b"\xc3", b"\xe6\x97", b"\xff", b"\x1b[2;5r", b"\x1b[r", b"\x1b[2J",
+        b"\x1b[K", b"\x1b[?2026h", b"\x1b[?2026l", b"\x1b[?7l", b"\x1b[?7h", b"\x1b[4h", b"\x1b[4l", b"\x1b[38:2::1:2:3m",
+        b"\x1b[4:3m", b"\x1b[58:5:9m", b"\x1b[?25l", b"\x1b[>4;1m", b"\x1b[1 q", b"\x1b[3\n1m", b"\x1b[1\x08;2H",
+        b"\x1b[1;2\x7fm", b"\x1b[", b"\x1b[38;2;1", b"\x1b7", b"\x1b8", b"\x1bM", b"\x1b(0", b"\x1b(B", b"\x1bc",
+        b"\x1b]8;;http://x\x1b\\", b"\x1b]8;;\x1b\\", b"\x1b[?1049h", b"\x1b[?1049l", b"\x1b[6n",
+    ];
+    let mut out = Vec::with_capacity(len + 256);
+    let number = |rng: &mut Rng| -> String {
+        match rng.below(10) {
+            0 => String::new(),
+            1 => ["255", "256", "65535", "65536", "99999999"][rng.below(5)].to_owned(),
+            2 => format!("{}", rng.below(300)),
+            _ => format!("{}", rng.below(110)),
+        }
+    };
+    while out.len() < len {
+        match rng.below(10) {
+            // A colour change.
+            0..=3 => {
+                let mut params: Vec<String> = Vec::new();
+                let most = if rng.below(8) == 0 { 40 } else { 5 };
+                for _ in 0..rng.below(most) {
+                    match rng.below(6) {
+                        0 => {
+                            params.push(["38", "48", "58"][rng.below(3)].to_owned());
+                            params.push("2".to_owned());
+                            for _ in 0..rng.below(4) {
+                                params.push(number(rng));
+                            }
+                        }
+                        1 => {
+                            params.push(["38", "48", "58"][rng.below(3)].to_owned());
+                            params.push(["5", "5", "2", "3", ""][rng.below(5)].to_owned());
+                            params.push(number(rng));
+                        }
+                        _ => params.push(number(rng)),
+                    }
+                }
+                out.extend_from_slice(format!("\x1b[{}m", params.join(";")).as_bytes());
+            }
+            // A cursor move.
+            4 | 5 => {
+                let params: Vec<String> = (0..rng.below(4)).map(|_| number(rng)).collect();
+                let end = [b'H', b'f'][rng.below(2)];
+                out.extend_from_slice(format!("\x1b[{}", params.join(";")).as_bytes());
+                out.push(end);
+            }
+            // The characters between them.
+            6 | 7 => out.extend((0..1 + rng.below(8)).map(|_| 0x20 + rng.below(95) as u8)),
+            8 => out.extend_from_slice(AROUND[rng.below(AROUND.len())]),
+            _ => {
+                let len = rng.below(60);
+                out.extend_from_slice(&random_stream(rng, len));
+            }
+        }
+    }
+    out
+}
+
+/// Applying plain colour changes and cursor moves straight to the grid
+/// leaves every cell of history and screen, the cursor, the pen, the
+/// modes, the scroll count and the replies exactly as the parser alone
+/// does, for escape-dense streams cut into random reads.
+#[test]
+fn escapes_match_the_parser() {
+    let mut rng = Rng::new(41);
+    for round in 0..600 {
+        let len = 200 + rng.below(4000);
+        let stream = random_painting(&mut rng, len);
+        let n = rng.below(20);
+        let cuts = random_cuts(&mut rng, &stream, n);
+        let (rows, cols) = [(6, 10), (24, 80), (3, 40), (39, 154)][round % 4];
+        let run = |fast: bool| {
+            let mut e = engine(rows, cols);
+            e.set_fast(fast);
+            let (mut i, mut s) = (Intake::new(glass_window::LAYER_PICTURES), Splitter::default());
+            let mut replies = Vec::new();
+            let mut pieces = Vec::new();
+            for w in cuts.windows(2) {
+                pieces.clear();
+                s.split(&stream[w[0]..w[1]], &mut pieces);
+                replies.extend(pump(&mut e, &mut i, &pieces).replies);
+            }
+            e.settle();
+            (e.grid_state(), replies, e.alt_scrolled(), e.alternate_screen())
+        };
+        let (fast, slow) = (run(true), run(false));
+        assert!(fast.0.0 == slow.0.0, "cells differ, round {round}: {:?}", String::from_utf8_lossy(&stream));
+        assert_eq!(fast.0.1, slow.0.1, "cursor, round {round}: {:?}", String::from_utf8_lossy(&stream));
+        assert_eq!((fast.0.2, fast.0.3), (slow.0.2, slow.0.3), "history and count, round {round}");
+        assert_eq!(fast.1, slow.1, "replies, round {round}");
+        assert_eq!((fast.2, fast.3), (slow.2, slow.3), "alternate screen, round {round}");
+    }
+}
+
+/// Cut `stream` at `cuts` random points.
+pub(crate) fn random_cuts(rng: &mut Rng, stream: &[u8], cuts: usize) -> Vec<usize> {
+    let mut at: Vec<usize> = (0..cuts).map(|_| rng.below(stream.len() + 1)).collect();
+    at.push(0);
+    at.push(stream.len());
+    at.sort_unstable();
+    at.dedup();
+    at
+}
+
+/// The splitter's bulk path gives the pieces the byte-at-a-time steps
+/// give, piece for piece, however the stream is cut into reads.
+#[test]
+fn splitter_bulk_matches_byte_steps() {
+    let mut rng = Rng::new(11);
+    for round in 0..600 {
+        let len = 50 + rng.below(1500);
+        let stream = random_stream(&mut rng, len);
+        let cap = if round % 5 == 0 { 1 + rng.below(40) } else { crate::intake::BODY_CAP };
+        let n = rng.below(30);
+        let cuts = random_cuts(&mut rng, &stream, n);
+        let (mut bulk, mut step) = (Splitter::with_body_cap(cap), Splitter::with_body_cap(cap));
+        for w in cuts.windows(2) {
+            let read = &stream[w[0]..w[1]];
+            let (mut a, mut b) = (Vec::new(), Vec::new());
+            bulk.split(read, &mut a);
+            step.split_stepwise(read, &mut b);
+            assert_eq!(a, b, "round {round}, read {:?}", String::from_utf8_lossy(read));
+        }
+    }
+}
+
+/// While the store holds nothing that text could move, the reader feeds
+/// a read's text pieces to the engine at once. That leaves the grid, the
+/// cursor, the scroll count, the replies and the store exactly as
+/// feeding them one at a time does, for random streams with pictures
+/// coming and going between the text.
+#[test]
+fn a_feed_of_many_pieces_matches_one_at_a_time() {
+    let mut rng = Rng::new(31);
+    for round in 0..300 {
+        let len = 200 + rng.below(3000);
+        let stream = random_stream(&mut rng, len);
+        let n = rng.below(20);
+        let cuts = random_cuts(&mut rng, &stream, n);
+        let (rows, cols) = [(6, 10), (24, 80), (3, 40)][round % 3];
+        let run = |batched: bool| {
+            let mut e = engine(rows, cols);
+            let (mut i, mut s) = (Intake::new(glass_window::LAYER_PICTURES), Splitter::default());
+            i.set_cell((10, 20));
+            let mut replies = Vec::new();
+            let mut pieces = Vec::new();
+            for w in cuts.windows(2) {
+                pieces.clear();
+                s.split(&stream[w[0]..w[1]], &mut pieces);
+                if batched {
+                    replies.extend(pump(&mut e, &mut i, &pieces).replies);
+                } else {
+                    for piece in &pieces {
+                        replies.extend(pump(&mut e, &mut i, std::slice::from_ref(piece)).replies);
+                    }
+                }
+            }
+            // An open synchronized update holds bytes in the parser (a
+            // UTF-8 character half read before it among them) until it
+            // ends; the frame is held meanwhile. End it, then compare.
+            e.settle();
+            let view = crate::intake::View { top: e.top_line(), rows: rows as u16, alternate: e.alternate_screen() };
+            let shown: Vec<(f32, f32, f32, f32)> =
+                i.describe(view).placements.iter().map(|p| (p.row, p.column, p.width, p.height)).collect();
+            (e.grid_state(), replies, e.alt_scrolled(), i.scrolled(), shown)
+        };
+        let (batched, single) = (run(true), run(false));
+        assert!(batched.0.0 == single.0.0, "cells differ, round {round}");
+        assert_eq!(batched.0.1, single.0.1, "cursor, round {round}");
+        assert_eq!((batched.0.2, batched.0.3), (single.0.2, single.0.3), "history and count, round {round}");
+        assert_eq!(batched.1, single.1, "replies, round {round}");
+        assert_eq!((batched.2, batched.3), (single.2, single.3), "scroll counts, round {round}");
+        assert_eq!(batched.4, single.4, "pictures shown, round {round}");
+    }
+}
+
+/// Writing plain text runs straight into the grid leaves every cell of
+/// history and screen, the cursor, the pen, the modes, the scroll count
+/// and the replies exactly as the parser alone does, for random streams
+/// cut into random reads, on small screens that wrap and scroll a lot.
+#[test]
+fn plain_runs_match_the_parser() {
+    let mut rng = Rng::new(23);
+    for round in 0..400 {
+        let len = 200 + rng.below(4000);
+        let stream = random_stream(&mut rng, len);
+        let n = rng.below(20);
+        let cuts = random_cuts(&mut rng, &stream, n);
+        let (rows, cols) = [(6, 10), (24, 80), (3, 40), (39, 154)][round % 4];
+        let run = |fast: bool| {
+            let mut e = engine(rows, cols);
+            e.set_fast(fast);
+            let (mut i, mut s) = (Intake::new(glass_window::LAYER_PICTURES), Splitter::default());
+            let mut replies = Vec::new();
+            let mut pieces = Vec::new();
+            for w in cuts.windows(2) {
+                pieces.clear();
+                s.split(&stream[w[0]..w[1]], &mut pieces);
+                replies.extend(pump(&mut e, &mut i, &pieces).replies);
+            }
+            (e.grid_state(), replies, e.alt_scrolled(), e.alternate_screen())
+        };
+        let (fast, slow) = (run(true), run(false));
+        assert!(fast.0.0 == slow.0.0, "cells differ, round {round}: {:?}", String::from_utf8_lossy(&stream));
+        assert_eq!(fast.0.1, slow.0.1, "cursor, round {round}");
+        assert_eq!((fast.0.2, fast.0.3), (slow.0.2, slow.0.3), "history and count, round {round}");
+        assert_eq!(fast.1, slow.1, "replies, round {round}");
+        assert_eq!((fast.2, fast.3), (slow.2, slow.3), "alternate screen, round {round}");
+    }
+}
+
+/// [`plain_runs_match_the_parser`] over many seeds. The fixed-seed test is
+/// the gate CI runs; this is the sweep to run before a change to the lane's
+/// own rules becomes the default (the run-whole gap, say), where 400 streams
+/// out of one seed is thinner evidence than it looks. `GLASS_SWEEP_SEEDS`
+/// seeds from `GLASS_SWEEP_FROM`, `GLASS_SWEEP_ROUNDS` streams each. Check
+/// the sweep still bites before trusting it: `GLASS_RUN_PROBE=5` is
+/// deliberately incorrect, and must fail.
+#[test]
+#[ignore]
+fn plain_runs_match_the_parser_over_seeds() {
+    let seeds: u64 = env("GLASS_SWEEP_SEEDS", 64);
+    let from: u64 = env("GLASS_SWEEP_FROM", 1);
+    let rounds: usize = env("GLASS_SWEEP_ROUNDS", 100);
+    // The ceiling probes are a startup-fixed atomic, and only main and the
+    // bench ever set it — so without this the sweep silently ignores
+    // GLASS_RUN_PROBE and cannot be used to check that it still bites.
+    crate::engine::probes::init();
+    let mut swept = 0usize;
+    for seed in from..from + seeds {
+        let mut rng = Rng::new(seed);
+        for round in 0..rounds {
+            let len = 200 + rng.below(4000);
+            let stream = random_stream(&mut rng, len);
+            let n = rng.below(20);
+            let cuts = random_cuts(&mut rng, &stream, n);
+            let (rows, cols) = [(6, 10), (24, 80), (3, 40), (39, 154)][round % 4];
+            // The difference pass wants the cuts as windows over the whole
+            // stream, as the shrink test builds them.
+            let mut w: Vec<usize> = std::iter::once(0)
+                .chain(cuts.iter().copied().filter(|v| *v < stream.len()))
+                .chain(std::iter::once(stream.len()))
+                .collect();
+            w.sort_unstable();
+            w.dedup();
+            if let Some(field) = plain_runs_first_difference(rows, cols, &stream, &w) {
+                panic!(
+                    "seed {seed} round {round} ({rows}x{cols}) diverges in {field}: {:?}",
+                    String::from_utf8_lossy(&stream)
+                );
+            }
+            swept += 1;
+        }
+    }
+    eprintln!("swept {swept} streams over {seeds} seeds: no divergence");
+}
+
+/// Shrink a divergence [`plain_runs_match_the_parser_over_seeds`] found:
+/// `GLASS_SHRINK_SEED` and `GLASS_SHRINK_ROUND` name the case, which is
+/// regenerated exactly as the sweep generates it, then cut down greedily —
+/// slices removed from anywhere while the divergence still stands — and
+/// printed. The cuts are dropped first, since a stream that diverges when fed
+/// whole is the clearer report.
+#[test]
+#[ignore]
+fn shrink_sweep_divergence() {
+    let seed: u64 = env("GLASS_SHRINK_SEED", 18);
+    let target: usize = env("GLASS_SHRINK_ROUND", 161);
+    crate::engine::probes::init();
+    let mut rng = Rng::new(seed);
+    let (mut stream, mut cuts, mut rows, mut cols) = (Vec::new(), Vec::new(), 0, 0);
+    for round in 0..=target {
+        let len = 200 + rng.below(4000);
+        let s = random_stream(&mut rng, len);
+        let n = rng.below(20);
+        let c = random_cuts(&mut rng, &s, n);
+        if round == target {
+            let (r, co) = [(6, 10), (24, 80), (3, 40), (39, 154)][round % 4];
+            (stream, cuts, rows, cols) = (s, c, r, co);
+        }
+    }
+    let windows = |stream: &[u8], cuts: &[usize]| {
+        let mut w: Vec<usize> = std::iter::once(0)
+            .chain(cuts.iter().copied().filter(|v| *v < stream.len()))
+            .chain(std::iter::once(stream.len()))
+            .collect();
+        w.sort_unstable();
+        w.dedup();
+        w
+    };
+    let differs = |stream: &[u8], cuts: &[usize]| {
+        plain_runs_first_difference(rows, cols, stream, &windows(stream, cuts)).is_some()
+    };
+    assert!(differs(&stream, &cuts), "seed {seed} round {target} does not diverge");
+    // Whole-stream first: if it still diverges with no reads in the middle,
+    // the cuts are not part of the story.
+    if differs(&stream, &[]) {
+        cuts = Vec::new();
+    }
+    // Greedy removal, largest slices first.
+    let mut size = stream.len() / 2;
+    while size > 0 {
+        let mut at = 0;
+        while at + size <= stream.len() {
+            let mut shorter = stream.clone();
+            shorter.drain(at..at + size);
+            let kept: Vec<usize> = cuts.iter().copied().filter(|&v| v < shorter.len()).collect();
+            if differs(&shorter, &kept) {
+                stream = shorter;
+                cuts = kept;
+            } else {
+                at += 1;
+            }
+        }
+        size /= 2;
+    }
+    let field = plain_runs_first_difference(rows, cols, &stream, &windows(&stream, &cuts));
+    panic!(
+        "minimal: {rows}x{cols} field={field:?} cuts={cuts:?} len={} stream={:?}",
+        stream.len(),
+        String::from_utf8_lossy(&stream)
+    );
+}
+
+/// One pass of `plain_runs_match_the_parser`'s comparison on a given
+/// stream and cuts, returning the first field where fast differs from
+/// slow, or None when they agree. Used by the shrink and debug tests.
+pub(crate) fn plain_runs_first_difference(rows: usize, cols: usize, stream: &[u8], cuts: &[usize]) -> Option<&'static str> {
+    let run = |fast: bool| {
+        let mut e = engine(rows, cols);
+        e.set_fast(fast);
+        let (mut i, mut s) = (Intake::new(glass_window::LAYER_PICTURES), Splitter::default());
+        let mut replies = Vec::new();
+        let mut pieces = Vec::new();
+        for w in cuts.windows(2) {
+            pieces.clear();
+            s.split(&stream[w[0]..w[1]], &mut pieces);
+            replies.extend(pump(&mut e, &mut i, &pieces).replies);
+        }
+        e.settle();
+        (e.grid_state(), replies, e.alt_scrolled(), e.alternate_screen())
+    };
+    let (fast, slow) = (run(true), run(false));
+    if fast.0.0 != slow.0.0 { return Some("cells"); }
+    if fast.0.1 != slow.0.1 { return Some("cursor"); }
+    if (fast.0.2, fast.0.3) != (slow.0.2, slow.0.3) { return Some("history"); }
+    if fast.1 != slow.1 { return Some("replies"); }
+    if (fast.2, fast.3) != (slow.2, slow.3) { return Some("alternate"); }
+    None
+}
+
+/// The C0-inline divergence, fed one piece at a time with the trace on:
+/// where in the piece stream the fast path first applies a C0 gap the
+/// parser has not reached.
+#[test]
+#[ignore]
+fn trace_c0_inline_case() {
+    let stream: Vec<u8> = b"\x1b[?2026hm\x1b[?47l\nQ=c]1337;CurrentDir=/tmp".to_vec();
+    let (rows, cols) = (3usize, 40usize);
+    let run = |fast: bool| {
+        let mut e = engine(rows, cols);
+        e.set_fast(fast);
+        let (mut i, mut s) = (Intake::new(glass_window::LAYER_PICTURES), Splitter::default());
+        let mut pieces = Vec::new();
+        s.split(&stream, &mut pieces);
+        eprintln!("split into {} pieces: {:?}", pieces.len(), pieces.iter().map(|p| String::from_utf8_lossy(match p { crate::intake::Piece::Text(t) => t, _ => b"media" })).collect::<Vec<_>>());
+        pump(&mut e, &mut i, &pieces);
+        e.settle();
+        e.grid_state()
+    };
+    let fast = run(true);
+    let slow = run(false);
+    eprintln!("fast cursor {:?} slow cursor {:?}", fast.1, slow.1);
+    for (line, (a, b)) in fast.0.iter().zip(slow.0.iter()).enumerate() {
+        if a != b { eprintln!("DIFF line {line}: fast {a:?} slow {b:?}"); }
+    }
+}
+
+/// Which parts of the 46-byte divergence case are necessary? Feeds the
+/// case and its variants, fast vs slow, and prints which still diverge.
+/// The case: 2026h 'm' 47l LF "Q=c]1337;CurrentDir=/tmp".
+#[test]
+#[ignore]
+fn c0_inline_parts() {
+    let (rows, cols) = (3usize, 40usize);
+    let full: Vec<u8> = b"\x1b[?2026hm\x1b[?47l\nQ=c]1337;CurrentDir=/tmp".to_vec();
+    let cases: Vec<(&str, Vec<u8>)> = vec![
+        ("full", full.clone()),
+        ("no 2026h", b"m\x1b[?47l\nQ=c]1337;CurrentDir=/tmp".to_vec()),
+        ("no 47l", b"\x1b[?2026hm\nQ=c]1337;CurrentDir=/tmp".to_vec()),
+        ("no m", b"\x1b[?2026h\x1b[?47l\nQ=c]1337;CurrentDir=/tmp".to_vec()),
+        ("no run after", b"\x1b[?2026hm\x1b[?47l\n".to_vec()),
+        ("bare", b"\nQ=c]1337;CurrentDir=/tmp".to_vec()),
+    ];
+    for (name, stream) in cases {
+        let one = |fast: bool| {
+            let mut e = engine(rows, cols);
+            e.set_fast(fast);
+            let (mut i, mut sp) = (Intake::new(glass_window::LAYER_PICTURES), Splitter::default());
+            let mut pieces = Vec::new();
+            sp.split(&stream, &mut pieces);
+            pump(&mut e, &mut i, &pieces);
+            e.settle();
+            e.grid_state()
+        };
+        let (f, s) = (one(true), one(false));
+        let diverged = f.0 != s.0 || f.1 != s.1 || (f.2, f.3) != (s.2, s.3);
+        eprintln!("{name:14} -> {}", if diverged { "DIVERGES" } else { "match" });
+    }
+}
+
+/// Shrink the C0-inline divergence (GLASS_C0_INLINE=1): truncate the
+/// round's stream from the front while the divergence stands, then drop
+/// single parts, printing the minimal stream and where the cells first
+/// differ. Cuts are kept inside the shrunken stream and sorted.
+#[test]
+#[ignore]
+fn shrink_c0_inline_divergence() {
+    // Rebuild round 274's stream: seed 23, round index 274, (3, 40).
+    let round = 274usize;
+    let (rows, cols) = [(6, 10), (24, 80), (3, 40), (39, 154)][round % 4];
+    let mut rng = Rng::new(23);
+    let mut stream = Vec::new();
+    let mut cuts_all: Vec<usize> = Vec::new();
+    for r in 0..=round {
+        let len = 200 + rng.below(4000);
+        let s = random_stream(&mut rng, len);
+        let n = rng.below(20);
+        let c = random_cuts(&mut rng, &s, n);
+        if r == round {
+            stream = s;
+            cuts_all = c;
+        }
+    }
+    let differs = |stream: &[u8], cuts: &[usize]| {
+        let mut w: Vec<usize> = std::iter::once(0)
+            .chain(cuts.iter().copied().filter(|v| *v < stream.len()))
+            .chain(std::iter::once(stream.len()))
+            .collect();
+        w.sort_unstable();
+        w.dedup();
+        plain_runs_first_difference(rows, cols, stream, &w).is_some()
+    };
+    // With the sync-open guard (or the candidate reverted) this no longer
+    // diverges: the case stands as the guard's regression test. When the
+    // gap-inline is being retried, flip this to `assert!(differs(...))`
+    // after removing the guard to reproduce the original kill.
+    assert!(!differs(&stream, &cuts_all), "round 274 diverges: the sync-open guard is missing or broken");
+    // Front truncation: drop a prefix, keep the divergence.
+    let mut start = 0usize;
+    let mut step = stream.len() / 2;
+    while step > 0 {
+        while start + step < stream.len() && differs(&stream[start + step..], &cuts_all) {
+            start += step;
+        }
+        step /= 2;
+    }
+    // Single-part deletion: drop each random part once if the divergence stands.
+    let mut s2: Vec<u8> = stream[start..].to_vec();
+    let mut i = 0usize;
+    'del: while i < s2.len() {
+        for len in 1..64usize {
+            if i + len > s2.len() { break; }
+            let cand: Vec<u8> = s2[..i].iter().chain(s2[i + len..].iter()).copied().collect();
+            if differs(&cand, &[]) {
+                s2 = cand;
+                continue 'del;
+            }
+        }
+        i += 1;
+    }
+    eprintln!("c0-inline divergence minimal (front {start} dropped): {:?}", String::from_utf8_lossy(&s2));
+    let what = plain_runs_first_difference(rows, cols, &s2, &[0, s2.len()]);
+    eprintln!("first difference: {what:?}");
+    let mut e_fast = engine(rows, cols);
+    e_fast.set_fast(true);
+    let (mut i_f, mut sp_f) = (Intake::new(glass_window::LAYER_PICTURES), Splitter::default());
+    let mut pieces = Vec::new();
+    sp_f.split(&s2, &mut pieces);
+    pump(&mut e_fast, &mut i_f, &pieces);
+    e_fast.settle();
+    let mut e_slow = engine(rows, cols);
+    e_slow.set_fast(false);
+    let (mut i_s, mut sp_s) = (Intake::new(glass_window::LAYER_PICTURES), Splitter::default());
+    let mut pieces2 = Vec::new();
+    sp_s.split(&s2, &mut pieces2);
+    pump(&mut e_slow, &mut i_s, &pieces2);
+    e_slow.settle();
+    let (f, s) = (e_fast.grid_state(), e_slow.grid_state());
+    eprintln!("fast lines {} slow lines {}", f.0.len(), s.0.len());
+    for (line, (a, b)) in f.0.iter().zip(s.0.iter()).enumerate() {
+        if a != b {
+            eprintln!("DIFF line {line}");
+            eprintln!("  fast: {a:?}");
+            eprintln!("  slow: {b:?}");
+        }
+    }
+    for (line, (a, b)) in f.0.iter().zip(s.0.iter()).enumerate() {
+        if a != b {
+            eprintln!("line {line}: fast {a:?}");
+            eprintln!("line {line}: slow {b:?}");
+            break;
+        }
+    }
+    eprintln!("fast history {} slow history {}", f.2, s.2);
+
+    eprintln!("cursor fast {:?} slow {:?}", f.1, s.1);
+}
+
+/// Shrink the run-whole divergence (GLASS_RUN_WHOLE=1): window deletion
+/// then single-byte delta debugging, printing the minimal stream.
+#[test]
+#[ignore]
+fn shrink_run_whole_divergence() {
+    let mut rng = Rng::new(23);
+    let len = 200 + rng.below(4000);
+    let mut stream: Vec<u8> = random_stream(&mut rng, len);
+    let n = rng.below(20);
+    let mut cuts: Vec<usize> = random_cuts(&mut rng, &stream, n);
+    // plain_runs_match_the_parser cycles these; round 3 is (39,154), the
+    // round that diverges first with GLASS_RUN_WHOLE=1.
+    let (rows, cols) = (39usize, 154usize);
+    let differs = |stream: &[u8], cuts: &[usize]| {
+        plain_runs_first_difference(rows, cols, stream, cuts).is_some()
+    };
+    // Try seeds until one diverges, as plain_runs does round by round.
+    let mut seed = 23u64;
+    let mut attempts = 0;
+    while !differs(&stream, &cuts) {
+        seed += 1;
+        attempts += 1;
+        assert!(attempts < 200, "no divergence found from seed 23");
+        let mut rng = Rng::new(seed);
+        let len = 200 + rng.below(4000);
+        stream = random_stream(&mut rng, len);
+        let n = rng.below(20);
+        cuts = random_cuts(&mut rng, &stream, n);
+    }
+    eprintln!("divergent seed: {seed}");
+    let mut window = stream.len() / 2;
+    while window > 0 {
+        let mut at = 0;
+        while at < stream.len() {
+            let end = (at + window).min(stream.len());
+            let mut trial: Vec<u8> = stream[..at].to_vec();
+            trial.extend_from_slice(&stream[end..]);
+            let trial_cuts: Vec<usize> = cuts.iter()
+                .map(|&c| if c > at { c.saturating_sub(end - at) } else { c })
+                .filter(|&c| c <= trial.len())
+                .collect();
+            if differs(&trial, &trial_cuts) {
+                stream = trial;
+                cuts = trial_cuts;
+            } else {
+                at += window.max(1);
+            }
+        }
+        window /= 2;
+    }
+    eprintln!("minimal stream ({} bytes): {:?}", stream.len(), String::from_utf8_lossy(&stream));
+    loop {
+        let before = stream.len();
+        for i in 0..stream.len() {
+            let mut trial: Vec<u8> = stream[..i].to_vec();
+            trial.extend_from_slice(&stream[i + 1..]);
+            let trial_cuts: Vec<usize> = cuts.iter()
+                .map(|&c| if c > i { c - 1 } else { c })
+                .filter(|&c| c <= trial.len())
+                .collect();
+            if differs(&trial, &trial_cuts) {
+                stream = trial;
+                cuts = trial_cuts;
+                break;
+            }
+        }
+        if stream.len() == before { break; }
+    }
+    eprintln!("delta-minimal stream ({} bytes): {:?}", stream.len(), String::from_utf8_lossy(&stream));
+    eprintln!("cuts: {:?}", cuts);
+}
+
+/// Shrink an escapes_match divergence under run-whole.
+#[test]
+#[ignore]
+fn shrink_escapes_divergence() {
+    let mut rng = Rng::new(41);
+    let len = 200 + rng.below(4000);
+    let mut stream: Vec<u8> = random_painting(&mut rng, len);
+    let n = rng.below(20);
+    let mut cuts: Vec<usize> = random_cuts(&mut rng, &stream, n);
+    fn differs_at(rows: usize, cols: usize, stream: &[u8], cuts: &[usize]) -> bool {
+        let run = |fast: bool| {
+            let mut e = engine(rows, cols);
+            e.set_fast(fast);
+            let (mut i, mut s) = (Intake::new(glass_window::LAYER_PICTURES), Splitter::default());
+            let mut replies = Vec::new();
+            let mut pieces = Vec::new();
+            for w in cuts.windows(2) {
+                pieces.clear();
+                s.split(&stream[w[0]..w[1]], &mut pieces);
+                replies.extend(pump(&mut e, &mut i, &pieces).replies);
+            }
+            e.settle();
+            (e.grid_state(), replies, e.alt_scrolled(), e.alternate_screen())
+        };
+        let (fast, slow) = (run(true), run(false));
+        fast.0.0 != slow.0.0 || fast.0.1 != slow.0.1 || (fast.0.2, fast.0.3) != (slow.0.2, slow.0.3)
+            || fast.1 != slow.1 || (fast.2, fast.3) != (slow.2, slow.3)
+    }
+    // The real test walks one sequential Rng; drive it the same way,
+    // round by round (round 383 diverges under GLASS_RUN_WHOLE=1).
+    let dims = [(6usize, 10usize), (24usize, 80usize), (3usize, 40usize), (39usize, 154usize)];
+    let mut rng = Rng::new(41);
+    let mut rows = 0usize;
+    let mut cols = 0usize;
+    let mut found = false;
+    for round in 0..600 {
+        let len = 200 + rng.below(4000);
+        stream = random_painting(&mut rng, len);
+        let n = rng.below(20);
+        cuts = random_cuts(&mut rng, &stream, n);
+        let (r, c) = dims[round % 4];
+        if differs_at(r, c, &stream, &cuts) {
+            rows = r;
+            cols = c;
+            found = true;
+            eprintln!("divergent round {round} at {rows}x{cols}");
+            break;
+        }
+    }
+    assert!(found, "no divergence in 600 rounds");
+    cuts.sort_unstable();
+    cuts.dedup();
+    let differs = |stream: &[u8], cuts: &[usize]| differs_at(rows, cols, stream, cuts);
+    let mut window = stream.len() / 2;
+    while window > 0 {
+        let mut at = 0;
+        while at < stream.len() {
+            let end = (at + window).min(stream.len());
+            let mut trial: Vec<u8> = stream[..at].to_vec();
+            trial.extend_from_slice(&stream[end..]);
+            let mut trial_cuts: Vec<usize> = cuts.iter()
+                .map(|&c| if c > at { c.saturating_sub(end - at) } else { c })
+                .filter(|&c| c <= trial.len())
+                .collect();
+            trial_cuts.sort_unstable();
+            trial_cuts.dedup();
+            if differs(&trial, &trial_cuts) {
+                stream = trial;
+                cuts = trial_cuts;
+            } else {
+                at += window.max(1);
+            }
+        }
+        window /= 2;
+    }
+    loop {
+        let before = stream.len();
+        for i in 0..stream.len() {
+            let mut trial: Vec<u8> = stream[..i].to_vec();
+            trial.extend_from_slice(&stream[i + 1..]);
+            let mut trial_cuts: Vec<usize> = cuts.iter()
+                .map(|&c| if c > i { c - 1 } else { c })
+                .filter(|&c| c <= trial.len())
+                .collect();
+            trial_cuts.sort_unstable();
+            trial_cuts.dedup();
+            if differs(&trial, &trial_cuts) {
+                stream = trial;
+                cuts = trial_cuts;
+                break;
+            }
+        }
+        if stream.len() == before { break; }
+    }
+    eprintln!("delta-minimal escapes stream ({} bytes): {:?}", stream.len(), String::from_utf8_lossy(&stream));
+    eprintln!("cuts: {:?}", cuts);
+}
+
+/// Dump where the minimal stream diverges, fast vs slow.
+#[test]
+#[ignore]
+fn debug_run_whole() {
+    for (stream, cuts) in [
+        (b"\x1b[fXK\x1b[m\x1b\x1b[b".as_slice(), vec![0, 12]),
+        (b"XK\x1b[m\x1b\x1b[b".as_slice(), vec![0, 9]),
+    ] {
+    let run = |fast: bool| {
+        let mut e = engine(39, 154);
+        e.set_fast(fast);
+        let (mut i, mut s) = (Intake::new(glass_window::LAYER_PICTURES), Splitter::default());
+        let mut pieces = Vec::new();
+        for w in cuts.windows(2) {
+            pieces.clear();
+            s.split(&stream[w[0]..w[1]], &mut pieces);
+            eprintln!("pieces (fast={}): {:?}", fast, pieces.iter().map(|p| match p { Piece::Text(t) => String::from_utf8_lossy(t).to_string(), Piece::Media(_) => "<media>".to_string() }).collect::<Vec<_>>());
+            pump(&mut e, &mut i, &pieces);
+        }
+        e.settle();
+        e.grid_state()
+    };
+    let _ = &cuts;
+    let (fast, slow) = (run(true), run(false));
+    eprintln!("cursor fast={:?} slow={:?}", fast.1, slow.1);
+    for (r, (fr, sr)) in fast.0.iter().zip(slow.0.iter()).enumerate() {
+        if fr != sr {
+            eprintln!("row {} fast={:?}", r, String::from_iter(fr.chars()));
+            eprintln!("row {} slow={:?}", r, String::from_iter(sr.chars()));
+        }
+    }
+    eprintln!("field: {:?}", plain_runs_first_difference(39, 154, stream, &cuts));
+    }
+}
+
+/// How long one draw holds the engine for the cells: `view::paint` of a
+/// full harness-sized screen of coloured text. Ignored by default.
+#[test]
+#[ignore]
+fn paint_speed() {
+    use ratatui_core::buffer::Buffer;
+    use ratatui_core::layout::Rect;
+    let mut e = engine(ROWS, COLS);
+    let (mut i, mut s) = (Intake::new(glass_window::LAYER_PICTURES), Splitter::default());
+    let (_, frames) = workloads(0.01, ROWS, COLS).pop().unwrap();
+    feed(&mut e, &mut i, &mut s, &frames[..frames.len() - 8], 4095);
+    let area = Rect::new(0, 0, COLS as u16, ROWS as u16);
+    let mut buf = Buffer::empty(area);
+    let t = Instant::now();
+    for _ in 0..500 {
+        crate::view::paint(&mut buf, area, &mut e, None, None);
+    }
+    eprintln!("paint: {:.1} us per frame", t.elapsed().as_secs_f64() * 1e6 / 500.0);
+}
+
+/// Consecutive records on recycled rows, including a saturated history,
+/// retained suffixes, combining/wide predecessors, REP and sync boundaries.
+/// This guards both the parser and any future CRLF/scroll coalescing path.
+#[test]
+fn crlf_records_preserve_history_and_suffixes() {
+    // The shipped history is 10,000 rows; this separate case really fills
+    // and recycles it (the shorter mode matrix below does not).
+    let mut saturated = b"history suffix, kept until scrolling\r\n".repeat(10_100);
+    saturated.extend_from_slice(b"\x1b[6n");
+    for step in [4095, saturated.len()] {
+        let mut cuts: Vec<_> = (0..saturated.len()).step_by(step).collect();
+        cuts.push(saturated.len());
+        assert_eq!(plain_runs_first_difference(3, 40, &saturated, &cuts), None,
+            "saturated history, chunk {step}");
+    }
+    let (rows, cols) = (6, 40);
+    for setup in ["", "\x1b[2;6r", "\x1b[?1049h", "\x1b[31;44m", "\x1b[20h", "\x1b[?7l"] {
+        let mut stream = setup.as_bytes().to_vec();
+        // Build enough history to preserve and compare older suffixes.
+        for _ in 0..1100 { stream.extend_from_slice(b"old row suffix, kept until it really scrolls\r\n"); }
+        stream.extend_from_slice("\x1b[6;1H漢字e\u{301} untouched suffix\x1b[6;1H".as_bytes());
+        let records = [24, 1, 39, 40, 23, 2, 38, 25];
+        for pass in 0..32 {
+            if pass % 4 == 0 { stream.extend_from_slice(b"\x1b[?2026h"); }
+            for (n, len) in records.iter().copied().enumerate() {
+                stream.extend(std::iter::repeat_n(b'a' + ((pass + n) % 26) as u8, len));
+                stream.extend_from_slice(b"\r\n");
+            }
+            if pass % 4 == 0 { stream.extend_from_slice(b"\x1b[?2026l"); }
+            stream.extend_from_slice(b"\x1b[3b\r\n");
+        }
+        stream.extend_from_slice(b"\x1b[6n\x1b[r\x1b[?1049l");
+        for step in [39, 41, 160, 4095, stream.len()] {
+            let mut cuts: Vec<_> = (0..stream.len()).step_by(step).collect();
+            cuts.push(stream.len());
+            assert_eq!(plain_runs_first_difference(rows, cols, &stream, &cuts), None,
+                "setup {setup:?}, chunk {step}");
+        }
+    }
+}
+
+/// Long and short ASCII CRLF records preserve every observable field
+/// across terminal modes, wrap boundaries, and input chunk boundaries.
+#[test]
+fn ascii_crlf_records_match_parser() {
+    for (rows, cols) in [(3, 40), (6, 80), (24, 80), (39, 154)] {
+        for setup in ["", "\x1b[2;3r", "\x1b[?1049h", "\x1b[31;44m", "\x1b[?7l", "\x1b[4h", "\x1b(0"] {
+            let mut stream = setup.as_bytes().to_vec();
+            for n in 0..90 {
+                let len = [cols - 1, cols, 24, 1, cols + 1, 0][n % 6];
+                stream.extend(std::iter::repeat_n(b'a' + (n % 26) as u8, len));
+                stream.extend_from_slice(b"\r\n");
+                if n % 13 == 0 { stream.extend_from_slice("\x1b[2b漢字\r\n".as_bytes()); }
+            }
+            stream.extend_from_slice(b"\x1b[5b\x1b[6n\x1b[r\x1b[?1049l");
+            for step in [1, 23, 160, 4096, stream.len()] {
+                let mut cuts: Vec<_> = (0..stream.len()).step_by(step).collect();
+                cuts.push(stream.len());
+                assert_eq!(plain_runs_first_difference(rows, cols, &stream, &cuts), None,
+                    "{rows}x{cols} setup {setup:?} step {step}");
+            }
+        }
+    }
+}
+
+/// A row lane may use an exclusive internal column, but the observable
+/// cursor must stay on the final cell with pending wrap until actual input.
+/// Compare against parser-only execution at exact row edges and read splits.
+#[test]
+fn unicode_row_edges_preserve_pending_wrap() {
+    for (rows, cols) in [(3, 2), (3, 3), (4, 10), (39, 154)] {
+        for setup in ["", "\x1b[?7l", "\x1b[2;3r", "\x1b[?1049h", "\x1b[31;44m"] {
+            for suffix in ["x", "漢", "e\u{301}", "\u{301}Z", "\x1b[3b", "\r\nq", "\x1b[6n"] {
+                let mut stream = setup.as_bytes().to_vec();
+                // Every starting column, both final-cell and penultimate-cell
+                // wide writes, stale wide flags, wraps, marks and held REP.
+                for start in 1..=cols {
+                    stream.extend_from_slice(format!("\x1b[1;1H漢字\x1b[1;{start}H").as_bytes());
+                    stream.extend(std::iter::repeat_n(b'a', cols - start));
+                    stream.extend_from_slice("漢é".as_bytes());
+                    stream.extend_from_slice(suffix.as_bytes());
+                    stream.extend_from_slice(b"\x1b[6n\r\n");
+                    stream.extend(std::iter::repeat_n(b'z', cols));
+                    stream.extend_from_slice(suffix.as_bytes());
+                    // Invalid/partial UTF-8 and a valid UTF-8 C1 control
+                    // terminate the lane without consuming its held scalar.
+                    stream.extend_from_slice(b"\xc3\x1b[6n\xc2\x85\xff\r\n");
+                }
+                stream.extend_from_slice(b"\x1b[6n\x1b[r\x1b[?1049l");
+                for step in [1, 2, 3, cols + 1, 4095, stream.len()] {
+                    let mut cuts: Vec<_> = (0..stream.len()).step_by(step).collect();
+                    cuts.push(stream.len());
+                    assert_eq!(plain_runs_first_difference(rows, cols, &stream, &cuts), None,
+                        "{rows}x{cols}, setup {setup:?}, suffix {suffix:?}, chunk {step}");
+                }
+            }
+        }
+    }
+}
+
+/// C1 scalars take the parser's execute path, not the Unicode row writer.
+/// Long C1-only runs cross RUN_MIN; mixed runs also leave a held printable
+/// scalar at a C1 boundary. Splits include every byte of the UTF-8 pair.
+#[test]
+fn c1_row_runs_preserve_parser_state() {
+    for (rows, cols) in [(3, 2), (4, 10), (39, 154)] {
+        for setup in ["", "\x1b[?7l", "\x1b[?1049h", "\x1b[31;44m"] {
+            for c1 in '\u{80}'..='\u{9f}' {
+                let mut stream = setup.as_bytes().to_vec();
+                stream.extend_from_slice(c1.to_string().repeat(16).as_bytes());
+                stream.extend_from_slice(b"\x1b[6n");
+                for prefix in ["", "z", "漢", "e\u{301}"] {
+                    stream.extend_from_slice(prefix.repeat(cols + 2).as_bytes());
+                    stream.extend_from_slice(c1.to_string().repeat(16).as_bytes());
+                    stream.extend_from_slice(b"\x1b[3b\x1b[6n\r\n");
+                }
+                stream.extend_from_slice(b"\x1b[?1049l\x1b[6n");
+                for step in [1, 2, 3, 23, 24, 25, stream.len()] {
+                    let mut cuts: Vec<_> = (0..stream.len()).step_by(step).collect();
+                    cuts.push(stream.len());
+                    assert_eq!(plain_runs_first_difference(rows, cols, &stream, &cuts), None,
+                        "{rows}x{cols}, setup {setup:?}, C1 {c1:?}, chunk {step}");
+                }
+            }
+        }
+    }
+}
+
+/// A parser can be in Ground and still own an incomplete UTF-8 scalar.
+/// Exercise runs and simple lanes immediately after partial/malformed UTF-8,
+/// unfinished CSI/string payloads and synchronized output at real read cuts.
+#[test]
+fn parser_ground_chunk_boundaries() {
+    let prefixes: &[&[u8]] = &[
+        b"", b"\xc3", b"\xe6", b"\xe6\x97", b"\xf0\x9f\x99",
+        b"\xff", b"\x1b[", b"\x1b[38;2;", b"\x1b]2;", b"\x1bP0q",
+        b"\x1b_", b"\x1b[?2026h", b"\x1b[?2026h\xc3",
+    ];
+    let bodies = [
+        "A".repeat(80), "漢é🙂e\u{301}".repeat(16),
+        format!("\x1b[31m{}\x1b[3b", "Z".repeat(80)),
+        format!("\x1b[2;3H{}\x1b[6n", "q".repeat(80)),
+    ];
+    let mut scenarios = 0;
+    for (rows, cols) in [(3, 2), (4, 10), (39, 154)] {
+        for prefix in prefixes {
+            for body in &bodies {
+                let mut stream = prefix.to_vec();
+                stream.extend_from_slice(body.as_bytes());
+                stream.extend_from_slice(b"\x18\x1b\\\x1b[?2026l\x1b[3b\x1b[6n\r\nEND");
+                for step in [1, 2, 3, 23, 24, 25, stream.len()] {
+                    let mut cuts: Vec<_> = (0..stream.len()).step_by(step).collect();
+                    cuts.extend([prefix.len(), stream.len()]);
+                    cuts.sort_unstable();
+                    cuts.dedup();
+                    assert_eq!(plain_runs_first_difference(rows, cols, &stream, &cuts), None,
+                        "{rows}x{cols}, prefix {prefix:?}, body {body:?}, chunk {step}");
+                    scenarios += 1;
+                }
+            }
+        }
+    }
+    eprintln!("parser ground chunk boundaries: {scenarios} scenarios matched");
+}
+
+/// A successful simple-CSI lane establishes ground only at the consumed
+/// frontier. A following non-ASCII or control prefix must revoke that fact
+/// before the next lane; partial scalars and synchronized output are not plain.
+#[test]
+fn simple_lane_ground_handoff_boundaries() {
+    let prefixes: &[&[u8]] = &[
+        b"", b"\x1b[b", b"\x1b[31m", b"\x1b[2;2H",
+        b"\x1b[31mA", b"\x1b[31m\xc3", b"\x1b[31m\xe6\x97",
+        b"\x1b[31m\xf0\x9f\x99", b"\x1b[31m\xff", b"\x1b[31m\r\n",
+        b"\x1b[31m\x1b[?2026h", b"\x1b[31m\x1b]2;unfinished",
+        b"\x1b[31m\x1bP0q", b"\x1b[31m\x1b_", b"\xc3\x1b[31m",
+    ];
+    let bodies: &[&[u8]] = &[
+        b"\x1b[44mX\x1b[3b\x1b[6n", b"\x1b[44m\x1b[3b\x1b[6n",
+        b"\x1b[44m\xc3\x1b[32mY\x1b[3b", b"\x1b[44m\xe6\x97\x1b[32mZ",
+        b"\x1b[44mA\r\n\x1b[32mB\x1b[2;1H\x1b[3b",
+        b"\x1b[44m\x1b[?2026hDEFER\x1b[32mX\x1b[?2026l\x1b[3b",
+    ];
+    let mut scenarios = 0;
+    for (rows, cols) in [(3, 2), (4, 10), (39, 154)] {
+        for prefix in prefixes {
+            for body in bodies {
+                let mut stream = prefix.to_vec();
+                stream.extend_from_slice(body);
+                stream.extend_from_slice(b"\x18\x1b\\\x1b[?2026l\x1b[0mEND\x1b[3b\x1b[6n");
+                for step in [1, 2, 3, 7, 23, 24, 25, stream.len()] {
+                    let mut cuts: Vec<_> = (0..stream.len()).step_by(step).collect();
+                    cuts.extend([prefix.len(), stream.len()]);
+                    cuts.sort_unstable();
+                    cuts.dedup();
+                    assert_eq!(plain_runs_first_difference(rows, cols, &stream, &cuts), None,
+                        "{rows}x{cols}, prefix {prefix:?}, body {body:?}, chunk {step}");
+                    scenarios += 1;
+                }
+            }
+        }
+    }
+    eprintln!("simple lane ground handoff boundaries: {scenarios} scenarios matched");
+}

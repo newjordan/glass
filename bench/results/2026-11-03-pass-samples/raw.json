@@ -1,0 +1,682 @@
+{
+  "schema": "glass.pass-sample-screen/v1",
+  "protocol_sha256": "6f1f57c70c948a43eb499bff8e343f584d940a46e4ceec70d7bb23a6fe27e129",
+  "runner_sha256": "411c2683fe7eb480a54a1168d013ade5d14195a34bdd5e46face235a71694932",
+  "analyzer_sha256": "2457e11a9f8b9c0c4b3e7f45f857ce8d03d61b6b36999300b1395cfacc8efa79",
+  "source_sha256": "486ac678d99766ddca4f35b814a1397cab4cf60c5ef4b4c6d51d00cde43d9419",
+  "binary": {
+    "path": "/tmp/glass-i34-sample-final-test",
+    "sha256": "afaa4ae10d8781fcc6f0df2a84f4ff1be1e4993fac76527ee1d742023e8bfa59",
+    "source_sha256": "486ac678d99766ddca4f35b814a1397cab4cf60c5ef4b4c6d51d00cde43d9419",
+    "build_exit": 0
+  },
+  "settings": {
+    "GLASS_BENCH_CORPUS": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/corpus",
+    "GLASS_BENCH_SCALE": "1",
+    "GLASS_BENCH_READ": "4095",
+    "GLASS_BENCH_ROUNDS": "5",
+    "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames"
+  },
+  "sessions": [
+    {
+      "pair": 0,
+      "mode": "off",
+      "begin_ns": 1793713689583215574,
+      "end_ns": 1793713692111384803,
+      "started_utc": "2026-11-03T13:48:09.583216+00:00",
+      "exit": 0,
+      "argv": [
+        "/tmp/glass-i34-sample-final-test",
+        "--exact",
+        "--ignored",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "settings": {
+        "GLASS_BENCH_CORPUS": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/corpus",
+        "GLASS_BENCH_SCALE": "1",
+        "GLASS_BENCH_READ": "4095",
+        "GLASS_BENCH_ROUNDS": "5",
+        "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames"
+      },
+      "stdout": "00-off.stdout",
+      "stderr": "00-off.stderr",
+      "stdout_sha256": "92453f4fed6de50b4d4ac6752fe0b5909de2c8991da4eacc50d6c820a53edfe2",
+      "stderr_sha256": "8595ec454e0e0240e6b2e547dd937fcc170ba299ee047f9e4b5a3399f50a34ba"
+    },
+    {
+      "pair": 0,
+      "mode": "on",
+      "begin_ns": 1793713692118111151,
+      "end_ns": 1793713694508264925,
+      "started_utc": "2026-11-03T13:48:12.118111+00:00",
+      "exit": 0,
+      "argv": [
+        "/tmp/glass-i34-sample-final-test",
+        "--exact",
+        "--ignored",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "settings": {
+        "GLASS_BENCH_CORPUS": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/corpus",
+        "GLASS_BENCH_SCALE": "1",
+        "GLASS_BENCH_READ": "4095",
+        "GLASS_BENCH_ROUNDS": "5",
+        "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames",
+        "GLASS_BENCH_SAMPLES": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/00-on.jsonl"
+      },
+      "stdout": "00-on.stdout",
+      "stderr": "00-on.stderr",
+      "stdout_sha256": "7a008e1238cffed5d120d0e3519a6605a96ae5076bbbf94ed712ac82ff86d8cd",
+      "stderr_sha256": "305cc05d4122a395dbe40bbb4d4f477a6820a593a125a4c5bfa7e550d2f064a8",
+      "samples": "00-on.jsonl",
+      "samples_sha256": "c3470e0e81f2eef55fa420923e7dba0b8b6ff81d2e544d6842da658a67b47ae1"
+    },
+    {
+      "pair": 1,
+      "mode": "on",
+      "begin_ns": 1793713694513075882,
+      "end_ns": 1793713696724166956,
+      "started_utc": "2026-11-03T13:48:14.513076+00:00",
+      "exit": 0,
+      "argv": [
+        "/tmp/glass-i34-sample-final-test",
+        "--exact",
+        "--ignored",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "settings": {
+        "GLASS_BENCH_CORPUS": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/corpus",
+        "GLASS_BENCH_SCALE": "1",
+        "GLASS_BENCH_READ": "4095",
+        "GLASS_BENCH_ROUNDS": "5",
+        "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames",
+        "GLASS_BENCH_SAMPLES": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/01-on.jsonl"
+      },
+      "stdout": "01-on.stdout",
+      "stderr": "01-on.stderr",
+      "stdout_sha256": "81536b9a1ef99bf5f8c6e5db88473b961a52d1cb1dec4000c2c2c9176f83c2a1",
+      "stderr_sha256": "f6fd706b4eac220f9373f65a5dc643d7743bd5fed42d696aa531b94de96a47e0",
+      "samples": "01-on.jsonl",
+      "samples_sha256": "54ecce808d4ddd6c3372dc2acfa5311b0a7ac93228f2a4b30ea99b9a5f94e1e9"
+    },
+    {
+      "pair": 1,
+      "mode": "off",
+      "begin_ns": 1793713696729682859,
+      "end_ns": 1793713699075525587,
+      "started_utc": "2026-11-03T13:48:16.729683+00:00",
+      "exit": 0,
+      "argv": [
+        "/tmp/glass-i34-sample-final-test",
+        "--exact",
+        "--ignored",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "settings": {
+        "GLASS_BENCH_CORPUS": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/corpus",
+        "GLASS_BENCH_SCALE": "1",
+        "GLASS_BENCH_READ": "4095",
+        "GLASS_BENCH_ROUNDS": "5",
+        "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames"
+      },
+      "stdout": "01-off.stdout",
+      "stderr": "01-off.stderr",
+      "stdout_sha256": "b3e1d9b8c7cc547148cbcd977d5c53b769ba91eaf18f700e82a55cafe545995c",
+      "stderr_sha256": "8a99052823da96b28d8915baebf370c62bf25c3e41145c24301c48dba5130414"
+    },
+    {
+      "pair": 2,
+      "mode": "off",
+      "begin_ns": 1793713699082012625,
+      "end_ns": 1793713701460582672,
+      "started_utc": "2026-11-03T13:48:19.082013+00:00",
+      "exit": 0,
+      "argv": [
+        "/tmp/glass-i34-sample-final-test",
+        "--exact",
+        "--ignored",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "settings": {
+        "GLASS_BENCH_CORPUS": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/corpus",
+        "GLASS_BENCH_SCALE": "1",
+        "GLASS_BENCH_READ": "4095",
+        "GLASS_BENCH_ROUNDS": "5",
+        "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames"
+      },
+      "stdout": "02-off.stdout",
+      "stderr": "02-off.stderr",
+      "stdout_sha256": "377b65e8e29608140182fd6e5ab2ea26c4f5ac141c69cde5570a4c05a3c824bd",
+      "stderr_sha256": "1fd1d983231adb3baffae9f0f4914dd3ed9c26d2ffd87a0f3ed23a1dbd856e62"
+    },
+    {
+      "pair": 2,
+      "mode": "on",
+      "begin_ns": 1793713701466027921,
+      "end_ns": 1793713703895468714,
+      "started_utc": "2026-11-03T13:48:21.466028+00:00",
+      "exit": 0,
+      "argv": [
+        "/tmp/glass-i34-sample-final-test",
+        "--exact",
+        "--ignored",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "settings": {
+        "GLASS_BENCH_CORPUS": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/corpus",
+        "GLASS_BENCH_SCALE": "1",
+        "GLASS_BENCH_READ": "4095",
+        "GLASS_BENCH_ROUNDS": "5",
+        "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames",
+        "GLASS_BENCH_SAMPLES": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/02-on.jsonl"
+      },
+      "stdout": "02-on.stdout",
+      "stderr": "02-on.stderr",
+      "stdout_sha256": "277d32e87e82e27471025c8039fae4dced868b12f117390c6eaca54656e4e5f2",
+      "stderr_sha256": "2544f31f5959c2906f4f0317f1211042051c5ee8ec3ba30250c0afb295148dca",
+      "samples": "02-on.jsonl",
+      "samples_sha256": "883221ccb57f17075dd874ab4705f4da9d7b785fe0587c9e738fc66897706694"
+    },
+    {
+      "pair": 3,
+      "mode": "on",
+      "begin_ns": 1793713703900561560,
+      "end_ns": 1793713705581132355,
+      "started_utc": "2026-11-03T13:48:23.900562+00:00",
+      "exit": 0,
+      "argv": [
+        "/tmp/glass-i34-sample-final-test",
+        "--exact",
+        "--ignored",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "settings": {
+        "GLASS_BENCH_CORPUS": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/corpus",
+        "GLASS_BENCH_SCALE": "1",
+        "GLASS_BENCH_READ": "4095",
+        "GLASS_BENCH_ROUNDS": "5",
+        "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames",
+        "GLASS_BENCH_SAMPLES": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/03-on.jsonl"
+      },
+      "stdout": "03-on.stdout",
+      "stderr": "03-on.stderr",
+      "stdout_sha256": "49a8b476255e916f7b98ad645096958e55b9ec18ad08b9a317579b7218e02cb6",
+      "stderr_sha256": "42a4ba3e623fe718135877fd793d288d37d420a2edcee8819fddf34592765c6e",
+      "samples": "03-on.jsonl",
+      "samples_sha256": "cc09dee6c45840a3ff232a7f0ce3322f76dd511b1e199b8fbe9c2dd0d2e40034"
+    },
+    {
+      "pair": 3,
+      "mode": "off",
+      "begin_ns": 1793713705585999347,
+      "end_ns": 1793713707360280252,
+      "started_utc": "2026-11-03T13:48:25.585999+00:00",
+      "exit": 0,
+      "argv": [
+        "/tmp/glass-i34-sample-final-test",
+        "--exact",
+        "--ignored",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "settings": {
+        "GLASS_BENCH_CORPUS": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/corpus",
+        "GLASS_BENCH_SCALE": "1",
+        "GLASS_BENCH_READ": "4095",
+        "GLASS_BENCH_ROUNDS": "5",
+        "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames"
+      },
+      "stdout": "03-off.stdout",
+      "stderr": "03-off.stderr",
+      "stdout_sha256": "381d5da0c4ed59c4c971e39e3b8cb8f39ccbacf287227ded06a9833edf6d62ba",
+      "stderr_sha256": "f7da4f345885bbd2fb930734ad48a2bb3a796bec11f1c44b9e1843ae1e8ecdef"
+    },
+    {
+      "pair": 4,
+      "mode": "off",
+      "begin_ns": 1793713707364915037,
+      "end_ns": 1793713708942692318,
+      "started_utc": "2026-11-03T13:48:27.364915+00:00",
+      "exit": 0,
+      "argv": [
+        "/tmp/glass-i34-sample-final-test",
+        "--exact",
+        "--ignored",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "settings": {
+        "GLASS_BENCH_CORPUS": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/corpus",
+        "GLASS_BENCH_SCALE": "1",
+        "GLASS_BENCH_READ": "4095",
+        "GLASS_BENCH_ROUNDS": "5",
+        "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames"
+      },
+      "stdout": "04-off.stdout",
+      "stderr": "04-off.stderr",
+      "stdout_sha256": "a2ef999fccea49567f7d2b4db0e729964623f7faf5aa380ffc77693f17658146",
+      "stderr_sha256": "cfe02b904fbfcc1459b78689157fa9e2421db2388d40c724cb6b910dc11e7372"
+    },
+    {
+      "pair": 4,
+      "mode": "on",
+      "begin_ns": 1793713708946859574,
+      "end_ns": 1793713710506858996,
+      "started_utc": "2026-11-03T13:48:28.946860+00:00",
+      "exit": 0,
+      "argv": [
+        "/tmp/glass-i34-sample-final-test",
+        "--exact",
+        "--ignored",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "settings": {
+        "GLASS_BENCH_CORPUS": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/corpus",
+        "GLASS_BENCH_SCALE": "1",
+        "GLASS_BENCH_READ": "4095",
+        "GLASS_BENCH_ROUNDS": "5",
+        "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames",
+        "GLASS_BENCH_SAMPLES": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/04-on.jsonl"
+      },
+      "stdout": "04-on.stdout",
+      "stderr": "04-on.stderr",
+      "stdout_sha256": "b4c3d3c6588e04401052d2266c17e0c63e624d672fe508bb68612f940125b0c1",
+      "stderr_sha256": "5943ab5b229d116244a7019b7d20f98fc6c6643c35bdabda2d6c54a552462ebf",
+      "samples": "04-on.jsonl",
+      "samples_sha256": "d603bd4d54cf81ba212c18da4d00a56ee57b060024e51be0324860592cb928b1"
+    },
+    {
+      "pair": 5,
+      "mode": "on",
+      "begin_ns": 1793713710510820735,
+      "end_ns": 1793713712063274337,
+      "started_utc": "2026-11-03T13:48:30.510821+00:00",
+      "exit": 0,
+      "argv": [
+        "/tmp/glass-i34-sample-final-test",
+        "--exact",
+        "--ignored",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "settings": {
+        "GLASS_BENCH_CORPUS": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/corpus",
+        "GLASS_BENCH_SCALE": "1",
+        "GLASS_BENCH_READ": "4095",
+        "GLASS_BENCH_ROUNDS": "5",
+        "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames",
+        "GLASS_BENCH_SAMPLES": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/05-on.jsonl"
+      },
+      "stdout": "05-on.stdout",
+      "stderr": "05-on.stderr",
+      "stdout_sha256": "aae6ade406e03768e5fa12d40c4676b17064d3e98a620dabd391adfeba9d169c",
+      "stderr_sha256": "fb14e9f67c24cbacdf1f73ad1aa962b4f56b3c06b2e135039921dc4f8cad67c7",
+      "samples": "05-on.jsonl",
+      "samples_sha256": "a886fe144689a9c40ebc689886cc0d50030e7eaeedd6cdca190557f352ca4182"
+    },
+    {
+      "pair": 5,
+      "mode": "off",
+      "begin_ns": 1793713712067322639,
+      "end_ns": 1793713713650676004,
+      "started_utc": "2026-11-03T13:48:32.067323+00:00",
+      "exit": 0,
+      "argv": [
+        "/tmp/glass-i34-sample-final-test",
+        "--exact",
+        "--ignored",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "settings": {
+        "GLASS_BENCH_CORPUS": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/corpus",
+        "GLASS_BENCH_SCALE": "1",
+        "GLASS_BENCH_READ": "4095",
+        "GLASS_BENCH_ROUNDS": "5",
+        "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames"
+      },
+      "stdout": "05-off.stdout",
+      "stderr": "05-off.stderr",
+      "stdout_sha256": "a2ef999fccea49567f7d2b4db0e729964623f7faf5aa380ffc77693f17658146",
+      "stderr_sha256": "816f240f94c0f6e6ad03d6a4dcdbdacfbf92c78fa743e03172c622bd41d66314"
+    },
+    {
+      "pair": 6,
+      "mode": "off",
+      "begin_ns": 1793713713654972453,
+      "end_ns": 1793713715210133254,
+      "started_utc": "2026-11-03T13:48:33.654972+00:00",
+      "exit": 0,
+      "argv": [
+        "/tmp/glass-i34-sample-final-test",
+        "--exact",
+        "--ignored",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "settings": {
+        "GLASS_BENCH_CORPUS": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/corpus",
+        "GLASS_BENCH_SCALE": "1",
+        "GLASS_BENCH_READ": "4095",
+        "GLASS_BENCH_ROUNDS": "5",
+        "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames"
+      },
+      "stdout": "06-off.stdout",
+      "stderr": "06-off.stderr",
+      "stdout_sha256": "aae6ade406e03768e5fa12d40c4676b17064d3e98a620dabd391adfeba9d169c",
+      "stderr_sha256": "bb0e6d10ae0bacf3de03c8530abb84b95a5cb92fb75049a7bf2c382ee01f4320"
+    },
+    {
+      "pair": 6,
+      "mode": "on",
+      "begin_ns": 1793713715214281905,
+      "end_ns": 1793713716761791468,
+      "started_utc": "2026-11-03T13:48:35.214282+00:00",
+      "exit": 0,
+      "argv": [
+        "/tmp/glass-i34-sample-final-test",
+        "--exact",
+        "--ignored",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "settings": {
+        "GLASS_BENCH_CORPUS": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/corpus",
+        "GLASS_BENCH_SCALE": "1",
+        "GLASS_BENCH_READ": "4095",
+        "GLASS_BENCH_ROUNDS": "5",
+        "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames",
+        "GLASS_BENCH_SAMPLES": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/06-on.jsonl"
+      },
+      "stdout": "06-on.stdout",
+      "stderr": "06-on.stderr",
+      "stdout_sha256": "aae6ade406e03768e5fa12d40c4676b17064d3e98a620dabd391adfeba9d169c",
+      "stderr_sha256": "e4b4f4789f0fef21ea35f141c8246be9f6fd89d521ff847b699f306bfef64647",
+      "samples": "06-on.jsonl",
+      "samples_sha256": "1c1d63b3aae158c6cd0f626fc61f6e467c69796c6e7e77d19f21d27db60208e3"
+    },
+    {
+      "pair": 7,
+      "mode": "on",
+      "begin_ns": 1793713716766045797,
+      "end_ns": 1793713718305922887,
+      "started_utc": "2026-11-03T13:48:36.766046+00:00",
+      "exit": 0,
+      "argv": [
+        "/tmp/glass-i34-sample-final-test",
+        "--exact",
+        "--ignored",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "settings": {
+        "GLASS_BENCH_CORPUS": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/corpus",
+        "GLASS_BENCH_SCALE": "1",
+        "GLASS_BENCH_READ": "4095",
+        "GLASS_BENCH_ROUNDS": "5",
+        "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames",
+        "GLASS_BENCH_SAMPLES": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/07-on.jsonl"
+      },
+      "stdout": "07-on.stdout",
+      "stderr": "07-on.stderr",
+      "stdout_sha256": "4032af7765bd4cb92a7ba2e2ef9467c81c2d32293a2f154026e825816695e4a5",
+      "stderr_sha256": "6ee4b5a5d17bd5dd5c4b37e0ed9e9a432f71f7948b1f24182ad9165ee6741a1c",
+      "samples": "07-on.jsonl",
+      "samples_sha256": "b79a9041d345808784c348b7b2bb1926dec9590f01007eeeddc5ecfa19de130e"
+    },
+    {
+      "pair": 7,
+      "mode": "off",
+      "begin_ns": 1793713718310114840,
+      "end_ns": 1793713720596412767,
+      "started_utc": "2026-11-03T13:48:38.310115+00:00",
+      "exit": 0,
+      "argv": [
+        "/tmp/glass-i34-sample-final-test",
+        "--exact",
+        "--ignored",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "settings": {
+        "GLASS_BENCH_CORPUS": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/corpus",
+        "GLASS_BENCH_SCALE": "1",
+        "GLASS_BENCH_READ": "4095",
+        "GLASS_BENCH_ROUNDS": "5",
+        "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames"
+      },
+      "stdout": "07-off.stdout",
+      "stderr": "07-off.stderr",
+      "stdout_sha256": "9fd41b5c032ce6881b5f4a49c172e4c3dc7bf38b38bda0c7a0c7b12bfd72403f",
+      "stderr_sha256": "d9ff316a8eb53e73813181d3a41933d0722924d8d2a538c3e6d24cdc17545025"
+    },
+    {
+      "pair": 8,
+      "mode": "off",
+      "begin_ns": 1793713720601974204,
+      "end_ns": 1793713722774348309,
+      "started_utc": "2026-11-03T13:48:40.601974+00:00",
+      "exit": 0,
+      "argv": [
+        "/tmp/glass-i34-sample-final-test",
+        "--exact",
+        "--ignored",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "settings": {
+        "GLASS_BENCH_CORPUS": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/corpus",
+        "GLASS_BENCH_SCALE": "1",
+        "GLASS_BENCH_READ": "4095",
+        "GLASS_BENCH_ROUNDS": "5",
+        "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames"
+      },
+      "stdout": "08-off.stdout",
+      "stderr": "08-off.stderr",
+      "stdout_sha256": "f9ef19121d6dbd85ce0c1e2e5d96f5e998de918b09f4428eb1fd81c06eb3a626",
+      "stderr_sha256": "9c383284702fdca4f4038fe32dd3f3c16d053394be893b414d318f0ba5c8554a"
+    },
+    {
+      "pair": 8,
+      "mode": "on",
+      "begin_ns": 1793713722779631453,
+      "end_ns": 1793713724969750254,
+      "started_utc": "2026-11-03T13:48:42.779631+00:00",
+      "exit": 0,
+      "argv": [
+        "/tmp/glass-i34-sample-final-test",
+        "--exact",
+        "--ignored",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "settings": {
+        "GLASS_BENCH_CORPUS": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/corpus",
+        "GLASS_BENCH_SCALE": "1",
+        "GLASS_BENCH_READ": "4095",
+        "GLASS_BENCH_ROUNDS": "5",
+        "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames",
+        "GLASS_BENCH_SAMPLES": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/08-on.jsonl"
+      },
+      "stdout": "08-on.stdout",
+      "stderr": "08-on.stderr",
+      "stdout_sha256": "872f1a4edb892df979c9bdcfa9e93a8e1e4052ab248345128f631688f3f45791",
+      "stderr_sha256": "d05d7f168e5e3fd7f3f42d42606ea40837349f41fa6dde1a50e44fbb5a09391d",
+      "samples": "08-on.jsonl",
+      "samples_sha256": "addf002519acca0886ef992a1602ef3b1dfb2c44eb5cf4cfda75727be74c2a64"
+    },
+    {
+      "pair": 9,
+      "mode": "on",
+      "begin_ns": 1793713724974377054,
+      "end_ns": 1793713727123678841,
+      "started_utc": "2026-11-03T13:48:44.974377+00:00",
+      "exit": 0,
+      "argv": [
+        "/tmp/glass-i34-sample-final-test",
+        "--exact",
+        "--ignored",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "settings": {
+        "GLASS_BENCH_CORPUS": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/corpus",
+        "GLASS_BENCH_SCALE": "1",
+        "GLASS_BENCH_READ": "4095",
+        "GLASS_BENCH_ROUNDS": "5",
+        "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames",
+        "GLASS_BENCH_SAMPLES": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/09-on.jsonl"
+      },
+      "stdout": "09-on.stdout",
+      "stderr": "09-on.stderr",
+      "stdout_sha256": "8bff6a2825954fcc12d3ca15d4e46293ba35549976fc3e1b317d34113a7a3f42",
+      "stderr_sha256": "40b6dcf21d0e8c6616ba5c4d066bdca439c4f51aa065bc7a759791050a12eb08",
+      "samples": "09-on.jsonl",
+      "samples_sha256": "473ec70825f9cd7e98aa75e6a22f6dc0012aebd7687119225f47c88eb2dc9b45"
+    },
+    {
+      "pair": 9,
+      "mode": "off",
+      "begin_ns": 1793713727129046825,
+      "end_ns": 1793713729218649384,
+      "started_utc": "2026-11-03T13:48:47.129047+00:00",
+      "exit": 0,
+      "argv": [
+        "/tmp/glass-i34-sample-final-test",
+        "--exact",
+        "--ignored",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "settings": {
+        "GLASS_BENCH_CORPUS": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/corpus",
+        "GLASS_BENCH_SCALE": "1",
+        "GLASS_BENCH_READ": "4095",
+        "GLASS_BENCH_ROUNDS": "5",
+        "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames"
+      },
+      "stdout": "09-off.stdout",
+      "stderr": "09-off.stderr",
+      "stdout_sha256": "9aa907106089193fffaf85235c00d9ef63e24045e67eae337ed4cc658e52477c",
+      "stderr_sha256": "6dd67ae13679dc9758747638e3226ac67608ae6c6bcc7008c9183106b69c472f"
+    },
+    {
+      "pair": 10,
+      "mode": "off",
+      "begin_ns": 1793713729223529580,
+      "end_ns": 1793713731381310098,
+      "started_utc": "2026-11-03T13:48:49.223530+00:00",
+      "exit": 0,
+      "argv": [
+        "/tmp/glass-i34-sample-final-test",
+        "--exact",
+        "--ignored",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "settings": {
+        "GLASS_BENCH_CORPUS": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/corpus",
+        "GLASS_BENCH_SCALE": "1",
+        "GLASS_BENCH_READ": "4095",
+        "GLASS_BENCH_ROUNDS": "5",
+        "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames"
+      },
+      "stdout": "10-off.stdout",
+      "stderr": "10-off.stderr",
+      "stdout_sha256": "8bff6a2825954fcc12d3ca15d4e46293ba35549976fc3e1b317d34113a7a3f42",
+      "stderr_sha256": "2e3ed1412ad9c4b3bac533aba7284615cc2663f9db8e4e308c65d6df1644e3e7"
+    },
+    {
+      "pair": 10,
+      "mode": "on",
+      "begin_ns": 1793713731387163044,
+      "end_ns": 1793713733446445567,
+      "started_utc": "2026-11-03T13:48:51.387163+00:00",
+      "exit": 0,
+      "argv": [
+        "/tmp/glass-i34-sample-final-test",
+        "--exact",
+        "--ignored",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "settings": {
+        "GLASS_BENCH_CORPUS": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/corpus",
+        "GLASS_BENCH_SCALE": "1",
+        "GLASS_BENCH_READ": "4095",
+        "GLASS_BENCH_ROUNDS": "5",
+        "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames",
+        "GLASS_BENCH_SAMPLES": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/10-on.jsonl"
+      },
+      "stdout": "10-on.stdout",
+      "stderr": "10-on.stderr",
+      "stdout_sha256": "97dd2e9a595e8576aaa95e5b55971bf95f20f7a8ae9773b5a8f66cfe97d0110a",
+      "stderr_sha256": "23ed73b31ed7d002d33ea9fa1942a812e853463380402f3a91e1498c72a654e4",
+      "samples": "10-on.jsonl",
+      "samples_sha256": "f01fa6b55a84d4d09ba2819e3acdfc9e3e30274df78a477837301be58b3f1e7e"
+    },
+    {
+      "pair": 11,
+      "mode": "on",
+      "begin_ns": 1793713733450768185,
+      "end_ns": 1793713735599799889,
+      "started_utc": "2026-11-03T13:48:53.450768+00:00",
+      "exit": 0,
+      "argv": [
+        "/tmp/glass-i34-sample-final-test",
+        "--exact",
+        "--ignored",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "settings": {
+        "GLASS_BENCH_CORPUS": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/corpus",
+        "GLASS_BENCH_SCALE": "1",
+        "GLASS_BENCH_READ": "4095",
+        "GLASS_BENCH_ROUNDS": "5",
+        "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames",
+        "GLASS_BENCH_SAMPLES": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/11-on.jsonl"
+      },
+      "stdout": "11-on.stdout",
+      "stderr": "11-on.stderr",
+      "stdout_sha256": "8bff6a2825954fcc12d3ca15d4e46293ba35549976fc3e1b317d34113a7a3f42",
+      "stderr_sha256": "4a69fe30f8a431a810439312c63434cee7be69dadca191c99118c0b9fc239b9d",
+      "samples": "11-on.jsonl",
+      "samples_sha256": "ca1fcca23e95974f7697e7c5b7824abf7aaf45b1888e472348892e87bf08c374"
+    },
+    {
+      "pair": 11,
+      "mode": "off",
+      "begin_ns": 1793713735604227916,
+      "end_ns": 1793713737414410625,
+      "started_utc": "2026-11-03T13:48:55.604228+00:00",
+      "exit": 0,
+      "argv": [
+        "/tmp/glass-i34-sample-final-test",
+        "--exact",
+        "--ignored",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "settings": {
+        "GLASS_BENCH_CORPUS": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-pass-samples/corpus",
+        "GLASS_BENCH_SCALE": "1",
+        "GLASS_BENCH_READ": "4095",
+        "GLASS_BENCH_ROUNDS": "5",
+        "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames"
+      },
+      "stdout": "11-off.stdout",
+      "stderr": "11-off.stderr",
+      "stdout_sha256": "d7af94e193112bff608ef9d675ea57c7708a3668e9d2ec13040b439e4e658f6d",
+      "stderr_sha256": "f1944f9541e44995aea3d056f845d07c53a741e9794e22fd2d2ca9dbc3229196"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schema": "glass.pass-sample-checkpoint/v1",
+  "status": "reported",
+  "sessions": 24,
+  "pairs": 12,
+  "captured_passes": 360,
+  "different_cpu_wall_minima": 1,
+  "observer_cpu_ratios": {
+    "ascii": 0.934536510924051,
+    "unicode": 1.104756655449055,
+    "truecolor": 1.0082269358683136,
+    "cursor_motion": 0.999434326983512,
+    "scroll_region": 1.013951257048873,
+    "tui_frames": 1.0040877994366038
+  },
+  "parser_tests": 1,
+  "python_tests": 5,
+  "rejected_corruptions": 26,
+  "rejected_guard_cases": 6,
+  "unchanged_prior_evidence_files": 7698,
+  "unchanged_other_rust_sources": 119,
+  "selected_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "retained_test_source": "crates/term/src/speed.rs",
+  "runtime_promotion": false,
+  "championship_established": false,
+  "note": "Local source/raw-clock/archive replay only. One existing parser test, not a full suite. No independent audit, speed acceptance or Ghostty comparison."
+}

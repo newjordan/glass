@@ -1,0 +1,21 @@
+
+running 1 test
+test speed::speed ... FAILED
+
+failures:
+
+failures:
+    speed::speed
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 397 filtered out; finished in 0.01s
+
+
+thread 'speed::speed' (3877657) panicked at crates/term/src/speed.rs:397:25:
+sample path must be new and writable: Os { code: 17, kind: AlreadyExists, message: "File exists" }
+stack backtrace:
+   0: __rustc::rust_begin_unwind
+   1: core::panicking::panic_fmt
+   2: core::result::unwrap_failed
+   3: glass::speed::speed
+   4: <glass::speed::speed::{closure#0} as core::ops::function::FnOnce<()>>::call_once
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.

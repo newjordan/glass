@@ -10,6 +10,9 @@
 //! loads the six payloads exported by `bench/export-tput-corpus.py`, so an
 //! engine diagnostic can use the actual Python terminal corpus. Corpus
 //! hashes are checked by the external runner, not by this loader.
+//! `GLASS_BENCH_SAMPLES` optionally names a NEW JSONL file retaining every
+//! in-memory pass's paired integer-nanosecond wall/thread-CPU durations.
+//! Records are buffered until after each workload, never printed in a pass.
 
 use std::time::Instant;
 
@@ -199,6 +202,33 @@ fn cpu_seconds() -> f64 {
     t.tv_sec as f64 + t.tv_nsec as f64 * 1e-9
 }
 
+fn cpu_nanos() -> u128 {
+    let mut t = libc::timespec { tv_sec: 0, tv_nsec: 0 };
+    // SAFETY: `t` is a valid timespec for the call to fill.
+    assert_eq!(unsafe { libc::clock_gettime(libc::CLOCK_THREAD_CPUTIME_ID, &mut t) }, 0);
+    assert!(t.tv_sec >= 0 && (0..1_000_000_000).contains(&t.tv_nsec));
+    t.tv_sec as u128 * 1_000_000_000 + t.tv_nsec as u128
+}
+
+fn pass_record(name: &str, pass: usize, rounds: usize, bytes: usize, read: usize, wall_ns: u128, cpu_ns: u128) -> serde_json::Value {
+    assert!(pass < rounds && bytes > 0 && read > 0 && wall_ns > 0 && cpu_ns > 0);
+    serde_json::json!({"schema": "glass.engine-pass/v1", "workload": name,
+        "pass": pass, "rounds": rounds, "bytes": bytes, "read": read,
+        "wall_ns": u64::try_from(wall_ns).expect("wall duration overflow"),
+        "cpu_ns": u64::try_from(cpu_ns).expect("CPU duration overflow")})
+}
+
+#[test]
+fn pass_records_preserve_integer_pairs() {
+    let record = pass_record("ascii", 2, 3, 25_165_955, 4095, 123_456_789, 111_222_333);
+    let encoded = serde_json::to_string(&record).unwrap();
+    let decoded: serde_json::Value = serde_json::from_str(&encoded).unwrap();
+    assert_eq!(decoded, record);
+    assert_eq!(decoded["cpu_ns"].as_u64(), Some(111_222_333));
+    assert_eq!(decoded["wall_ns"].as_u64(), Some(123_456_789));
+    assert_eq!(decoded["pass"], 2);
+}
+
 /// The stream written into a pseudo-terminal by another thread and read
 /// back as the reader thread reads it: the pty's own read sizes and the
 /// system calls are part of what is timed. Returns the reader's CPU
@@ -354,22 +384,32 @@ fn dump_generated_corpus() {
 #[test]
 #[ignore]
 fn speed() {
+    use std::io::Write;
     let scale: f64 = env("GLASS_BENCH_SCALE", 0.25);
     let read: usize = env("GLASS_BENCH_READ", 4095);
     let rounds: usize = env("GLASS_BENCH_ROUNDS", 3);
     let only: String = env("GLASS_BENCH_ONLY", String::new());
+    assert!(rounds > 0 && read > 0, "rounds and read must be positive");
+    let mut samples = std::env::var_os("GLASS_BENCH_SAMPLES").map(|path| {
+        assert_eq!(env("GLASS_BENCH_PTY", 0), 0, "pass samples support only the in-memory path");
+        assert_eq!(env("GLASS_BENCH_STAGE", 0), 0, "pass samples require the complete feed path");
+        std::io::BufWriter::new(std::fs::OpenOptions::new().write(true).create_new(true)
+            .open(path).expect("sample path must be new and writable"))
+    });
     let payloads = if let Some(dir) = std::env::var_os("GLASS_BENCH_CORPUS") {
         assert_eq!(scale, 1.0, "a fixed corpus cannot be rescaled");
         load_corpus(std::path::Path::new(&dir), ROWS, COLS).expect("invalid fixed corpus")
     } else {
         workloads(scale, ROWS, COLS)
     };
+    let mut measured = 0;
     for (name, stream) in payloads {
         if !only.is_empty() && !only.split(',').any(|o| o == name) {
             continue;
         }
         let mut best = f64::MAX;
         let mut best_cpu = f64::MAX;
+        let mut passes = Vec::with_capacity(if samples.is_some() { rounds } else { 0 });
         // The harness's own hot threads are placed on the largest L3
         // (affinity.rs); this bench runs the same path on the thread it
         // is given, which the scheduler may put on any die — on a dual-
@@ -393,14 +433,27 @@ fn speed() {
         }
         for _ in 0..rounds {
             feed(&mut e, &mut i, &mut s, b"\x1b[0m\x1b[H\x1b[2J", read);
-            let (t, c) = (Instant::now(), cpu_seconds());
+            let c_ns = samples.as_ref().map(|_| cpu_nanos());
+            let (t, c) = (Instant::now(), if c_ns.is_some() { 0.0 } else { cpu_seconds() });
             let used = if env("GLASS_BENCH_PTY", 0) == 1 {
                 feed_pty(&mut e, &mut i, &mut s, &stream)
             } else {
                 std::hint::black_box(feed(&mut e, &mut i, &mut s, &stream, read));
-                cpu_seconds() - c
+                if let Some(c_ns) = c_ns {
+                    let used_ns = cpu_nanos().checked_sub(c_ns).expect("nonmonotonic thread clock");
+                    let wall_ns = t.elapsed().as_nanos();
+                    passes.push((wall_ns, used_ns));
+                    used_ns as f64 * 1e-9
+                } else {
+                    cpu_seconds() - c
+                }
             };
-            best = best.min(t.elapsed().as_secs_f64());
+            let wall = if samples.is_some() {
+                passes.last().expect("missing recorded pass").0 as f64 * 1e-9
+            } else {
+                t.elapsed().as_secs_f64()
+            };
+            best = best.min(wall);
             best_cpu = best_cpu.min(used);
         }
         // What the engine's two apply paths took, when a census asked for
@@ -432,7 +485,17 @@ fn speed() {
         // The lazy-fill census (post-rounds, unlike the in-loop placement
         // that once read pre-feed zeros).
         alacritty_terminal::grid::fill_census::report();
+        if let Some(output) = samples.as_mut() {
+            assert_eq!(passes.len(), rounds);
+            for (pass, (wall_ns, cpu_ns)) in passes.into_iter().enumerate() {
+                serde_json::to_writer(&mut *output, &pass_record(name, pass, rounds, stream.len(), read, wall_ns, cpu_ns)).unwrap();
+                writeln!(output).unwrap();
+            }
+            output.flush().unwrap();
+        }
+        measured += 1;
     }
+    assert!(measured > 0, "no workload matched GLASS_BENCH_ONLY");
 }
 
 /// A random stream of what programs write: text, UTF-8, controls, CSI
