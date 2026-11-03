@@ -1,0 +1,274 @@
+{
+  "schema": "glass.read-shape-run/v1",
+  "complete": true,
+  "binary": "/work/frosty40/glass-repo/tree/target/release/glass",
+  "observer": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-read-shape/read-shape.so",
+  "rounds": 12,
+  "sha256": {
+    "/work/frosty40/glass-repo/tree/target/release/glass": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+    "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-read-shape/read-shape.so": "2524747f39cc1840959886f115ed421b02a40d8b2584cd3b8b4216066d645cd6",
+    "/work/frosty40/glass-repo/tree/bench/linux/read-shape.c": "a491a11d32333531f2dbbead7b33fa58ca680d498f087afb71c86a40ab4839cd",
+    "/work/frosty40/glass-repo/tree/bench/linux/run-read-shape.sh": "5f8db11c1a673061d0ff2d104c4980dc0ea4cf193c76449e031db9385c388c4d",
+    "/work/frosty40/glass-repo/tree/bench/linux/pipeline-profile.py": "b37fbca23b8360c15b298d93aa840e5ba510dc5e793ffe53bd1954f91dcc8bf2",
+    "/work/frosty40/glass-repo/tree/bench/lib.sh": "a057c54c4b9aa587101d1ee9a3a729f1b73fed1e55f5af56bc4b939e04a62f25",
+    "/work/frosty40/glass-repo/tree/bench/tput.py": "477b0131f1041bda8dd74a64bf8d164d526685bb7fc0c13500b17f897c06542a"
+  },
+  "orders": [
+    [
+      "plain",
+      "count",
+      "timed"
+    ],
+    [
+      "plain",
+      "timed",
+      "count"
+    ],
+    [
+      "count",
+      "plain",
+      "timed"
+    ],
+    [
+      "count",
+      "timed",
+      "plain"
+    ],
+    [
+      "timed",
+      "plain",
+      "count"
+    ],
+    [
+      "timed",
+      "count",
+      "plain"
+    ],
+    [
+      "plain",
+      "count",
+      "timed"
+    ],
+    [
+      "plain",
+      "timed",
+      "count"
+    ],
+    [
+      "count",
+      "plain",
+      "timed"
+    ],
+    [
+      "count",
+      "timed",
+      "plain"
+    ],
+    [
+      "timed",
+      "plain",
+      "count"
+    ],
+    [
+      "timed",
+      "count",
+      "plain"
+    ]
+  ],
+  "planned_orders": [
+    [
+      "plain",
+      "count",
+      "timed"
+    ],
+    [
+      "plain",
+      "timed",
+      "count"
+    ],
+    [
+      "count",
+      "plain",
+      "timed"
+    ],
+    [
+      "count",
+      "timed",
+      "plain"
+    ],
+    [
+      "timed",
+      "plain",
+      "count"
+    ],
+    [
+      "timed",
+      "count",
+      "plain"
+    ],
+    [
+      "plain",
+      "count",
+      "timed"
+    ],
+    [
+      "plain",
+      "timed",
+      "count"
+    ],
+    [
+      "count",
+      "plain",
+      "timed"
+    ],
+    [
+      "count",
+      "timed",
+      "plain"
+    ],
+    [
+      "timed",
+      "plain",
+      "count"
+    ],
+    [
+      "timed",
+      "count",
+      "plain"
+    ]
+  ],
+  "raw_sha256": {
+    "count-1.trace": "d3ac8ced63c2f3a1cc7658ca0833273b007831193b06a705ebf354bcc1787ec1",
+    "count-10.trace": "18c326d3c29df1ca7a4222312c2f8edc90a7879c86d2d99b751a1408f75cec57",
+    "count-11.trace": "08865964058980272539ca7f7e7d11207b217ab91588e758853ba2830779edb3",
+    "count-12.trace": "f1763bc1279d8d9d6049538e3ceec02de1ed51b0b07f1a62546e3a9a968110c4",
+    "count-2.trace": "b374e48ad67bcbb28089372ef9482968e15c14efe8402790f73a6c8bcb0c5cf1",
+    "count-3.trace": "ede51550b88a3285bea3ad3764c66d1dd4ff75fc3d516fbd751783bc48754486",
+    "count-4.trace": "39fbda08e7c51c7018077f6aa267cb1bd83559a8d81feed8d16405991eb7dad9",
+    "count-5.trace": "b837f733d535066970fa36e84ae16f6b6c0fa33a56416ab2256a6ce354d2795e",
+    "count-6.trace": "defd693bb9e251ed323f2ad792f6dc7fb27dd6705014017f04982f4d819e5d94",
+    "count-7.trace": "43702a1f1c9300bdaaeca7ac66eae92dff5d1647437420f7c1acaa8b4334e5e4",
+    "count-8.trace": "0bb86ebf5fa95b989e8a96d6cde967da0bbc0c137f971e1342981cb4aa3e05d9",
+    "count-9.trace": "de28c586c4f54b9cf0c4e1de2d25ae540eb52c89e5147bddc3c9add50e5914a8",
+    "timed-1.trace": "047d0419f5e0959b4cf544f68adb7aeebc88c1c508f482a6cf144e905e650b6b",
+    "timed-10.trace": "c1ee4a1869c2520f52e43db039d0515b769815dec094aa314054d30f5b69ea2e",
+    "timed-11.trace": "4988e1829cdc4195e3521a243f97231c2a2e7ec70e1221523821f6ace5cde149",
+    "timed-12.trace": "2c3e024ac7cd7e132825644a08d178120719c7a0f5203d0d6731730d90e15503",
+    "timed-2.trace": "ac624b08ec77ebb953b2238e107e3900b7288bb2a66305121dcf8597975880c0",
+    "timed-3.trace": "cb922ec9d33088889a2b0e71fa24bccf8cf6cab680a896b35d4e7bdf39cd8754",
+    "timed-4.trace": "fbc4ad324caaaa35b090143937b82e872d7c34d4b9909d48be266cb58b0cfb28",
+    "timed-5.trace": "4e890a69c8777b68dbf4d7c04ef029419de12549cc4a729968d0eb09d4f2e86a",
+    "timed-6.trace": "136f24472094cf999433cc34e241a2715a2477781d900b56456a4d832fe7d053",
+    "timed-7.trace": "0d2517be12346a7a13f208d75c1932e2b40e77348216540c3fd4662a686d213b",
+    "timed-8.trace": "8795ef527b79b34f1e5a6ce5b7d2472f7d61338a00c1827d4817d0dbd7e4a7e3",
+    "timed-9.trace": "415449ab3087537558d50b25c2f3de1401cc10a8e99936f89b4924a77a745d2d",
+    "tput-count-1.json": "b444dfcf48fd9f1a9ab3ff4283b9865762e44d5221b8e48b34478420b3d457e3",
+    "tput-count-1.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-count-1.profile.json": "5e3c134e4d6200875e2e76cafa0abe0a27a221cb1a78734e248fabe0e31c195f",
+    "tput-count-10.json": "96dd29c1424b2fbe8f7dde60522fd6d55d8216af26b8f63256abefc67449b210",
+    "tput-count-10.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-count-10.profile.json": "02828bc912a26557836e9dc0e06436ce2b45a96b5e285de96cd171db6374edb6",
+    "tput-count-11.json": "abb8c46a7d75bd910b626a7def2def0ca6b13df6b61c71f7cd608ebceeeba69f",
+    "tput-count-11.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-count-11.profile.json": "e5303c5c0accf57163549a402545968510b358c0d260848a30c6454bacf53f5e",
+    "tput-count-12.json": "490441dea15a522c98400aeb00bfa234d06ab3c483767c596ae581785a10a481",
+    "tput-count-12.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-count-12.profile.json": "f3e0a8b91a0a24067702e6d24e862daf862ae15df9b1e7aa45e8deaf38b147f0",
+    "tput-count-2.json": "e4b106b5f477f2c60fb8f7d182a65fe8a17ace16c217d6b684a971c4d0449a05",
+    "tput-count-2.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-count-2.profile.json": "8ef3ceb6838391aabbcb11a0e7b16599694baefe6352353ff161658d35dd03e0",
+    "tput-count-3.json": "534aa42502df8952eb06c80e40c436df2cfdd4c62240d4fcdb885104fc5edc76",
+    "tput-count-3.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-count-3.profile.json": "5c5077fcbe3f06b48c7fd051861ce10fc6659c1d54a86ce3ab84d7dfcbe24620",
+    "tput-count-4.json": "4cd179caee526d7166437aad92774bf9ce43077539f23e5816c36cec29aff56f",
+    "tput-count-4.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-count-4.profile.json": "ffb9f3aa497fee5506114114e3e91e42d29dcb298acac26e5c25a87d78b7bac6",
+    "tput-count-5.json": "55ca49c723bc1f17b16dfc13a837251ed30f8edd7be85e6f01d962abb7eed7f9",
+    "tput-count-5.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-count-5.profile.json": "6f45b134fb5bfcae3d7685126a1051fe3054d688c57f0f6a628ebc4844d464ac",
+    "tput-count-6.json": "09101746305f618a846f76c7c25b33d3c424d04846e104015a5e951f3ee9878c",
+    "tput-count-6.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-count-6.profile.json": "7241f1e51ea4b342d50663974b35602afea110a22934ca7c1359c07071f7068d",
+    "tput-count-7.json": "58c3c37c4761b770e8fbfd1cac164cf03be4835ff1571b6ff7ef1045e061c4fd",
+    "tput-count-7.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-count-7.profile.json": "8988e0b5e8bacc21c3290145e401a5b9793a89ab3fc15ca8bcf4fcde2bb1e31e",
+    "tput-count-8.json": "f863c8b6fc70461cd8faf335365cbcca69e7254346a38e16c290e37dacf0040e",
+    "tput-count-8.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-count-8.profile.json": "8003c394502f336728dba0522f6a833747dd02bdd5b7dbf00209eaf7003d9702",
+    "tput-count-9.json": "2b67baf032f48e66a3a64c7fa1482f526f886034d2dc9e7bc8d0772adec0258c",
+    "tput-count-9.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-count-9.profile.json": "c058c9f224019d89d17bf4bc39dd6528fa40efde95bc3916c03b008264185d05",
+    "tput-plain-1.json": "cba56adf84f2fde595aea26ef35ff6542629c59b34cb601f0584a76f0b2f5854",
+    "tput-plain-1.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-plain-1.profile.json": "02c24d5413b2afceaa564faec0a21ce5938cef6ec7f0e87e96c159f36a412749",
+    "tput-plain-10.json": "601515d17393a48fec6a89544deac3ec9015afd96f06eedb3cb2b4bdc6668660",
+    "tput-plain-10.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-plain-10.profile.json": "8d260b77fb7dbca9b938e6f46cbec60c456fe1766b765cf2a0e90b77cdf55d03",
+    "tput-plain-11.json": "ac8aca1ed35740a0ee49e3bf6909b105fc12cd9016433beeacf08a0b328ba5f5",
+    "tput-plain-11.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-plain-11.profile.json": "620ccdc2ed8c7de0f43b12d41f9946865b275c0877f6589eee30ec72a259b3c2",
+    "tput-plain-12.json": "8ef065a4576d5f81f959267078f383f81c42657be238cd7ccc17c6a54479fd4c",
+    "tput-plain-12.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-plain-12.profile.json": "7d56f2fb964045902475f6900581d00a51981654742bbf0d57b9dd3c44987297",
+    "tput-plain-2.json": "8e7d8bd762f7c7772ba0ca3f72d1a756124297e6009c0f37e1aa57e3a7c8899b",
+    "tput-plain-2.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-plain-2.profile.json": "9e5e23e3107c0b4031f57dddaf6d4cf6a60cecf9a44242e30c11de80c2930d83",
+    "tput-plain-3.json": "75ecad3c4828a5c67b8fb1d34e4d0163793b51cb66698db94dc9ce4b9154bbad",
+    "tput-plain-3.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-plain-3.profile.json": "328c18699185a545f25a2a3b1d66c44c35aba4894301b52fffbb3b87d7aa0bb4",
+    "tput-plain-4.json": "8df2a0c7a4294881c7f5bb1c84501731f11aacf8933a0eca23e3c0ad8e98c59b",
+    "tput-plain-4.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-plain-4.profile.json": "071ded73d2ce5a7acbdd1774cf380190227fa459f816a0cf18ee6300c8b39d3a",
+    "tput-plain-5.json": "5683e109c674813bcb1feb79a5ec56b7809ca9b2719bec2a9c3bb361e92a63c1",
+    "tput-plain-5.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-plain-5.profile.json": "293cb43eed6b64835e291b4b938132389af527e48ab3f21524dc514661b020df",
+    "tput-plain-6.json": "4703d17a55ed7892e5c34e52587f3f4cb38fcba0ebec2f8a165438baef642d2d",
+    "tput-plain-6.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-plain-6.profile.json": "976415935950212ed52e7a6ccf6871451ae050be2332d99060de4736137b80c2",
+    "tput-plain-7.json": "c1896eb34962911748d248068d372bc5da388556e2f28709f77545e6f9ef9de4",
+    "tput-plain-7.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-plain-7.profile.json": "845cc80d33e11330d408168a9190eaac056f0c58b351d77e0ba5e3527ff991d2",
+    "tput-plain-8.json": "2c3eaf240d243d0a289ad93c36042ce548bd9d65767e9c952bc4ff85ab4bd2fd",
+    "tput-plain-8.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-plain-8.profile.json": "62a8c57e483198ff75350cb9f29236714cd64d8856501367b0726095b75c8b6d",
+    "tput-plain-9.json": "3ad36f1c4e8d0aa453eed1d32481ab355005ed4eba9c37003c98a2cbc6f3e768",
+    "tput-plain-9.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-plain-9.profile.json": "437186b6a7e2fb7b76e3bd6efb972cdb8297a885ea48fa2c37406e26b227bb81",
+    "tput-timed-1.json": "a8cbfc6724de179fff1f7f4f2323eeebf9b54a4592fb0f203fdfef1b43305e42",
+    "tput-timed-1.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-timed-1.profile.json": "6d92bdf42039ebe2b1f1259c563b4663cb2049dfebe33cf384a5396d63e89cd0",
+    "tput-timed-10.json": "700db27e18def197065b947fe4a32a44376024af7ee382a10ec976a82efc0fd0",
+    "tput-timed-10.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-timed-10.profile.json": "63535176fef640332ac62c38d930e5b3d6d7cadecd846b0f547b4c0d257d7059",
+    "tput-timed-11.json": "8d37d914fe1eed5e1652afcf1ac1fa798613ef7f838dd427d0ae795d43c788c7",
+    "tput-timed-11.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-timed-11.profile.json": "24262b7771a7df8339a1be21ea0ce035367dc018d82a5eaaa9e9957fa8c34fd0",
+    "tput-timed-12.json": "fce5a729d700d5209a0e255249ef99e01459eb8e1baf653c1e8edb4bf3931b2d",
+    "tput-timed-12.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-timed-12.profile.json": "5fb19a7a037f2ca8b4f9f32db22de97e57226ed6b4338a42418ed8300011b0c0",
+    "tput-timed-2.json": "28716007466cdb01b84da74b7531dd590f786d3024727076c54e45e1274b0dec",
+    "tput-timed-2.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-timed-2.profile.json": "b39a4c79621cfaf966d6b1c79a7d5847f596e3480de72e1fd1d1b67df806290e",
+    "tput-timed-3.json": "12cbffbb1e8ea6d545ca909ae9e64157de40d48123f81407daaadbd2a6614791",
+    "tput-timed-3.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-timed-3.profile.json": "705c127694c7f7f726de23d2b2b3f0d842e1dc6c8751d725e6aaba20ada37bd2",
+    "tput-timed-4.json": "8ba0054e8dbc5c7f04f36d4f4455e5063c269e9a41069e20397cd9df408fef12",
+    "tput-timed-4.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-timed-4.profile.json": "caf37b968e6716c09ced77bb68582fa82e428a62dd07da047c6cfa929b7ebfae",
+    "tput-timed-5.json": "115c24eef6d3058afc4eabc5634bf96826be3c220372b6823f972bd98220f721",
+    "tput-timed-5.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-timed-5.profile.json": "4c9f79a09a1faa4b1b42960dd4fe47024a412d4507b845fe6f3fc0636b00727e",
+    "tput-timed-6.json": "ac975b6c8e3fb50044b9e40c853316d9d8f2ae4061cfc5b94d610ecb1849efc2",
+    "tput-timed-6.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-timed-6.profile.json": "84113c7ae113e475fa9201f20703e3cfcaa6d057c05e1ea1e7756cbdbce2a9f6",
+    "tput-timed-7.json": "6c039d228537fac4b4dfcbc6fc4f448c6fe99d51ca360dba3fe1ff01f6b8190b",
+    "tput-timed-7.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-timed-7.profile.json": "5adbd43f2f1b869bef7c44bf5d17b2205f92b27bb01de7da1a94369ca435e650",
+    "tput-timed-8.json": "8eb980e9e3fecba4992814d966e30013a2672a2459db41e54589153629cdeb76",
+    "tput-timed-8.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-timed-8.profile.json": "517396b3b2f33b10784d3f3bec6a954ee50c854374a7108240b3d990192bf312",
+    "tput-timed-9.json": "d7e558038e73c0b2c9806e4dafcad657dfb55e193e55d5455a60cf21130cba6d",
+    "tput-timed-9.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-timed-9.profile.json": "1fab975d21373ae18cbdf1ca22055df0b1e95dc6038fc9f53bb1019177e6fec2"
+  }
+}

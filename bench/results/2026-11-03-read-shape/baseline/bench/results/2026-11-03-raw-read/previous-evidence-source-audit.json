@@ -1,0 +1,31 @@
+{
+  "schema": "glass.explicit-historical-snapshot-replay/v1",
+  "manifest": "bench/results/2026-11-03-marks-width/evidence-sha256.json",
+  "manifest_sha256": "910ae1d2256c0c032919844b39117ae96344ae00e7620eae60698b82a52620d7",
+  "unchanged_files": 633,
+  "intentional_live_source_changes": [
+    {
+      "original_path": "CHANGELOG.md",
+      "previous_expected_sha256": "9e4f527e503bc600ee45b302d91dba0dda433229b3036dc469fd963cbbb9087e",
+      "historical_snapshot": "bench/results/2026-11-03-raw-read/previous-source-snapshots/CHANGELOG.md",
+      "current_sha256": "07034b38154a482b32c91b663c9f290d58e7799ae747864c4e5c2a8f87045d98",
+      "reason": "Intentional additive research documentation in this checkpoint, not frozen raw/report modification."
+    },
+    {
+      "original_path": "bench/README.md",
+      "previous_expected_sha256": "0b05fad1a3603bece4da8b67470ae82a4e3835336758a77e34171b0ba23db0b0",
+      "historical_snapshot": "bench/results/2026-11-03-raw-read/previous-source-snapshots/bench/README.md",
+      "current_sha256": "9e878400e6f19ec4fdfc765cb849c704843ae95699154854afbdd929839a6edb",
+      "reason": "Intentional additive research documentation in this checkpoint, not frozen raw/report modification."
+    },
+    {
+      "original_path": "docs/PERFORMANCE.md",
+      "previous_expected_sha256": "61f4d647eb9810b7a656a359c73e900bca35ab65ba0eaf622ee1bd20722546fa",
+      "historical_snapshot": "bench/results/2026-11-03-raw-read/previous-source-snapshots/docs/PERFORMANCE.md",
+      "current_sha256": "a4a89ee792ebce7d257587d2e096a85fce871f55df9cd3e03aa8618ec2bfb9d3",
+      "reason": "Intentional additive research documentation in this checkpoint, not frozen raw/report modification."
+    }
+  ],
+  "historical_snapshots_match_previous_hashes": true,
+  "note": "Original previous verifier failed as expected on changed live docs. Its manifest and checker were NOT edited; snapshots supply the exact prior bytes. No blanket full-original-checker-pass claim."
+}

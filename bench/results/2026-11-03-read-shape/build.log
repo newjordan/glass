@@ -1,0 +1,5 @@
+bench/linux/read-shape.c: In function ‘finish’:
+bench/linux/read-shape.c:151:24: error: initializer-string for array of ‘char’ truncates NUL terminator but destination lacks ‘nonstring’ attribute (9 chars into 8 available) [-Werror=unterminated-string-initialization]
+  151 |     struct header h = {"RDSHAPE1", 1, sizeof(struct event), n,
+      |                        ^~~~~~~~~~
+cc1: all warnings being treated as errors

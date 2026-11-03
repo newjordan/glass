@@ -1,0 +1,74 @@
+Reader call shape and tail spare-capacity research — iteration 14
+
+STATUS: REPORTED. Not a championship, official acceptance, or runtime promotion.
+Starting commit 671ac9f. Shared Linux/Hyprland Ryzen9950X3D/RTX3090 host.
+Explicit source: bench/results/2026-11-03-read-shape/README.md.
+
+New, measured findings
+1. An opt-in own-exact-process libc read/poll observer captured only pty-read;
+   no application buffers were logged. Balanced 12-round plain/count/timed series
+   completed 36 sessions/648 pass profiles, plus a separate 3-session pilot.
+   Same selected executable, six original generators,154x39, one session at time,
+   all six treatment orders twice. Every trace pass accounts for payload plus
+   3-byte DA1 query. No drops; dumped prefixes enclose all passes.
+2. Reads reach16384 bytes, refuting the source comment's Linux4-KiB read ceiling.
+   In counted captures, >4096-byte reads carry70.9% ASCII and70.0% region bytes;
+   all six workloads show reads >4096. This is observer-conditioned, not a claim
+   that every uninstrumented read has the same distribution.
+3. Median timed wholly-contained read/poll wall fractions:92.7% ASCII,94.4%
+   region,24.5–27.2% Unicode/styled workloads. Boundary-straddling calls excluded
+   from durations, retained for byte accounting. Wall/CPU spans include wrapper,
+   glibc and kernel. No scheduler trace: off-CPU is not classified as blocked
+   versus runnable; neither ioctl/handoff counts nor pure kernel costs measured.
+4. Observer control is not equivalence: timed/plain ASCII median .91569, sign
+   p=.387695. Count/plain effects mixed. Plain ASCII ranges173.0–1095.7MB/s,
+   with host slowdowns retained. Pilot strongly perturbed, kept separate. These
+   captures cannot replace an uninstrumented optimization/latency gate.
+
+Distinct optimization hypothesis tested and rejected
+Change only PTY_READ spare-capacity4096->1: fill a remaining tail opportunistically
+while preserving two16KiB buffers, FIONREAD/poll(0) cadence and no added waiting.
+This is not the previously tried larger-buffer, extra-credit or syscall change.
+Seven existing reader tests passed; release candidate hash:
+1d626efc697c57a8bbe87ffb31e40ea077cb9159937e5fddc1f049827122fbd5.
+Full uninstrumented18-round three-arm gate:54 sessions, six orders x3, no dropped
+outliers, unchanged producer and competitor. Candidate/control medians:
+ASCII .98687(9/18 wins), Unicode .96540(8), truecolor .94501(4), cursor .97534(7),
+region .92324(6), TUI .97583(6). No control improvement established. Truecolor
+uncorrected loss p=.03088 becomes comparator-family Holm p=.18530; do not claim
+corrected significant regression. Only truecolor vs Ghostty survives that family
+correction, not whole-campaign correction; not a reason to promote below control.
+No quiet-RTT gate needed for a rejected candidate. No key-to-screen/title claim.
+
+Verification and retained engineering
+- Existing reader tests:7/7 pass before candidate,7/7 on candidate; restored
+  comments/constants also verified separately in restored-reader-tests.log.
+- Independent read-only terminal checker recomputes54 sessions, raw/harness
+  shapes/hashes, rounded-rate consistency, orders and all three binary hashes.
+- Read-only diagnostic decoder independently checks header/size/mode, monotonic
+  records, duration/cpu shape, payload hashes, pass order/bytes, raw hash set,
+  fastest-of-three summaries, geometry, captured reader and pass enclosure.
+- Five disposable-copy corruptions rejected, all without rewriting evidence:
+  changed raw; drop count; truncation; missing byte; missing enclosing tail.
+  This demonstrates those rejection paths, not a proof against deliberate forgery.
+- Prior700-artifact manifest replayed before edits; exact baseline copies retained
+  for all prior explicit sources. Historical sources/manifests not overwritten.
+- Runtime statements/constants restored (only factual comments changed). Selected
+  executable atomically restored and byte-compared; SHA256:
+  d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c.
+- Final explicit artifact integrity manifest and read-only verifier retain raw
+  traces, every session, source snapshots, protocols, successful and failed logs.
+  Full timing replay needs recorded executable/harness paths. Integrity is not
+  timing accuracy, exhaustive syscall coverage or independent safety certification.
+
+Failures retained, not counted as passes: initial strict C magic initializer
+warning, invalid initial analyzer write, mistaken --lib invocation (binary crate),
+and SIGPIPE host snapshot rerun. Corrected actual exit/results are retained.
+
+Next necessary evidence
+A scheduler-aware reader/TTY transport profile with observer-overhead controls,
+distinguishing runnable/blocked intervals and line-discipline copy/locking versus
+producer availability, followed by an uninstrumented full paired gate for any
+resulting candidate. Do not repeat small spare-capacity tweaks on call-shape
+intuition alone. ASCII/Unicode superiority remains unresolved; no all-metric or
+world-champion status demonstrated.

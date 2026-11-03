@@ -544,3 +544,30 @@ not quietly accepted. This is integrity/consistency evidence, not timing accurac
 The full protocol, raw data, rejection, corruption demonstration and limitations
 are in `bench/results/2026-11-03-raw-read/README.md`. Do not reclassify sampled time
 in `read` as proof of glibc-wrapper overhead or promote a noisy positive median.
+
+### Reader call shapes and tail policy (2026-11-03)
+
+An opt-in own-process interposer measured the unchanged `pty-read` thread in
+12 balanced plain/count/timed rounds. All 648 pass profiles and trace hashes
+replay; calls at pass boundaries are accounted separately. Captured reads reach
+16 KiB, and reads above 4 KiB carry about 70% of ASCII/region bytes. The 4-KiB
+spare-capacity constant is a coalescing policy, not a Linux read-size bound.
+
+In timed captures, median wholly contained read/poll wall fractions were 92.7%
+ASCII and 94.4% region versus 24.5–27.2% on Unicode/styled workloads. These are
+inclusive wrapper/glibc/kernel spans, not pure kernel cost or blocked-versus-
+runnable evidence. The observer changes pacing: timed/plain ASCII median ratio
+is .91569, and plain ASCII itself ranges 173.0–1095.7 MB/s on this shared host.
+Non-significant comparisons are not equivalence. Do not use this diagnostic as
+a scoreboard or infer a reader-buffer optimization from it.
+
+A distinct uninstrumented 18-round, three-arm gate tested only changing the
+minimum spare-capacity threshold 4096->1, preserving two 16-KiB buffers,
+readiness cadence and zero waiting. Candidate/control median ratios were
+.98687 ASCII, .96540 Unicode, .94501 truecolor, .97534 cursor, .92324 region,
+and .97583 TUI. No control improvement was established; reject. The independent
+checker replays all 54 sessions and exact binary hashes. Seven existing reader
+tests pass, starting runtime statements/constants are restored, and the exact
+selected executable is byte-compared. Corrected comments and diagnostic tools
+remain. Five disposable-copy corruptions are rejected read-only. See
+`bench/results/2026-11-03-read-shape/README.md` for raw evidence and limits.

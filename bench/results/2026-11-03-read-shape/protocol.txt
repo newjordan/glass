@@ -1,0 +1,20 @@
+Unchanged selected executable; no runtime source change or promotion in this diagnostic.
+12 rounds, cyclic all six permutations of plain/count/timed, sequential sessions,
+normal producer affinity and payloads, 154x39, existing boundary-only pipeline-profile.
+All 18 passes retained. All arms use the same boundary wrapper. Plain has no DSO.
+Count records read/poll result/size with one exit monotonic timestamp. Timed adds
+entry/exit monotonic and thread CPU clocks. Per-call trace is diagnostic, not an
+official score. Compare fastest-of-three session paired rates for overhead only.
+Do not call non-significance equivalence. Do not remove outliers. Do not overlap
+Glass benchmarks/compilation. Do not interpret CPU samples as syscall counts.
+Join calls by exit timestamps strictly inside pass windows; report boundary
+straddles and byte completeness explicitly. Read bytes must equal payload plus the 3-byte DA1 query (ESC [ c),
+which goes producer->terminal, not the reply.
+Validate exact bytes against the unchanged generator, not a presumed read size.
+A read blocked across a pass boundary cannot have all duration attributed to that
+pass. Do not classify off-CPU as blocked rather than runnable; no scheduler trace.
+Call wall is inclusive userspace wrapper/glibc/kernel; CPU includes clock/trace
+cost, not pure kernel CPU. Outside read/poll includes ioctl, handoff, credit waits,
+scheduling and loop overhead; do not label it all credit pressure. No ioctl hook.
+If observed instrumentation has material cost, conclusions remain conditional on
+that perturbation and cannot replace an uninstrumented timing gate.

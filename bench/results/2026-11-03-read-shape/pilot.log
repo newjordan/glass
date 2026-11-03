@@ -1,0 +1,3 @@
+tput-plain-1.json {'ascii': 1082.5, 'unicode': 261.9, 'truecolor': 277.3, 'cursor_motion': 241.1, 'scroll_region': 877.3, 'tui_frames': 270.0}
+tput-count-1.json {'ascii': 578.9, 'unicode': 152.6, 'truecolor': 172.0, 'cursor_motion': 141.0, 'scroll_region': 768.7, 'tui_frames': 169.8}
+tput-timed-1.json {'ascii': 331.8, 'unicode': 120.3, 'truecolor': 149.1, 'cursor_motion': 155.6, 'scroll_region': 785.3, 'tui_frames': 141.4}

@@ -1,0 +1,9 @@
+{
+  "schema": "glass.research-restoration/v1",
+  "selected_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "restored_source_sha256": "8c7e2b9532d36a169f16ebdc6bf150e44af7192f80aaf92dfe7fc975a6645904",
+  "runtime_statements_identical": true,
+  "source_change": "comments only; PTY_READ restored to4096",
+  "candidate_promoted": false,
+  "selected_byte_comparison": "cmp target/release/glass /tmp/glass-i14-selected exited0"
+}

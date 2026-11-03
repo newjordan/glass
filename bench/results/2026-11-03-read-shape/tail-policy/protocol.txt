@@ -1,0 +1,15 @@
+Distinct hypothesis from 64KiB buffers, extra credits, true waiting, syscall
+replacement and single-poll: keep current 2x16KiB producer buffer cap, FIONREAD
+and poll(0) cadence but stop at no spare capacity rather than <4096 spare.
+Only constant PTY_READ changes 4096->1. No added wait. Short/tiny tail reads may
+raise call count enough to lose; no positive expectation baked into acceptance.
+7 existing reader tests and normal release build before uninstrumented comparison.
+18 three-arm rounds (candidate, fresh control, Ghostty): all six orders x3.
+All six original workloads at154x39, original producer normal unpinned affinity.
+No observer, profiler, census, parser, or competitor configuration change.
+No outlier exclusion. Look for repeatable ASCII/region wins with no other
+regression. Exploratory uncorrected sign tests and six-workload per-comparator
+Holm family separately, not whole-campaign false-discovery correction.
+Reject on failure of the all-metric gate; quiet RTT only if candidate warrants
+promotion. Do not infer victory from lower handoff count or observer timings.
+Restore starting statements/constants and exact selected executable if rejected.

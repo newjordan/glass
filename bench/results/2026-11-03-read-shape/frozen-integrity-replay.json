@@ -1,0 +1,7 @@
+{
+  "schema": "glass.evidence-replay/v1",
+  "files": 965,
+  "bytes": 140048121,
+  "manifest_sha256": "9ac30a4471382a2dbae2e3e8ad452b0f171df902ad4a05ad3e678ed3682322e0",
+  "note": "Integrity replay only, not a timing or safety proof."
+}

@@ -1,0 +1,11 @@
+{
+  "head": "671ac9f0e55d436ee9040a7f954f88d891f45ff8",
+  "selected_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "source_sha256": {
+    "bench/lib.sh": "a057c54c4b9aa587101d1ee9a3a729f1b73fed1e55f5af56bc4b939e04a62f25",
+    "bench/tput.py": "477b0131f1041bda8dd74a64bf8d164d526685bb7fc0c13500b17f897c06542a",
+    "bench/linux/pipeline-profile.py": "b37fbca23b8360c15b298d93aa840e5ba510dc5e793ffe53bd1954f91dcc8bf2",
+    "crates/term/src/read_ahead.rs": "40d251c15b0a105faf2864c7bf322f00fdaae582c5f8a2aa0da3a39831f25610",
+    "crates/term/src/census.rs": "5ffb799f292674716a7b97a99c48e4cdca54cda69618c9d6e91d845fbd2041bc"
+  }
+}

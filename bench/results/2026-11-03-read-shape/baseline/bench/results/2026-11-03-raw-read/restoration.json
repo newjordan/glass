@@ -1,0 +1,11 @@
+{
+  "schema": "glass.runtime-restoration/v1",
+  "starting_head": "ccb856003f2d747aa6c81f7f51ae27f70a3cafb9",
+  "only_crate_diff": "crates/term/src/read_ahead.rs",
+  "only_new_tests": true,
+  "unchanged_other_crate_sources": true,
+  "selected_release_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "saved_selected_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "final_reader_sha256": "40d251c15b0a105faf2864c7bf322f00fdaae582c5f8a2aa0da3a39831f25610",
+  "note": "Removal of three added test functions and their comments exactly reproduces the starting reader source; all runtime source and exact selected release retained."
+}

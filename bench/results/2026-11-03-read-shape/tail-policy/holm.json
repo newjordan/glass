@@ -1,0 +1,120 @@
+{
+  "schema": "glass.exploratory-holm/v1",
+  "source": "bench/results/2026-11-03-read-shape/tail-policy/gate/terminal-summary.json",
+  "source_sha256": "b44fd8504ed6ac253262ed19b790999916d77489b4c5809b1b2924049bfae39d",
+  "note": "Six workloads per comparator; two-sided signs, alpha .05. Not campaign-wide correction. Direction is separate from significance.",
+  "families": {
+    "glass-alt": {
+      "truecolor": {
+        "median_ratio": 0.9450146506017987,
+        "wins": 4,
+        "losses": 14,
+        "ties": 0,
+        "sign_p_two_sided": 0.0308837890625,
+        "holm_adjusted_p": 0.185302734375,
+        "holm_reject_at_05": false
+      },
+      "scroll_region": {
+        "median_ratio": 0.9232449790967618,
+        "wins": 6,
+        "losses": 12,
+        "ties": 0,
+        "sign_p_two_sided": 0.237884521484375,
+        "holm_adjusted_p": 1.0,
+        "holm_reject_at_05": false
+      },
+      "tui_frames": {
+        "median_ratio": 0.9758346310852277,
+        "wins": 6,
+        "losses": 12,
+        "ties": 0,
+        "sign_p_two_sided": 0.237884521484375,
+        "holm_adjusted_p": 1.0,
+        "holm_reject_at_05": false
+      },
+      "cursor_motion": {
+        "median_ratio": 0.975338325817025,
+        "wins": 7,
+        "losses": 11,
+        "ties": 0,
+        "sign_p_two_sided": 0.480682373046875,
+        "holm_adjusted_p": 1.0,
+        "holm_reject_at_05": false
+      },
+      "unicode": {
+        "median_ratio": 0.96539768817247,
+        "wins": 8,
+        "losses": 10,
+        "ties": 0,
+        "sign_p_two_sided": 0.8145294189453125,
+        "holm_adjusted_p": 1.0,
+        "holm_reject_at_05": false
+      },
+      "ascii": {
+        "median_ratio": 0.9868671058619862,
+        "wins": 9,
+        "losses": 9,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_adjusted_p": 1.0,
+        "holm_reject_at_05": false
+      }
+    },
+    "ghostty": {
+      "truecolor": {
+        "median_ratio": 1.2565313057040997,
+        "wins": 17,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 0.00014495849609375,
+        "holm_adjusted_p": 0.0008697509765625,
+        "holm_reject_at_05": true
+      },
+      "unicode": {
+        "median_ratio": 0.8170288173458256,
+        "wins": 5,
+        "losses": 13,
+        "ties": 0,
+        "sign_p_two_sided": 0.09625244140625,
+        "holm_adjusted_p": 0.48126220703125,
+        "holm_reject_at_05": false
+      },
+      "tui_frames": {
+        "median_ratio": 1.0437814868639168,
+        "wins": 12,
+        "losses": 6,
+        "ties": 0,
+        "sign_p_two_sided": 0.237884521484375,
+        "holm_adjusted_p": 0.9515380859375,
+        "holm_reject_at_05": false
+      },
+      "ascii": {
+        "median_ratio": 0.8763287125415837,
+        "wins": 7,
+        "losses": 11,
+        "ties": 0,
+        "sign_p_two_sided": 0.480682373046875,
+        "holm_adjusted_p": 1.0,
+        "holm_reject_at_05": false
+      },
+      "cursor_motion": {
+        "median_ratio": 1.106694248007005,
+        "wins": 11,
+        "losses": 7,
+        "ties": 0,
+        "sign_p_two_sided": 0.480682373046875,
+        "holm_adjusted_p": 1.0,
+        "holm_reject_at_05": false
+      },
+      "scroll_region": {
+        "median_ratio": 1.0523057898475794,
+        "wins": 11,
+        "losses": 7,
+        "ties": 0,
+        "sign_p_two_sided": 0.480682373046875,
+        "holm_adjusted_p": 1.0,
+        "holm_reject_at_05": false
+      }
+    }
+  }
+}

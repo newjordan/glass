@@ -485,3 +485,32 @@ synthetic tests and read-only replay of 630 supported terminal sessions. The
 raw-read candidate itself was rejected after 54 balanced sessions; it did not
 clear ASCII or scroll-region gates. Three new reader regression tests survive;
 the raw-syscall runtime change does not. Earlier reports remain unchanged.
+
+### Reader call-shape diagnosis (2026-11-03)
+
+`bench/results/2026-11-03-read-shape/README.md` preserves 12 balanced rounds of
+plain/count/timed captures using the unchanged selected executable and the
+boundary-only producer wrapper. The opt-in own-process LD_PRELOAD observer
+records libc `read`/`poll` calls only on `pty-read`, not application buffers or
+general kernel syscalls. It is a diagnostic, not a performance optimization.
+
+```
+gcc -shared -fPIC -O2 -std=c11 -Wall -Wextra -Werror \
+  -o /tmp/glass-read-shape.so bench/linux/read-shape.c -ldl -pthread
+OUT=/tmp/glass-read-shape-fresh GLASS=/absolute/frozen/glass \
+OBSERVER=/tmp/glass-read-shape.so ROUNDS=12 \
+  bash bench/linux/run-read-shape.sh
+python3 -B -I bench/linux/analyze-read-shape.py \
+  bench/results/2026-11-03-read-shape/balanced \
+  --check bench/results/2026-11-03-read-shape/balanced-analysis.json
+```
+
+Reads reached 16 KiB; 4 KiB is not a Linux read-size ceiling. Captured large
+reads carried about 70% of ASCII/region bytes. Wall/CPU attribution excludes
+boundary-straddling calls and is inclusive wrapper/glibc/kernel time, not pure
+kernel cost. Instrumentation and shared-host timing effects are substantial;
+non-significant paired comparisons are not evidence of equivalence. All 648
+balanced pass profiles and raw hashes replay, and five disposable-copy
+corruptions are rejected without rewriting evidence. Full replay requires the
+recorded binary/harness hashes; explicit artifact integrity has a separate
+frozen verifier. The spare-capacity follow-up has its own uninstrumented gate.

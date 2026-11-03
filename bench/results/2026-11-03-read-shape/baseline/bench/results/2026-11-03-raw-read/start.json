@@ -1,0 +1,7 @@
+{
+  "head": "ccb856003f2d747aa6c81f7f51ae27f70a3cafb9",
+  "selected_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "reader_sha256": "895e7c3934e55b392fe46f10954413fcccc95cda329e06e5064bb74c90845c0d",
+  "RUSTC": "/home/frosty40/.rustup/toolchains/1.99.0-x86_64-unknown-linux-gnu/bin/rustc",
+  "loadavg": "2.50 6.41 10.31 2/3585 1211737"
+}

@@ -1,0 +1,43 @@
+{
+  "schema": "glass.read-shape-run/v1",
+  "complete": true,
+  "binary": "/work/frosty40/glass-repo/tree/target/release/glass",
+  "observer": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-read-shape/read-shape.so",
+  "rounds": 1,
+  "sha256": {
+    "/work/frosty40/glass-repo/tree/target/release/glass": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+    "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-read-shape/read-shape.so": "2524747f39cc1840959886f115ed421b02a40d8b2584cd3b8b4216066d645cd6",
+    "/work/frosty40/glass-repo/tree/bench/linux/read-shape.c": "a491a11d32333531f2dbbead7b33fa58ca680d498f087afb71c86a40ab4839cd",
+    "/work/frosty40/glass-repo/tree/bench/linux/run-read-shape.sh": "5f8db11c1a673061d0ff2d104c4980dc0ea4cf193c76449e031db9385c388c4d",
+    "/work/frosty40/glass-repo/tree/bench/linux/pipeline-profile.py": "b37fbca23b8360c15b298d93aa840e5ba510dc5e793ffe53bd1954f91dcc8bf2",
+    "/work/frosty40/glass-repo/tree/bench/lib.sh": "a057c54c4b9aa587101d1ee9a3a729f1b73fed1e55f5af56bc4b939e04a62f25",
+    "/work/frosty40/glass-repo/tree/bench/tput.py": "477b0131f1041bda8dd74a64bf8d164d526685bb7fc0c13500b17f897c06542a"
+  },
+  "orders": [
+    [
+      "plain",
+      "count",
+      "timed"
+    ]
+  ],
+  "planned_orders": [
+    [
+      "plain",
+      "count",
+      "timed"
+    ]
+  ],
+  "raw_sha256": {
+    "count-1.trace": "61760351eccb76c64c8331322d393a563ebf6b67642a54279581129c22117648",
+    "timed-1.trace": "a9cf4a5fc416a4ec40c11db2cf302b04583d6daeb72b441a68cc7f0c4645e46c",
+    "tput-count-1.json": "49931e95403b534657fd4ba068b064d54055225bce578cb235e9acfa1a60c655",
+    "tput-count-1.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-count-1.profile.json": "aad9e2f85593dcdc321330b8a938f9383bf34d1f087fb42b3f1dc47b1bcbfaa4",
+    "tput-plain-1.json": "7055f3bec7a649efe9a3a1bce7da3fb9fdaf90ceae04ac9a5dea80d610f2dab5",
+    "tput-plain-1.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-plain-1.profile.json": "aac6980d4072481d7fa22db1419719c1666a105c047337bb4afbefd041841999",
+    "tput-timed-1.json": "e193bea3fd7298d2d13a4a398a28fd65cedd5846052f700564cbbfc09b0a7e2b",
+    "tput-timed-1.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-timed-1.profile.json": "04d58a83b484a9bcbbd64b30f3765e52807b6db9c7e3156f78c832bd6ce89d99"
+  }
+}

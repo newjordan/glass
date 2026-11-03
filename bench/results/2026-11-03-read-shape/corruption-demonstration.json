@@ -1,0 +1,35 @@
+{
+  "note": "Disposable copies of real pilot evidence; rejection/consistency checks, not timing or safety proof. Original evidence never modified.",
+  "cases": [
+    {
+      "case": "changed_raw",
+      "rejected": true,
+      "read_only": true,
+      "reason": "changed raw: tput-plain-1.json"
+    },
+    {
+      "case": "trace_drop_with_updated_hash",
+      "rejected": true,
+      "read_only": true,
+      "reason": "trace count/drop"
+    },
+    {
+      "case": "truncated_trace_with_updated_hash",
+      "rejected": true,
+      "read_only": true,
+      "reason": "trace size/mode"
+    },
+    {
+      "case": "lost_pass_bytes_with_updated_hash",
+      "rejected": true,
+      "read_only": true,
+      "reason": "byte mismatch: ascii/0: 25165957"
+    },
+    {
+      "case": "unclosed_tail_with_updated_hash",
+      "rejected": true,
+      "read_only": true,
+      "reason": "trace does not enclose passes"
+    }
+  ]
+}

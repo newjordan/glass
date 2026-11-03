@@ -1,0 +1,21 @@
+{
+  "supported": [
+    "bench/results/2026-11-02-consumer-coalesce/terminal",
+    "bench/results/2026-11-02-inline-pieces/terminal",
+    "bench/results/2026-11-02-lazy-frame-cuts/terminal",
+    "bench/results/2026-11-03-immutable-width/gate",
+    "bench/results/2026-11-03-immutable-width/replication-gate",
+    "bench/results/2026-11-03-marks-width/gate",
+    "bench/results/2026-11-03-marks-width/replication-gate",
+    "bench/results/2026-11-03-raw-read/gate",
+    "bench/results/2026-11-03-static-marks/gate",
+    "bench/results/2026-11-03-static-marks/replication-gate"
+  ],
+  "not_validated": [
+    {
+      "path": "bench/results/2026-11-03-row-alignment/terminal-summary.json",
+      "schema": "glass.cyclic-terminal-comparison/v1",
+      "reason": "unsupported schema; no check claimed"
+    }
+  ]
+}

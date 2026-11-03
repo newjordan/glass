@@ -13,6 +13,18 @@ A program runs in a pseudo-terminal, and what it writes comes in through
 No dialect is the reference one; each is an adapter onto one shared
 description of what to show.
 
+### Reader call-shape research (not promoted)
+
+- Diagnose the unchanged Linux reader with 36 balanced plain/count/timed
+  sessions. Reads reach 16 KiB: correct the false 4-KiB ceiling in comments;
+  retain explicit observer-overhead, boundary and shared-host limitations.
+- Reject a distinct tail spare-capacity policy after 54 uninstrumented paired
+  terminal sessions. All six candidate/control median ratios are below one;
+  original runtime statements and exact selected executable are restored.
+- Retain a read-only call-trace decoder, five measured corruption rejections,
+  exact source/raw snapshots and prior evidence baseline copies. This is
+  diagnostic and integrity evidence, not an all-metric championship.
+
 ### Raw-read research and read-only measurement replay
 
 - Reject Linux raw `SYS_read` after 54 balanced real-terminal sessions: neither
