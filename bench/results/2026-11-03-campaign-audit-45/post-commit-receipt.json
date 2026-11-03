@@ -1,0 +1,11 @@
+{
+  "championship_established": false,
+  "checkpoint_sha256": "ad3913c73cdf29db94c5bab73b634c0ec740eccf6202a62d984173e90df2631c",
+  "file_references": 1980,
+  "frozen_replay_matches_saved": true,
+  "head": "92f143377fa2d5e017a93535bfb6f9b436fb5743",
+  "index_sha256": "21b213cde13949deb69cf540aa56842e41c6534b0c995c31edfe8ef24864169f",
+  "schema": "glass.audit45-postcommit/v1",
+  "status": "reported",
+  "unique_source_versions": 1886
+}
