@@ -1,0 +1,70 @@
+{
+  "broader_slot_failures": 2728,
+  "continuous_in_bounds_failures": 0,
+  "continuous_in_bounds_observations": 168296,
+  "deleted_eligible": 1632,
+  "deleted_failures": 0,
+  "deleted_observations": 6912,
+  "differential_streams_per_arm": 12800,
+  "height_observations": 56160,
+  "mixed_observations": 20736,
+  "preserved_tracked_files": 8498,
+  "restored_ignored": 14,
+  "restored_tests": 392,
+  "roundtrip_observations": 64,
+  "runtime_promoted": false,
+  "schema": "glass.persistent-witness-checkpoint/v1",
+  "scroll_counterexamples": 2,
+  "selected_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "slots": [
+    {
+      "absent": 9216,
+      "capacity": 0,
+      "cases": 36864,
+      "continuous_in_bounds_cases": 26448,
+      "continuous_in_bounds_failures": 0,
+      "failures": 560
+    },
+    {
+      "absent": 10368,
+      "capacity": 1,
+      "cases": 36864,
+      "continuous_in_bounds_cases": 25248,
+      "continuous_in_bounds_failures": 0,
+      "failures": 400
+    },
+    {
+      "absent": 7296,
+      "capacity": 2,
+      "cases": 36864,
+      "continuous_in_bounds_cases": 28160,
+      "continuous_in_bounds_failures": 0,
+      "failures": 424
+    },
+    {
+      "absent": 5824,
+      "capacity": 8,
+      "cases": 36864,
+      "continuous_in_bounds_cases": 29480,
+      "continuous_in_bounds_failures": 0,
+      "failures": 448
+    },
+    {
+      "absent": 5824,
+      "capacity": 32,
+      "cases": 36864,
+      "continuous_in_bounds_cases": 29480,
+      "continuous_in_bounds_failures": 0,
+      "failures": 448
+    },
+    {
+      "absent": 5824,
+      "capacity": 10000,
+      "cases": 36864,
+      "continuous_in_bounds_cases": 29480,
+      "continuous_in_bounds_failures": 0,
+      "failures": 448
+    }
+  ],
+  "unicode_observations": 124416
+}
