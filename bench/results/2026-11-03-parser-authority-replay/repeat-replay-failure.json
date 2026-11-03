@@ -1,0 +1,9 @@
+{
+  "command": "python3 -B bench/results/2026-11-03-parser-authority/verify.py",
+  "exit": 1,
+  "error": "ValueError: corruption replay changed",
+  "cause": "set iteration order changes which stale-package reason is reported first; all 17 cases are still rejected",
+  "first_checkpoint_exit": 0,
+  "post_commit_checkpoint_exit": 0,
+  "runtime_and_evidence_unchanged": true
+}

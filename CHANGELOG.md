@@ -175,6 +175,11 @@ description of what to show.
 
 ### Parser-ground boundary guard and fresh-build provenance
 
+- Supplemental replay fixes an intermittent verifier-only diagnostic comparison:
+  tolerate exactly one of three known first-stale-package messages, preserving
+  all rejection flags, hashes and other diagnostics. Original artifacts remain
+  unchanged; no runtime or performance gate changes.
+
 - Retain 1,092 parser-differential read-boundary scenarios for partial UTF8,
   strings, CSI, sync and REP. A compiled partial-UTF8 mutant fails on cells.
 - Reject shadow-parser removal despite 11-pair ASCII/scroll-region CPU gains

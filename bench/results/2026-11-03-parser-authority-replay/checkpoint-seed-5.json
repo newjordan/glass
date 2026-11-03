@@ -1,0 +1,67 @@
+{
+  "schema": "glass.parser-authority-stable-checkpoint/v1",
+  "engine_pairs": 11,
+  "engine_screen_cleared": false,
+  "runtime_promotion": false,
+  "ascii_cpu_ratio": 1.0644953240890036,
+  "scroll_region_cpu_ratio": 1.068099258122282,
+  "truecolor_cpu_ratio": 0.922042188933048,
+  "unchanged_runtime_rust_sources": 119,
+  "changed_rust_sources": [
+    "crates/term/src/speed.rs"
+  ],
+  "unchanged_prior_artifacts": 5994,
+  "selected_binary_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "terminal_tests_per_arm": 382,
+  "differential_streams_per_arm": 12800,
+  "boundary_scenarios_per_arm": 1092,
+  "python_tests": 65,
+  "corruptions_rejected": 17,
+  "prior_frozen_file_references": 65,
+  "frozen_file_references": 91,
+  "stable_replay_file_references": 14,
+  "live_checks": [
+    {
+      "argv": [
+        "/tmp/glass-i23-control-test",
+        "--exact",
+        "speed::parser_ground_chunk_boundaries",
+        "--nocapture"
+      ],
+      "exit": 0
+    },
+    {
+      "argv": [
+        "/tmp/glass-i23-candidate-test",
+        "--exact",
+        "speed::parser_ground_chunk_boundaries",
+        "--nocapture"
+      ],
+      "exit": 0
+    },
+    {
+      "argv": [
+        "/tmp/glass-i23-mutant-test",
+        "--exact",
+        "speed::parser_ground_chunk_boundaries",
+        "--nocapture"
+      ],
+      "exit": 101
+    },
+    {
+      "argv": [
+        "/home/frosty40/.local/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "bench",
+        "-p",
+        "test*.py"
+      ],
+      "exit": 0
+    }
+  ],
+  "note": "Integrity/correctness replay only; not new timing, terminal throughput or championship acceptance."
+}

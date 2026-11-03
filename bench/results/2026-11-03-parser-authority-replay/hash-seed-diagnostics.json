@@ -1,0 +1,98 @@
+[
+  {
+    "seed": 0,
+    "cases": 17,
+    "actual_stale_reason": "missing/ambiguous/stale package receipt: alacritty_terminal",
+    "all_rejected": true
+  },
+  {
+    "seed": 1,
+    "cases": 17,
+    "actual_stale_reason": "missing/ambiguous/stale package receipt: alacritty_terminal",
+    "all_rejected": true
+  },
+  {
+    "seed": 2,
+    "cases": 17,
+    "actual_stale_reason": "missing/ambiguous/stale package receipt: vte",
+    "all_rejected": true
+  },
+  {
+    "seed": 3,
+    "cases": 17,
+    "actual_stale_reason": "missing/ambiguous/stale package receipt: glass",
+    "all_rejected": true
+  },
+  {
+    "seed": 4,
+    "cases": 17,
+    "actual_stale_reason": "missing/ambiguous/stale package receipt: alacritty_terminal",
+    "all_rejected": true
+  },
+  {
+    "seed": 5,
+    "cases": 17,
+    "actual_stale_reason": "missing/ambiguous/stale package receipt: glass",
+    "all_rejected": true
+  },
+  {
+    "seed": 6,
+    "cases": 17,
+    "actual_stale_reason": "missing/ambiguous/stale package receipt: glass",
+    "all_rejected": true
+  },
+  {
+    "seed": 7,
+    "cases": 17,
+    "actual_stale_reason": "missing/ambiguous/stale package receipt: vte",
+    "all_rejected": true
+  },
+  {
+    "seed": 8,
+    "cases": 17,
+    "actual_stale_reason": "missing/ambiguous/stale package receipt: glass",
+    "all_rejected": true
+  },
+  {
+    "seed": 9,
+    "cases": 17,
+    "actual_stale_reason": "missing/ambiguous/stale package receipt: vte",
+    "all_rejected": true
+  },
+  {
+    "seed": 10,
+    "cases": 17,
+    "actual_stale_reason": "missing/ambiguous/stale package receipt: alacritty_terminal",
+    "all_rejected": true
+  },
+  {
+    "seed": 11,
+    "cases": 17,
+    "actual_stale_reason": "missing/ambiguous/stale package receipt: vte",
+    "all_rejected": true
+  },
+  {
+    "seed": 12,
+    "cases": 17,
+    "actual_stale_reason": "missing/ambiguous/stale package receipt: glass",
+    "all_rejected": true
+  },
+  {
+    "seed": 13,
+    "cases": 17,
+    "actual_stale_reason": "missing/ambiguous/stale package receipt: vte",
+    "all_rejected": true
+  },
+  {
+    "seed": 14,
+    "cases": 17,
+    "actual_stale_reason": "missing/ambiguous/stale package receipt: vte",
+    "all_rejected": true
+  },
+  {
+    "seed": 15,
+    "cases": 17,
+    "actual_stale_reason": "missing/ambiguous/stale package receipt: alacritty_terminal",
+    "all_rejected": true
+  }
+]

@@ -768,3 +768,16 @@ and 5,994 prior tracked artifacts are preserved. No every-metric win claimed.
 ```sh
 python3 -B bench/results/2026-11-03-parser-authority/verify.py
 ```
+
+
+**Parser-authority replay correction:** the initial checkpoint command compares
+one set-order-dependent stale-build diagnostic byte-for-byte and is intermittent.
+Use the supplemental command below instead. It permits only one of three known
+first-stale-package reasons for that one actual incident; all other evidence
+and rejection fields remain exact. Original verifier/results/reports are frozen
+unchanged. Six supplemental normalization tests cover the narrow correction.
+No runtime selection or performance conclusion changes.
+
+```sh
+python3 -B bench/results/2026-11-03-parser-authority-replay/verify.py
+```

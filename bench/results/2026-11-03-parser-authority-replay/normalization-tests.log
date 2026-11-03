@@ -1,0 +1,11 @@
+test_all_three_known_reasons_equal_and_input_unchanged (__main__.NarrowNormalization.test_all_three_known_reasons_equal_and_input_unchanged) ... ok
+test_digests_and_flags_not_normalized (__main__.NarrowNormalization.test_digests_and_flags_not_normalized) ... ok
+test_false_status_rejected (__main__.NarrowNormalization.test_false_status_rejected) ... ok
+test_missing_or_duplicate_incident_rejected (__main__.NarrowNormalization.test_missing_or_duplicate_incident_rejected) ... ok
+test_other_diagnostics_not_normalized (__main__.NarrowNormalization.test_other_diagnostics_not_normalized) ... ok
+test_unapproved_reason_rejected (__main__.NarrowNormalization.test_unapproved_reason_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.001s
+
+OK
