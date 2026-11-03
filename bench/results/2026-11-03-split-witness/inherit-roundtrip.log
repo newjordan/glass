@@ -1,0 +1,8 @@
+
+running 1 test
+split-roundtrip fast=false got=[(1, 8.0, 2.0), (3, 9.0, 2.0)] expected=[(1, 8.0, 2.0), (3, 9.0, 2.0)]
+split-roundtrip fast=true got=[(1, 8.0, 2.0), (3, 9.0, 2.0)] expected=[(1, 8.0, 2.0), (3, 9.0, 2.0)]
+test intake::position_tests::split_witness_blank_fragment_roundtrip ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 415 filtered out; finished in 0.00s
+

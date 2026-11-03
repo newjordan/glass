@@ -1,0 +1,45 @@
+Iteration 42: independent physical picture fragments
+
+New real-engine counterexample: after width 10 -> 7, partial-band SD, then
+width 7 -> 10, a born fragment loses its persistent witness and returns to
+(5,1) instead of (3,9). Inherited transported anchors plus per-fragment offsets
+pass 1,680 finite observations (both parser lanes, active/inactive primary,
+five marker columns, two picture columns, heights 3..6, three SD amounts),
+plus four repeated-split/local-death cases. Prototype remains unpromoted.
+
+More importantly, isolated shipping defects were reproduced without resizing:
+successive splits generate duplicate internal sequences [3,1048579,1048579];
+removing one anonymous fragment removes all siblings because they share a
+showing key. Four real APC control cases fail, including both parser lanes.
+
+Production source now allocates fragments through Intake::bump and removes
+vanished physical fragments by sequence, preserving parent-key cleanup and
+image-wide deletion. New fragments clone unsliced coverage only in Split,
+with no clone added to ordinary movement. All four cases pass, preserving
+exact image-source partitions; later placement sequences exceed all fragments.
+Final release-test suite: 393 passed, 0 failed, 14 ignored. Only physical split
+handling and its regression changed; other runtime bytes and selected release
+executable unchanged. No wider resize authority or witness state promoted.
+
+Five Python evidence tests pass: 16 record mutations, nine malformed coordinate
+sets, missing/duplicate records, wrong summary, duplicate JSON keys and 11
+matrix corruptions rejected. Exact subprocess receipts record control exit
+101, production/prototype exits 0; strict checker binds binaries, compiler
+receipts, source snapshots, logs, geometry, flags and executed configurations.
+First compiler/test-setup failures retained and excluded from claimed results.
+Prior 1,577-reference / 1,564-source-version frozen archive matches unchanged.
+
+Limits: one-cell width pictures, finite integer geometry, no history fill,
+fixed 10 -> 7 -> 10 width transition, limited scroll interleavings. No timing,
+memory, arbitrary writes/lifecycle/eviction, fractional geometry or relative
+parent split validation. No Ghostty comparison or campaign acceptance. Known
+shipping resize defects remain open; next required work is bounded lifetime
+and performance measurement, not a championship declaration.
+
+Exact sources, hashes, measured exits, independent expectations and replay:
+bench/results/2026-11-03-split-witness/README.md
+python3 -B bench/results/2026-11-03-split-witness/verify.py
+python3 -B bench/results/2026-11-03-split-witness/test-verify.py
+python3 -B bench/replay-evidence-index.py bench/results/2026-11-03-split-witness/final-frozen-index.json
+
+Worker report only, not independent verification or competitive acceptance.

@@ -1,0 +1,10 @@
+test_complete (__main__.Evidence.test_complete) ... ok
+test_matrix_corruptions (__main__.Evidence.test_matrix_corruptions) ... ok
+test_missing_duplicate_summary_and_json_keys (__main__.Evidence.test_missing_duplicate_summary_and_json_keys) ... ok
+test_record_corruption (__main__.Evidence.test_record_corruption) ... ok
+test_shape_rejection (__main__.Evidence.test_shape_rejection) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.084s
+
+OK

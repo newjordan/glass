@@ -993,3 +993,16 @@ Restored shipping 392 pass / 14 ignored; actual 12,800-stream sweep passes in
 both arms. First compiler failure, zero-test filter mistakes and initial checker
 mutation failure retained; final replay explicitly excludes zero-test evidence.
 No runtime promotion, benchmark or competitive superiority claim.
+
+### 2026-11-03 split fragments (iteration 42)
+
+`results/2026-11-03-split-witness/` separates the unpromoted persistent-witness
+prototype (1,680 exact geometry observations) from an isolated production repair
+for repeated fragment sequence collisions and sibling over-deletion. Shipping
+control 4/4 fail; repaired source 4/4 pass, exact source-slice partition and
+image-wide deletion retained. Final production release-test binary: 393 pass,
+14 ignored. Only physical split handling and its regression change in shipping
+source; selected release executable unchanged. Five adversarial evidence tests
+and strict source/compiler/run/log bindings support finite replay, not any
+performance or competitive claim. Run `verify.py`, `test-verify.py`, and the
+explicit `final-frozen-index.json` with `bench/replay-evidence-index.py`.

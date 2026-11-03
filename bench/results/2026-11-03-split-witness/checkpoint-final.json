@@ -1,0 +1,25 @@
+{
+  "schema": "glass.split-fragment-replay/v1",
+  "shipping_control": {
+    "cases": 4,
+    "failures": 4
+  },
+  "production": {
+    "cases": 4,
+    "failures": 0
+  },
+  "prototype": {
+    "cases": 1680,
+    "failures": 0,
+    "repeat_cases": 4
+  },
+  "production_tests": 393,
+  "ignored": 14,
+  "binary_sha256": {
+    "shipping-control": "4ae16cadb4b00b3f61a0f41e5d1d62dcdf8e6b4db06ce80e82c63a484a1500d7",
+    "local-v2": "072c1765cfbe085b848ce7805a07ad71570479be0dec26fd8a861f492996a55f",
+    "production-final": "118f4115069016e7f865d748c79a939fc8819b288d4f2e87004532c0a0f6b65c"
+  },
+  "selected_executable_unchanged": true,
+  "note": "Finite physical-split fix; witness inheritance remains research-only. No benchmark, latency, memory, competitive or campaign acceptance."
+}

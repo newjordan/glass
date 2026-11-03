@@ -1,0 +1,4 @@
+   Compiling vte v0.15.0 (/work/frosty40/glass-repo/tree/crates/vte)
+   Compiling glass-alacritty-terminal v0.26.0 (/work/frosty40/glass-repo/tree/crates/alacritty-terminal)
+   Compiling glass-term v0.1.0 (/work/frosty40/glass-repo/tree/crates/term)
+    Finished `release` profile [optimized] target(s) in 41.45s

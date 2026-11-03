@@ -404,3 +404,13 @@ Full scope, failed builds/zero-test receipts, source snapshots and replay:
 three shipping-defect characterization failures and broad out-of-bounds slot
 failures; no universal anchor, performance, memory or Ghostty win claim. Restored
 shipping: 392 tests pass, 14 ignored; 12,800 differential streams pass per arm.
+
+### 2026-11-03 — physical picture fragments retain independent identity
+
+Fix successive region-scroll splits minting the same placement sequence, and a
+vanished anonymous fragment deleting its surviving siblings. Allocate through
+`Intake::bump`, remove physical fragments by sequence, and clone unsliced
+coverage only when splitting. Real APC regressions fail 4/4 on control and pass
+4/4 on the isolated production patch; 393 tests pass, 14 ignored. Broader resize
+witness work remains research-only; selected release executable unchanged.
+Evidence: `bench/results/2026-11-03-split-witness/README.md`.

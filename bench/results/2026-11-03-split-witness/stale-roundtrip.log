@@ -1,0 +1,23 @@
+
+running 1 test
+
+thread 'intake::position_tests::split_witness_blank_fragment_roundtrip' (585538) panicked at crates/term/src/intake/position_tests.rs:1172:9:
+assertion `left == right` failed
+  left: [(2, 1.0, 3.0), (6, 1.0, 2.0)]
+ right: [(2, 1.0, 2.0), (5, 1.0, 2.0)]
+stack backtrace:
+   0: __rustc::rust_begin_unwind
+   1: core::panicking::panic_fmt
+   2: core::panicking::assert_failed_inner
+   3: core::panicking::assert_failed::<alloc::vec::Vec<(u64, f32, f32)>, alloc::vec::Vec<(u64, f32, f32)>>
+   4: <glass::intake::position_tests::split_witness_blank_fragment_roundtrip::{closure#0} as core::ops::function::FnOnce<()>>::call_once
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+test intake::position_tests::split_witness_blank_fragment_roundtrip ... FAILED
+
+failures:
+
+failures:
+    intake::position_tests::split_witness_blank_fragment_roundtrip
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 415 filtered out; finished in 0.00s
+

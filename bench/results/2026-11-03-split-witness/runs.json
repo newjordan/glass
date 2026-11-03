@@ -1,0 +1,52 @@
+[
+  {
+    "arm": "control",
+    "argv": [
+      "/tmp/glass-i42-shipping-control",
+      "--test-threads=1",
+      "--nocapture",
+      "--exact",
+      "intake::position_tests::split_identity_repeated_band_scroll"
+    ],
+    "environment": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 101,
+    "binary_sha256": "4ae16cadb4b00b3f61a0f41e5d1d62dcdf8e6b4db06ce80e82c63a484a1500d7",
+    "log": "control-measured.log",
+    "log_sha256": "0c684bdb79aee37f68a3d4e8c2d177b5bd98f1726586b1e7d5b61811c8a1f891"
+  },
+  {
+    "arm": "production",
+    "argv": [
+      "/tmp/glass-i42-production-final",
+      "--test-threads=1",
+      "--nocapture",
+      "--exact",
+      "intake::position_tests::split_identity_repeated_band_scroll"
+    ],
+    "environment": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "binary_sha256": "118f4115069016e7f865d748c79a939fc8819b288d4f2e87004532c0a0f6b65c",
+    "log": "production-measured.log",
+    "log_sha256": "347d14544524132fb2e2020758a03438da1cfa0612c06220f344eea5a223102b"
+  },
+  {
+    "arm": "prototype",
+    "argv": [
+      "/tmp/glass-i42-local-v2",
+      "--test-threads=1",
+      "--nocapture",
+      "intake::position_tests::split_witness"
+    ],
+    "environment": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "binary_sha256": "072c1765cfbe085b848ce7805a07ad71570479be0dec26fd8a861f492996a55f",
+    "log": "prototype-measured.log",
+    "log_sha256": "c9d9abfacdab0c6db78cb2dfc1831b2176020750d3cb2e6f563c09e06540e5cc"
+  }
+]

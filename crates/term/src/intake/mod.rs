@@ -2139,25 +2139,30 @@ impl Intake {
             match motion::scroll_rect(rect, band, image) {
                 motion::Fate::Keep(next) => apply_moved(put, &next),
                 motion::Fate::Split(first, rest) => {
+                    // Preserve the unsliced coverage for every new fragment.
+                    let original = put.clone();
                     apply_moved(put, &first);
-                    for (n, piece) in rest.into_iter().enumerate() {
-                        let mut born = put.clone();
-                        born.seq = born.seq.wrapping_add((n as u64 + 1).wrapping_mul(1 << 20));
+                    for piece in rest {
+                        let mut born = original.clone();
                         born.placement_id = None;
                         born.parent = None;
                         apply_moved(&mut born, &piece);
                         extra.push((index, born));
                     }
                 }
-                motion::Fate::Gone => gone.push(showing_key(put)),
+                motion::Fate::Gone => gone.push(put.seq),
             }
         }
-        for (index, born) in extra.into_iter().rev() {
+        for (index, mut born) in extra.into_iter().rev() {
+            born.seq = self.bump();
             let at = (index + 1).min(self.placements.len());
             self.placements.insert(at, born);
         }
         if !gone.is_empty() {
-            let removed = self.retain_showings(|p| !gone.contains(&showing_key(p)));
+            // A split makes several physical showings share an anonymous
+            // dialect key. Remove only the fragment that actually vanished;
+            // retain_showings still returns dialect keys for parent cleanup.
+            let removed = self.retain_showings(|p| !gone.contains(&p.seq));
             self.drop_parentless_if_removed(removed);
         }
     }

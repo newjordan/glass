@@ -1042,3 +1042,21 @@ Performance cost of wider event authority and O(placements) metadata cleanup is
 unmeasured. No memory bound, runtime promotion or Ghostty superiority claim.
 Details, immutable observations and independent checker:
 `bench/results/2026-11-03-scroll-witness/README.md`.
+
+### 2026-11-03: split-fragment identity fix (iteration 42)
+
+New correctness result, not throughput progress: repeated SD splits produce
+identical internal fragment IDs in shipping, and removal by shared anonymous
+showing key deletes surviving siblings. Real APC intake reproduces both parser
+lanes, no resize prototype needed. Isolated production fix uses the global
+sequence allocator and physical-sequence removal, preserving dialect parent
+cleanup and image-wide deletion. No clone added on ordinary movement; split
+fragments copy unsliced coverage. Control 4/4 fail; production 4/4 pass; final
+release-test suite 393 pass, 14 ignored. No user-facing executable rebuilt.
+
+Research-only witness inheritance passes 1,680 active/inactive-primary split /
+width-roundtrip observations and four repeated-split/local-death cases. Those
+wider runtime changes are not promoted. No performance delta, memory bound,
+arbitrary-write lifecycle or Ghostty comparison measured. Prior 1,577-reference
+frozen archive preserved. Details, independent oracle and exact build/run exits:
+`bench/results/2026-11-03-split-witness/README.md`.

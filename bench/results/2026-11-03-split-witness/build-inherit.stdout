@@ -1,0 +1,47 @@
+{
+  "schema": "glass.engine-arm-build/v1",
+  "command": [
+    "cargo",
+    "test",
+    "--release",
+    "-p",
+    "glass-term",
+    "--locked",
+    "--no-run",
+    "--message-format=json"
+  ],
+  "source_sha256": {
+    "crates/alacritty-terminal/src/grid/mod.rs": "4bcd625b532ac7a30df1712b243821fdac7b111120d267b839a5e28ff15890f7",
+    "crates/alacritty-terminal/src/grid/origin.rs": "798bd50bdfc7cb2b94e7274429e4d28bc94fd37a9c89385bc32420335e0d93de",
+    "crates/alacritty-terminal/src/grid/resize.rs": "8772a9bb04cc967cde0f4d7bdf7f44d7abdd4e39bc1430c1a6f35e2ecc46532e",
+    "crates/alacritty-terminal/src/grid/row.rs": "41a6bd77c4e71f4d0cb76b0bbfa3858e221436b30de0331548188387529654e7",
+    "crates/alacritty-terminal/src/grid/storage.rs": "e3b4d92a5c311b1c60cdc02e8966d2882949817bfe50d3e23ac294fa1251428d",
+    "crates/alacritty-terminal/src/term/mod.rs": "c5c4a6544524ff992dc9246a7a2cd9b2338993c440ab3e7f2ece19264fe3fc37",
+    "crates/term/src/engine.rs": "3bc890a3cb9f1908424baa0f6656ce5ebda2366207a725508ac3def0c6700a7e",
+    "crates/term/src/intake/mod.rs": "fc533870a9eb1e9f7b040f8171a627f0b18cdfcba3edead12863f8fef20450f2",
+    "crates/term/src/intake/motion.rs": "4dd080d74fd751066d8eb9c9f8e2664f8218b785c7be9e45e522ed0693884e6c",
+    "crates/term/src/intake/position_tests.rs": "53e9ffe33eb9fddc85efecc5b638c7885700784868ea25f11e39589a219db295",
+    "crates/term/src/speed.rs": "486ac678d99766ddca4f35b814a1397cab4cf60c5ef4b4c6d51d00cde43d9419",
+    "crates/vte/src/ansi.rs": "ed3a17b498d5ae08c1667840ab46c177ed82e62f66d25090c95e74f65a1fc166",
+    "crates/vte/src/lib.rs": "fac2b9feef901019e1fcb3d413238d3b032001395abd8e727c26b4cafffba758"
+  },
+  "previous_mtime_ns": {
+    "crates/alacritty-terminal/src/grid/mod.rs": 1793727210824213542,
+    "crates/alacritty-terminal/src/grid/origin.rs": 1793727210824213542,
+    "crates/alacritty-terminal/src/grid/resize.rs": 1793727210824213542,
+    "crates/alacritty-terminal/src/grid/row.rs": 1793727210824213542,
+    "crates/alacritty-terminal/src/grid/storage.rs": 1793727210824213542,
+    "crates/alacritty-terminal/src/term/mod.rs": 1793727210824213542,
+    "crates/term/src/engine.rs": 1793727210824213542,
+    "crates/term/src/intake/mod.rs": 1793727274917197585,
+    "crates/term/src/intake/motion.rs": 1793727210824213542,
+    "crates/term/src/intake/position_tests.rs": 1793727210824213542,
+    "crates/term/src/speed.rs": 1793727210824213542,
+    "crates/vte/src/ansi.rs": 1793727210824213542,
+    "crates/vte/src/lib.rs": 1793727210824213542
+  },
+  "touched_mtime_ns": 1793727274948346179,
+  "executable": "/tmp/glass-i42-inherit",
+  "sha256": "6d6fe9bcbdcf68309c999fcbd0424e04c877c8689bd39a938d0ca46f92e6a658",
+  "note": "Content-preserving input touch and non-fresh compiler receipts; exclusive build ownership required."
+}

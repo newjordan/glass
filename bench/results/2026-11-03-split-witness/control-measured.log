@@ -1,0 +1,28 @@
+
+running 1 test
+test intake::position_tests::split_identity_repeated_band_scroll ... split-identity-json {"before":[[2,1.0,1.0],[4,1.0,2.0],[7,1.0,5.0]],"deleted":true,"expected":[[2,1.0,1.0],[4,1.0,2.0],[7,1.0,5.0]],"fast":false,"got":[[2,1.0,1.0],[4,1.0,2.0],[7,1.0,5.0]],"local_death":false,"next":6,"pass":false,"seq":[3,1048579,1048579],"sources":[[0.0,0.0,1.0,0.125],[0.0,0.125,1.0,0.25],[0.0,0.375,1.0,0.625]],"unique":2}
+split-identity-json {"before":[[2,1.0,1.0],[4,1.0,2.0],[7,1.0,5.0]],"deleted":true,"expected":[[4,1.0,2.0],[7,1.0,5.0]],"fast":false,"got":[],"local_death":true,"next":6,"pass":false,"seq":[3,1048579,1048579],"sources":[[0.0,0.0,1.0,0.125],[0.0,0.125,1.0,0.25],[0.0,0.375,1.0,0.625]],"unique":2}
+split-identity-json {"before":[[2,1.0,1.0],[4,1.0,2.0],[7,1.0,5.0]],"deleted":true,"expected":[[2,1.0,1.0],[4,1.0,2.0],[7,1.0,5.0]],"fast":true,"got":[[2,1.0,1.0],[4,1.0,2.0],[7,1.0,5.0]],"local_death":false,"next":6,"pass":false,"seq":[3,1048579,1048579],"sources":[[0.0,0.0,1.0,0.125],[0.0,0.125,1.0,0.25],[0.0,0.375,1.0,0.625]],"unique":2}
+split-identity-json {"before":[[2,1.0,1.0],[4,1.0,2.0],[7,1.0,5.0]],"deleted":true,"expected":[[4,1.0,2.0],[7,1.0,5.0]],"fast":true,"got":[],"local_death":true,"next":6,"pass":false,"seq":[3,1048579,1048579],"sources":[[0.0,0.0,1.0,0.125],[0.0,0.125,1.0,0.25],[0.0,0.375,1.0,0.625]],"unique":2}
+split-identity-summary cases=4 failures=4
+
+thread 'intake::position_tests::split_identity_repeated_band_scroll' (635425) panicked at crates/term/src/intake/position_tests.rs:827:25:
+assertion `left == right` failed: fragment identity/lifetime failure
+  left: 4
+ right: 0
+stack backtrace:
+   0: __rustc::rust_begin_unwind
+   1: core::panicking::panic_fmt
+   2: core::panicking::assert_failed_inner
+   3: core::panicking::assert_failed::<i32, i32>
+   4: <glass::intake::position_tests::split_identity_repeated_band_scroll::{closure#0} as core::ops::function::FnOnce<()>>::call_once
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+FAILED
+
+failures:
+
+failures:
+    intake::position_tests::split_identity_repeated_band_scroll
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 406 filtered out; finished in 0.00s
+
