@@ -599,3 +599,30 @@ promotion. Full evidence, explicit source snapshots, read-only replay, separate
 [`scheduler-shape/README.md`](../bench/results/2026-11-03-scheduler-shape/README.md).
 No new all-metric Ghostty victory is established. A predeclared bounded own-CPU
 contention control is the next causal measurement, not another buffer tweak.
+
+### Own-reader contention: observer sensitivity, not a policy win
+
+The predeclared causal follow-up is complete: 12 balanced six-arm rounds,
+**72 confirmatory sessions**, plus distinct six-session pilot and six-session
+hardened-wrapper smoke. Only the own reader is pinned to CPU 0; sleep/busy
+helpers share CPU 0. No Rust source, selected executable, priority, global
+setting, payload, geometry, or DA1 completion policy changed.
+
+Plain-arm busy/sleep median paired ratios: ASCII **0.9108** (3 faster/9 slower;
+Holm p=.291992), scroll **1.0132** (7/5; p=.774414), Unicode **0.9780** (1/11;
+p=.031738). These are artificial-restriction sensitivities, not unrestricted
+performance changes. No significant ASCII/scroll penalty is not equivalence.
+
+Scheduler-arm recorded runnable fraction increases in 12/12 ASCII and 11/12
+scroll/Unicode rounds. Scroll throughput ratios disagree: plain 1.0132,
+clock 1.0611, scheduler 0.8578. An explicitly **post-capture exploratory** paired
+scheduler/plain ratio-of-ratios is 0.9008 (11/12 below 1; Holm p=.038086).
+Treat this as an observer-interaction warning, not mechanism proof. Unicode
+busy snapshot uncertainty reaches 2.54% of sampled wall; residual is not pure
+blocking. These observations cannot justify a shipping scheduling change.
+
+The [full report](../bench/results/2026-11-03-reader-contention/README.md) retains
+all rounds, orders, masks, identities, traces, failed pilot, source snapshots,
+read-only replays, ten non-mutating evidence-corruption challenges, and three
+catchable-signal cleanup cases. The exact selected release remains unchanged.
+The all-metric Ghostty goal is still open; no runtime candidate is promoted.

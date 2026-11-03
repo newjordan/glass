@@ -1,0 +1,35 @@
+{
+  "schema": "glass.contention-final-verification/v1",
+  "sessions": {
+    "pilot-v2": 6,
+    "balanced": 72,
+    "safe-smoke": 6
+  },
+  "session_total": 84,
+  "prior_scheduler_sessions": 36,
+  "rust_sources_unchanged": 120,
+  "prior_artifacts_unchanged": 193,
+  "selected_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "selected_byte_comparison": true,
+  "corruption_cases": 10,
+  "catchable_signal_cases": 3,
+  "frozen": {
+    "schema": "glass.historical-evidence-replay/v1",
+    "manifests": [
+      {
+        "path": "bench/results/2026-11-03-reader-contention/evidence-sha256.json",
+        "manifest_sha256": "0fd2a4523983a7395f7f090f7a9c639e4429081de88cdc958715f2feaea2d161",
+        "files": 437,
+        "live_paths": 437,
+        "historical_paths": 0,
+        "bytes": 38052905
+      }
+    ],
+    "manifest_count": 1,
+    "file_references": 437,
+    "historical_references": 0,
+    "unique_source_versions": 437,
+    "note": "Explicit historical byte-integrity replay only; not timing, safety or championship acceptance."
+  },
+  "note": "Byte consistency and replay only; not a world title or global acceptance."
+}

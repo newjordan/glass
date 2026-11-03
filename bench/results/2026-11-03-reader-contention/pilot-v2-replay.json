@@ -1,0 +1,2553 @@
+{
+  "schema": "glass.reader-contention-analysis/v1",
+  "sessions": 6,
+  "rounds": 1,
+  "manifest_sha256": "a719e5cf0887f80d8cbe4944ae046d2e48092dd8228a4e1730eca0e1bcf3ecb6",
+  "busy_vs_sleep": {
+    "plain": {
+      "ascii": {
+        "median_ratio": 0.906494960806271,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "ratios": [
+          0.906494960806271
+        ],
+        "holm_p_six_workloads": 1.0
+      },
+      "unicode": {
+        "median_ratio": 0.9875094625283876,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "ratios": [
+          0.9875094625283876
+        ],
+        "holm_p_six_workloads": 1.0
+      },
+      "truecolor": {
+        "median_ratio": 0.9694276573053678,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "ratios": [
+          0.9694276573053678
+        ],
+        "holm_p_six_workloads": 1.0
+      },
+      "cursor_motion": {
+        "median_ratio": 0.980952380952381,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "ratios": [
+          0.980952380952381
+        ],
+        "holm_p_six_workloads": 1.0
+      },
+      "scroll_region": {
+        "median_ratio": 0.8826686309586447,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "ratios": [
+          0.8826686309586447
+        ],
+        "holm_p_six_workloads": 1.0
+      },
+      "tui_frames": {
+        "median_ratio": 0.9960116026105873,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "ratios": [
+          0.9960116026105873
+        ],
+        "holm_p_six_workloads": 1.0
+      }
+    },
+    "clock": {
+      "ascii": {
+        "median_ratio": 0.827412906910337,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "ratios": [
+          0.827412906910337
+        ],
+        "holm_p_six_workloads": 1.0
+      },
+      "unicode": {
+        "median_ratio": 0.9782690146122145,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "ratios": [
+          0.9782690146122145
+        ],
+        "holm_p_six_workloads": 1.0
+      },
+      "truecolor": {
+        "median_ratio": 0.9786780383795309,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "ratios": [
+          0.9786780383795309
+        ],
+        "holm_p_six_workloads": 1.0
+      },
+      "cursor_motion": {
+        "median_ratio": 0.9882253994953742,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "ratios": [
+          0.9882253994953742
+        ],
+        "holm_p_six_workloads": 1.0
+      },
+      "scroll_region": {
+        "median_ratio": 0.8858661940629154,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "ratios": [
+          0.8858661940629154
+        ],
+        "holm_p_six_workloads": 1.0
+      },
+      "tui_frames": {
+        "median_ratio": 0.9992609016999259,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "ratios": [
+          0.9992609016999259
+        ],
+        "holm_p_six_workloads": 1.0
+      }
+    },
+    "sched": {
+      "ascii": {
+        "median_ratio": 0.8738421854848165,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "ratios": [
+          0.8738421854848165
+        ],
+        "holm_p_six_workloads": 1.0
+      },
+      "unicode": {
+        "median_ratio": 0.9591009579955786,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "ratios": [
+          0.9591009579955786
+        ],
+        "holm_p_six_workloads": 1.0
+      },
+      "truecolor": {
+        "median_ratio": 0.9703328509406658,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "ratios": [
+          0.9703328509406658
+        ],
+        "holm_p_six_workloads": 1.0
+      },
+      "cursor_motion": {
+        "median_ratio": 0.9619520264681555,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "ratios": [
+          0.9619520264681555
+        ],
+        "holm_p_six_workloads": 1.0
+      },
+      "scroll_region": {
+        "median_ratio": 0.945026869879306,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "ratios": [
+          0.945026869879306
+        ],
+        "holm_p_six_workloads": 1.0
+      },
+      "tui_frames": {
+        "median_ratio": 0.9951600893521966,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "ratios": [
+          0.9951600893521966
+        ],
+        "holm_p_six_workloads": 1.0
+      }
+    }
+  },
+  "medians_mb_s": {
+    "sleep-plain": {
+      "ascii": 893.0,
+      "unicode": 264.2,
+      "truecolor": 281.3,
+      "cursor_motion": 241.5,
+      "scroll_region": 950.3,
+      "tui_frames": 275.8
+    },
+    "sleep-clock": {
+      "ascii": 875.5,
+      "unicode": 266.9,
+      "truecolor": 281.4,
+      "cursor_motion": 237.8,
+      "scroll_region": 1128.5,
+      "tui_frames": 270.6
+    },
+    "sleep-sched": {
+      "ascii": 852.9,
+      "unicode": 271.4,
+      "truecolor": 276.4,
+      "cursor_motion": 241.8,
+      "scroll_region": 1135.1,
+      "tui_frames": 268.6
+    },
+    "busy-plain": {
+      "ascii": 809.5,
+      "unicode": 260.9,
+      "truecolor": 272.7,
+      "cursor_motion": 236.9,
+      "scroll_region": 838.8,
+      "tui_frames": 274.7
+    },
+    "busy-clock": {
+      "ascii": 724.4,
+      "unicode": 261.1,
+      "truecolor": 275.4,
+      "cursor_motion": 235.0,
+      "scroll_region": 999.7,
+      "tui_frames": 270.4
+    },
+    "busy-sched": {
+      "ascii": 745.3,
+      "unicode": 260.3,
+      "truecolor": 268.2,
+      "cursor_motion": 232.6,
+      "scroll_region": 1072.7,
+      "tui_frames": 267.3
+    }
+  },
+  "decomposition": {
+    "ascii": {
+      "wall_coverage": {
+        "sleep": {
+          "min": 0.9194550903771128,
+          "median": 0.9194550903771128,
+          "max": 0.9194550903771128
+        },
+        "busy": {
+          "min": 0.9360036704670571,
+          "median": 0.9360036704670571,
+          "max": 0.9360036704670571
+        },
+        "differences": [
+          0.01654858008994431
+        ],
+        "median_difference": 0.01654858008994431,
+        "positive": 1,
+        "negative": 0,
+        "sign_p_two_sided": 1.0
+      },
+      "byte_coverage": {
+        "sleep": {
+          "min": 0.948612804646658,
+          "median": 0.948612804646658,
+          "max": 0.948612804646658
+        },
+        "busy": {
+          "min": 0.9560438748248725,
+          "median": 0.9560438748248725,
+          "max": 0.9560438748248725
+        },
+        "differences": [
+          0.007431070178214538
+        ],
+        "median_difference": 0.007431070178214538,
+        "positive": 1,
+        "negative": 0,
+        "sign_p_two_sided": 1.0
+      },
+      "cpu_fraction": {
+        "sleep": {
+          "min": 0.9069705130685998,
+          "median": 0.9069705130685998,
+          "max": 0.9069705130685998
+        },
+        "busy": {
+          "min": 0.7602661788666368,
+          "median": 0.7602661788666368,
+          "max": 0.7602661788666368
+        },
+        "differences": [
+          -0.14670433420196294
+        ],
+        "median_difference": -0.14670433420196294,
+        "positive": 0,
+        "negative": 1,
+        "sign_p_two_sided": 1.0
+      },
+      "runqueue_fraction": {
+        "sleep": {
+          "min": 0.004182085491826779,
+          "median": 0.004182085491826779,
+          "max": 0.004182085491826779
+        },
+        "busy": {
+          "min": 0.08502070432100528,
+          "median": 0.08502070432100528,
+          "max": 0.08502070432100528
+        },
+        "differences": [
+          0.0808386188291785
+        ],
+        "median_difference": 0.0808386188291785,
+        "positive": 1,
+        "negative": 0,
+        "sign_p_two_sided": 1.0
+      },
+      "residual_fraction": {
+        "sleep": {
+          "min": 0.08884740143957341,
+          "median": 0.08884740143957341,
+          "max": 0.08884740143957341
+        },
+        "busy": {
+          "min": 0.1547131168123579,
+          "median": 0.1547131168123579,
+          "max": 0.1547131168123579
+        },
+        "differences": [
+          0.06586571537278448
+        ],
+        "median_difference": 0.06586571537278448,
+        "positive": 1,
+        "negative": 0,
+        "sign_p_two_sided": 1.0
+      },
+      "uncertainty_fraction": {
+        "sleep": {
+          "min": 0.002490312530812787,
+          "median": 0.002490312530812787,
+          "max": 0.002490312530812787
+        },
+        "busy": {
+          "min": 0.002502693179101294,
+          "median": 0.002502693179101294,
+          "max": 0.002502693179101294
+        },
+        "differences": [
+          1.2380648288506848e-05
+        ],
+        "median_difference": 1.2380648288506848e-05,
+        "positive": 1,
+        "negative": 0,
+        "sign_p_two_sided": 1.0
+      }
+    },
+    "unicode": {
+      "wall_coverage": {
+        "sleep": {
+          "min": 0.9568590703921087,
+          "median": 0.9568590703921087,
+          "max": 0.9568590703921087
+        },
+        "busy": {
+          "min": 0.961575487469295,
+          "median": 0.961575487469295,
+          "max": 0.961575487469295
+        },
+        "differences": [
+          0.004716417077186286
+        ],
+        "median_difference": 0.004716417077186286,
+        "positive": 1,
+        "negative": 0,
+        "sign_p_two_sided": 1.0
+      },
+      "byte_coverage": {
+        "sleep": {
+          "min": 0.9583526129029778,
+          "median": 0.9583526129029778,
+          "max": 0.9583526129029778
+        },
+        "busy": {
+          "min": 0.9670688757919277,
+          "median": 0.9670688757919277,
+          "max": 0.9670688757919277
+        },
+        "differences": [
+          0.008716262888949888
+        ],
+        "median_difference": 0.008716262888949888,
+        "positive": 1,
+        "negative": 0,
+        "sign_p_two_sided": 1.0
+      },
+      "cpu_fraction": {
+        "sleep": {
+          "min": 0.22483141707238705,
+          "median": 0.22483141707238705,
+          "max": 0.22483141707238705
+        },
+        "busy": {
+          "min": 0.27302706271470484,
+          "median": 0.27302706271470484,
+          "max": 0.27302706271470484
+        },
+        "differences": [
+          0.04819564564231779
+        ],
+        "median_difference": 0.04819564564231779,
+        "positive": 1,
+        "negative": 0,
+        "sign_p_two_sided": 1.0
+      },
+      "runqueue_fraction": {
+        "sleep": {
+          "min": 0.014007941392906061,
+          "median": 0.014007941392906061,
+          "max": 0.014007941392906061
+        },
+        "busy": {
+          "min": 0.024613540455876902,
+          "median": 0.024613540455876902,
+          "max": 0.024613540455876902
+        },
+        "differences": [
+          0.01060559906297084
+        ],
+        "median_difference": 0.01060559906297084,
+        "positive": 1,
+        "negative": 0,
+        "sign_p_two_sided": 1.0
+      },
+      "residual_fraction": {
+        "sleep": {
+          "min": 0.7480428625258407,
+          "median": 0.7480428625258407,
+          "max": 0.7480428625258407
+        },
+        "busy": {
+          "min": 0.7094379452106379,
+          "median": 0.7094379452106379,
+          "max": 0.7094379452106379
+        },
+        "differences": [
+          -0.03860491731520288
+        ],
+        "median_difference": -0.03860491731520288,
+        "positive": 0,
+        "negative": 1,
+        "sign_p_two_sided": 1.0
+      },
+      "uncertainty_fraction": {
+        "sleep": {
+          "min": 0.0011351359846270292,
+          "median": 0.0011351359846270292,
+          "max": 0.0011351359846270292
+        },
+        "busy": {
+          "min": 0.04679430031685267,
+          "median": 0.04679430031685267,
+          "max": 0.04679430031685267
+        },
+        "differences": [
+          0.045659164332225645
+        ],
+        "median_difference": 0.045659164332225645,
+        "positive": 1,
+        "negative": 0,
+        "sign_p_two_sided": 1.0
+      }
+    },
+    "truecolor": {
+      "wall_coverage": {
+        "sleep": {
+          "min": 0.9744208680386247,
+          "median": 0.9744208680386247,
+          "max": 0.9744208680386247
+        },
+        "busy": {
+          "min": 0.9819659214165363,
+          "median": 0.9819659214165363,
+          "max": 0.9819659214165363
+        },
+        "differences": [
+          0.007545053377911559
+        ],
+        "median_difference": 0.007545053377911559,
+        "positive": 1,
+        "negative": 0,
+        "sign_p_two_sided": 1.0
+      },
+      "byte_coverage": {
+        "sleep": {
+          "min": 0.9751616310500731,
+          "median": 0.9751616310500731,
+          "max": 0.9751616310500731
+        },
+        "busy": {
+          "min": 0.9827504803453957,
+          "median": 0.9827504803453957,
+          "max": 0.9827504803453957
+        },
+        "differences": [
+          0.007588849295322553
+        ],
+        "median_difference": 0.007588849295322553,
+        "positive": 1,
+        "negative": 0,
+        "sign_p_two_sided": 1.0
+      },
+      "cpu_fraction": {
+        "sleep": {
+          "min": 0.26873160130191037,
+          "median": 0.26873160130191037,
+          "max": 0.26873160130191037
+        },
+        "busy": {
+          "min": 0.29458065045550313,
+          "median": 0.29458065045550313,
+          "max": 0.29458065045550313
+        },
+        "differences": [
+          0.025849049153592762
+        ],
+        "median_difference": 0.025849049153592762,
+        "positive": 1,
+        "negative": 0,
+        "sign_p_two_sided": 1.0
+      },
+      "runqueue_fraction": {
+        "sleep": {
+          "min": 0.0037824149098807367,
+          "median": 0.0037824149098807367,
+          "max": 0.0037824149098807367
+        },
+        "busy": {
+          "min": 0.025121969179557578,
+          "median": 0.025121969179557578,
+          "max": 0.025121969179557578
+        },
+        "differences": [
+          0.02133955426967684
+        ],
+        "median_difference": 0.02133955426967684,
+        "positive": 1,
+        "negative": 0,
+        "sign_p_two_sided": 1.0
+      },
+      "residual_fraction": {
+        "sleep": {
+          "min": 0.7177640721892017,
+          "median": 0.7177640721892017,
+          "max": 0.7177640721892017
+        },
+        "busy": {
+          "min": 0.6890154015549577,
+          "median": 0.6890154015549577,
+          "max": 0.6890154015549577
+        },
+        "differences": [
+          -0.028748670634244022
+        ],
+        "median_difference": -0.028748670634244022,
+        "positive": 0,
+        "negative": 1,
+        "sign_p_two_sided": 1.0
+      },
+      "uncertainty_fraction": {
+        "sleep": {
+          "min": 0.0011130438924541756,
+          "median": 0.0011130438924541756,
+          "max": 0.0011130438924541756
+        },
+        "busy": {
+          "min": 0.022027532374517985,
+          "median": 0.022027532374517985,
+          "max": 0.022027532374517985
+        },
+        "differences": [
+          0.02091448848206381
+        ],
+        "median_difference": 0.02091448848206381,
+        "positive": 1,
+        "negative": 0,
+        "sign_p_two_sided": 1.0
+      }
+    },
+    "cursor_motion": {
+      "wall_coverage": {
+        "sleep": {
+          "min": 0.9668580445463321,
+          "median": 0.9668580445463321,
+          "max": 0.9668580445463321
+        },
+        "busy": {
+          "min": 0.9606398610611941,
+          "median": 0.9606398610611941,
+          "max": 0.9606398610611941
+        },
+        "differences": [
+          -0.006218183485137918
+        ],
+        "median_difference": -0.006218183485137918,
+        "positive": 0,
+        "negative": 1,
+        "sign_p_two_sided": 1.0
+      },
+      "byte_coverage": {
+        "sleep": {
+          "min": 0.9684697464438434,
+          "median": 0.9684697464438434,
+          "max": 0.9684697464438434
+        },
+        "busy": {
+          "min": 0.9611253390221666,
+          "median": 0.9611253390221666,
+          "max": 0.9611253390221666
+        },
+        "differences": [
+          -0.007344407421676857
+        ],
+        "median_difference": -0.007344407421676857,
+        "positive": 0,
+        "negative": 1,
+        "sign_p_two_sided": 1.0
+      },
+      "cpu_fraction": {
+        "sleep": {
+          "min": 0.2070329196699749,
+          "median": 0.2070329196699749,
+          "max": 0.2070329196699749
+        },
+        "busy": {
+          "min": 0.2542866510491371,
+          "median": 0.2542866510491371,
+          "max": 0.2542866510491371
+        },
+        "differences": [
+          0.04725373137916222
+        ],
+        "median_difference": 0.04725373137916222,
+        "positive": 1,
+        "negative": 0,
+        "sign_p_two_sided": 1.0
+      },
+      "runqueue_fraction": {
+        "sleep": {
+          "min": 0.005644772707698539,
+          "median": 0.005644772707698539,
+          "max": 0.005644772707698539
+        },
+        "busy": {
+          "min": 0.02594887809360589,
+          "median": 0.02594887809360589,
+          "max": 0.02594887809360589
+        },
+        "differences": [
+          0.02030410538590735
+        ],
+        "median_difference": 0.02030410538590735,
+        "positive": 1,
+        "negative": 0,
+        "sign_p_two_sided": 1.0
+      },
+      "residual_fraction": {
+        "sleep": {
+          "min": 0.7914605940354604,
+          "median": 0.7914605940354604,
+          "max": 0.7914605940354604
+        },
+        "busy": {
+          "min": 0.7189960098411228,
+          "median": 0.7189960098411228,
+          "max": 0.7189960098411228
+        },
+        "differences": [
+          -0.07246458419433766
+        ],
+        "median_difference": -0.07246458419433766,
+        "positive": 0,
+        "negative": 1,
+        "sign_p_two_sided": 1.0
+      },
+      "uncertainty_fraction": {
+        "sleep": {
+          "min": 0.000924699421279563,
+          "median": 0.000924699421279563,
+          "max": 0.000924699421279563
+        },
+        "busy": {
+          "min": 0.00145184904686634,
+          "median": 0.00145184904686634,
+          "max": 0.00145184904686634
+        },
+        "differences": [
+          0.0005271496255867771
+        ],
+        "median_difference": 0.0005271496255867771,
+        "positive": 1,
+        "negative": 0,
+        "sign_p_two_sided": 1.0
+      }
+    },
+    "scroll_region": {
+      "wall_coverage": {
+        "sleep": {
+          "min": 0.9148588576261422,
+          "median": 0.9148588576261422,
+          "max": 0.9148588576261422
+        },
+        "busy": {
+          "min": 0.9263852760067899,
+          "median": 0.9263852760067899,
+          "max": 0.9263852760067899
+        },
+        "differences": [
+          0.011526418380647718
+        ],
+        "median_difference": 0.011526418380647718,
+        "positive": 1,
+        "negative": 0,
+        "sign_p_two_sided": 1.0
+      },
+      "byte_coverage": {
+        "sleep": {
+          "min": 0.9208900943223037,
+          "median": 0.9208900943223037,
+          "max": 0.9208900943223037
+        },
+        "busy": {
+          "min": 0.9197609541615824,
+          "median": 0.9197609541615824,
+          "max": 0.9197609541615824
+        },
+        "differences": [
+          -0.001129140160721298
+        ],
+        "median_difference": -0.001129140160721298,
+        "positive": 0,
+        "negative": 1,
+        "sign_p_two_sided": 1.0
+      },
+      "cpu_fraction": {
+        "sleep": {
+          "min": 0.8565211818114494,
+          "median": 0.8565211818114494,
+          "max": 0.8565211818114494
+        },
+        "busy": {
+          "min": 0.8625181512362383,
+          "median": 0.8625181512362383,
+          "max": 0.8625181512362383
+        },
+        "differences": [
+          0.005996969424788889
+        ],
+        "median_difference": 0.005996969424788889,
+        "positive": 1,
+        "negative": 0,
+        "sign_p_two_sided": 1.0
+      },
+      "runqueue_fraction": {
+        "sleep": {
+          "min": 0.00011976103348365078,
+          "median": 0.00011976103348365078,
+          "max": 0.00011976103348365078
+        },
+        "busy": {
+          "min": 0.036622217021192456,
+          "median": 0.036622217021192456,
+          "max": 0.036622217021192456
+        },
+        "differences": [
+          0.03650245598770881
+        ],
+        "median_difference": 0.03650245598770881,
+        "positive": 1,
+        "negative": 0,
+        "sign_p_two_sided": 1.0
+      },
+      "residual_fraction": {
+        "sleep": {
+          "min": 0.1328129416470642,
+          "median": 0.1328129416470642,
+          "max": 0.1328129416470642
+        },
+        "busy": {
+          "min": 0.10085963174256926,
+          "median": 0.10085963174256926,
+          "max": 0.10085963174256926
+        },
+        "differences": [
+          -0.031953309904494936
+        ],
+        "median_difference": -0.031953309904494936,
+        "positive": 0,
+        "negative": 1,
+        "sign_p_two_sided": 1.0
+      },
+      "uncertainty_fraction": {
+        "sleep": {
+          "min": 0.0028600719046056058,
+          "median": 0.0028600719046056058,
+          "max": 0.0028600719046056058
+        },
+        "busy": {
+          "min": 0.0025568068170479536,
+          "median": 0.0025568068170479536,
+          "max": 0.0025568068170479536
+        },
+        "differences": [
+          -0.00030326508755765215
+        ],
+        "median_difference": -0.00030326508755765215,
+        "positive": 0,
+        "negative": 1,
+        "sign_p_two_sided": 1.0
+      }
+    },
+    "tui_frames": {
+      "wall_coverage": {
+        "sleep": {
+          "min": 0.9307883330169109,
+          "median": 0.9307883330169109,
+          "max": 0.9307883330169109
+        },
+        "busy": {
+          "min": 0.9360514084093913,
+          "median": 0.9360514084093913,
+          "max": 0.9360514084093913
+        },
+        "differences": [
+          0.0052630753924803875
+        ],
+        "median_difference": 0.0052630753924803875,
+        "positive": 1,
+        "negative": 0,
+        "sign_p_two_sided": 1.0
+      },
+      "byte_coverage": {
+        "sleep": {
+          "min": 0.9531036806287589,
+          "median": 0.9531036806287589,
+          "max": 0.9531036806287589
+        },
+        "busy": {
+          "min": 0.9632687305227409,
+          "median": 0.9632687305227409,
+          "max": 0.9632687305227409
+        },
+        "differences": [
+          0.010165049893981926
+        ],
+        "median_difference": 0.010165049893981926,
+        "positive": 1,
+        "negative": 0,
+        "sign_p_two_sided": 1.0
+      },
+      "cpu_fraction": {
+        "sleep": {
+          "min": 0.28191422266940597,
+          "median": 0.28191422266940597,
+          "max": 0.28191422266940597
+        },
+        "busy": {
+          "min": 0.27657455447915924,
+          "median": 0.27657455447915924,
+          "max": 0.27657455447915924
+        },
+        "differences": [
+          -0.005339668190246727
+        ],
+        "median_difference": -0.005339668190246727,
+        "positive": 0,
+        "negative": 1,
+        "sign_p_two_sided": 1.0
+      },
+      "runqueue_fraction": {
+        "sleep": {
+          "min": 0.010676228386783242,
+          "median": 0.010676228386783242,
+          "max": 0.010676228386783242
+        },
+        "busy": {
+          "min": 0.022188882478765767,
+          "median": 0.022188882478765767,
+          "max": 0.022188882478765767
+        },
+        "differences": [
+          0.011512654091982525
+        ],
+        "median_difference": 0.011512654091982525,
+        "positive": 1,
+        "negative": 0,
+        "sign_p_two_sided": 1.0
+      },
+      "residual_fraction": {
+        "sleep": {
+          "min": 0.7003326570604961,
+          "median": 0.7003326570604961,
+          "max": 0.7003326570604961
+        },
+        "busy": {
+          "min": 0.701236563042075,
+          "median": 0.701236563042075,
+          "max": 0.701236563042075
+        },
+        "differences": [
+          0.0009039059815789674
+        ],
+        "median_difference": 0.0009039059815789674,
+        "positive": 1,
+        "negative": 0,
+        "sign_p_two_sided": 1.0
+      },
+      "uncertainty_fraction": {
+        "sleep": {
+          "min": 0.001152992759162129,
+          "median": 0.001152992759162129,
+          "max": 0.001152992759162129
+        },
+        "busy": {
+          "min": 0.01424820861107969,
+          "median": 0.01424820861107969,
+          "max": 0.01424820861107969
+        },
+        "differences": [
+          0.013095215851917561
+        ],
+        "median_difference": 0.013095215851917561,
+        "positive": 1,
+        "negative": 0,
+        "sign_p_two_sided": 1.0
+      }
+    }
+  },
+  "passes": [
+    {
+      "arm": "sleep-clock",
+      "round": 1,
+      "wall_ns": 29128382.5,
+      "cpu_ns": 25619030.5,
+      "runqueue_ns": 0,
+      "residual_ns": 3509352.0,
+      "uncertainty_ns": 31410,
+      "bytes": 23222784,
+      "reads": 2816,
+      "timeslices": 0,
+      "workload": "ascii",
+      "pass_index": 0,
+      "windows": 22,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 33492626,
+      "wall_coverage": 0.8696953920543584,
+      "byte_coverage": 0.9227856138041715,
+      "cpu_fraction": 0.879521219552785,
+      "uncertainty_fraction": 0.001078329701280186
+    },
+    {
+      "arm": "sleep-clock",
+      "round": 1,
+      "wall_ns": 31994820.0,
+      "cpu_ns": 29224484.0,
+      "runqueue_ns": 0,
+      "residual_ns": 2770336.0,
+      "uncertainty_ns": 29104,
+      "bytes": 24684544,
+      "reads": 3072,
+      "timeslices": 0,
+      "workload": "ascii",
+      "pass_index": 1,
+      "windows": 24,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 32517372,
+      "wall_coverage": 0.9839300666732846,
+      "byte_coverage": 0.9808704282189457,
+      "cpu_fraction": 0.9134129837267407,
+      "uncertainty_fraction": 0.0009096472491484559
+    },
+    {
+      "arm": "sleep-clock",
+      "round": 1,
+      "wall_ns": 27161590.5,
+      "cpu_ns": 24704426.5,
+      "runqueue_ns": 0,
+      "residual_ns": 2457164.0,
+      "uncertainty_ns": 28122,
+      "bytes": 23917434,
+      "reads": 2944,
+      "timeslices": 0,
+      "workload": "ascii",
+      "pass_index": 2,
+      "windows": 23,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 28749360,
+      "wall_coverage": 0.9447720053594236,
+      "byte_coverage": 0.9503883778237252,
+      "cpu_fraction": 0.9095353418276444,
+      "uncertainty_fraction": 0.0010353591038786921
+    },
+    {
+      "arm": "sleep-clock",
+      "round": 1,
+      "wall_ns": 59118685.0,
+      "cpu_ns": 18806556.0,
+      "runqueue_ns": 0,
+      "residual_ns": 40312129.0,
+      "uncertainty_ns": 28648,
+      "bytes": 15890865,
+      "reads": 2688,
+      "timeslices": 0,
+      "workload": "unicode",
+      "pass_index": 0,
+      "windows": 21,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 62856811,
+      "wall_coverage": 0.9405294996591539,
+      "byte_coverage": 0.9471669359100912,
+      "cpu_fraction": 0.31811526254347505,
+      "uncertainty_fraction": 0.00048458452687166504
+    },
+    {
+      "arm": "sleep-clock",
+      "round": 1,
+      "wall_ns": 63068619.0,
+      "cpu_ns": 20974573.5,
+      "runqueue_ns": 0,
+      "residual_ns": 42094045.5,
+      "uncertainty_ns": 26804,
+      "bytes": 16535553,
+      "reads": 2816,
+      "timeslices": 0,
+      "workload": "unicode",
+      "pass_index": 1,
+      "windows": 22,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 64082055,
+      "wall_coverage": 0.9841853386256105,
+      "byte_coverage": 0.98559323665445,
+      "cpu_fraction": 0.3325675087320368,
+      "uncertainty_fraction": 0.0004249974143242299
+    },
+    {
+      "arm": "sleep-clock",
+      "round": 1,
+      "wall_ns": 59866686.0,
+      "cpu_ns": 19234080.0,
+      "runqueue_ns": 0,
+      "residual_ns": 40632606.0,
+      "uncertainty_ns": 23928,
+      "bytes": 15902785,
+      "reads": 2688,
+      "timeslices": 0,
+      "workload": "unicode",
+      "pass_index": 2,
+      "windows": 21,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 63332185,
+      "wall_coverage": 0.945280602587768,
+      "byte_coverage": 0.9478774214548396,
+      "cpu_fraction": 0.3212818561561934,
+      "uncertainty_fraction": 0.0003996880669158804
+    },
+    {
+      "arm": "sleep-clock",
+      "round": 1,
+      "wall_ns": 88483671.5,
+      "cpu_ns": 27741617.0,
+      "runqueue_ns": 0,
+      "residual_ns": 60742054.5,
+      "uncertainty_ns": 38618,
+      "bytes": 24319295,
+      "reads": 4224,
+      "timeslices": 0,
+      "workload": "truecolor",
+      "pass_index": 0,
+      "windows": 33,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 91684919,
+      "wall_coverage": 0.9650842522967163,
+      "byte_coverage": 0.9663449873731764,
+      "cpu_fraction": 0.31352244464675044,
+      "uncertainty_fraction": 0.00043644210672248154
+    },
+    {
+      "arm": "sleep-clock",
+      "round": 1,
+      "wall_ns": 87277569.5,
+      "cpu_ns": 28952381.0,
+      "runqueue_ns": 0,
+      "residual_ns": 58325188.5,
+      "uncertainty_ns": 34894,
+      "bytes": 24598081,
+      "reads": 4096,
+      "timeslices": 0,
+      "workload": "truecolor",
+      "pass_index": 1,
+      "windows": 32,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 89426354,
+      "wall_coverage": 0.9759714625064553,
+      "byte_coverage": 0.97742275314105,
+      "cpu_fraction": 0.3317276267644002,
+      "uncertainty_fraction": 0.0003998049006165324
+    },
+    {
+      "arm": "sleep-clock",
+      "round": 1,
+      "wall_ns": 86175108.0,
+      "cpu_ns": 22576117.5,
+      "runqueue_ns": 0,
+      "residual_ns": 63598990.5,
+      "uncertainty_ns": 31684,
+      "bytes": 23825023,
+      "reads": 3712,
+      "timeslices": 0,
+      "workload": "truecolor",
+      "pass_index": 2,
+      "windows": 29,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 90977249,
+      "wall_coverage": 0.9472160232059775,
+      "byte_coverage": 0.946704727669969,
+      "cpu_fraction": 0.261979567231874,
+      "uncertainty_fraction": 0.00036766997727464407
+    },
+    {
+      "arm": "sleep-clock",
+      "round": 1,
+      "wall_ns": 67576964.0,
+      "cpu_ns": 14324071.0,
+      "runqueue_ns": 0,
+      "residual_ns": 53252893.0,
+      "uncertainty_ns": 23908,
+      "bytes": 16076291,
+      "reads": 2688,
+      "timeslices": 0,
+      "workload": "cursor_motion",
+      "pass_index": 0,
+      "windows": 21,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 70565261,
+      "wall_coverage": 0.9576520095348333,
+      "byte_coverage": 0.95819602776644,
+      "cpu_fraction": 0.2119667731743616,
+      "uncertainty_fraction": 0.00035378919952663157
+    },
+    {
+      "arm": "sleep-clock",
+      "round": 1,
+      "wall_ns": 68960143.5,
+      "cpu_ns": 13384858.0,
+      "runqueue_ns": 0,
+      "residual_ns": 55575285.5,
+      "uncertainty_ns": 30254,
+      "bytes": 16390300,
+      "reads": 2816,
+      "timeslices": 0,
+      "workload": "cursor_motion",
+      "pass_index": 1,
+      "windows": 22,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 70573716,
+      "wall_coverage": 0.9771363534265363,
+      "byte_coverage": 0.9769119228993977,
+      "cpu_fraction": 0.19409556478083606,
+      "uncertainty_fraction": 0.00043871718451397943
+    },
+    {
+      "arm": "sleep-clock",
+      "round": 1,
+      "wall_ns": 71649930.0,
+      "cpu_ns": 13922805.0,
+      "runqueue_ns": 0,
+      "residual_ns": 57727125.0,
+      "uncertainty_ns": 24736,
+      "bytes": 16167088,
+      "reads": 2688,
+      "timeslices": 0,
+      "workload": "cursor_motion",
+      "pass_index": 2,
+      "windows": 21,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 74317885,
+      "wall_coverage": 0.9641007679376237,
+      "byte_coverage": 0.9636078061880367,
+      "cpu_fraction": 0.19431707749051536,
+      "uncertainty_fraction": 0.000345234112580431
+    },
+    {
+      "arm": "sleep-clock",
+      "round": 1,
+      "wall_ns": 14681667.0,
+      "cpu_ns": 12304236.0,
+      "runqueue_ns": 0,
+      "residual_ns": 2377431.0,
+      "uncertainty_ns": 16024,
+      "bytes": 15652864,
+      "reads": 2048,
+      "timeslices": 0,
+      "workload": "scroll_region",
+      "pass_index": 0,
+      "windows": 16,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 15917671,
+      "wall_coverage": 0.9223501980911655,
+      "byte_coverage": 0.9329749457721855,
+      "cpu_fraction": 0.8380680477223738,
+      "uncertainty_fraction": 0.0010914291953359248
+    },
+    {
+      "arm": "sleep-clock",
+      "round": 1,
+      "wall_ns": 15070322.5,
+      "cpu_ns": 12494564.0,
+      "runqueue_ns": 0,
+      "residual_ns": 2575758.5,
+      "uncertainty_ns": 17110,
+      "bytes": 16027654,
+      "reads": 2176,
+      "timeslices": 0,
+      "workload": "scroll_region",
+      "pass_index": 1,
+      "windows": 17,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 15864711,
+      "wall_coverage": 0.9499273261265206,
+      "byte_coverage": 0.9553139681981107,
+      "cpu_fraction": 0.8290840491303355,
+      "uncertainty_fraction": 0.0011353439848417312
+    },
+    {
+      "arm": "sleep-clock",
+      "round": 1,
+      "wall_ns": 14313680.5,
+      "cpu_ns": 12630093.0,
+      "runqueue_ns": 0,
+      "residual_ns": 1683587.5,
+      "uncertainty_ns": 17894,
+      "bytes": 16207558,
+      "reads": 2048,
+      "timeslices": 0,
+      "workload": "scroll_region",
+      "pass_index": 2,
+      "windows": 16,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 14868088,
+      "wall_coverage": 0.9627115806686105,
+      "byte_coverage": 0.9660369850622577,
+      "cpu_fraction": 0.8823791337245511,
+      "uncertainty_fraction": 0.0012501326964787288
+    },
+    {
+      "arm": "sleep-clock",
+      "round": 1,
+      "wall_ns": 71458144.5,
+      "cpu_ns": 17658095.0,
+      "runqueue_ns": 0,
+      "residual_ns": 53800049.5,
+      "uncertainty_ns": 29834,
+      "bytes": 20160000,
+      "reads": 3200,
+      "timeslices": 0,
+      "workload": "tui_frames",
+      "pass_index": 0,
+      "windows": 25,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 77232704,
+      "wall_coverage": 0.9252316803513703,
+      "byte_coverage": 0.9645185858569137,
+      "cpu_fraction": 0.24711102035401997,
+      "uncertainty_fraction": 0.00041750314409577205
+    },
+    {
+      "arm": "sleep-clock",
+      "round": 1,
+      "wall_ns": 73387145.0,
+      "cpu_ns": 16217088.5,
+      "runqueue_ns": 0,
+      "residual_ns": 57170056.5,
+      "uncertainty_ns": 29500,
+      "bytes": 19406062,
+      "reads": 2944,
+      "timeslices": 0,
+      "workload": "tui_frames",
+      "pass_index": 1,
+      "windows": 23,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 81473314,
+      "wall_coverage": 0.9007507047031376,
+      "byte_coverage": 0.928447791532321,
+      "cpu_fraction": 0.22097996181756355,
+      "uncertainty_fraction": 0.0004019777578212097
+    },
+    {
+      "arm": "sleep-clock",
+      "round": 1,
+      "wall_ns": 78755070.0,
+      "cpu_ns": 16717672.5,
+      "runqueue_ns": 0,
+      "residual_ns": 62037397.5,
+      "uncertainty_ns": 30472,
+      "bytes": 20246528,
+      "reads": 3072,
+      "timeslices": 0,
+      "workload": "tui_frames",
+      "pass_index": 2,
+      "windows": 24,
+      "excluded_overlapping_windows": 1,
+      "pass_wall_ns": 81249794,
+      "wall_coverage": 0.9692956267679891,
+      "byte_coverage": 0.9686583608666869,
+      "cpu_fraction": 0.21227423834427422,
+      "uncertainty_fraction": 0.00038692112139574
+    },
+    {
+      "arm": "sleep-sched",
+      "round": 1,
+      "wall_ns": 31159531.0,
+      "cpu_ns": 25992241.0,
+      "runqueue_ns": 504445,
+      "residual_ns": 4662845.0,
+      "uncertainty_ns": 93940,
+      "bytes": 23872750,
+      "reads": 3072,
+      "timeslices": 855,
+      "workload": "ascii",
+      "pass_index": 0,
+      "windows": 24,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 35514406,
+      "wall_coverage": 0.8773772254560586,
+      "byte_coverage": 0.948612804646658,
+      "cpu_fraction": 0.8341666310702816,
+      "uncertainty_fraction": 0.0030148078929686075,
+      "runqueue_fraction": 0.01618910759600329,
+      "residual_fraction": 0.1496442613337152
+    },
+    {
+      "arm": "sleep-sched",
+      "round": 1,
+      "wall_ns": 28619280.0,
+      "cpu_ns": 26434980.0,
+      "runqueue_ns": 1433,
+      "residual_ns": 2182867.0,
+      "uncertainty_ns": 69476,
+      "bytes": 24548455,
+      "reads": 3072,
+      "timeslices": 766,
+      "workload": "ascii",
+      "pass_index": 1,
+      "windows": 24,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 29515640,
+      "wall_coverage": 0.9696310159630623,
+      "byte_coverage": 0.975462766011133,
+      "cpu_fraction": 0.9236773252157287,
+      "uncertainty_fraction": 0.002427594265124769,
+      "runqueue_fraction": 5.0071140853298896e-05,
+      "residual_fraction": 0.07627260364341801
+    },
+    {
+      "arm": "sleep-sched",
+      "round": 1,
+      "wall_ns": 28153896.0,
+      "cpu_ns": 25534753.5,
+      "runqueue_ns": 117742,
+      "residual_ns": 2501400.5,
+      "uncertainty_ns": 70112,
+      "bytes": 23453696,
+      "reads": 2944,
+      "timeslices": 882,
+      "workload": "ascii",
+      "pass_index": 2,
+      "windows": 23,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 30620197,
+      "wall_coverage": 0.9194550903771128,
+      "byte_coverage": 0.931961183436768,
+      "cpu_fraction": 0.9069705130685998,
+      "uncertainty_fraction": 0.002490312530812787,
+      "runqueue_fraction": 0.004182085491826779,
+      "residual_fraction": 0.08884740143957341
+    },
+    {
+      "arm": "sleep-sched",
+      "round": 1,
+      "wall_ns": 60304659.0,
+      "cpu_ns": 14645278.0,
+      "runqueue_ns": 661718,
+      "residual_ns": 44997663.0,
+      "uncertainty_ns": 72392,
+      "bytes": 16415857,
+      "reads": 2560,
+      "timeslices": 2136,
+      "workload": "unicode",
+      "pass_index": 0,
+      "windows": 20,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 61825073,
+      "wall_coverage": 0.9754078090615437,
+      "byte_coverage": 0.9784588173789294,
+      "cpu_fraction": 0.24285483481466996,
+      "uncertainty_fraction": 0.0012004379296796952,
+      "runqueue_fraction": 0.010972916702837171,
+      "residual_fraction": 0.7461722484824929
+    },
+    {
+      "arm": "sleep-sched",
+      "round": 1,
+      "wall_ns": 61206099.0,
+      "cpu_ns": 13692807.5,
+      "runqueue_ns": 1728506,
+      "residual_ns": 45784785.5,
+      "uncertainty_ns": 68620,
+      "bytes": 16078530,
+      "reads": 2560,
+      "timeslices": 2209,
+      "workload": "unicode",
+      "pass_index": 1,
+      "windows": 20,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 63965636,
+      "wall_coverage": 0.9568590703921087,
+      "byte_coverage": 0.9583526129029778,
+      "cpu_fraction": 0.22371638976697403,
+      "uncertainty_fraction": 0.0011211301017566894,
+      "runqueue_fraction": 0.028240747707185192,
+      "residual_fraction": 0.7480428625258407
+    },
+    {
+      "arm": "sleep-sched",
+      "round": 1,
+      "wall_ns": 58126956.5,
+      "cpu_ns": 13068766.0,
+      "runqueue_ns": 814239,
+      "residual_ns": 44243951.5,
+      "uncertainty_ns": 65982,
+      "bytes": 15414336,
+      "reads": 2560,
+      "timeslices": 2343,
+      "workload": "unicode",
+      "pass_index": 2,
+      "windows": 20,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 63505721,
+      "wall_coverage": 0.9153026780059705,
+      "byte_coverage": 0.9187636669374896,
+      "cpu_fraction": 0.22483141707238705,
+      "uncertainty_fraction": 0.0011351359846270292,
+      "runqueue_fraction": 0.014007941392906061,
+      "residual_fraction": 0.7611606415347069
+    },
+    {
+      "arm": "sleep-sched",
+      "round": 1,
+      "wall_ns": 89015357.5,
+      "cpu_ns": 26692522.0,
+      "runqueue_ns": 37905,
+      "residual_ns": 62284930.5,
+      "uncertainty_ns": 99078,
+      "bytes": 24541177,
+      "reads": 4224,
+      "timeslices": 3014,
+      "workload": "truecolor",
+      "pass_index": 0,
+      "windows": 33,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 91352064,
+      "wall_coverage": 0.9744208680386247,
+      "byte_coverage": 0.9751616310500731,
+      "cpu_fraction": 0.2998642341014021,
+      "uncertainty_fraction": 0.0011130438924541756,
+      "runqueue_fraction": 0.00042582539760063315,
+      "residual_fraction": 0.6997099405009972
+    },
+    {
+      "arm": "sleep-sched",
+      "round": 1,
+      "wall_ns": 88015727.5,
+      "cpu_ns": 22790212.0,
+      "runqueue_ns": 332912,
+      "residual_ns": 64892603.5,
+      "uncertainty_ns": 86822,
+      "bytes": 24166400,
+      "reads": 3840,
+      "timeslices": 3166,
+      "workload": "truecolor",
+      "pass_index": 1,
+      "windows": 30,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 91773926,
+      "wall_coverage": 0.9590493872954722,
+      "byte_coverage": 0.9602695926364284,
+      "cpu_fraction": 0.25893340482813143,
+      "uncertainty_fraction": 0.0009864373387131293,
+      "runqueue_fraction": 0.0037824149098807367,
+      "residual_fraction": 0.7372841802619878
+    },
+    {
+      "arm": "sleep-sched",
+      "round": 1,
+      "wall_ns": 89830914.5,
+      "cpu_ns": 24140405.5,
+      "runqueue_ns": 1213106,
+      "residual_ns": 64477403.0,
+      "uncertainty_ns": 104070,
+      "bytes": 24865461,
+      "reads": 4224,
+      "timeslices": 2585,
+      "workload": "truecolor",
+      "pass_index": 2,
+      "windows": 33,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 91051830,
+      "wall_coverage": 0.9865909833992353,
+      "byte_coverage": 0.9880472931502831,
+      "cpu_fraction": 0.26873160130191037,
+      "uncertainty_fraction": 0.0011585098579843579,
+      "runqueue_fraction": 0.013504326508887984,
+      "residual_fraction": 0.7177640721892017
+    },
+    {
+      "arm": "sleep-sched",
+      "round": 1,
+      "wall_ns": 67876958.0,
+      "cpu_ns": 13771870.5,
+      "runqueue_ns": 383150,
+      "residual_ns": 53721937.5,
+      "uncertainty_ns": 65572,
+      "bytes": 15579649,
+      "reads": 2560,
+      "timeslices": 2343,
+      "workload": "cursor_motion",
+      "pass_index": 0,
+      "windows": 20,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 73294571,
+      "wall_coverage": 0.9260843889788235,
+      "byte_coverage": 0.9285946482180117,
+      "cpu_fraction": 0.202894633256841,
+      "uncertainty_fraction": 0.0009660421140263828,
+      "runqueue_fraction": 0.005644772707698539,
+      "residual_fraction": 0.7914605940354604
+    },
+    {
+      "arm": "sleep-sched",
+      "round": 1,
+      "wall_ns": 68811549.5,
+      "cpu_ns": 14246256.0,
+      "runqueue_ns": 446248,
+      "residual_ns": 54119045.5,
+      "uncertainty_ns": 63630,
+      "bytes": 16349057,
+      "reads": 2688,
+      "timeslices": 2454,
+      "workload": "cursor_motion",
+      "pass_index": 1,
+      "windows": 21,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 70879572,
+      "wall_coverage": 0.9708234341482762,
+      "byte_coverage": 0.9744537141761809,
+      "cpu_fraction": 0.2070329196699749,
+      "uncertainty_fraction": 0.000924699421279563,
+      "runqueue_fraction": 0.006485074137154839,
+      "residual_fraction": 0.7864820061928702
+    },
+    {
+      "arm": "sleep-sched",
+      "round": 1,
+      "wall_ns": 67096791.5,
+      "cpu_ns": 13920377.0,
+      "runqueue_ns": 20709,
+      "residual_ns": 53155705.5,
+      "uncertainty_ns": 59462,
+      "bytes": 16248660,
+      "reads": 2688,
+      "timeslices": 2498,
+      "workload": "cursor_motion",
+      "pass_index": 2,
+      "windows": 21,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 69396735,
+      "wall_coverage": 0.9668580445463321,
+      "byte_coverage": 0.9684697464438434,
+      "cpu_fraction": 0.20746710369898985,
+      "uncertainty_fraction": 0.0008862122714168828,
+      "runqueue_fraction": 0.00030864367039070713,
+      "residual_fraction": 0.7922242526306195
+    },
+    {
+      "arm": "sleep-sched",
+      "round": 1,
+      "wall_ns": 13523595.5,
+      "cpu_ns": 11583246.0,
+      "runqueue_ns": 144241,
+      "residual_ns": 1796108.5,
+      "uncertainty_ns": 619430,
+      "bytes": 15450112,
+      "reads": 1920,
+      "timeslices": 1192,
+      "workload": "scroll_region",
+      "pass_index": 0,
+      "windows": 15,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 14782166,
+      "wall_coverage": 0.9148588576261422,
+      "byte_coverage": 0.9208900943223037,
+      "cpu_fraction": 0.8565211818114494,
+      "uncertainty_fraction": 0.04580364741018762,
+      "runqueue_fraction": 0.010665876541486322,
+      "residual_fraction": 0.1328129416470642
+    },
+    {
+      "arm": "sleep-sched",
+      "round": 1,
+      "wall_ns": 14796131.5,
+      "cpu_ns": 12229478.5,
+      "runqueue_ns": 1772,
+      "residual_ns": 2564881.0,
+      "uncertainty_ns": 42318,
+      "bytes": 16037217,
+      "reads": 2176,
+      "timeslices": 1495,
+      "workload": "scroll_region",
+      "pass_index": 1,
+      "windows": 17,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 15550721,
+      "wall_coverage": 0.9514755939612061,
+      "byte_coverage": 0.9558839622520052,
+      "cpu_fraction": 0.8265321580846994,
+      "uncertainty_fraction": 0.0028600719046056058,
+      "runqueue_fraction": 0.00011976103348365078,
+      "residual_fraction": 0.17334808088181697
+    },
+    {
+      "arm": "sleep-sched",
+      "round": 1,
+      "wall_ns": 15350900.0,
+      "cpu_ns": 14141971.0,
+      "runqueue_ns": 0,
+      "residual_ns": 1208929.0,
+      "uncertainty_ns": 40420,
+      "bytes": 15237120,
+      "reads": 1792,
+      "timeslices": 424,
+      "workload": "scroll_region",
+      "pass_index": 2,
+      "windows": 14,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 16848229,
+      "wall_coverage": 0.9111284040595602,
+      "byte_coverage": 0.9081948968395996,
+      "cpu_fraction": 0.9212470278615587,
+      "uncertainty_fraction": 0.002633070373724016,
+      "runqueue_fraction": 0.0,
+      "residual_fraction": 0.07875297213844139
+    },
+    {
+      "arm": "sleep-sched",
+      "round": 1,
+      "wall_ns": 78525013.0,
+      "cpu_ns": 22137318.0,
+      "runqueue_ns": 1394064,
+      "residual_ns": 54993631.0,
+      "uncertainty_ns": 87876,
+      "bytes": 20762380,
+      "reads": 3584,
+      "timeslices": 2657,
+      "workload": "tui_frames",
+      "pass_index": 0,
+      "windows": 28,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 79144367,
+      "wall_coverage": 0.9921743767310692,
+      "byte_coverage": 0.9933383629277713,
+      "cpu_fraction": 0.28191422266940597,
+      "uncertainty_fraction": 0.001119082909289044,
+      "runqueue_fraction": 0.017753120270097886,
+      "residual_fraction": 0.7003326570604961
+    },
+    {
+      "arm": "sleep-sched",
+      "round": 1,
+      "wall_ns": 74417572.5,
+      "cpu_ns": 22593506.0,
+      "runqueue_ns": 794499,
+      "residual_ns": 51029567.5,
+      "uncertainty_ns": 95294,
+      "bytes": 19921410,
+      "reads": 3456,
+      "timeslices": 2603,
+      "workload": "tui_frames",
+      "pass_index": 1,
+      "windows": 27,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 79951123,
+      "wall_coverage": 0.9307883330169109,
+      "byte_coverage": 0.9531036806287589,
+      "cpu_fraction": 0.3036044477263754,
+      "uncertainty_fraction": 0.0012805308853631311,
+      "runqueue_fraction": 0.010676228386783242,
+      "residual_fraction": 0.6857193238868414
+    },
+    {
+      "arm": "sleep-sched",
+      "round": 1,
+      "wall_ns": 71983106.0,
+      "cpu_ns": 18096280.0,
+      "runqueue_ns": 105407,
+      "residual_ns": 53781419.0,
+      "uncertainty_ns": 82996,
+      "bytes": 19752257,
+      "reads": 3200,
+      "timeslices": 2770,
+      "workload": "tui_frames",
+      "pass_index": 2,
+      "windows": 25,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 77825088,
+      "wall_coverage": 0.9249344632928651,
+      "byte_coverage": 0.9450108625556709,
+      "cpu_fraction": 0.2513962095495018,
+      "uncertainty_fraction": 0.001152992759162129,
+      "runqueue_fraction": 0.0014643296998048403,
+      "residual_fraction": 0.7471394607506934
+    },
+    {
+      "arm": "busy-clock",
+      "round": 1,
+      "wall_ns": 35535866.5,
+      "cpu_ns": 26015486.5,
+      "runqueue_ns": 0,
+      "residual_ns": 9520380.0,
+      "uncertainty_ns": 31726,
+      "bytes": 23728318,
+      "reads": 3328,
+      "timeslices": 0,
+      "workload": "ascii",
+      "pass_index": 0,
+      "windows": 26,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 39109234,
+      "wall_coverage": 0.9086311048689933,
+      "byte_coverage": 0.9428736231698392,
+      "cpu_fraction": 0.7320909566113999,
+      "uncertainty_fraction": 0.0008927881356150413
+    },
+    {
+      "arm": "busy-clock",
+      "round": 1,
+      "wall_ns": 35788541.5,
+      "cpu_ns": 28039656.0,
+      "runqueue_ns": 0,
+      "residual_ns": 7748885.5,
+      "uncertainty_ns": 46034,
+      "bytes": 24558631,
+      "reads": 3328,
+      "timeslices": 0,
+      "workload": "ascii",
+      "pass_index": 1,
+      "windows": 26,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 36720133,
+      "wall_coverage": 0.9746299530015319,
+      "byte_coverage": 0.9758671217682235,
+      "cpu_fraction": 0.7834813832801765,
+      "uncertainty_fraction": 0.0012862776204501096
+    },
+    {
+      "arm": "busy-clock",
+      "round": 1,
+      "wall_ns": 33072386.0,
+      "cpu_ns": 26434257.0,
+      "runqueue_ns": 0,
+      "residual_ns": 6638129.0,
+      "uncertainty_ns": 33428,
+      "bytes": 23963648,
+      "reads": 3072,
+      "timeslices": 0,
+      "workload": "ascii",
+      "pass_index": 2,
+      "windows": 24,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 34745110,
+      "wall_coverage": 0.95185728293852,
+      "byte_coverage": 0.9522247474147417,
+      "cpu_fraction": 0.7992848474857545,
+      "uncertainty_fraction": 0.0010107525958362967
+    },
+    {
+      "arm": "busy-clock",
+      "round": 1,
+      "wall_ns": 64489430.5,
+      "cpu_ns": 19055342.0,
+      "runqueue_ns": 0,
+      "residual_ns": 45434088.5,
+      "uncertainty_ns": 41862,
+      "bytes": 16545790,
+      "reads": 2944,
+      "timeslices": 0,
+      "workload": "unicode",
+      "pass_index": 0,
+      "windows": 23,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 65510439,
+      "wall_coverage": 0.9844145678828378,
+      "byte_coverage": 0.9862034078391471,
+      "cpu_fraction": 0.2954800787084017,
+      "uncertainty_fraction": 0.0006491296275286537
+    },
+    {
+      "arm": "busy-clock",
+      "round": 1,
+      "wall_ns": 60569197.0,
+      "cpu_ns": 17905954.0,
+      "runqueue_ns": 0,
+      "residual_ns": 42663243.0,
+      "uncertainty_ns": 37856,
+      "bytes": 15458816,
+      "reads": 2816,
+      "timeslices": 0,
+      "workload": "unicode",
+      "pass_index": 1,
+      "windows": 22,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 65762864,
+      "wall_coverage": 0.9210243185272466,
+      "byte_coverage": 0.9214148747420541,
+      "cpu_fraction": 0.29562805661762365,
+      "uncertainty_fraction": 0.0006250041584668854
+    },
+    {
+      "arm": "busy-clock",
+      "round": 1,
+      "wall_ns": 62871329.5,
+      "cpu_ns": 16153623.0,
+      "runqueue_ns": 0,
+      "residual_ns": 46717706.5,
+      "uncertainty_ns": 31822,
+      "bytes": 16474112,
+      "reads": 2816,
+      "timeslices": 0,
+      "workload": "unicode",
+      "pass_index": 2,
+      "windows": 22,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 64251343,
+      "wall_coverage": 0.978521639617712,
+      "byte_coverage": 0.9819310770609192,
+      "cpu_fraction": 0.2569314682616979,
+      "uncertainty_fraction": 0.0005061448557406441
+    },
+    {
+      "arm": "busy-clock",
+      "round": 1,
+      "wall_ns": 91525565.0,
+      "cpu_ns": 23998333.5,
+      "runqueue_ns": 0,
+      "residual_ns": 67527231.5,
+      "uncertainty_ns": 42732,
+      "bytes": 24476792,
+      "reads": 4224,
+      "timeslices": 0,
+      "workload": "truecolor",
+      "pass_index": 0,
+      "windows": 33,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 94182124,
+      "wall_coverage": 0.9717933840608649,
+      "byte_coverage": 0.972603245948366,
+      "cpu_fraction": 0.26220360945053983,
+      "uncertainty_fraction": 0.0004668859460195629
+    },
+    {
+      "arm": "busy-clock",
+      "round": 1,
+      "wall_ns": 87527656.0,
+      "cpu_ns": 25269534.5,
+      "runqueue_ns": 0,
+      "residual_ns": 62258121.5,
+      "uncertainty_ns": 3040636,
+      "bytes": 24161866,
+      "reads": 4352,
+      "timeslices": 0,
+      "workload": "truecolor",
+      "pass_index": 1,
+      "windows": 34,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 91396377,
+      "wall_coverage": 0.9576709588827574,
+      "byte_coverage": 0.9600894308277597,
+      "cpu_fraction": 0.28870342991933884,
+      "uncertainty_fraction": 0.03473914576211203
+    },
+    {
+      "arm": "busy-clock",
+      "round": 1,
+      "wall_ns": 88871501.5,
+      "cpu_ns": 24156654.5,
+      "runqueue_ns": 0,
+      "residual_ns": 64714847.0,
+      "uncertainty_ns": 49126,
+      "bytes": 24199416,
+      "reads": 4096,
+      "timeslices": 0,
+      "workload": "truecolor",
+      "pass_index": 2,
+      "windows": 32,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 92622642,
+      "wall_coverage": 0.9595008259427539,
+      "byte_coverage": 0.9615815075625442,
+      "cpu_fraction": 0.27181553245164874,
+      "uncertainty_fraction": 0.0005527756274040222
+    },
+    {
+      "arm": "busy-clock",
+      "round": 1,
+      "wall_ns": 70409068.0,
+      "cpu_ns": 16664279.0,
+      "runqueue_ns": 0,
+      "residual_ns": 53744789.0,
+      "uncertainty_ns": 941236,
+      "bytes": 16534974,
+      "reads": 3072,
+      "timeslices": 0,
+      "workload": "cursor_motion",
+      "pass_index": 0,
+      "windows": 24,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 71500609,
+      "wall_coverage": 0.9847338223370936,
+      "byte_coverage": 0.9855349350183673,
+      "cpu_fraction": 0.23667802277967945,
+      "uncertainty_fraction": 0.013368107642044061
+    },
+    {
+      "arm": "busy-clock",
+      "round": 1,
+      "wall_ns": 68266054.5,
+      "cpu_ns": 15621505.0,
+      "runqueue_ns": 0,
+      "residual_ns": 52644549.5,
+      "uncertainty_ns": 33358,
+      "bytes": 16074738,
+      "reads": 3200,
+      "timeslices": 0,
+      "workload": "cursor_motion",
+      "pass_index": 1,
+      "windows": 25,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 71384972,
+      "wall_coverage": 0.9563084860494167,
+      "byte_coverage": 0.958103464224817,
+      "cpu_fraction": 0.22883269165643666,
+      "uncertainty_fraction": 0.0004886469599616307
+    },
+    {
+      "arm": "busy-clock",
+      "round": 1,
+      "wall_ns": 68070737.5,
+      "cpu_ns": 15588194.5,
+      "runqueue_ns": 0,
+      "residual_ns": 52482543.0,
+      "uncertainty_ns": 34850,
+      "bytes": 15996773,
+      "reads": 3200,
+      "timeslices": 0,
+      "workload": "cursor_motion",
+      "pass_index": 2,
+      "windows": 25,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 71700595,
+      "wall_coverage": 0.9493747924964918,
+      "byte_coverage": 0.9534565121819104,
+      "cpu_fraction": 0.22899993554499098,
+      "uncertainty_fraction": 0.0005119674221246684
+    },
+    {
+      "arm": "busy-clock",
+      "round": 1,
+      "wall_ns": 17453852.5,
+      "cpu_ns": 13952504.0,
+      "runqueue_ns": 0,
+      "residual_ns": 3501348.5,
+      "uncertainty_ns": 17942,
+      "bytes": 16201475,
+      "reads": 2304,
+      "timeslices": 0,
+      "workload": "scroll_region",
+      "pass_index": 0,
+      "windows": 18,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 18096115,
+      "wall_coverage": 0.964508266000741,
+      "byte_coverage": 0.9656744132929551,
+      "cpu_fraction": 0.7993939446892885,
+      "uncertainty_fraction": 0.0010279678941941329
+    },
+    {
+      "arm": "busy-clock",
+      "round": 1,
+      "wall_ns": 15244680.5,
+      "cpu_ns": 13183584.0,
+      "runqueue_ns": 0,
+      "residual_ns": 2061096.5,
+      "uncertainty_ns": 15766,
+      "bytes": 15456257,
+      "reads": 2176,
+      "timeslices": 0,
+      "workload": "scroll_region",
+      "pass_index": 1,
+      "windows": 17,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 16783829,
+      "wall_coverage": 0.9082957470550969,
+      "byte_coverage": 0.9212563615461019,
+      "cpu_fraction": 0.8647989703687132,
+      "uncertainty_fraction": 0.0010341968137672678
+    },
+    {
+      "arm": "busy-clock",
+      "round": 1,
+      "wall_ns": 16711868.5,
+      "cpu_ns": 13791974.0,
+      "runqueue_ns": 0,
+      "residual_ns": 2919894.5,
+      "uncertainty_ns": 17254,
+      "bytes": 15883597,
+      "reads": 2304,
+      "timeslices": 0,
+      "workload": "scroll_region",
+      "pass_index": 2,
+      "windows": 18,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 18031774,
+      "wall_coverage": 0.9268011289405025,
+      "byte_coverage": 0.9467275796775751,
+      "cpu_fraction": 0.8252801893456737,
+      "uncertainty_fraction": 0.0010324399093973244
+    },
+    {
+      "arm": "busy-clock",
+      "round": 1,
+      "wall_ns": 72958985.5,
+      "cpu_ns": 20440975.5,
+      "runqueue_ns": 0,
+      "residual_ns": 52518010.0,
+      "uncertainty_ns": 43918,
+      "bytes": 20116991,
+      "reads": 3328,
+      "timeslices": 0,
+      "workload": "tui_frames",
+      "pass_index": 0,
+      "windows": 26,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 78683892,
+      "wall_coverage": 0.9272416964326066,
+      "byte_coverage": 0.9624608983639018,
+      "cpu_fraction": 0.2801707748526739,
+      "uncertainty_fraction": 0.000601954642036518
+    },
+    {
+      "arm": "busy-clock",
+      "round": 1,
+      "wall_ns": 73584802.0,
+      "cpu_ns": 19827967.5,
+      "runqueue_ns": 0,
+      "residual_ns": 53756834.5,
+      "uncertainty_ns": 49280,
+      "bytes": 20478153,
+      "reads": 3840,
+      "timeslices": 0,
+      "workload": "tui_frames",
+      "pass_index": 1,
+      "windows": 30,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 77992402,
+      "wall_coverage": 0.9434868027272708,
+      "byte_coverage": 0.9797400383195196,
+      "cpu_fraction": 0.2694573738202081,
+      "uncertainty_fraction": 0.0006697035075259155
+    },
+    {
+      "arm": "busy-clock",
+      "round": 1,
+      "wall_ns": 70870384.5,
+      "cpu_ns": 19089372.0,
+      "runqueue_ns": 0,
+      "residual_ns": 51781012.5,
+      "uncertainty_ns": 36066,
+      "bytes": 19731204,
+      "reads": 4096,
+      "timeslices": 0,
+      "workload": "tui_frames",
+      "pass_index": 2,
+      "windows": 32,
+      "excluded_overlapping_windows": 1,
+      "pass_wall_ns": 77298368,
+      "wall_coverage": 0.9168419247868208,
+      "byte_coverage": 0.9440036200066607,
+      "cpu_fraction": 0.2693561229373604,
+      "uncertainty_fraction": 0.0005089008653537078
+    },
+    {
+      "arm": "busy-sched",
+      "round": 1,
+      "wall_ns": 31611890.5,
+      "cpu_ns": 23285415.5,
+      "runqueue_ns": 2173894,
+      "residual_ns": 6152581.0,
+      "uncertainty_ns": 81430,
+      "bytes": 24059760,
+      "reads": 3328,
+      "timeslices": 1521,
+      "workload": "ascii",
+      "pass_index": 0,
+      "windows": 26,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 36190147,
+      "wall_coverage": 0.8734943933772913,
+      "byte_coverage": 0.9560438748248725,
+      "cpu_fraction": 0.7366030671275418,
+      "uncertainty_fraction": 0.002575929459201436,
+      "runqueue_fraction": 0.06876823769840655,
+      "residual_fraction": 0.19462869517405168
+    },
+    {
+      "arm": "busy-sched",
+      "round": 1,
+      "wall_ns": 33560373.0,
+      "cpu_ns": 25757005.0,
+      "runqueue_ns": 3140392,
+      "residual_ns": 4662976.0,
+      "uncertainty_ns": 78504,
+      "bytes": 24479424,
+      "reads": 3456,
+      "timeslices": 1411,
+      "workload": "ascii",
+      "pass_index": 1,
+      "windows": 27,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 34695056,
+      "wall_coverage": 0.9672955420507175,
+      "byte_coverage": 0.9727197351279058,
+      "cpu_fraction": 0.7674826796472137,
+      "uncertainty_fraction": 0.0023391873505100792,
+      "runqueue_fraction": 0.09357440693522685,
+      "residual_fraction": 0.13894291341755946
+    },
+    {
+      "arm": "busy-sched",
+      "round": 1,
+      "wall_ns": 31609947.5,
+      "cpu_ns": 24031974.0,
+      "runqueue_ns": 2687500,
+      "residual_ns": 4890473.5,
+      "uncertainty_ns": 79110,
+      "bytes": 23533566,
+      "reads": 3328,
+      "timeslices": 1413,
+      "workload": "ascii",
+      "pass_index": 2,
+      "windows": 26,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 33771179,
+      "wall_coverage": 0.9360036704670571,
+      "byte_coverage": 0.9351349151897973,
+      "cpu_fraction": 0.7602661788666368,
+      "uncertainty_fraction": 0.002502693179101294,
+      "runqueue_fraction": 0.08502070432100528,
+      "residual_fraction": 0.1547131168123579
+    },
+    {
+      "arm": "busy-sched",
+      "round": 1,
+      "wall_ns": 61982178.0,
+      "cpu_ns": 16922812.0,
+      "runqueue_ns": 1086857,
+      "residual_ns": 43972509.0,
+      "uncertainty_ns": 4154764,
+      "bytes": 16373362,
+      "reads": 2816,
+      "timeslices": 2314,
+      "workload": "unicode",
+      "pass_index": 0,
+      "windows": 22,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 64458983,
+      "wall_coverage": 0.961575487469295,
+      "byte_coverage": 0.975925924491003,
+      "cpu_fraction": 0.27302706271470484,
+      "uncertainty_fraction": 0.06703159091957046,
+      "runqueue_fraction": 0.01753499207465733,
+      "residual_fraction": 0.7094379452106379
+    },
+    {
+      "arm": "busy-sched",
+      "round": 1,
+      "wall_ns": 64464639.0,
+      "cpu_ns": 16042276.0,
+      "runqueue_ns": 1586703,
+      "residual_ns": 46835660.0,
+      "uncertainty_ns": 63968,
+      "bytes": 16224765,
+      "reads": 2944,
+      "timeslices": 2767,
+      "workload": "unicode",
+      "pass_index": 1,
+      "windows": 23,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 66628221,
+      "wall_coverage": 0.9675275436214934,
+      "byte_coverage": 0.9670688757919277,
+      "cpu_fraction": 0.2488538871675059,
+      "uncertainty_fraction": 0.000992295946929913,
+      "runqueue_fraction": 0.024613540455876902,
+      "residual_fraction": 0.7265325723766172
+    },
+    {
+      "arm": "busy-sched",
+      "round": 1,
+      "wall_ns": 62183000.5,
+      "cpu_ns": 17986568.0,
+      "runqueue_ns": 2494178,
+      "residual_ns": 41702254.5,
+      "uncertainty_ns": 2909810,
+      "bytes": 15801599,
+      "reads": 2816,
+      "timeslices": 1952,
+      "workload": "unicode",
+      "pass_index": 2,
+      "windows": 22,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 66352933,
+      "wall_coverage": 0.9371552648622179,
+      "byte_coverage": 0.9418462813264074,
+      "cpu_fraction": 0.28925217270594716,
+      "uncertainty_fraction": 0.04679430031685267,
+      "runqueue_fraction": 0.04011028705506097,
+      "residual_fraction": 0.6706375402389918
+    },
+    {
+      "arm": "busy-sched",
+      "round": 1,
+      "wall_ns": 92334540.5,
+      "cpu_ns": 27199969.0,
+      "runqueue_ns": 1514651,
+      "residual_ns": 63619920.5,
+      "uncertainty_ns": 1938538,
+      "bytes": 24816056,
+      "reads": 4352,
+      "timeslices": 2914,
+      "workload": "truecolor",
+      "pass_index": 0,
+      "windows": 34,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 93843246,
+      "wall_coverage": 0.9839231317723174,
+      "byte_coverage": 0.9860841493132115,
+      "cpu_fraction": 0.29458065045550313,
+      "uncertainty_fraction": 0.02099472190474593,
+      "runqueue_fraction": 0.016403947989539192,
+      "residual_fraction": 0.6890154015549577
+    },
+    {
+      "arm": "busy-sched",
+      "round": 1,
+      "wall_ns": 90105791.5,
+      "cpu_ns": 26677208.0,
+      "runqueue_ns": 2938983,
+      "residual_ns": 60489600.5,
+      "uncertainty_ns": 6194922,
+      "bytes": 23831487,
+      "reads": 4224,
+      "timeslices": 2916,
+      "workload": "truecolor",
+      "pass_index": 1,
+      "windows": 33,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 95277001,
+      "wall_coverage": 0.9457244723729287,
+      "byte_coverage": 0.9469615794413044,
+      "cpu_fraction": 0.29606540884777643,
+      "uncertainty_fraction": 0.06875165177368205,
+      "runqueue_fraction": 0.03261702662031441,
+      "residual_fraction": 0.6713175645319092
+    },
+    {
+      "arm": "busy-sched",
+      "round": 1,
+      "wall_ns": 92603927.0,
+      "cpu_ns": 26178956.0,
+      "runqueue_ns": 2326393,
+      "residual_ns": 64098578.0,
+      "uncertainty_ns": 2039836,
+      "bytes": 24732160,
+      "reads": 4224,
+      "timeslices": 2514,
+      "workload": "truecolor",
+      "pass_index": 2,
+      "windows": 33,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 94304624,
+      "wall_coverage": 0.9819659214165363,
+      "byte_coverage": 0.9827504803453957,
+      "cpu_fraction": 0.28269811927090305,
+      "uncertainty_fraction": 0.022027532374517985,
+      "runqueue_fraction": 0.025121969179557578,
+      "residual_fraction": 0.6921799115495394
+    },
+    {
+      "arm": "busy-sched",
+      "round": 1,
+      "wall_ns": 68567396.0,
+      "cpu_ns": 17435773.5,
+      "runqueue_ns": 1779247,
+      "residual_ns": 49352375.5,
+      "uncertainty_ns": 80580,
+      "bytes": 15893394,
+      "reads": 2688,
+      "timeslices": 1712,
+      "workload": "cursor_motion",
+      "pass_index": 0,
+      "windows": 21,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 72577323,
+      "wall_coverage": 0.9447495879670293,
+      "byte_coverage": 0.9472948081449241,
+      "cpu_fraction": 0.2542866510491371,
+      "uncertainty_fraction": 0.0011751941112070233,
+      "runqueue_fraction": 0.02594887809360589,
+      "residual_fraction": 0.719764470857257
+    },
+    {
+      "arm": "busy-sched",
+      "round": 1,
+      "wall_ns": 70970357.0,
+      "cpu_ns": 17998707.5,
+      "runqueue_ns": 1944246,
+      "residual_ns": 51027403.5,
+      "uncertainty_ns": 7834260,
+      "bytes": 16523261,
+      "reads": 2816,
+      "timeslices": 1789,
+      "workload": "cursor_motion",
+      "pass_index": 1,
+      "windows": 22,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 72144078,
+      "wall_coverage": 0.9837308753186921,
+      "byte_coverage": 0.9848368044562104,
+      "cpu_fraction": 0.2536088059976928,
+      "uncertainty_fraction": 0.11038777781546175,
+      "runqueue_fraction": 0.027395184161184367,
+      "residual_fraction": 0.7189960098411228
+    },
+    {
+      "arm": "busy-sched",
+      "round": 1,
+      "wall_ns": 70620289.5,
+      "cpu_ns": 19441878.5,
+      "runqueue_ns": 1583640,
+      "residual_ns": 49594771.0,
+      "uncertainty_ns": 102530,
+      "bytes": 16125438,
+      "reads": 2816,
+      "timeslices": 2021,
+      "workload": "cursor_motion",
+      "pass_index": 2,
+      "windows": 22,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 73513803,
+      "wall_coverage": 0.9606398610611941,
+      "byte_coverage": 0.9611253390221666,
+      "cpu_fraction": 0.2753015972838797,
+      "uncertainty_fraction": 0.00145184904686634,
+      "runqueue_fraction": 0.022424716908021173,
+      "residual_fraction": 0.7022736858080991
+    },
+    {
+      "arm": "busy-sched",
+      "round": 1,
+      "wall_ns": 14491179.0,
+      "cpu_ns": 12894673.5,
+      "runqueue_ns": 9166,
+      "residual_ns": 1587339.5,
+      "uncertainty_ns": 40928,
+      "bytes": 15431168,
+      "reads": 2048,
+      "timeslices": 1082,
+      "workload": "scroll_region",
+      "pass_index": 0,
+      "windows": 16,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 15642713,
+      "wall_coverage": 0.9263852760067899,
+      "byte_coverage": 0.9197609541615824,
+      "cpu_fraction": 0.8898291505473778,
+      "uncertainty_fraction": 0.002824338861592973,
+      "runqueue_fraction": 0.000632522722961327,
+      "residual_fraction": 0.10953832672966085
+    },
+    {
+      "arm": "busy-sched",
+      "round": 1,
+      "wall_ns": 17507268.0,
+      "cpu_ns": 14127814.0,
+      "runqueue_ns": 1738398,
+      "residual_ns": 1641056.0,
+      "uncertainty_ns": 43808,
+      "bytes": 16522242,
+      "reads": 2304,
+      "timeslices": 1280,
+      "workload": "scroll_region",
+      "pass_index": 1,
+      "windows": 18,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 17798575,
+      "wall_coverage": 0.9836331279329946,
+      "byte_coverage": 0.9847934431670092,
+      "cpu_fraction": 0.8069685115918714,
+      "uncertainty_fraction": 0.0025022750551371006,
+      "runqueue_fraction": 0.09929578961149164,
+      "residual_fraction": 0.09373569879663692
+    },
+    {
+      "arm": "busy-sched",
+      "round": 1,
+      "wall_ns": 17398264.0,
+      "cpu_ns": 15006318.5,
+      "runqueue_ns": 637163,
+      "residual_ns": 1754782.5,
+      "uncertainty_ns": 44484,
+      "bytes": 15321209,
+      "reads": 1920,
+      "timeslices": 564,
+      "workload": "scroll_region",
+      "pass_index": 2,
+      "windows": 15,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 20721921,
+      "wall_coverage": 0.8396067140686426,
+      "byte_coverage": 0.9132069464054194,
+      "cpu_fraction": 0.8625181512362383,
+      "uncertainty_fraction": 0.0025568068170479536,
+      "runqueue_fraction": 0.036622217021192456,
+      "residual_fraction": 0.10085963174256926
+    },
+    {
+      "arm": "busy-sched",
+      "round": 1,
+      "wall_ns": 72660254.0,
+      "cpu_ns": 21417979.5,
+      "runqueue_ns": 1050552,
+      "residual_ns": 50191722.5,
+      "uncertainty_ns": 4309756,
+      "bytes": 19986707,
+      "reads": 3328,
+      "timeslices": 2273,
+      "workload": "tui_frames",
+      "pass_index": 0,
+      "windows": 26,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 79413683,
+      "wall_coverage": 0.9149588742786303,
+      "byte_coverage": 0.9562276970028015,
+      "cpu_fraction": 0.2947688498308855,
+      "uncertainty_fraction": 0.05931380311442346,
+      "runqueue_fraction": 0.014458413536511998,
+      "residual_fraction": 0.6907727366326024
+    },
+    {
+      "arm": "busy-sched",
+      "round": 1,
+      "wall_ns": 73206255.5,
+      "cpu_ns": 20246987.5,
+      "runqueue_ns": 1624365,
+      "residual_ns": 51334903.0,
+      "uncertainty_ns": 1043058,
+      "bytes": 20453075,
+      "reads": 3584,
+      "timeslices": 3410,
+      "workload": "tui_frames",
+      "pass_index": 1,
+      "windows": 28,
+      "excluded_overlapping_windows": 2,
+      "pass_wall_ns": 78207516,
+      "wall_coverage": 0.9360514084093913,
+      "byte_coverage": 0.9785402269556248,
+      "cpu_fraction": 0.27657455447915924,
+      "uncertainty_fraction": 0.01424820861107969,
+      "runqueue_fraction": 0.022188882478765767,
+      "residual_fraction": 0.701236563042075
+    },
+    {
+      "arm": "busy-sched",
+      "round": 1,
+      "wall_ns": 75636123.0,
+      "cpu_ns": 19828175.0,
+      "runqueue_ns": 1929908,
+      "residual_ns": 53878040.0,
+      "uncertainty_ns": 103084,
+      "bytes": 20133876,
+      "reads": 3968,
+      "timeslices": 3827,
+      "workload": "tui_frames",
+      "pass_index": 2,
+      "windows": 31,
+      "excluded_overlapping_windows": 1,
+      "pass_wall_ns": 80767027,
+      "wall_coverage": 0.9364727885799239,
+      "byte_coverage": 0.9632687305227409,
+      "cpu_fraction": 0.26215218619812125,
+      "uncertainty_fraction": 0.001362893759110313,
+      "runqueue_fraction": 0.025515691754851053,
+      "residual_fraction": 0.7123321220470277
+    }
+  ],
+  "limits": [
+    "CPU restriction is artificial and not the shipping policy; sleep is not an uncontended baseline on a shared host.",
+    "The helper may also affect other eligible threads, SMT siblings, caches, power/frequency and thermal state; no pure scheduler-only or Ghostty-gap attribution.",
+    "Plain retains common producer-boundary profiling, so it is observer-free for reader clocks/proc, not fully uninstrumented throughput.",
+    "Neither observer neutrality, startup, memory, key latency, presentation latency, nor all-metric superiority follows from this experiment.",
+    "Residual remains unclassified off-CPU/accounting time, not pure blocking. No global sysctl changes, elevated privilege or unrelated-process tracing."
+  ]
+}

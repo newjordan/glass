@@ -1,0 +1,82 @@
+{
+  "schema": "glass.reader-contention-run/v1",
+  "complete": true,
+  "binary": "/work/frosty40/glass-repo/tree/target/release/glass",
+  "observer": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-scheduler-shape/sched-shape-safe.so",
+  "helper": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-reader-contention/reader-contender",
+  "protocol": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-reader-contention/protocol.json",
+  "rounds": 1,
+  "cpu": 0,
+  "arms": [
+    "sleep-plain",
+    "sleep-clock",
+    "sleep-sched",
+    "busy-plain",
+    "busy-clock",
+    "busy-sched"
+  ],
+  "orders": [
+    [
+      "sleep-plain",
+      "sleep-clock",
+      "busy-sched",
+      "sleep-sched",
+      "busy-clock",
+      "busy-plain"
+    ]
+  ],
+  "planned_orders": [
+    [
+      "sleep-plain",
+      "sleep-clock",
+      "busy-sched",
+      "sleep-sched",
+      "busy-clock",
+      "busy-plain"
+    ]
+  ],
+  "sha256": {
+    "/work/frosty40/glass-repo/tree/target/release/glass": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+    "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-scheduler-shape/sched-shape-safe.so": "96ca5870d6200e8fdb06d4f4a23cd045ec4b6096906befb98492d31477ac81b2",
+    "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-reader-contention/reader-contender": "69b2a95f82cc4c363a565fae9895d7f1b690232f1475837c9a4d4e81fbd81e71",
+    "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-reader-contention/protocol.json": "2608639ac5567d5d77c8fb11a0ab40b8f72b7f9d35aed1e39ef74dc8df18ee33",
+    "/work/frosty40/glass-repo/tree/bench/linux/sched-shape.c": "0bf653f6c9b49e6b7701b5ab7e48c7523fda9c021ad58486a9b6cf866452a6de",
+    "/work/frosty40/glass-repo/tree/bench/linux/sched-snapshot.h": "a5d44d55bd7a2e68256d17a275912124c62995cbfb3d902217f8c397880872a2",
+    "/work/frosty40/glass-repo/tree/bench/linux/reader-contender.c": "4e35d26a936c331731bde10f9204e90a09b21f56888febabbaff87b6d2482cb1",
+    "/work/frosty40/glass-repo/tree/bench/linux/reader-contention.py": "cac41bb10de109ea4777f2bfd62b5b922e80eaa863a7b2d9f55948375c296276",
+    "/work/frosty40/glass-repo/tree/bench/linux/run-reader-contention.sh": "1ef5b558642aefdc6eeb640cd4adffaf287b786fc9d4c51043648de41a5b30bf",
+    "/work/frosty40/glass-repo/tree/bench/linux/pipeline-profile.py": "b37fbca23b8360c15b298d93aa840e5ba510dc5e793ffe53bd1954f91dcc8bf2",
+    "/work/frosty40/glass-repo/tree/bench/lib.sh": "a057c54c4b9aa587101d1ee9a3a729f1b73fed1e55f5af56bc4b939e04a62f25",
+    "/work/frosty40/glass-repo/tree/bench/tput.py": "477b0131f1041bda8dd74a64bf8d164d526685bb7fc0c13500b17f897c06542a"
+  },
+  "raw_sha256": {
+    "busy-clock-1.trace": "1cb939b7b339b21290a110e6a3c8eeb442c01156d43fe2bc47cf062ec67bd4e5",
+    "busy-sched-1.trace": "fee61cff4ed1c464e8af87c163263ddf33a77cec766914c40fec2efeb68b71df",
+    "sleep-clock-1.trace": "d9e2c116f7d991aa0b80baae6cf352c5693e27733167ff4e26d948902cc8662d",
+    "sleep-sched-1.trace": "303d5e009c66450b274d21a625f8c6b0a142dbefdcb000be91e51c4852970f31",
+    "tput-busy-clock-1.contention.json": "773ef2a4816328bd635f00a47867c35cc98df94b3a88ff07eecec8fdf420a674",
+    "tput-busy-clock-1.json": "c45f44a838d2d6b5774e02699f7e1121cf3e0c651cb10b9c9c019f90d0fc0883",
+    "tput-busy-clock-1.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-busy-clock-1.profile.json": "05f18be7a07bf6931d8e62c6057462508c221f664ce45d3b737d1d4e6baf1e59",
+    "tput-busy-plain-1.contention.json": "6abb4c7e96ea4376dd5dbb0f62e5d4066eb3e9e5de756ba620f6bb2b6df17a0a",
+    "tput-busy-plain-1.json": "c20b3c143e46815b9566cedd9bf5602561be0fce798bb60166ada5f6e2c14f0f",
+    "tput-busy-plain-1.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-busy-plain-1.profile.json": "665fab3ef4313e1c5fb7085dad81b605a870b9b8cf6294baec2ab5012b855a2a",
+    "tput-busy-sched-1.contention.json": "38db5aaf9a57d575bac907f47e6ddfb10e1bacd44bfba4c45b70f07fde40bb1b",
+    "tput-busy-sched-1.json": "19e070baaeec40c7885eec2648c0207e3804dda52c68e040933f61438b525835",
+    "tput-busy-sched-1.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-busy-sched-1.profile.json": "158e4d04129f0ad244efbc19e6bf513692026f61d79bb71cbe993664730e0cc0",
+    "tput-sleep-clock-1.contention.json": "f85b3170c6cc968e54452cd109b14d89472738b809fd2c53afe12835982ce05b",
+    "tput-sleep-clock-1.json": "c3835a790760bdddbea2e3b48f67c11b48e73078d69b0f2cec66f519b79c3150",
+    "tput-sleep-clock-1.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-sleep-clock-1.profile.json": "ae8c3c34e8091bef07b3ec20d08990589187a9a789218ba106e3128f60645fcb",
+    "tput-sleep-plain-1.contention.json": "78c84d134d1ca2bffb0a67f19c138f289d2e55972d4735deb203d11f7ad648af",
+    "tput-sleep-plain-1.json": "3e3f37520d2ccfc03723b6eace9cca8a3adf2e672d0c8d2927ac8ec6f9f94dd8",
+    "tput-sleep-plain-1.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-sleep-plain-1.profile.json": "b4a6b7ef099e47e9cd42ad548c48e5f3d040cf683a60adcd4c6a5ecfd2f0e246",
+    "tput-sleep-sched-1.contention.json": "f1d9ecd2f898182c93b94e22498cb0ebacfe57a1bd0764c380624a9993eb33cc",
+    "tput-sleep-sched-1.json": "a7695fc06fc9483d0a60c9e882ad2a09f5f61d7bd96b3511e293d23849bda47a",
+    "tput-sleep-sched-1.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-sleep-sched-1.profile.json": "69ed458f768ecc18092851654df402a971a105dbf4e5386e6e65ad7965a2259c"
+  }
+}

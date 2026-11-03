@@ -1,0 +1,66 @@
+{
+  "schema": "glass.contention-corruption/v1",
+  "cases": [
+    {
+      "case": "hash",
+      "rejected": true,
+      "reason": "changed raw artifact: tput-sleep-plain-1.json",
+      "unchanged_files": 30
+    },
+    {
+      "case": "truncated-trace",
+      "rejected": true,
+      "reason": "trace length",
+      "unchanged_files": 30
+    },
+    {
+      "case": "rate",
+      "rejected": true,
+      "reason": "rate/time mismatch",
+      "unchanged_files": 30
+    },
+    {
+      "case": "reader-identity",
+      "rejected": true,
+      "reason": "reader pass identity/affinity",
+      "unchanged_files": 30
+    },
+    {
+      "case": "producer-mask",
+      "rejected": true,
+      "reason": "producer identity/affinity",
+      "unchanged_files": 30
+    },
+    {
+      "case": "reader-mask",
+      "rejected": true,
+      "reason": "reader pass identity/affinity",
+      "unchanged_files": 30
+    },
+    {
+      "case": "helper-incomplete",
+      "rejected": true,
+      "reason": "helper lifecycle",
+      "unchanged_files": 30
+    },
+    {
+      "case": "order",
+      "rejected": true,
+      "reason": "arm order",
+      "unchanged_files": 30
+    },
+    {
+      "case": "source-set",
+      "rejected": true,
+      "reason": "source set",
+      "unchanged_files": 30
+    },
+    {
+      "case": "duplicate-key",
+      "rejected": true,
+      "reason": "duplicate key: cols",
+      "unchanged_files": 30
+    }
+  ],
+  "canonical_unchanged": true
+}

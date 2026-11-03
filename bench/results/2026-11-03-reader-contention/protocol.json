@@ -1,0 +1,25 @@
+{
+  "schema": "glass.reader-contention-protocol/v1",
+  "question": "Does bounded own-process CPU competition causally increase selected Glass reader runnable waiting, and does end-to-end throughput respond in matched plain and clock controls?",
+  "runtime_policy_change": false,
+  "competitor_comparison": false,
+  "binary_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "reader_cpu": 0,
+  "treatments": ["sleep", "busy"],
+  "observers": ["plain", "clock", "sched"],
+  "pilot_rounds": 1,
+  "confirmatory_rounds": 12,
+  "order": "Six-arm Williams design rows [0,1,5,2,4,3] modulo six; six rows then their reversals. All six arms occur once per round and twice per launch position. Not all 720 permutations.",
+  "control": "Pin only the own terminal pty-read TID to logical CPU 0 in both treatments. Launch an own helper on CPU 0 that blocks waiting for pipe EOF (sleep) or does integer work until pipe EOF (busy). Original producer and all other terminal thread affinities remain unchanged. Restore the reader mask before producer exit.",
+  "payload": "Unchanged tput.py generators, byte counts, DA1 completion and fastest-of-three estimator through the common zero-periodic-sampling pipeline wrapper. 154x39.",
+  "primary": "Busy/sleep ratios for ASCII and scroll_region in the plain arm; paired scheduler-arm per-round median runnable-wait fraction differences. Preserve all six workloads and all observer arms.",
+  "analysis": "Outer rounds are units. Report all paired ratios, signs, exploratory two-sided sign p, and six-workload Holm correction for throughput within each observer. Report per-round medians over three internal passes for decomposition; never count passes as independent trials. No data-dependent stopping, exclusions, pooling with pilot or previous captures, or candidate promotion.",
+  "failure_policy": "Fail closed on binary/source/raw hashes, missing or recycled reader TID, wrong CPU masks, incomplete helper teardown, incomplete pass or trace, wrong geometry, window drop/discontinuity or impossible clocks. Retain failed artifacts; a changed protocol or source requires a fresh run directory.",
+  "limits": [
+    "CPU restriction is artificial and not the shipping policy; sleep is not an uncontended baseline on a shared host.",
+    "The helper may also affect other eligible threads, SMT siblings, caches, power/frequency and thermal state; no pure scheduler-only or Ghostty-gap attribution.",
+    "Plain retains common producer-boundary profiling, so it is observer-free for reader clocks/proc, not fully uninstrumented throughput.",
+    "Neither observer neutrality, startup, memory, key latency, presentation latency, nor all-metric superiority follows from this experiment.",
+    "Residual remains unclassified off-CPU/accounting time, not pure blocking. No global sysctl changes, elevated privilege or unrelated-process tracing."
+  ]
+}

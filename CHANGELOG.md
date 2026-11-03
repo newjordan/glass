@@ -13,6 +13,17 @@ A program runs in a pseudo-terminal, and what it writes comes in through
 No dialect is the reference one; each is an adapter onto one shared
 description of what to show.
 
+### Controlled reader contention (diagnostic only)
+
+- Capture a predeclared 12-round, six-arm own-reader contention experiment:
+  72 confirmatory sessions plus separate six-session pilot and hardened smoke.
+- Detect runnable-wait sensitivity and a scroll observer interaction; plain
+  ASCII/scroll effects do not justify a shipping scheduler policy. Report
+  Unicode's small controlled penalty and substantial snapshot uncertainty.
+- Add read-only treatment replay, ten non-mutating corruption challenges, and
+  SIGTERM/SIGHUP/SIGINT affinity/helper cleanup checks. Preserve the selected
+  release bytes and all 120 Rust sources; no candidate promotion or title claim.
+
 ### Own-reader scheduler accounting (diagnostic only)
 
 - Validate own-thread runnable-wait accounting on this kernel even with

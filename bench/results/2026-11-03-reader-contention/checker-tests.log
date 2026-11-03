@@ -1,0 +1,14 @@
+test_clock_mode_has_no_sched_fields (test_analyze_sched_shape.SchedulerReplayTests.test_clock_mode_has_no_sched_fields) ... ok
+test_counter_regression_and_invalid_time (test_analyze_sched_shape.SchedulerReplayTests.test_counter_regression_and_invalid_time) ... ok
+test_duplicate_json_rejected_without_change (test_analyze_sched_shape.SchedulerReplayTests.test_duplicate_json_rejected_without_change) ... ok
+test_header_length_drop_and_tail_rejected (test_analyze_sched_shape.SchedulerReplayTests.test_header_length_drop_and_tail_rejected) ... ok
+test_negative_residual_not_repaired (test_analyze_sched_shape.SchedulerReplayTests.test_negative_residual_not_repaired) ... ok
+test_recycled_reader_rejected (test_analyze_sched_shape.SchedulerReplayTests.test_recycled_reader_rejected) ... ok
+test_scheduler_interval_and_trace (test_analyze_sched_shape.SchedulerReplayTests.test_scheduler_interval_and_trace) ... ok
+test_whole_windows_only (test_analyze_sched_shape.SchedulerReplayTests.test_whole_windows_only) ... ok
+test_window_contiguity (test_analyze_sched_shape.SchedulerReplayTests.test_window_contiguity) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.013s
+
+OK

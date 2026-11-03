@@ -1,0 +1,69 @@
+Iteration 17: controlled own-reader contention and observer interaction
+Status: reported research, not championship acceptance or runtime promotion.
+
+Frozen exact build: d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c.
+Recovered interrupted scheduler iteration and checkpointed it in cc99a3f.
+Prior calibrated replay reproduced exactly: 36 terminal sessions, 36 trials,
+nine existing scheduler checker tests passed.
+
+New work: protocol written before pilot; 12 deterministic balanced six-arm
+rounds (sleep/busy x plain/clock/sched), 72 confirmatory sessions. Separate
+6-session pilot-v2 and 6-session hardened smoke; first failed pilot retained.
+CPU0 pin applies only to own reader/helper; other affinities recorded, checked.
+Same payload, geometry, DA1, fastest-of-three estimator and shared producer
+pass-boundary instrumentation. Plain is reader-observer-free, not fully
+uninstrumented. No new Ghostty session, no Rust edit, no terminal rebuild.
+
+Busy/sleep plain paired median ratios, 12 outer-round units:
+ ASCII .9108, 3 faster/9 slower, six-workload Holm p=.291992.
+ scroll_region 1.0132, 7 faster/5 slower, Holm p=.774414.
+ Unicode .9780, 1 faster/11 slower, Holm p=.031738.
+Truecolor .9764 (0/12, Holm p=.002930), cursor .9876 (1/11, p=.031738),
+TUI .9917 (2/10, p=.115723). These are artificial-treatment sensitivities,
+not optimizations, no-effect equivalence, or ordinary competitor comparisons.
+
+Runnable-wait fractions increase under the known busy treatment: ASCII 12/12
+rounds, scroll/Unicode 11/12. Paired median differences are respectively
++7.574, +7.731 and +2.166 percentage points. However scroll throughput differs
+across observers: plain 1.0132, clock 1.0611, sched .8578. The explicitly
+POST-CAPTURE exploratory sched/plain ratio-of-ratios is .9008 (11/12 below 1,
+Holm p=.038086 within six workloads). This warns against prescribing a
+scheduler change from instrumented traces. It does not prove a pure mechanism.
+
+Unicode snapshot uncertainty median rises from .125% to 2.541% of sampled
+wall; truecolor reaches 4.727%. Residual is unclassified off-CPU/accounting,
+not pure blocked I/O. CPU0 pin is artificial; shared load, SMT, caches,
+frequency, deterministic ordering and carryover are not fully controlled.
+The observed Unicode penalty does not localize the selected build's remaining
+~5.01% median parity gap against Ghostty in the historical exact-build audit.
+
+Verification: 84 valid sessions replay numerically identically. Ten disposable
+real-capture corruptions are rejected, including updated dependent hashes;
+challenged files remain unchanged. Nine existing scheduler tests pass. Separate
+SIGTERM/SIGHUP/SIGINT injected-wait tests use real reader pins/helpers and all
+restore reader affinity, remove helpers, and record complete:false. Current
+wrapper hardens signal unwinding/pipe cleanup; original capture wrapper is
+explicitly snapshotted. SIGKILL requires owner-level terminal/group cleanup.
+
+120 Rust sources, all 193 prior scheduler/audit files, selected release hash
+and byte comparison to /tmp/glass-i17-selected remain unchanged. Unrelated
+untracked work preserved. No candidate promoted, no all-metric title asserted.
+
+Primary artifacts:
+ bench/results/2026-11-03-reader-contention/README.md
+ bench/results/2026-11-03-reader-contention/protocol.json
+ bench/results/2026-11-03-reader-contention/balanced/manifest.json
+ bench/results/2026-11-03-reader-contention/balanced-replay.json
+ bench/results/2026-11-03-reader-contention/exploratory-observer-contrasts.json
+ bench/results/2026-11-03-reader-contention/corruption-replay.json
+ bench/results/2026-11-03-reader-contention/signal-smoke-replay.json
+
+Replay: python3 -B bench/linux/analyze-reader-contention.py
+ bench/results/2026-11-03-reader-contention/balanced
+Challenge: python3 -B bench/results/2026-11-03-reader-contention/check-corruption.py
+
+Decision: retain selected runtime. A next useful door is an observer-free
+exact-build placement experiment with predeclared reciprocal controls,
+Unicode guard, and all-metric gates. Do not repeat buffer/parser microtuning
+based on these instrumented counters. No global acceptance command is bound;
+the championship objective remains open.

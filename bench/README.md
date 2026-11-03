@@ -538,3 +538,34 @@ source/DSO and separately hardened safe-smoke capture remain distinct.
 Run `python3 -B -m unittest discover -s bench -p 'test_*.py' -v` from repo root.
 No fast-sample selection, performance neutrality, promotion or championship is
 implied by this diagnostic.
+
+### Bounded own-reader contention (Linux, diagnostic only)
+
+The scheduler follow-up crosses an own sleep/busy helper with plain/clock/
+scheduler observers in a predeclared 12-round six-arm balanced order. It pins
+only the own `pty-read` TID and helper, preserves recorded producer/non-reader
+masks, and restores the original reader mask before exit. No global scheduling
+setting or priority is changed. Artificial restriction is not shipping policy.
+
+See [protocol, results and limitations](results/2026-11-03-reader-contention/README.md).
+The runner requires fresh `OUT`, exact `GLASS`, `OBSERVER`, `HELPER`, and
+`PROTOCOL` paths, and uses the ordinary headless-output helper. Build only the
+own helper with `cc -O2 -Wall -Wextra -Werror -std=c11
+bench/linux/reader-contender.c -o /chosen/path/reader-contender`; no terminal
+rebuild is necessary. Do not run concurrent headless benchmark campaigns.
+
+Read-only replay (does not launch terminals or repair evidence):
+
+```sh
+python3 -B bench/linux/analyze-reader-contention.py \
+  bench/results/2026-11-03-reader-contention/balanced
+python3 -B bench/results/2026-11-03-reader-contention/check-corruption.py
+```
+
+Replay verifies complete arm order/source/raw hashes, unchanged payloads and
+rates, identities/masks on all passes, trace/window integrity, and helper/reader
+cleanup. The exact capture wrapper snapshot is explicit and hash matched.
+Catchable termination restores affinity and reaps helpers; SIGKILL cannot run
+Python cleanup, so the owning caller must terminate its terminal/process group.
+This is diagnostic sensitivity evidence, not an observer-free throughput gate,
+competitor ranking, runtime promotion, or world-championship acceptance.

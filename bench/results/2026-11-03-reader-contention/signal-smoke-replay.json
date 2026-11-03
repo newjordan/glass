@@ -1,0 +1,27 @@
+{
+  "schema": "glass.contention-signal-smoke/v1",
+  "cases": [
+    {
+      "signal": "SIGTERM",
+      "interrupted": true,
+      "restored": true,
+      "helper_gone": true,
+      "complete": false
+    },
+    {
+      "signal": "SIGHUP",
+      "interrupted": true,
+      "restored": true,
+      "helper_gone": true,
+      "complete": false
+    },
+    {
+      "signal": "SIGINT",
+      "interrupted": true,
+      "restored": true,
+      "helper_gone": true,
+      "complete": false
+    }
+  ],
+  "note": "Injected payload wait, real reader pin/helper, not benchmark evidence."
+}

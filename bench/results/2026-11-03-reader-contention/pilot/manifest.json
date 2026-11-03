@@ -1,0 +1,43 @@
+{
+  "schema": "glass.reader-contention-run/v1",
+  "complete": false,
+  "binary": "/work/frosty40/glass-repo/tree/target/release/glass",
+  "observer": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-scheduler-shape/sched-shape-safe.so",
+  "helper": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-reader-contention/reader-contender",
+  "protocol": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-reader-contention/protocol.json",
+  "rounds": 1,
+  "cpu": 0,
+  "arms": [
+    "sleep-plain",
+    "sleep-clock",
+    "sleep-sched",
+    "busy-plain",
+    "busy-clock",
+    "busy-sched"
+  ],
+  "orders": [],
+  "planned_orders": [
+    [
+      "sleep-plain",
+      "sleep-clock",
+      "busy-sched",
+      "sleep-sched",
+      "busy-clock",
+      "busy-plain"
+    ]
+  ],
+  "sha256": {
+    "/work/frosty40/glass-repo/tree/target/release/glass": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+    "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-scheduler-shape/sched-shape-safe.so": "96ca5870d6200e8fdb06d4f4a23cd045ec4b6096906befb98492d31477ac81b2",
+    "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-reader-contention/reader-contender": "69b2a95f82cc4c363a565fae9895d7f1b690232f1475837c9a4d4e81fbd81e71",
+    "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-reader-contention/protocol.json": "2608639ac5567d5d77c8fb11a0ab40b8f72b7f9d35aed1e39ef74dc8df18ee33",
+    "/work/frosty40/glass-repo/tree/bench/linux/sched-shape.c": "0bf653f6c9b49e6b7701b5ab7e48c7523fda9c021ad58486a9b6cf866452a6de",
+    "/work/frosty40/glass-repo/tree/bench/linux/sched-snapshot.h": "a5d44d55bd7a2e68256d17a275912124c62995cbfb3d902217f8c397880872a2",
+    "/work/frosty40/glass-repo/tree/bench/linux/reader-contender.c": "4e35d26a936c331731bde10f9204e90a09b21f56888febabbaff87b6d2482cb1",
+    "/work/frosty40/glass-repo/tree/bench/linux/reader-contention.py": "cac41bb10de109ea4777f2bfd62b5b922e80eaa863a7b2d9f55948375c296276",
+    "/work/frosty40/glass-repo/tree/bench/linux/run-reader-contention.sh": "940cead55476d884c3ac0d39e0a5711ddd1474451bb08445820b26e0cf8acab2",
+    "/work/frosty40/glass-repo/tree/bench/linux/pipeline-profile.py": "b37fbca23b8360c15b298d93aa840e5ba510dc5e793ffe53bd1954f91dcc8bf2",
+    "/work/frosty40/glass-repo/tree/bench/lib.sh": "a057c54c4b9aa587101d1ee9a3a729f1b73fed1e55f5af56bc4b939e04a62f25",
+    "/work/frosty40/glass-repo/tree/bench/tput.py": "477b0131f1041bda8dd74a64bf8d164d526685bb7fc0c13500b17f897c06542a"
+  }
+}
