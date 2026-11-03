@@ -1,0 +1,6 @@
+{
+  "bench/results/2026-11-03-decoded-handoff/checkpoint-initial.json": "d85caa200b350096170c40914fc90cb82f2ac89be02325160bf011c15c0d17e4",
+  "bench/results/2026-11-03-decoded-handoff/hash-seed-checkpoints.json": "b4ee30aecd943aa94374f6888a5a2c40e222917d41b7b3329f3f31e2da2990e3",
+  "bench/results/2026-11-03-decoded-handoff/frozen-replay-initial.json": "de098cc0f0521213a65eaabcc027292e5a4c1f84e99561dc5313f3b7d79fa471",
+  "bench/results/2026-11-03-decoded-handoff/frozen-index.json": "b7d5101d918ba9f00b6efdead65c97e4c2e8a128613535b833fb656896d5656f"
+}

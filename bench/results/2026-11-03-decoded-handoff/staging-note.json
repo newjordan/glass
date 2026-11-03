@@ -1,0 +1,5 @@
+{
+  "schema": "glass.decoded-handoff-staging/v1",
+  "whitespace": "Retained candidate.patch contains a raw diff context line consisting of one space; git diff --cached --check flags it as trailing whitespace. Preserve frozen raw patch bytes; check all other paths with only Rust test harness blank-at-EOF exception. Canonical checkpoint applies this exact patch to the control snapshot and byte-compares result to candidate snapshot.",
+  "runtime_promotion": false
+}

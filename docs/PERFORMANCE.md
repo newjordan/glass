@@ -858,3 +858,31 @@ python3 -B bench/results/2026-11-03-csi-outlining/verify.py
 python3 -B bench/replay-evidence-index.py \
   bench/results/2026-11-03-csi-outlining/frozen-index.json
 ```
+
+### Decoded-lookahead handoff diagnostic (2026-11-03, iteration 27)
+
+Reject a distinct Unicode candidate returning put_row's already-decoded
+lookahead rather than decoding it again in print_utf8. Exactly 12 AB/BA engine
+pairs give Unicode CPU ratio **.918109** (1/12 wins); no runtime promotion or
+PTY/Ghostty escalation. A separate test-only census confirms **4.1341% fewer
+UTF8 attempts** (2.0050% fewer non-ASCII attempts), with all instrumented rates
+excluded. Fewer source-level calls do not imply faster execution.
+
+Both exact print_utf8 ELFs start at **0x2623a0**, but candidate instructions grow
+from 1,967 to 2,252 and bytes from 8,524 to 9,699. Caller apply retains its
+relocation-masked instruction stream. Fixed entry address rules out entry
+movement as necessary for this candidate's loss, not all layout/codegen effects
+or a unique causal explanation. Both arms pass 383 terminal tests and 12,800
+differential streams. All 120 Rust sources, 6,421 prior tracked reports/results
+and selected executable are unchanged; restored Cargo artifact byte-matches
+control. Retain failed census invocation before corrected run; no engine
+sessions lost or retried. Full report and read-only replay:
+
+```sh
+python3 -B bench/results/2026-11-03-decoded-handoff/verify.py
+python3 -B bench/replay-evidence-index.py \
+  bench/results/2026-11-03-decoded-handoff/frozen-index.json
+```
+
+See `bench/results/2026-11-03-decoded-handoff/README.md` and
+`reports/research-1eecf9876bb302e9da10ff629e71e6d8-27.txt`.

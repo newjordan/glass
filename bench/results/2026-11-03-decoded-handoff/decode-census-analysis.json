@@ -1,0 +1,75 @@
+{
+  "schema": "glass.decode-census-analysis/v1",
+  "counts": {
+    "control": {
+      "ascii": [
+        0,
+        0,
+        0
+      ],
+      "unicode": [
+        78778,
+        1410225,
+        1054160
+      ],
+      "truecolor": [
+        0,
+        0,
+        0
+      ],
+      "cursor_motion": [
+        0,
+        0,
+        0
+      ],
+      "scroll_region": [
+        0,
+        0,
+        0
+      ],
+      "tui_frames": [
+        0,
+        0,
+        0
+      ]
+    },
+    "candidate": {
+      "ascii": [
+        0,
+        0,
+        0
+      ],
+      "unicode": [
+        39389,
+        1365614,
+        1033024
+      ],
+      "truecolor": [
+        0,
+        0,
+        0
+      ],
+      "cursor_motion": [
+        0,
+        0,
+        0
+      ],
+      "scroll_region": [
+        0,
+        0,
+        0
+      ],
+      "tui_frames": [
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "unicode_attempt_ratio": 0.9586593545124713,
+  "unicode_non_ascii_attempt_ratio": 0.9799499127267208,
+  "unicode_nonempty_attempt_ratio": 0.9733211328587051,
+  "unicode_removed_attempts": 105136,
+  "timing_rates_used": false,
+  "note": "Instrumented test-only builds, one run per arm at scale .25, not timing data. Lead categories count attempts, not valid codepoints. Fewer calls do not imply fewer cycles, instructions or optimized instructions in the uninstrumented binary."
+}

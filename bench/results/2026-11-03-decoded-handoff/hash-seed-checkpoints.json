@@ -1,0 +1,54 @@
+{
+  "schema": "glass.decoded-handoff-hash-seeds/v1",
+  "checks": [
+    {
+      "seed": "0",
+      "exit": 0,
+      "identical": true,
+      "stdout_sha256": "d85caa200b350096170c40914fc90cb82f2ac89be02325160bf011c15c0d17e4"
+    },
+    {
+      "seed": "1",
+      "exit": 0,
+      "identical": true,
+      "stdout_sha256": "d85caa200b350096170c40914fc90cb82f2ac89be02325160bf011c15c0d17e4"
+    },
+    {
+      "seed": "2",
+      "exit": 0,
+      "identical": true,
+      "stdout_sha256": "d85caa200b350096170c40914fc90cb82f2ac89be02325160bf011c15c0d17e4"
+    },
+    {
+      "seed": "3",
+      "exit": 0,
+      "identical": true,
+      "stdout_sha256": "d85caa200b350096170c40914fc90cb82f2ac89be02325160bf011c15c0d17e4"
+    },
+    {
+      "seed": "7",
+      "exit": 0,
+      "identical": true,
+      "stdout_sha256": "d85caa200b350096170c40914fc90cb82f2ac89be02325160bf011c15c0d17e4"
+    },
+    {
+      "seed": "13",
+      "exit": 0,
+      "identical": true,
+      "stdout_sha256": "d85caa200b350096170c40914fc90cb82f2ac89be02325160bf011c15c0d17e4"
+    },
+    {
+      "seed": "42",
+      "exit": 0,
+      "identical": true,
+      "stdout_sha256": "d85caa200b350096170c40914fc90cb82f2ac89be02325160bf011c15c0d17e4"
+    },
+    {
+      "seed": "314159",
+      "exit": 0,
+      "identical": true,
+      "stdout_sha256": "d85caa200b350096170c40914fc90cb82f2ac89be02325160bf011c15c0d17e4"
+    }
+  ],
+  "limits": "Replay determinism only, not independent correctness or measurement accuracy."
+}

@@ -1,0 +1,21 @@
+{
+  "schema": "glass.decode-census-protocol/v1",
+  "arms": [
+    "control",
+    "candidate"
+  ],
+  "scale": ".25",
+  "rounds": "1",
+  "read": "4095",
+  "workloads": [
+    "ascii",
+    "unicode",
+    "truecolor",
+    "cursor_motion",
+    "scroll_region",
+    "tui_frames"
+  ],
+  "question": "Does the exact candidate reduce utf8_at invocations on the measured workload shapes?",
+  "observation": "Thread-local [end-of-slice, ASCII-lead, non-ASCII-lead] attempt counters, reset immediately after round reset sequence, report immediately after feed. One fixed run per arm. No decode validity inference.",
+  "limits": "Test-only instrumentation changes codegen. Rates printed by speed are discarded, not pooled with uninstrumented screen. Attempts are not cycles or independently executed instructions."
+}

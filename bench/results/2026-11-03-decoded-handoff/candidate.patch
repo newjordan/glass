@@ -1,0 +1,68 @@
+diff --git i/crates/term/src/engine.rs w/crates/term/src/engine.rs
+index 4987a85..4291ba4 100644
+--- i/crates/term/src/engine.rs
++++ w/crates/term/src/engine.rs
+@@ -1833,10 +1833,15 @@ impl Watch<'_> {
+         loop {
+             // As many as fit go into the cursor's row at once; this loop
+             // takes the one that stopped them.
+-            if plain {
+-                (at, held) = self.put_row(text, at, held, ascii);
+-            }
+-            let Some((c, len)) = utf8_at(text, at) else {
++            let next = if plain {
++                let (end, pending, next) = self.put_row(text, at, held, ascii);
++                at = end;
++                held = pending;
++                next
++            } else {
++                utf8_at(text, at)
++            };
++            let Some((c, len)) = next else {
+                 break;
+             };
+             if ('\u{7f}'..='\u{9f}').contains(&c) {
+@@ -1886,11 +1891,11 @@ impl Watch<'_> {
+     /// a C1 control, or at a held character `put_plain` would refuse, and
+     /// returns where it stopped and what it holds.
+     #[inline(always)]
+-    fn put_row(&mut self, text: &[u8], mut at: usize, mut held: Option<(char, usize)>, ascii: bool) -> (usize, Option<(char, usize)>) {
++    fn put_row(&mut self, text: &[u8], mut at: usize, mut held: Option<(char, usize)>, ascii: bool) -> (usize, Option<(char, usize)>, Option<(char, usize)>) {
+         let columns = self.term.columns();
+         let grid = self.term.grid_mut();
+         if grid.cursor.input_needs_wrap {
+-            return (at, held);
++            return (at, held, utf8_at(text, at));
+         }
+         let line = grid.cursor.point.line;
+         let mut column = grid.cursor.point.column.0;
+@@ -1943,7 +1948,11 @@ impl Watch<'_> {
+             flags: flags | CellFlags::WIDE_CHAR_SPACER,
+             ..narrow.clone()
+         };
+-        while let Some((c, len)) = utf8_at(text, at) {
++        // A stopped row has already decoded the next character. Keep that
++        // lookahead for print_utf8, including C1, invalid and incomplete
++        // boundaries; only committed characters advance at/held.
++        let mut next = utf8_at(text, at);
++        while let Some((c, len)) = next {
+             if ('\u{7f}'..='\u{9f}').contains(&c) {
+                 break;
+             }
+@@ -2015,6 +2024,7 @@ impl Watch<'_> {
+             }
+             held = Some((c, at));
+             at += len;
++            next = utf8_at(text, at);
+         }
+         if occ_to > start_column {
+             row.occ_bump(occ_to - 1);
+@@ -2026,7 +2036,7 @@ impl Watch<'_> {
+         grid.cursor.point.column = Column(column);
+         grid.cursor.input_needs_wrap = wrap;
+         self.drained += written;
+-        (at, held)
++        (at, held, next)
+     }
+ 
+     /// One character of a run `print_utf8` checked: written straight into

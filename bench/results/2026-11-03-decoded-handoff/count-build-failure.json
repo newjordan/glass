@@ -1,0 +1,7 @@
+{
+  "exit": 1,
+  "phase": "first instrumented build, before timing/census",
+  "reason": "used unsupported build helper flags; argparse exited 2; source finally restored",
+  "retained_empty_receipt": "build-count-control.json",
+  "screen_affected": false
+}

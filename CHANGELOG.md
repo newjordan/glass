@@ -208,6 +208,19 @@ description of what to show.
 
 ### Open intake
 
+### Decoded Unicode handoff: fewer calls, larger hot routine, rejection
+
+- Reject returning decoded put_row lookahead: 12 balanced engine pairs yield
+  .918109 Unicode CPU ratio despite 4.1341% fewer instrumented decode attempts.
+- Exact print_utf8 entry address stays fixed; static instructions grow from
+  1,967 to 2,252. Caller instruction stream unchanged. Diagnostic, not causal
+  cost attribution or a Ghostty win. No instrumented rates used as timing.
+- Both arms pass 383 tests + 12,800 streams. Preserve 120 crate Rust files,
+  6,421 prior reports/results and selected terminal; restore exact Cargo ELF.
+- Retain raw sessions, census sources/failed first driver, disassembly, 23
+  corruption checks and historical documentation adapter for frozen replay.
+
+
 
 ### Parser-ground boundary guard and fresh-build provenance
 

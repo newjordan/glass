@@ -1,0 +1,47 @@
+{
+  "schema": "glass.decode-census-raw/v1",
+  "protocol_sha256": "58061d4d4bb1bde75d6e4ac2489cdd477a864ba4bfc63eb552c8b8caee15417c",
+  "runner_sha256": "e60d11cf37d282848fff8e359fe587ddad9ca872e6d95222e4d5f1df15346ea0",
+  "sessions": [
+    {
+      "arm": "control",
+      "argv": [
+        "/tmp/glass-i27-count-control-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "settings": {
+        "GLASS_BENCH_SCALE": ".25",
+        "GLASS_BENCH_ROUNDS": "1",
+        "GLASS_BENCH_READ": "4095",
+        "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames"
+      },
+      "binary_sha256": "90e0071cbf955dadca2138ceafbbd309f3ad81ba02d3bfb3dd09993f1047e751",
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.09s\n\n",
+      "stderr": "decode-calls ascii: [0, 0, 0]\n         ascii:  1114.5 MB/s   1118.8 MB/cpu-s  (6291605 bytes, read 4095)\ndecode-calls unicode: [78778, 1410225, 1054160]\n       unicode:   241.6 MB/s    242.3 MB/cpu-s  (4194372 bytes, read 4095)\ndecode-calls truecolor: [0, 0, 0]\n     truecolor:   329.4 MB/s    330.0 MB/cpu-s  (6294280 bytes, read 4095)\ndecode-calls cursor_motion: [0, 0, 0]\n cursor_motion:   259.5 MB/s    259.9 MB/cpu-s  (4194604 bytes, read 4095)\ndecode-calls scroll_region: [0, 0, 0]\n scroll_region:  1721.1 MB/s   1726.4 MB/cpu-s  (4194465 bytes, read 4095)\ndecode-calls tui_frames: [0, 0, 0]\n    tui_frames:   303.6 MB/s    304.1 MB/cpu-s  (5225416 bytes, read 4095)\n"
+    },
+    {
+      "arm": "candidate",
+      "argv": [
+        "/tmp/glass-i27-count-candidate-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "settings": {
+        "GLASS_BENCH_SCALE": ".25",
+        "GLASS_BENCH_ROUNDS": "1",
+        "GLASS_BENCH_READ": "4095",
+        "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames"
+      },
+      "binary_sha256": "201f59120cc91554c9c6393b125e8744de3b60c156aab0a6ffef8d5339a50cda",
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.09s\n\n",
+      "stderr": "decode-calls ascii: [0, 0, 0]\n         ascii:  1043.1 MB/s   1047.9 MB/cpu-s  (6291605 bytes, read 4095)\ndecode-calls unicode: [39389, 1365614, 1033024]\n       unicode:   230.8 MB/s    231.3 MB/cpu-s  (4194372 bytes, read 4095)\ndecode-calls truecolor: [0, 0, 0]\n     truecolor:   324.5 MB/s    325.0 MB/cpu-s  (6294280 bytes, read 4095)\ndecode-calls cursor_motion: [0, 0, 0]\n cursor_motion:   259.0 MB/s    259.6 MB/cpu-s  (4194604 bytes, read 4095)\ndecode-calls scroll_region: [0, 0, 0]\n scroll_region:  1769.7 MB/s   1775.7 MB/cpu-s  (4194465 bytes, read 4095)\ndecode-calls tui_frames: [0, 0, 0]\n    tui_frames:   302.2 MB/s    302.9 MB/cpu-s  (5225416 bytes, read 4095)\n"
+    }
+  ]
+}

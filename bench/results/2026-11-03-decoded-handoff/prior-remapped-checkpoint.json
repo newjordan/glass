@@ -1,0 +1,30 @@
+{
+  "schema": "glass.csi-outlining-checkpoint/v1",
+  "sessions": 48,
+  "blocks": 12,
+  "runtime_promotion": false,
+  "engine_screen_cleared": false,
+  "primary_cpu_ratios": {
+    "ascii": 1.0748125773596051,
+    "unicode": 0.975961980879342,
+    "truecolor": 1.0494263219681592,
+    "cursor_motion": 1.0604091547901908,
+    "scroll_region": 1.059253633841146,
+    "tui_frames": 1.0789430424490374
+  },
+  "failed_point_guards": [
+    "unicode"
+  ],
+  "terminal_tests_per_new_arm_and_restored_control": 383,
+  "differential_streams_per_new_arm_and_restored_control": 12800,
+  "existing_python_tests": 65,
+  "corruption_cases_rejected": 23,
+  "codegen_decimal_loop_register": "r9",
+  "print_utf8_normalized_instructions": 1967,
+  "unchanged_crate_rust_sources": 120,
+  "unchanged_prior_result_report_files": 6318,
+  "selected_binary_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "frozen_file_references": 99,
+  "prior_checkpoint_replayed": true,
+  "note": "Read-only operational research/evidence replay, not unique causal attribution, end-to-end superiority or championship acceptance."
+}

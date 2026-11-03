@@ -1,0 +1,100 @@
+# Decoded lookahead handoff: fewer calls, slower Unicode
+
+**Rejected runtime candidate; reported local research, not championship acceptance.**
+
+## New intervention
+
+`put_row` decodes a lookahead before testing the held glyph and cell guards.
+Previously, a stopped row returned only `(at, held)` and `print_utf8` decoded
+that same unconsumed position again. The single candidate also returns the
+lookahead, including `None` at invalid/incomplete/end boundaries. No decoder,
+width lookup, parser authority, row mutation or chunk setting changed.
+
+Protocol and both source arms were retained before serial builds/timing.
+Control byte-matches iteration 26's exact inline-control ELF. Each arm passes
+**383 terminal tests** (11 ignored) and **12,800 differential streams**. All
+four source inputs are restored in `finally`; the final rebuilt Cargo artifact
+also byte-matches control. The selected release terminal is never overwritten.
+
+## Predeclared screen
+
+Exactly **12 alternating AB/BA pairs**, **24 sessions**, six workloads, scale 2,
+five internal repetitions, read size 4095. Each printed rate is best-of-five;
+internal repetitions are not five independent trials. No pilot, rescue variant,
+extra pair, pooling or PTY escalation. Ratios are candidate/control CPU rates.
+
+| Workload | Median CPU ratio | Wins/12 | Six-workload Holm p |
+|---|---:|---:|---:|
+| ASCII | 1.003895 | 7 | .774414 |
+| Unicode | **.918109** | **1** | .038086 |
+| Truecolor | .988338 | 1 | .038086 |
+| Cursor motion | .988315 | 1 | .038086 |
+| Scroll region | 1.010725 | 11 | .038086 |
+| TUI frames | .986164 | 3 | .291992 |
+
+Unicode fails both the >=1.02 target and >=.98 point guard. Other point guards
+clear, but this is not evidence of noninferiority. Sign-test p values assume
+independent fair signs; sequential balance on a shared host does not establish
+that assumption. The candidate is rejected. No new Ghostty, PTY throughput,
+latency, startup, frame or memory comparison was made.
+
+## Mechanism diagnostic, kept separate from timing
+
+After timing, test-only thread-local counters record three classes of `utf8_at`
+attempts: end-of-slice, ASCII lead, non-ASCII lead. One fixed invocation per arm
+at scale .25, one internal repetition, read 4095. Counters reset after the
+workload's setup sequence. **All instrumented rates are excluded.**
+
+| Unicode decode attempts | Control | Candidate |
+|---|---:|---:|
+| End-of-slice | 78,778 | 39,389 |
+| ASCII lead | 1,410,225 | 1,365,614 |
+| Non-ASCII lead | 1,054,160 | 1,033,024 |
+
+105,136 fewer attempts overall (**4.1341%**); nonempty attempts fall **2.6679%**;
+non-ASCII attempts fall **2.0050%**. All five other workload counters are zero.
+This confirms the source-level handoff saves calls in this instrumented build,
+not cycles, retired instructions or faster uninstrumented execution.
+
+The initial census driver used unsupported helper flags. Argument parsing
+stopped before compilation/census; its driver, empty receipt and failure record
+are retained. The corrected driver produced exactly the planned two sessions.
+No measured sessions were retried or pooled, and engine timing is unaffected.
+
+## Exact timing ELF census
+
+Both `print_utf8` routines begin at **0x2623a0**, keeping entry virtual address
+and alignment fixed. The candidate grows from **8,524 to 9,699 bytes** (+13.78%)
+and **1,967 to 2,252 instructions** (+14.49%). Stack-referencing instruction
+counts are 420 and 441; both allocate a 0x118-byte stack frame. These are static
+counts, not dynamic costs or proof of register-spill causality.
+
+`Engine::apply` starts at 0x258340 with 9,774 bytes / 2,048 instructions in both
+ELFs and the same relocation-masked instruction hash. Other layout, data and
+callee displacements are not held fixed. The result rules out **entry-address
+movement** as a necessary explanation for this candidate's loss; it does not
+explain iteration 26's unchanged-callee regression or uniquely attribute cost.
+
+## Replay and preservation
+
+```sh
+python3 -B bench/results/2026-11-03-decoded-handoff/verify.py
+python3 -B bench/replay-evidence-index.py \
+  bench/results/2026-11-03-decoded-handoff/frozen-index.json
+```
+
+The checkpoint checks build receipts and source hashes, applies the exact patch
+in a disposable directory, replays raw decisions, disassembly and census, and
+rejects 23 corruptions. Prior iteration verification runs through an exact
+location/index-only adapter with three explicit historical documentation
+snapshots. That prior checkpoint includes the existing **65 Python tests**.
+Original evidence and checkers remain unchanged.
+
+All **120 crate Rust sources**, **6,421 prior tracked result/report files**, and
+the selected terminal executable remain byte-identical. Temporary exact ELFs
+are needed for executable/disassembly checks; frozen hash replay does not need
+them. Byte consistency is not independent authenticity or measurement accuracy.
+
+No runtime candidate is selected. A future Unicode design must demonstrate a
+measured win despite the optimizer's instruction-footprint response; reducing
+source-level decoder calls alone is not a sufficient promotion criterion.
