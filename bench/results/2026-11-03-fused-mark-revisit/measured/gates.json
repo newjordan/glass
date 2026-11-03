@@ -1,0 +1,110 @@
+[
+  {
+    "arm": "control",
+    "label": "literal",
+    "argv": [
+      "/tmp/glass-i47-fused-mark-measured-control-test",
+      "--exact",
+      "engine::tests::partial_utf8_chunks_match_direct_term_input",
+      "--nocapture"
+    ],
+    "exit": 0,
+    "log_sha256": "33532fb58803315bd2badd1f6d7da3b9e5eff1088b15f5242c34323f40444267",
+    "binary_sha256": "8a528d94daed64f4ceeb97402a7a3138c3fce9b327214ee0594f3694194f5c6e",
+    "source_census_sha256": "38bbabde67c26fd212ae96ffe2cf414ac1091b6d8e4800dc050adb0b8871c233",
+    "start_ns": 199698598282223,
+    "end_ns": 199698843452214
+  },
+  {
+    "arm": "control",
+    "label": "redraw",
+    "argv": [
+      "/tmp/glass-i47-fused-mark-measured-control-test",
+      "--exact",
+      "engine::tests::fused_mark_redraws_match_direct_term_input",
+      "--nocapture"
+    ],
+    "exit": 0,
+    "log_sha256": "2d00ca84e962d7ae2328140ad63714c602baa564679a17dbd830d433f246ad99",
+    "binary_sha256": "8a528d94daed64f4ceeb97402a7a3138c3fce9b327214ee0594f3694194f5c6e",
+    "source_census_sha256": "38bbabde67c26fd212ae96ffe2cf414ac1091b6d8e4800dc050adb0b8871c233",
+    "start_ns": 199698852811147,
+    "end_ns": 199707930605258
+  },
+  {
+    "arm": "control",
+    "label": "suite",
+    "argv": [
+      "/tmp/glass-i47-fused-mark-measured-control-test"
+    ],
+    "exit": 0,
+    "log_sha256": "b43154edae8634fe37ca45b36b293369504c559d9a29070032dd6c23102ad984",
+    "binary_sha256": "8a528d94daed64f4ceeb97402a7a3138c3fce9b327214ee0594f3694194f5c6e",
+    "source_census_sha256": "38bbabde67c26fd212ae96ffe2cf414ac1091b6d8e4800dc050adb0b8871c233",
+    "start_ns": 199707939901523,
+    "end_ns": 199717286675994
+  },
+  {
+    "arm": "candidate",
+    "label": "literal",
+    "argv": [
+      "/tmp/glass-i47-fused-mark-measured-candidate-test",
+      "--exact",
+      "engine::tests::partial_utf8_chunks_match_direct_term_input",
+      "--nocapture"
+    ],
+    "exit": 0,
+    "log_sha256": "33532fb58803315bd2badd1f6d7da3b9e5eff1088b15f5242c34323f40444267",
+    "binary_sha256": "23f4327bf7fddbb09c95adcafde2307e187c8f5c621053ae9d37177bac92618c",
+    "source_census_sha256": "2fe80272ff42e4ff5f7dbd10b3d7280f0a0a0bab3d64cdac0e65c0c231aa2b93",
+    "start_ns": 199753942829540,
+    "end_ns": 199754182586294
+  },
+  {
+    "arm": "candidate",
+    "label": "redraw",
+    "argv": [
+      "/tmp/glass-i47-fused-mark-measured-candidate-test",
+      "--exact",
+      "engine::tests::fused_mark_redraws_match_direct_term_input",
+      "--nocapture"
+    ],
+    "exit": 0,
+    "log_sha256": "0a26eb3440f3110c5eff2ac84c013c2a74f29d590fef602d9fa5911e18ae4652",
+    "binary_sha256": "23f4327bf7fddbb09c95adcafde2307e187c8f5c621053ae9d37177bac92618c",
+    "source_census_sha256": "2fe80272ff42e4ff5f7dbd10b3d7280f0a0a0bab3d64cdac0e65c0c231aa2b93",
+    "start_ns": 199754191945818,
+    "end_ns": 199763122227202
+  },
+  {
+    "arm": "candidate",
+    "label": "suite",
+    "argv": [
+      "/tmp/glass-i47-fused-mark-measured-candidate-test"
+    ],
+    "exit": 0,
+    "log_sha256": "460756318583cb34bc65d13025e842559c7bd1612163f1b48fa70eb55070deb6",
+    "binary_sha256": "23f4327bf7fddbb09c95adcafde2307e187c8f5c621053ae9d37177bac92618c",
+    "source_census_sha256": "2fe80272ff42e4ff5f7dbd10b3d7280f0a0a0bab3d64cdac0e65c0c231aa2b93",
+    "start_ns": 199763131704037,
+    "end_ns": 199772454568089
+  },
+  {
+    "arm": "candidate",
+    "label": "library",
+    "argv": [
+      "cargo",
+      "test",
+      "--release",
+      "--locked",
+      "-p",
+      "glass-alacritty-terminal"
+    ],
+    "exit": 0,
+    "log_sha256": "897dd3004c5fc789caaffbdb9c744d17c4b87a9ee0359e704eb7bb6a41045f67",
+    "binary_sha256": "23f4327bf7fddbb09c95adcafde2307e187c8f5c621053ae9d37177bac92618c",
+    "source_census_sha256": "2fe80272ff42e4ff5f7dbd10b3d7280f0a0a0bab3d64cdac0e65c0c231aa2b93",
+    "start_ns": 199772463900882,
+    "end_ns": 199778765702702
+  }
+]

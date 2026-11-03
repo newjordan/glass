@@ -1,0 +1,4 @@
+usage: engine-pairs.py [-h] --out OUT [--pairs PAIRS] [--scale SCALE]
+                       [--rounds ROUNDS] [--only ONLY]
+                       base candidate
+engine-pairs.py: error: unrecognized arguments: --read 4095

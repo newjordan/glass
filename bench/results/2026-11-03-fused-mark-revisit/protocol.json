@@ -1,0 +1,38 @@
+{
+  "schema": "glass.fused-mark-revisit-protocol/v1",
+  "created_utc": "2026-11-03T21:00:33.943317+00:00",
+  "mechanism": "Revisit shelved fused-mark reuse after independent split-UTF8 repair. Keep exact Cell layout and ordinary Arc ownership. Write base and following combining mark together only with another printable scalar available. Retain identical singleton extras; otherwise bounded existing cache.",
+  "correctness": [
+    "exact cell reuse/COW/Weak/style test",
+    "existing independent direct Term split/REP oracle (3816 cases)",
+    "new repeated-redraw direct Term oracle across rows/screens/styles/cuts",
+    "both arm full terminal suites; candidate library tests"
+  ],
+  "engine": {
+    "blocks": 12,
+    "orders": [
+      [
+        "base",
+        "candidate"
+      ],
+      [
+        "candidate",
+        "base"
+      ]
+    ],
+    "scale": 1,
+    "rounds": 5,
+    "read": 4095,
+    "workloads": [
+      "ascii",
+      "unicode",
+      "truecolor",
+      "cursor_motion",
+      "scroll_region",
+      "tui_frames"
+    ],
+    "primary": "Unicode median paired CPU rate >=1.02, wins>losses, six-workload Holm sign p<.05; all six point medians >=.98",
+    "stop": "Exactly 12 pairs, no pilot/retry/pooling/rescue. Correctness must pass before timing. Stop and restore on failed screen; a surviving screen is research only, needs independent same-build PTY and missing competitive metrics."
+  },
+  "runtime_promotion": false
+}

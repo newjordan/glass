@@ -1,0 +1,26 @@
+{
+  "artifact_references": 124,
+  "candidate_library_passed": 139,
+  "engine_screen_cleared": false,
+  "library_doctests": 1,
+  "literal_cases_per_arm": 3816,
+  "long_observations_per_arm": 520704,
+  "long_redraw_cases_per_arm": 86784,
+  "note": "Byte-integrity and receipt replay only, not fresh test execution, PTY or Ghostty timing, or championship acceptance.",
+  "pairs": 12,
+  "point_regression_guards_failed": [
+    "unicode"
+  ],
+  "prior_references": 2294,
+  "prior_versions": 2196,
+  "production_restored": true,
+  "reference_fixtures": 45,
+  "runtime_promotion": false,
+  "schema": "glass.fused-mark-revisit-checkpoint/v1",
+  "selected_executable_unchanged": true,
+  "source_bound_fresh_builds": 2,
+  "status": "reported",
+  "terminal_ignored": 14,
+  "terminal_passed_per_arm": 397,
+  "timing_sessions": 24
+}

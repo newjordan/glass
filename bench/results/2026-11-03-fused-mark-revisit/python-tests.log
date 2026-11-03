@@ -1,0 +1,10 @@
+test_complete (__main__.Evidence.test_complete) ... ok
+test_duplicate_json_keys (__main__.Evidence.test_duplicate_json_keys) ... ok
+test_gate_metadata_corruptions (__main__.Evidence.test_gate_metadata_corruptions) ... ok
+test_raw_timing_corruptions (__main__.Evidence.test_raw_timing_corruptions) ... ok
+test_rehashed_log_census_corruptions (__main__.Evidence.test_rehashed_log_census_corruptions) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.541s
+
+OK

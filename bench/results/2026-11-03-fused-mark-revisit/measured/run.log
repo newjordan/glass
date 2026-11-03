@@ -1,0 +1,9 @@
+control literal exit 0
+control redraw exit 0
+control suite exit 0
+candidate literal exit 0
+candidate redraw exit 0
+candidate suite exit 0
+candidate library exit 0
+exactly 12 fixed pairs completed
+original production sources restored; selected executable not rebuilt

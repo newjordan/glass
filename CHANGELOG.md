@@ -5,6 +5,16 @@ All notable changes to glass are recorded here. Versions follow
 
 ## 0.1.0 - unreleased
 
+### Research — reject fused combining-mark reuse after literal long-run checks
+
+- Short split/REP oracles can pass without entering the 24-byte fast run.
+  A longer independent oracle exposed the prototype's stale `extra_free` hint;
+  the corrected archived arm passes 86,784 redraw cases / 520,704 comparisons.
+- Fixed 12-pair release-engine screen: Unicode 0.9763× control, 1/12 wins;
+  fails both target and regression guard. Reject and restore production sources
+  and exact selected executable. No PTY, Ghostty or championship claim.
+- Evidence: `bench/results/2026-11-03-fused-mark-revisit/README.md`.
+
 ### Fix — preserve ASCII after split UTF-8 scalars
 
 - Completing a split UTF-8 scalar now consumes only the scalar emitted, not an

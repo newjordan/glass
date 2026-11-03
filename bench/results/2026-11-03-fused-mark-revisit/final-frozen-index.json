@@ -1,0 +1,185 @@
+{
+  "manifests": [
+    {
+      "path": "bench/results/2026-11-03-pen-dispatch/evidence-sha256.json",
+      "sha256": "4a7fc3e43ccad24f238e9f56f7391f1a9a09078486111abc83819791ee44c332",
+      "snapshots": {
+        "crates/term/src/engine.rs": "bench/results/2026-11-03-scroll-authority/original-crates_term_src_engine.rs"
+      },
+      "source_root": "."
+    },
+    {
+      "path": "bench/results/2026-11-03-exact-corpus/evidence-sha256.json",
+      "sha256": "1a6d21ec00cfa48bdb826ab812e8c46bc5b54c39727f003cf09912a14652ac37",
+      "snapshots": {
+        "crates/term/src/speed.rs": "bench/results/2026-11-03-pass-samples/original-speed.rs"
+      },
+      "source_root": "."
+    },
+    {
+      "path": "bench/results/2026-11-03-pass-samples/evidence-sha256.json",
+      "sha256": "980a4f200e93a862a96b888a7b2e6da3fcfecf0af93521eacb362df30915512d",
+      "snapshots": {
+        "crates/term/src/speed.rs": "bench/results/2026-11-03-split-witness/original-crates_term_src_speed.rs"
+      },
+      "source_root": "."
+    },
+    {
+      "path": "bench/results/2026-11-03-scroll-authority/evidence-sha256.json",
+      "sha256": "4edd7a3ab79a4cacbf31b6a5c9a2178d220169d241d80ea172c76e8dec03365e",
+      "snapshots": {
+        "crates/term/src/engine.rs": "bench/results/2026-11-03-movement-authority/original-crates_term_src_engine.rs"
+      },
+      "source_root": "."
+    },
+    {
+      "path": "bench/results/2026-11-03-movement-authority/evidence-sha256.json",
+      "sha256": "061ac783b8f180c5687899d0af255d94e2c3ac72abae5279b241831b38822321",
+      "snapshots": {
+        "crates/term/src/engine.rs": "bench/results/2026-11-03-split-witness/original-crates_term_src_engine.rs",
+        "crates/term/src/intake/position_tests.rs": "bench/results/2026-11-03-height-snapshot/original-crates_term_src_intake_position_tests.rs"
+      },
+      "source_root": "."
+    },
+    {
+      "path": "bench/results/2026-11-03-height-snapshot/evidence-sha256.json",
+      "sha256": "67a1f65fc4a3653480a9798ffa93141d04aeab0006f4ffb157057fd5fd3ae210",
+      "snapshots": {
+        "CHANGELOG.md": "bench/results/2026-11-03-origin-map/original-CHANGELOG.md",
+        "bench/README.md": "bench/results/2026-11-03-origin-map/original-bench_README.md",
+        "crates/term/src/intake/position_tests.rs": "bench/results/2026-11-03-split-witness/original-crates_term_src_intake_position_tests.rs",
+        "docs/PERFORMANCE.md": "bench/results/2026-11-03-origin-map/original-docs_PERFORMANCE.md"
+      },
+      "source_root": "."
+    },
+    {
+      "path": "bench/results/2026-11-03-origin-map/evidence-sha256.json",
+      "sha256": "85418c4862e84245028720bd004ce23d1b0dd4997bc89993757b888c01d5908f",
+      "snapshots": {
+        "CHANGELOG.md": "bench/results/2026-11-03-blank-witness/original-CHANGELOG.md",
+        "bench/README.md": "bench/results/2026-11-03-blank-witness/original-bench_README.md",
+        "docs/PERFORMANCE.md": "bench/results/2026-11-03-blank-witness/original-docs_PERFORMANCE.md"
+      },
+      "source_root": "."
+    },
+    {
+      "path": "bench/results/2026-11-03-blank-witness/explicit-evidence-manifest.json",
+      "sha256": "db0337cb75df8d9542235d093457f184476596ca919062724ff2c24f25e8e3f0",
+      "snapshots": {
+        "CHANGELOG.md": "bench/results/2026-11-03-scroll-witness/original-CHANGELOG.md",
+        "bench/README.md": "bench/results/2026-11-03-scroll-witness/original-bench_README.md",
+        "docs/PERFORMANCE.md": "bench/results/2026-11-03-scroll-witness/original-docs_PERFORMANCE.md"
+      },
+      "source_root": "."
+    },
+    {
+      "path": "bench/results/2026-11-03-persistent-witness/explicit-evidence-manifest.json",
+      "sha256": "3f2e2019b8d423a436c16cad17b107e1a2245a98d22bbc09211d915971bb1290",
+      "snapshots": {},
+      "source_root": "."
+    },
+    {
+      "path": "bench/results/2026-11-03-scroll-witness/explicit-evidence-manifest.json",
+      "sha256": "4f106801b65bcd109ed628847dcd3efb166cd807f645434e0532b22bb527e425",
+      "snapshots": {
+        "CHANGELOG.md": "bench/results/2026-11-03-split-witness/prior-CHANGELOG.md",
+        "bench/README.md": "bench/results/2026-11-03-split-witness/prior-bench_README.md",
+        "docs/PERFORMANCE.md": "bench/results/2026-11-03-split-witness/prior-docs_PERFORMANCE.md"
+      },
+      "source_root": "."
+    },
+    {
+      "path": "bench/results/2026-11-03-scroll-witness/post-commit-evidence-manifest.json",
+      "sha256": "94e45f86925749027eb93060961c16ef94c60ba5564874b602f6fdf0e48cb661",
+      "snapshots": {},
+      "source_root": "."
+    },
+    {
+      "path": "bench/results/2026-11-03-split-witness/evidence-sha256.json",
+      "sha256": "fbc847e2a88781f9a5d12b4dd9ff76a3641ec8d281c84bd835a8842546c9869d",
+      "snapshots": {
+        "CHANGELOG.md": "bench/results/2026-11-03-source-seams/prior-CHANGELOG.md",
+        "bench/README.md": "bench/results/2026-11-03-source-seams/prior-bench_README.md",
+        "crates/term/src/intake/mod.rs": "bench/results/2026-11-03-cover-transport/original-crates_term_src_intake_mod.rs",
+        "crates/term/src/intake/position_tests.rs": "bench/results/2026-11-03-source-seams/original-crates_term_src_intake_position_tests.rs",
+        "docs/PERFORMANCE.md": "bench/results/2026-11-03-source-seams/prior-docs_PERFORMANCE.md"
+      },
+      "source_root": "."
+    },
+    {
+      "path": "bench/results/2026-11-03-source-seams/explicit-evidence-manifest.json",
+      "sha256": "3849be2721814cbf7eda4ca0b7dd5a4f721e940e6f515ac3be49ae92a216fd88",
+      "snapshots": {
+        "CHANGELOG.md": "bench/results/2026-11-03-cover-transport/prior-CHANGELOG.md",
+        "bench/README.md": "bench/results/2026-11-03-cover-transport/prior-bench_README.md",
+        "crates/term/src/intake/motion.rs": "bench/results/2026-11-03-cover-transport/original-crates_term_src_intake_motion.rs",
+        "crates/term/src/intake/position_tests.rs": "bench/results/2026-11-03-cover-transport/original-crates_term_src_intake_position_tests.rs",
+        "docs/PERFORMANCE.md": "bench/results/2026-11-03-cover-transport/prior-docs_PERFORMANCE.md"
+      },
+      "source_root": "."
+    },
+    {
+      "path": "bench/results/2026-11-03-cover-transport/explicit-evidence-manifest.json",
+      "sha256": "b5652d1a122fbf513e905800cad58f21e6e370778c4dd7aae7d9962849b7f59a",
+      "snapshots": {
+        "CHANGELOG.md": "bench/results/2026-11-03-extra-noop/original-CHANGELOG.md",
+        "bench/README.md": "bench/results/2026-11-03-partial-utf8-accounting/prior-bench_README.md",
+        "docs/PERFORMANCE.md": "bench/results/2026-11-03-partial-utf8-accounting/prior-docs_PERFORMANCE.md"
+      },
+      "source_root": "."
+    },
+    {
+      "path": "bench/results/2026-11-03-local-mark-lane/inputs-sha256.json",
+      "sha256": "0c4add562165b477c69f720c9e1dd73fb319815d7f3bcb1de710974b4a47f961",
+      "snapshots": {},
+      "source_root": "."
+    },
+    {
+      "path": "bench/results/2026-11-03-local-mark-lane/evidence-sha256.json",
+      "sha256": "60b8d4350370531d25390c69a507d4c0799fd74a4bc758c94ba1da800c766dd1",
+      "snapshots": {},
+      "source_root": "."
+    },
+    {
+      "path": "bench/results/2026-11-03-campaign-audit-45/evidence-sha256.json",
+      "sha256": "a061196b5c7f9699b5084de0f057cf580ca4849baa40f1e1a0ed344e444db63d",
+      "snapshots": {},
+      "source_root": "."
+    },
+    {
+      "path": "bench/results/2026-11-03-extra-noop/evidence-sha256.json",
+      "sha256": "987c454a5e73fad19878c8057cc5748474c27461bd67aad6c7690a284c12d2dd",
+      "snapshots": {},
+      "source_root": "."
+    },
+    {
+      "path": "bench/results/2026-11-03-wide-pair/evidence-sha256.json",
+      "sha256": "0b6667c7542c701569b15aa01b3d705bd09e508fe045176d4d174498122ccec0",
+      "snapshots": {},
+      "source_root": "."
+    },
+    {
+      "path": "bench/results/2026-11-03-inline-mark-id/evidence-sha256.json",
+      "sha256": "e26d0fbdd51caa3aed5bb570dc5b10ee82ecc5f643b55dd62aefdd25d0a0ec25",
+      "snapshots": {},
+      "source_root": "."
+    },
+    {
+      "path": "bench/results/2026-11-03-partial-utf8-accounting/evidence-sha256.json",
+      "sha256": "70feff53663f2123cda941cf75e0a3dac5f426ca0fe037258d2eb74f384593b8",
+      "snapshots": {
+        "CHANGELOG.md": "bench/results/2026-11-03-fused-mark-revisit/prior-CHANGELOG.md",
+        "bench/README.md": "bench/results/2026-11-03-fused-mark-revisit/prior-bench_README.md",
+        "docs/PERFORMANCE.md": "bench/results/2026-11-03-fused-mark-revisit/prior-docs_PERFORMANCE.md"
+      },
+      "source_root": "."
+    },
+    {
+      "path": "bench/results/2026-11-03-fused-mark-revisit/evidence-sha256.json",
+      "sha256": "c59e2f7579f9f3b760cf65ebccf3837bba0f8dd3250178557d913970fe2e5bd0",
+      "source_root": ".",
+      "snapshots": {}
+    }
+  ],
+  "schema": "glass.historical-evidence-index/v1"
+}

@@ -1,0 +1,72 @@
+   Compiling glass-alacritty-terminal v0.26.0 (/work/frosty40/glass-repo/tree/crates/alacritty-terminal)
+   Compiling glass-term v0.1.0 (/work/frosty40/glass-repo/tree/crates/term)
+warning: variable `extra_written` is assigned to, but never used
+    --> crates/term/src/engine.rs:1912:13
+     |
+1912 |         let mut extra_written = false;
+     |             ^^^^^^^^^^^^^^^^^
+     |
+     = note: consider using `_extra_written` instead
+     = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: value assigned to `extra_written` is never read
+    --> crates/term/src/engine.rs:2006:25
+     |
+2006 |                         extra_written = true;
+     |                         ^^^^^^^^^^^^^^^^^^^^
+     |
+     = help: maybe it is overwritten before being read?
+     = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `apply_timed` is never used
+   --> crates/term/src/engine.rs:495:8
+    |
+368 | impl Engine {
+    | ----------- method in this implementation
+...
+495 |     fn apply_timed(&mut self, pass: &[u8]) {
+    |        ^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: static `FEED_NS` is never used
+    --> crates/term/src/engine.rs:2999:16
+     |
+2999 |     pub static FEED_NS: AtomicU64 = AtomicU64::new(0);
+     |                ^^^^^^^
+
+warning: static `FEED_CALLS` is never used
+    --> crates/term/src/engine.rs:3000:16
+     |
+3000 |     pub static FEED_CALLS: AtomicU64 = AtomicU64::new(0);
+     |                ^^^^^^^^^^
+
+warning: constant `FEED` is never used
+    --> crates/term/src/engine.rs:3002:15
+     |
+3002 |     pub const FEED: usize = 1;
+     |               ^^^^
+
+warning: `glass-term` (bin "glass" test) generated 6 warnings
+    Finished `release` profile [optimized] target(s) in 40.96s
+     Running unittests src/main.rs (target/release/deps/glass-1153e7f1f5d5d9af)
+
+running 1 test
+
+thread 'engine::tests::fused_mark_redraws_match_direct_term_input' (1968661) panicked at crates/term/src/engine.rs:3920:53:
+extra_free invalid fast=true alt=false cols=9 row=Row { inner: [Cell { c: 'z', fg: Named(Foreground), bg: Named(Background), flags: Flags(0x0), extra: None }, Cell { c: 'e', fg: Named(Foreground), bg: Named(Background), flags: Flags(0x0), extra: Some(CellExtra { zerowidth: ['\u{300}'], underline_color: None, hyperlink: None }) }, Cell { c: 'x', fg: Named(Foreground), bg: Named(Background), flags: Flags(0x0), extra: Some(CellExtra { zerowidth: ['\u{301}'], underline_color: None, hyperlink: None }) }, Cell { c: 'y', fg: Named(Foreground), bg: Named(Background), flags: Flags(0x0), extra: None }, Cell { c: 'z', fg: Named(Foreground), bg: Named(Background), flags: Flags(0x0), extra: None }, Cell { c: ' ', fg: Named(Foreground), bg: Named(Background), flags: Flags(0x0), extra: None }, Cell { c: ' ', fg: Named(Foreground), bg: Named(Background), flags: Flags(0x0), extra: None }, Cell { c: ' ', fg: Named(Foreground), bg: Named(Background), flags: Flags(0x0), extra: None }, Cell { c: ' ', fg: Named(Foreground), bg: Named(Background), flags: Flags(0x0), extra: None }], occ: 5, blank: None, extra_free: true, uniform_to: 1 } col=7 cut=0
+stack backtrace:
+   0: __rustc::rust_begin_unwind
+   1: core::panicking::panic_fmt
+   2: <glass::engine::tests::fused_mark_redraws_match_direct_term_input::{closure#0} as core::ops::function::FnOnce<()>>::call_once
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+test engine::tests::fused_mark_redraws_match_direct_term_input ... FAILED
+
+failures:
+
+failures:
+    engine::tests::fused_mark_redraws_match_direct_term_input
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 410 filtered out; finished in 6.11s
+
+error: test failed, to rerun pass `-p glass-term --bin glass`

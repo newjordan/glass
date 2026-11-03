@@ -1,0 +1,110 @@
+[
+  {
+    "arm": "control",
+    "label": "literal",
+    "argv": [
+      "/tmp/glass-i47-fused-mark-control-test",
+      "--exact",
+      "engine::tests::partial_utf8_chunks_match_direct_term_input",
+      "--nocapture"
+    ],
+    "exit": 0,
+    "log_sha256": "8465be3a16a15a606952b3d12b07d3366aefc3486c634a49b10fcea0046df548",
+    "binary_sha256": "ac4ebd260e3e9b8d2a2f540f77c5ef82c1124244d5bc4d9310ef1ae1ff7af2d2",
+    "source_census_sha256": "26dfb96bd3526416877e1401ca726abc7081a9ea775bfb1007a19bc1bcf509b3",
+    "start_ns": 199073188510872,
+    "end_ns": 199073422076682
+  },
+  {
+    "arm": "control",
+    "label": "redraw",
+    "argv": [
+      "/tmp/glass-i47-fused-mark-control-test",
+      "--exact",
+      "engine::tests::fused_mark_redraws_match_direct_term_input",
+      "--nocapture"
+    ],
+    "exit": 0,
+    "log_sha256": "877ab966d5488f118b1ef1e9b7e1f6d0fd9bb0debe1686295051cb80462953fd",
+    "binary_sha256": "ac4ebd260e3e9b8d2a2f540f77c5ef82c1124244d5bc4d9310ef1ae1ff7af2d2",
+    "source_census_sha256": "26dfb96bd3526416877e1401ca726abc7081a9ea775bfb1007a19bc1bcf509b3",
+    "start_ns": 199073431123900,
+    "end_ns": 199075140354076
+  },
+  {
+    "arm": "control",
+    "label": "suite",
+    "argv": [
+      "/tmp/glass-i47-fused-mark-control-test"
+    ],
+    "exit": 0,
+    "log_sha256": "36ac64d7db79f13316831996d41eee61d2b124b4b30917b8f0a27a5b9352ec29",
+    "binary_sha256": "ac4ebd260e3e9b8d2a2f540f77c5ef82c1124244d5bc4d9310ef1ae1ff7af2d2",
+    "source_census_sha256": "26dfb96bd3526416877e1401ca726abc7081a9ea775bfb1007a19bc1bcf509b3",
+    "start_ns": 199075149626227,
+    "end_ns": 199077038214364
+  },
+  {
+    "arm": "candidate",
+    "label": "literal",
+    "argv": [
+      "/tmp/glass-i47-fused-mark-candidate-test",
+      "--exact",
+      "engine::tests::partial_utf8_chunks_match_direct_term_input",
+      "--nocapture"
+    ],
+    "exit": 0,
+    "log_sha256": "8465be3a16a15a606952b3d12b07d3366aefc3486c634a49b10fcea0046df548",
+    "binary_sha256": "308d75d68f3a82aef180a7a4e82a2b3750614d48922c6931bd39ce9fd3893c45",
+    "source_census_sha256": "b280bec1307750afad7f50a66a5ef92f27dc29774280c85639b3c6d17258945b",
+    "start_ns": 199118228505225,
+    "end_ns": 199118465565780
+  },
+  {
+    "arm": "candidate",
+    "label": "redraw",
+    "argv": [
+      "/tmp/glass-i47-fused-mark-candidate-test",
+      "--exact",
+      "engine::tests::fused_mark_redraws_match_direct_term_input",
+      "--nocapture"
+    ],
+    "exit": 0,
+    "log_sha256": "cb897526d7b88d84a247a63b49885d65c7a8e0dec39e65c522baab797e969436",
+    "binary_sha256": "308d75d68f3a82aef180a7a4e82a2b3750614d48922c6931bd39ce9fd3893c45",
+    "source_census_sha256": "b280bec1307750afad7f50a66a5ef92f27dc29774280c85639b3c6d17258945b",
+    "start_ns": 199118474988775,
+    "end_ns": 199120197123783
+  },
+  {
+    "arm": "candidate",
+    "label": "suite",
+    "argv": [
+      "/tmp/glass-i47-fused-mark-candidate-test"
+    ],
+    "exit": 0,
+    "log_sha256": "6a342ecf002ff3ab13e6c238f679dd975d39fddefe0adfc9c7adfbae827bf14a",
+    "binary_sha256": "308d75d68f3a82aef180a7a4e82a2b3750614d48922c6931bd39ce9fd3893c45",
+    "source_census_sha256": "b280bec1307750afad7f50a66a5ef92f27dc29774280c85639b3c6d17258945b",
+    "start_ns": 199120206078487,
+    "end_ns": 199122159577050
+  },
+  {
+    "arm": "candidate",
+    "label": "library",
+    "argv": [
+      "cargo",
+      "test",
+      "--release",
+      "--locked",
+      "-p",
+      "glass-alacritty-terminal"
+    ],
+    "exit": 0,
+    "log_sha256": "8db4854379042f272887b325dc6488d8bb8cb18e5bfb2b8743f4cac404478c1a",
+    "binary_sha256": "308d75d68f3a82aef180a7a4e82a2b3750614d48922c6931bd39ce9fd3893c45",
+    "source_census_sha256": "b280bec1307750afad7f50a66a5ef92f27dc29774280c85639b3c6d17258945b",
+    "start_ns": 199122168860683,
+    "end_ns": 199128022777014
+  }
+]

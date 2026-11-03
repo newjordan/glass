@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "python3",
+    "-B",
+    "/work/frosty40/glass-repo/tree/bench/engine-pairs.py",
+    "/tmp/glass-i47-fused-mark-control-test",
+    "/tmp/glass-i47-fused-mark-candidate-test",
+    "--out",
+    "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-fused-mark-revisit/raw.json",
+    "--pairs",
+    "12",
+    "--scale",
+    "1",
+    "--rounds",
+    "5",
+    "--read",
+    "4095"
+  ],
+  "exit": 2
+}

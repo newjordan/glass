@@ -1,0 +1,16 @@
+control literal exit 0
+control redraw exit 0
+control suite exit 0
+candidate literal exit 0
+candidate redraw exit 0
+candidate suite exit 0
+candidate library exit 0
+original production sources restored; selected executable not rebuilt
+Traceback (most recent call last):
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-fused-mark-revisit/run.py", line 91, in <module>
+    main()
+    ~~~~^^
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-fused-mark-revisit/run.py", line 81, in main
+    assert p.returncode == 0, p.stderr
+           ^^^^^^^^^^^^^^^^^
+AssertionError: b'usage: engine-pairs.py [-h] --out OUT [--pairs PAIRS] [--scale SCALE]\n                       [--rounds ROUNDS] [--only ONLY]\n                       base candidate\nengine-pairs.py: error: unrecognized arguments: --read 4095\n'

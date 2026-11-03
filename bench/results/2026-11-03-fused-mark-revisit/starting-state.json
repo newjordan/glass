@@ -1,0 +1,12 @@
+{
+  "head": "67e098ca40c2baa9734310b85a4f297872e45328",
+  "selected_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "sources": {
+    "crates/term/src/engine.rs": "afb0c774d24166229ec478312b27c98ca3ea33117f7616f4e764f6a0725101a7",
+    "crates/alacritty-terminal/src/term/cell.rs": "5bcac4b94b7971f7b118c9670a3e988abe91e0c68dcbb03460e742b7a95c218a",
+    "crates/vte/src/lib.rs": "7fda6587e80de9ca7f160d8247dd4edd10e8746bf1d37e2d9dc41336828d6063",
+    "crates/vte/src/ansi.rs": "ed3a17b498d5ae08c1667840ab46c177ed82e62f66d25090c95e74f65a1fc166",
+    "crates/term/src/speed.rs": "486ac678d99766ddca4f35b814a1397cab4cf60c5ef4b4c6d51d00cde43d9419"
+  },
+  "created_utc": "2026-11-03T21:00:33.943317+00:00"
+}

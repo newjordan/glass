@@ -1104,3 +1104,23 @@ alone detect this class. Evidence and exact reproduction:
 `bench/results/2026-11-03-partial-utf8-accounting/README.md`.
 This is a correctness fix, not throughput evidence, a fresh executable promotion,
 a Ghostty comparison, or championship acceptance.
+
+
+### 2026-11-03 — reject fused combining-mark reuse after the UTF-8 repair
+
+Revisited the safely owned base/mark overwrite prototype after its independent
+parser blocker was repaired. Short oracles passed but never entered the
+24-byte fast-run lane. A long direct-`Term::input` oracle exposed an invalid
+`extra_free` row hint; the corrected archived prototype records extra writes.
+Both corrected arms pass 86,784 redraw cases / 520,704 comparisons and 397
+terminal tests (14 ignored); candidate library: 139 tests, 45 fixtures, one doctest.
+
+Exactly 12 predeclared alternating engine pairs: candidate/control CPU-rate
+medians ASCII **.9937**, Unicode **.9763**, truecolor **1.0067**, cursor **1.0094**,
+scroll **.9934**, TUI **1.0006**. Unicode wins **1/12**, Holm sign p **.0381**
+(direction adverse). Fails >=1.02 Unicode target and >=.98 point guard; reject,
+no rescue timing or PTY escalation. Five-invocation best-of measurements are
+not five independent trials; balanced ordering does not establish independence.
+Production sources and selected executable restored. No fresh Ghostty result
+or all-metric victory. Setup failures, source-bound executables, all pairs and
+checker corruption rejection: `bench/results/2026-11-03-fused-mark-revisit/README.md`.
