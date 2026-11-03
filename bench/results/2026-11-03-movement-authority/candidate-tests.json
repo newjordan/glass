@@ -1,0 +1,90 @@
+[
+  {
+    "label": "terminal-tests",
+    "args": [],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "candidate-terminal-tests.log",
+    "sha256": "ac577e03c61b78afb4f344abb990d9b98e8b5b987b04fbccf0e4a412d25ebda9"
+  },
+  {
+    "label": "history-0",
+    "args": [
+      "--nocapture",
+      "movement_authority_configured_history"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "0"
+    },
+    "exit": 0,
+    "log": "candidate-history-0.log",
+    "sha256": "3de596c1f64f52d81686d05b283f4cada40cef996db9bc3daa973ad947b57895"
+  },
+  {
+    "label": "history-1",
+    "args": [
+      "--nocapture",
+      "movement_authority_configured_history"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "1"
+    },
+    "exit": 0,
+    "log": "candidate-history-1.log",
+    "sha256": "6f02b82759c907eb063643ba424183a4677e3a3f36320485928c0b4bd84a51cb"
+  },
+  {
+    "label": "history-2",
+    "args": [
+      "--nocapture",
+      "movement_authority_configured_history"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "2"
+    },
+    "exit": 0,
+    "log": "candidate-history-2.log",
+    "sha256": "a8f0d2e508b332e5ada030e86c6640a09b3e4fc56453504503874db30e47c698"
+  },
+  {
+    "label": "history-8",
+    "args": [
+      "--nocapture",
+      "movement_authority_configured_history"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "8"
+    },
+    "exit": 0,
+    "log": "candidate-history-8.log",
+    "sha256": "f4a300bf885938df607985a0b1abb8fad98d60ba4cfd805ed09b4acfabf60933"
+  },
+  {
+    "label": "history-32",
+    "args": [
+      "--nocapture",
+      "movement_authority_configured_history"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "32"
+    },
+    "exit": 0,
+    "log": "candidate-history-32.log",
+    "sha256": "46670d92141969127c6ee1c6f02fe572ec761edf413021fed770f9582f2750d7"
+  },
+  {
+    "label": "history-10000",
+    "args": [
+      "--nocapture",
+      "movement_authority_configured_history"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "candidate-history-10000.log",
+    "sha256": "503bf95c03937ee87f984ba232b858a3fe0b5a2aeea45a5592c5da1f464bdf54"
+  }
+]

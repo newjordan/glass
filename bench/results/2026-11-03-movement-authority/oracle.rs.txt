@@ -1,0 +1,67 @@
+    /// Independent absolute-coordinate oracle, including histories too short
+    /// to retain a selection observer until its next periodic fold.
+    #[test]
+    fn movement_authority_cursor_history_resize_matrix() {
+        let mut cases = 0;
+        let mut mismatches = 0;
+        for history in [0, 1, 2, 8, 32, 10_000] {
+            for rows in [4, 6, 12] {
+                for cursor in 0..rows {
+                    for height in 1..=rows {
+                        for fast in [false, true] {
+                            for motion in [None, Some(u64::MAX)] {
+                                let mut e = Engine::new(rows, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1) });
+                                e.term.grid_mut().update_history(history);
+                                e.set_fast(fast);
+                                e.set_motion(motion);
+                                let mut actual = Vec::new();
+                                let mut expected = Vec::new();
+                                e.process(&b"x\r\n".repeat(24));
+                                let mut count = 25 - rows;
+                                actual.push(e.scrolled_off_top()); expected.push(count);
+                                e.process(format!("\x1b[{};1H", cursor + 1).as_bytes());
+                                e.resize(height, 10);
+                                count += (cursor + 1).saturating_sub(height);
+                                actual.push(e.scrolled_off_top()); expected.push(count);
+                                e.process(format!("\x1b[{};1H\n", height).as_bytes());
+                                count += 1;
+                                actual.push(e.scrolled_off_top()); expected.push(count);
+                                e.resize(rows, 10);
+                                actual.push(e.scrolled_off_top()); expected.push(count);
+                                // After an explicit home, shrink removes bottom rows,
+                                // not top rows. Retained-history deltas are not the oracle.
+                                e.process(b"\x1b[H");
+                                e.resize(1, 10);
+                                actual.push(e.scrolled_off_top()); expected.push(count);
+                                e.process(b"\n"); count += 1;
+                                actual.push(e.scrolled_off_top()); expected.push(count);
+                                let matched = actual == expected;
+                                if !matched { mismatches += 1; }
+                                eprintln!("movement-case history={history} rows={rows} cursor={cursor} height={height} fast={fast} motion={motion:?} expected={expected:?} actual={actual:?} matched={matched}");
+                                cases += 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        eprintln!("movement oracle: {cases} cases checked; {mismatches} mismatches");
+        assert_eq!(cases, 4704);
+        assert_eq!(mismatches, 0);
+    }
+
+    #[test]
+    fn movement_authority_configured_history() {
+        let history = scrollback_lines();
+        for fast in [false, true] {
+            for motion in [None, Some(u64::MAX)] {
+                let mut e = Engine::new(4, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1) });
+                e.set_fast(fast); e.set_motion(motion);
+                e.process(&b"x\r\n".repeat(12_000));
+                let actual = e.scrolled_off_top();
+                eprintln!("configured-movement history={history} fast={fast} motion={motion:?} expected=11997 actual={actual}");
+                assert_eq!(actual, 11_997);
+            }
+        }
+    }
+

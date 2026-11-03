@@ -1,0 +1,7 @@
+
+running 1 test
+growth-picture before_row=0 marker_row=2 picture_row=0 reflow=false
+test intake::position_tests::height_growth_picture_coordinate_defect_is_reproducible ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 401 filtered out; finished in 0.00s
+

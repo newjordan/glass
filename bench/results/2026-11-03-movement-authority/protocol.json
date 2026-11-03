@@ -1,0 +1,13 @@
+{
+  "schema": "glass.movement-authority-protocol/v1",
+  "hypothesis": "Authoritative output movement plus primary height-only shrink pushes replaces fallible selection observation; width reflow retains existing accounting.",
+  "candidate": "Term primary movement counter: output scroll, ED2 actual pushes, height-only shrink max(cursor_row+1-new_height,0). No counter delta for width changes, growth, or alt resize.",
+  "gates": [
+    "exact release candidate build with current tests plus new cursor/history/resize independent oracle",
+    "all existing terminal tests",
+    "12800 differential streams over 64 seeds",
+    "configured GLASS_SCROLLBACK=0,1,2,8,32,10000 isolated tests",
+    "prior immutable evidence replay with exact historical source mappings"
+  ],
+  "performance": "Only after all semantic gates; fixed 12 alternating pairs on exact corpus, median pass CPU rates. No selected executable promotion or championship claim."
+}

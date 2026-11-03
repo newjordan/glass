@@ -1,0 +1,24 @@
+
+running 1 test
+configured-movement history=1 fast=false motion=None expected=11997 actual=3
+
+thread 'engine::tests::movement_authority_configured_history' (4112734) panicked at crates/term/src/engine.rs:4377:17:
+assertion `left == right` failed
+  left: 3
+ right: 11997
+stack backtrace:
+   0: __rustc::rust_begin_unwind
+   1: core::panicking::panic_fmt
+   2: core::panicking::assert_failed_inner
+   3: core::panicking::assert_failed::<usize, usize>
+   4: <glass::engine::tests::movement_authority_configured_history::{closure#0} as core::ops::function::FnOnce<()>>::call_once
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+test engine::tests::movement_authority_configured_history ... FAILED
+
+failures:
+
+failures:
+    engine::tests::movement_authority_configured_history
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 404 filtered out; finished in 0.00s
+

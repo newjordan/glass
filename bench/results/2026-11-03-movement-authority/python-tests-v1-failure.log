@@ -1,0 +1,21 @@
+test_actual_results (__main__.EvidenceTests.test_actual_results) ... ok
+test_complete_checkpoint (__main__.EvidenceTests.test_complete_checkpoint) ... ok
+test_preservation_and_scope (__main__.EvidenceTests.test_preservation_and_scope) ... ok
+test_rehashed_semantic_corruptions_rejected (__main__.EvidenceTests.test_rehashed_semantic_corruptions_rejected) ... FAIL
+
+======================================================================
+FAIL: test_rehashed_semantic_corruptions_rejected (__main__.EvidenceTests.test_rehashed_semantic_corruptions_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-movement-authority/test-verify.py", line 46, in test_rehashed_semantic_corruptions_rejected
+    reject(label,lambda raw:raw.replace('actual=[0,','actual=[999,',1) if arm=='control' and prefix=='movement-case' else raw.replace('matched=false','matched=true',1) if arm=='control' else raw.replace('actual=[21,','actual=[999,',1) if prefix=='movement-case' else raw.replace('actual=21,21','actual=999,21',1))
+    ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-movement-authority/test-verify.py", line 34, in reject
+    with self.assertRaises(ValueError,msg=f'{arm}:{label}:{total}'):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised : control:movement_authority_cursor_history_resize_matrix:7
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.685s
+
+FAILED (failures=1)

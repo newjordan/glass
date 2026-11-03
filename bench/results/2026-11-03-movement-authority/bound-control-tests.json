@@ -1,0 +1,174 @@
+[
+  {
+    "label": "terminal-tests",
+    "args": [
+      "--skip",
+      "movement_authority",
+      "--skip",
+      "growth_keeps_picture_on_marker_diagnostic"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "bound-control-terminal-tests.log",
+    "sha256": "c8e9ecd16a4e6182e0ec9496aa5addb8a9d508896de9b3f1056697752dc2791a"
+  },
+  {
+    "label": "movement_authority_cursor_history_resize_matrix",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "engine::tests::movement_authority_cursor_history_resize_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 101,
+    "log": "bound-control-movement_authority_cursor_history_resize_matrix.log",
+    "sha256": "87bdf4b7515cfa5fa52e62d352950823fb0719948f7bd156debf6af1c3a6ed81"
+  },
+  {
+    "label": "movement_authority_inactive_primary_resize",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "engine::tests::movement_authority_inactive_primary_resize"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 101,
+    "log": "bound-control-movement_authority_inactive_primary_resize.log",
+    "sha256": "058108bc672d4dc9245e7f06fbba5f9e9ef56f15a0d2200e46f488a0fd2922d7"
+  },
+  {
+    "label": "movement_authority_growth_coordinate_diagnostic",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "engine::tests::movement_authority_growth_coordinate_diagnostic"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 101,
+    "log": "bound-control-movement_authority_growth_coordinate_diagnostic.log",
+    "sha256": "269cb00f6a9f929f36716e30062840bd1c5f2a523f09a2049b2b5734c0450767"
+  },
+  {
+    "label": "growth_keeps_picture_on_marker_diagnostic",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::growth_keeps_picture_on_marker_diagnostic"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 101,
+    "log": "bound-control-growth_keeps_picture_on_marker_diagnostic.log",
+    "sha256": "88e621c2c516fb2f144e71d5e1a58dc7abfdb1f4382f76d2beb165797a55164b"
+  },
+  {
+    "label": "history-0",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "engine::tests::movement_authority_configured_history"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "0"
+    },
+    "exit": 101,
+    "log": "bound-control-history-0.log",
+    "sha256": "40c13f1ac0d84d5ade13fda9ce51523b622eb1c23690a84bf5d59762b0a240fd"
+  },
+  {
+    "label": "history-1",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "engine::tests::movement_authority_configured_history"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "1"
+    },
+    "exit": 101,
+    "log": "bound-control-history-1.log",
+    "sha256": "843154610c62dbe86c57d54c9ab860aa67b393742a946d8262dd5797aebdce2d"
+  },
+  {
+    "label": "history-2",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "engine::tests::movement_authority_configured_history"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "2"
+    },
+    "exit": 101,
+    "log": "bound-control-history-2.log",
+    "sha256": "7ccae5bdd8f537e076d4c91b6ad86827b787a5c7fc6f4bb29a99b6faa1f70e4e"
+  },
+  {
+    "label": "history-8",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "engine::tests::movement_authority_configured_history"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "8"
+    },
+    "exit": 101,
+    "log": "bound-control-history-8.log",
+    "sha256": "6c78e0b14103c0bc369c1481caed0214d391e4d61139d55bd6f1263637830386"
+  },
+  {
+    "label": "history-32",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "engine::tests::movement_authority_configured_history"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "32"
+    },
+    "exit": 101,
+    "log": "bound-control-history-32.log",
+    "sha256": "937029c547abbb9f2d6493cfbf62290e3b4229d0aa431c28d8a30f8e55627a38"
+  },
+  {
+    "label": "history-10000",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "engine::tests::movement_authority_configured_history"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "bound-control-history-10000.log",
+    "sha256": "6c7deccd5c2235556805c4473bb2cc136a25d0e624c625e466f8cd4c1bcab341"
+  },
+  {
+    "label": "sweep",
+    "args": [
+      "--ignored",
+      "--exact",
+      "--nocapture",
+      "speed::plain_runs_match_the_parser_over_seeds"
+    ],
+    "settings": {
+      "GLASS_SWEEP_SEEDS": "64",
+      "GLASS_SWEEP_ROUNDS": "200",
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "bound-control-sweep.log",
+    "sha256": "43b4e3bd88d7cece92b9d9447e9e8fd004ce7007058f9bf963ee6012a050ecf0"
+  }
+]

@@ -1,0 +1,147 @@
+[
+  {
+    "label": "terminal-tests",
+    "args": [
+      "--skip",
+      "movement_authority",
+      "--skip",
+      "growth_keeps_picture_on_marker_diagnostic"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "control-terminal-tests.log",
+    "sha256": "b986c371020e260d52d7554c8aa837dbe29da80fba8e001f92e6fd0e244ddf33"
+  },
+  {
+    "label": "movement_authority_cursor_history_resize_matrix",
+    "args": [
+      "--nocapture",
+      "movement_authority_cursor_history_resize_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 101,
+    "log": "control-movement_authority_cursor_history_resize_matrix.log",
+    "sha256": "0d297bf7f02f69023a431c8ca244e10f5c5f58c8af6b23f06fe2c2f7df014f85"
+  },
+  {
+    "label": "movement_authority_inactive_primary_resize",
+    "args": [
+      "--nocapture",
+      "movement_authority_inactive_primary_resize"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 101,
+    "log": "control-movement_authority_inactive_primary_resize.log",
+    "sha256": "a15dfb8c0e9d787153ee122bd7a5afc38321576e90e1b099d826753f309ee53b"
+  },
+  {
+    "label": "movement_authority_growth_coordinate_diagnostic",
+    "args": [
+      "--nocapture",
+      "movement_authority_growth_coordinate_diagnostic"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 101,
+    "log": "control-movement_authority_growth_coordinate_diagnostic.log",
+    "sha256": "7a652613034ea7cf4fe9322f6255f267407fbd05fa5bf05a269ea79deeeed3b6"
+  },
+  {
+    "label": "growth_keeps_picture_on_marker_diagnostic",
+    "args": [
+      "--nocapture",
+      "growth_keeps_picture_on_marker_diagnostic"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 101,
+    "log": "control-growth_keeps_picture_on_marker_diagnostic.log",
+    "sha256": "4f261d8c8d6b176a37c8dcecebdeff60ab64b4c4f887403a4936867fa69f0d4e"
+  },
+  {
+    "label": "history-0",
+    "args": [
+      "--nocapture",
+      "movement_authority_configured_history"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "0"
+    },
+    "exit": 101,
+    "log": "control-history-0.log",
+    "sha256": "331ce259d7e6855d9b09bf65ecb27c9d4aae8b4c2b4dabd0a3f7d7aef71667c3"
+  },
+  {
+    "label": "history-1",
+    "args": [
+      "--nocapture",
+      "movement_authority_configured_history"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "1"
+    },
+    "exit": 101,
+    "log": "control-history-1.log",
+    "sha256": "2802abd28a5e7c4a8a0889c7967e53e40607f831d00c842ada56b04ef55df32e"
+  },
+  {
+    "label": "history-2",
+    "args": [
+      "--nocapture",
+      "movement_authority_configured_history"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "2"
+    },
+    "exit": 101,
+    "log": "control-history-2.log",
+    "sha256": "0ff44e1394b04e8146cbe6d9e8851164ad72194beed7a63085147d7bb6360645"
+  },
+  {
+    "label": "history-8",
+    "args": [
+      "--nocapture",
+      "movement_authority_configured_history"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "8"
+    },
+    "exit": 101,
+    "log": "control-history-8.log",
+    "sha256": "1f3ce52225ccd35cf0c2b438b74a553899edcfc63c9ce9f0499235e5098c9c17"
+  },
+  {
+    "label": "history-32",
+    "args": [
+      "--nocapture",
+      "movement_authority_configured_history"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "32"
+    },
+    "exit": 101,
+    "log": "control-history-32.log",
+    "sha256": "262af82508be6b7adc2e85cfab7f8600d590f6043354b32d80d2cdc01031ac03"
+  },
+  {
+    "label": "history-10000",
+    "args": [
+      "--nocapture",
+      "movement_authority_configured_history"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "control-history-10000.log",
+    "sha256": "6c7deccd5c2235556805c4473bb2cc136a25d0e624c625e466f8cd4c1bcab341"
+  }
+]

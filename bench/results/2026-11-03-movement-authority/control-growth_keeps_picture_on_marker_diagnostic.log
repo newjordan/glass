@@ -1,0 +1,24 @@
+
+running 1 test
+growth-picture before_row=0 marker_row=2 picture_row=0 reflow=false
+
+thread 'intake::position_tests::growth_keeps_picture_on_marker_diagnostic' (4112730) panicked at crates/term/src/intake/position_tests.rs:598:5:
+assertion `left == right` failed: picture must stay on marker
+  left: 0.0
+ right: 2.0
+stack backtrace:
+   0: __rustc::rust_begin_unwind
+   1: core::panicking::panic_fmt
+   2: core::panicking::assert_failed_inner
+   3: core::panicking::assert_failed::<f32, f32>
+   4: <glass::intake::position_tests::growth_keeps_picture_on_marker_diagnostic::{closure#0} as core::ops::function::FnOnce<()>>::call_once
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+test intake::position_tests::growth_keeps_picture_on_marker_diagnostic ... FAILED
+
+failures:
+
+failures:
+    intake::position_tests::growth_keeps_picture_on_marker_diagnostic
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 404 filtered out; finished in 0.00s
+

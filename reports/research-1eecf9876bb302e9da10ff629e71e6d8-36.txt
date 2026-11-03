@@ -1,0 +1,161 @@
+ITERATION 36 — PRIMARY MOVEMENT AUTHORITY AND TWO MISSED RESIZE DEFECTS
+Status: reported local research, not independently audited acceptance.
+Date: 2026-11-03
+Starting commit: 4b32249 (scroll-authority post-commit checkpoint).
+Evidence: bench/results/2026-11-03-movement-authority/
+
+DECISION
+Do not promote the runtime candidate. It repairs the tested small-history and
+height-shrink count failures, but does not supply a correct complete resize
+coordinate contract. Height growth still detaches an actual picture from text.
+This failure also occurs in the shipping control: it is not evidence that the
+candidate introduced a growth regression. No performance sessions were run and
+no executable was selected or replaced. No Ghostty superiority or championship
+is established. Keep two clearly named defect-characterization tests, NOT tests
+asserting correct behavior. They deliberately record broken behavior and must be
+removed/replaced when a real fix lands.
+
+NEW CONCRETE RESULTS (BEYOND ITERATION 35)
+1. Inactive-primary height shrink loses movement in the shipping runtime even
+   with sufficient history. On a 4x10 primary terminal, 24 CRLF records produce
+   base 21. Mark row 2, put the cursor at row 3, enter alternate screen, shrink
+   to height 2, and return. The marker moves to primary row 0, so its absolute
+   coordinate requires base 23, but the engine reports 21. The selection observer
+   was removed at the screen switch. The active-only shrink repair also misses
+   these pushes; resizing the primary grid while inactive must be included.
+2. Height growth detaches an actual picture from its text in SHIPPING CONTROL.
+   On 4x10, 12 CRLF records give base 9 and retained history. Pump a real picture
+   onto row 0 with marker M. Resize to 6x10 using Session's reflow/set-scrolled
+   sequence. Text M is now at row 2, but picture row remains 0. Base remains 9,
+   and take_reflow() returns None. This is not merely an assertion about a
+   counter: the end-to-end intake placement diagnostic reproduces the mismatch.
+   Primary absolute marker coordinate changes 9 -> 11 with no mapping emitted.
+   A monotonic output counter cannot alone describe history retrieved on growth.
+3. The sweep's documentation names an obsolete mutation probe. GLASS_RUN_PROBE=5
+   passes BOTH 200 and 12,800 streams. The implementation explicitly makes
+   probes 3..99 inert. GLASS_RUN_PROBE=100 FAILS the exact sweep at seed 1 round 0
+   (cell divergence, one test failed). Thus the positive sweep is genuinely
+   exercised, but probe 5 must not be cited as mutation-sensitivity evidence.
+   No shipping source/comment was silently changed to hide this finding.
+
+PREDECLARED PRIMARY EXPERIMENT
+protocol.json was written before runtime edits. Baseline sources, selected ELF,
+tracked evidence and docs were hashed first. The initial candidate used Term's
+monotonic primary movement counter (output scrolls and actual ED2 pushes), with
+height-only shrink increments max(cursor_row+1-new_height,0). The counter excludes
+width reflow because the existing reflow mapping owns that coordinate change.
+The first repair inspected only the active primary. Its new inactive oracle
+failed 696/1,392 scenarios; the retained v2 inspects the actual primary grid,
+whether active or inactive, BEFORE grid resize. This is a diagnostic refinement,
+not a post-performance rescue: the performance gate never opened.
+
+INDEPENDENT DESIRED-INVARIANT MATRICES
+Each complete raw log identifies every case, expected and actual vector/value,
+fast/slow lane and motion extent where applicable. Expectations are arithmetic
+from known CRLF and cursor placement, not copied from parser equivalence output.
+
+Primary cursor/history matrix: 4,704 cases per arm.
+  history 0,1,2,8,32,10000; rows 4,6,12; every cursor row;
+  every target height 1..rows; fast false/true; motion None/unknown.
+  Observe initial CRLF base, shrink push, explicit bottom LF, growth, home/shrink,
+  another LF. Every scenario has six expected coordinates.
+  Shipping control: 3,136 mismatches. Counter v2: zero mismatches.
+Inactive-primary matrix: 1,392 cases per arm.
+  history 0,1,8,10000; rows 4,6,12; every cursor row;
+  every smaller height; fast false/true; motion explicitly None.
+  Observe base both during alternate screen and after return.
+  Shipping control: 1,218 mismatches. Counter v2: zero mismatches.
+These are 6,096 finite diagnostic cases, not coverage proof for all terminal
+operations. In particular grow/shrink monotonic-count checks do not establish
+correct picture coordinates. The separate growth placement oracle is necessary.
+
+ISOLATED CONFIGURED-HISTORY REPRODUCTION
+GLASS_SCROLLBACK is cached once per process; each history configuration used a
+new process. At capacities 0,1,2,8,32,10000, feed 12,000 CRLF records to height 4.
+Expected count 11,997. Counter v2 returns 11,997 in all four fast/motion modes at
+every capacity. Shipping control fails immediately in slow/no-motion mode at
+capacities 0 (reports 0), and 1,2,8,32 (reports 3). Those five failing control
+tests abort at first assertion: they do not demonstrate all four mode outcomes.
+At capacity 10000 all four control modes return 11,997.
+
+EXACT BUILDS AND OUTCOMES
+The final bound arms are independently rebuilt optimized release test executables
+with non-fresh Cargo receipts for glass, alacritty_terminal and vte. Build source
+binding includes position_tests.rs as well as the original six source inputs.
+Control/candidate have identical desired-invariant and actual picture oracles.
+Sources restored after each arm in finally; snapshots and receipt identities
+persist. These are local build receipts, not compiler attestation. Temporary
+ELFs can expire: source and raw-result replay then remains available but does not
+reproduce the binary. When an ELF exists the checker requires its recorded hash.
+
+Control: 388 existing tests passed, 4,704/1,392 matrices fail as above, both growth
+  desired-invariant tests fail, short-history failures retained, 12,800-stream
+  parser differential sweep passes.
+Counter v2: 391 passing tests with ONLY the two known growth desired-invariant
+  failures excluded from that passing subset. Both failures were separately
+  executed and FAILED. Both complete matrices and six history processes pass.
+  12,800-stream parser differential sweep passes.
+Final shipping-runtime source: 390 tests passed (388 prior + 2 characterization
+  tests), 12 ignored, zero filtered. Both new tests executed individually too.
+  12,800 streams over 64 seeds pass; active mutation probe 100 fails.
+Parser equivalence compares two lanes that share Term behavior; it cannot prove
+coordinate truth. Passing existing tests did NOT justify candidate promotion.
+
+EVIDENCE VALIDATION
+verify.py recomputes matrix identities/completeness and independent expected
+vectors. It rejects duplicate, absent or unknown cases, false match flags,
+inconsistent observations, wrong outcomes, wrong environments, missing exact
+single-test executions, zero-stream sweeps, changed source scope or changed
+shipping ELF/evidence. Numeric case rows are also hash-bound to frozen measured
+observations: merely preserving the number of wrong control cases is not enough.
+The first negative test exposed exactly that checker weakness; it is retained
+in python-tests-v1-failure.log and verify-v1.py.txt, then repaired.
+Four Python tests pass; 56 rehashed semantic/receipt corruptions rejected.
+These finite negative tests are not exhaustive/adversarial evidence security.
+
+FAILED/INVALID ATTEMPTS RETAINED WITHOUT COUNTING THEM AS SUCCESS
+- First sweep invocation used nonexistent plain_runs_seed_sweep, selected ZERO
+  tests, exit 0. Retained in candidate-sweep-zero-test-invalid.log; replaced by
+  exact speed::plain_runs_match_the_parser_over_seeds (one test, 12,800 streams).
+- First picture-oracle build erroneously called unwrap() on String; no executable
+  produced. Repaired to grid_line(2).chars(); original source and build failure
+  retained. First final-test build used engine(rows,cols) but helper takes no
+  args; repaired to explicit Engine::new and rebuilt. A runner after that failure
+  could not start the absent ELF. None of these is counted as a semantic pass.
+- One bounded independent reviewer timed out: no completed review endorsement.
+  Partial concerns were hypotheses only; actual release tests established the
+  inactive-primary and growth failures described here.
+- Probe 5 is inert, not a successful negative test. Probe 100 supplies the actual
+  failed mutation check. All raw logs retained; no timing samples discarded.
+
+PRESERVATION / FREEZE
+Shipping ELF SHA-256:
+  d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c
+118 other Rust source files under crates/, all four shared docs, and 7,245
+previously tracked evidence/report files remain byte-identical. Only engine.rs
+and intake/position_tests.rs receive one test-only addition each. No runtime
+logic, unrelated untracked work, prior report or evidence file is reverted.
+The prior scroll-authority checkpoint was rerun with ONLY the two live source
+paths mapped back to their retained originals for the check, then restored in
+finally. It passed. Prior four-manifest frozen replay passed: 436 references,
+434 distinct source versions, three explicit historical source bindings.
+The new final index adds this iteration's explicit hash manifest; source mappings
+are exact, never discovered by scanning/fallback or repaired in old archives.
+Post-commit checkpoint/replay receipts will be retained separately and must match
+the pre-commit values. Integrity replay establishes bytes, not benchmark truth.
+
+REPLAY COMMANDS
+python3 -B bench/results/2026-11-03-movement-authority/verify.py
+python3 -B bench/results/2026-11-03-movement-authority/test-verify.py
+python3 -B bench/replay-evidence-index.py bench/results/2026-11-03-movement-authority/final-frozen-index.json
+
+NEXT REQUIRED WORK / BLOCKERS
+A complete coordinate contract must distinguish monotonic output travel from
+viewport history retrieval and width reflow, including the inactive primary.
+Define and test the mapping at Engine/Session/Intake boundaries, growth with
+history versus without history, cursor positions, mixed width/height resize,
+clear/reset/screen-switch sequences and real pictures before any new speed
+screen. Do not reuse this count-only matrix as proof of picture anchoring.
+After semantic acceptance, the still-unrun fixed paired engine timing screen,
+then real PTY/render/input-latency/pacing competitor gates are needed. No bound
+championship acceptance command exists. Campaign goal remains unproven.

@@ -1,0 +1,25 @@
+
+/// Desired invariant diagnostic: same resize path as Session, actual picture
+/// placement through pump. Retained outside the normal passing suite until fixed.
+#[test]
+fn growth_keeps_picture_on_marker_diagnostic() {
+    let mut engine = engine(4, 10);
+    let mut intake = Intake::new(8);
+    feed(&mut engine, &mut intake, &b"x\r\n".repeat(12));
+    feed(&mut engine, &mut intake, b"\x1b[1;1H");
+    feed(&mut engine, &mut intake, &picture(719));
+    feed(&mut engine, &mut intake, b"\x1b[1;1HM");
+    let before = intake.describe(View { top: engine.top_line(), rows: 4, alternate: false });
+    assert_eq!(before.placements.len(), 1);
+    assert_eq!(before.placements[0].row, 0.0);
+    engine.resize(6, 10);
+    let reflow = engine.take_reflow();
+    if let Some(ref r) = reflow { intake.reflow(r); }
+    intake.set_scrolled_primary(engine.scrolled_off_top() as u64, engine.history_size(), 6);
+    let marker = engine.grid_line(2).chars().next().unwrap();
+    assert_eq!(marker, 'M');
+    let after = intake.describe(View { top: engine.top_line(), rows: 6, alternate: false });
+    assert_eq!(after.placements.len(), 1);
+    eprintln!("growth-picture before_row={} marker_row=2 picture_row={} reflow={}", before.placements[0].row, after.placements[0].row, reflow.is_some());
+    assert_eq!(after.placements[0].row, 2.0, "picture must stay on marker");
+}

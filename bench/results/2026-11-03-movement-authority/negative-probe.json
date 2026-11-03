@@ -1,0 +1,12 @@
+{
+  "exit": 0,
+  "settings": {
+    "GLASS_SWEEP_SEEDS": "64",
+    "GLASS_SWEEP_ROUNDS": "200",
+    "GLASS_RUN_PROBE": "5",
+    "GLASS_SCROLLBACK": "10000"
+  },
+  "log": "final-probe-full.log",
+  "sha256": "a442b5a071abe8eed2574d4f24dc9aa87ebe445c3aa2d4bbabf440a66c0106f9",
+  "note": "Mutation sensitivity not established unless an actual test failure is recorded; baseline pass is not independent oracle truth."
+}

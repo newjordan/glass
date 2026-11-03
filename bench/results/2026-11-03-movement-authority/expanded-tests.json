@@ -1,0 +1,14 @@
+[
+  {
+    "test": "movement_authority_inactive_primary_resize",
+    "exit": 101,
+    "log": "candidate-expanded-movement_authority_inactive_primary_resize.log",
+    "sha256": "69e5398b6647d5fdc43db9173e8627454390e39d1d3abd5539ea9db0ce9b6fcd"
+  },
+  {
+    "test": "movement_authority_growth_coordinate_diagnostic",
+    "exit": 101,
+    "log": "candidate-expanded-movement_authority_growth_coordinate_diagnostic.log",
+    "sha256": "2742e736dac75fd6d2cc9169cf0f14ce03cf4a907743fc349f304bdcb658b6f2"
+  }
+]

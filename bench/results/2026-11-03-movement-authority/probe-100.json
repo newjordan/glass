@@ -1,0 +1,11 @@
+{
+  "exit": 101,
+  "settings": {
+    "GLASS_SWEEP_SEEDS": "1",
+    "GLASS_SWEEP_ROUNDS": "200",
+    "GLASS_RUN_PROBE": "100",
+    "GLASS_SCROLLBACK": "10000"
+  },
+  "log": "final-probe-100-negative.log",
+  "sha256": "502aabb347244cc673a2b0d8ef192f4247f8724b5b96c21c8b5d9c2ad8834c82"
+}

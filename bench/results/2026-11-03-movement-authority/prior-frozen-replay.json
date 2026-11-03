@@ -1,0 +1,43 @@
+{
+  "schema": "glass.historical-evidence-replay/v1",
+  "manifests": [
+    {
+      "path": "bench/results/2026-11-03-pen-dispatch/evidence-sha256.json",
+      "manifest_sha256": "4a7fc3e43ccad24f238e9f56f7391f1a9a09078486111abc83819791ee44c332",
+      "files": 120,
+      "live_paths": 119,
+      "historical_paths": 1,
+      "bytes": 5150593
+    },
+    {
+      "path": "bench/results/2026-11-03-exact-corpus/evidence-sha256.json",
+      "manifest_sha256": "1a6d21ec00cfa48bdb826ab812e8c46bc5b54c39727f003cf09912a14652ac37",
+      "files": 69,
+      "live_paths": 68,
+      "historical_paths": 1,
+      "bytes": 6766343
+    },
+    {
+      "path": "bench/results/2026-11-03-pass-samples/evidence-sha256.json",
+      "manifest_sha256": "980a4f200e93a862a96b888a7b2e6da3fcfecf0af93521eacb362df30915512d",
+      "files": 141,
+      "live_paths": 141,
+      "historical_paths": 0,
+      "bytes": 5620734
+    },
+    {
+      "path": "bench/results/2026-11-03-scroll-authority/evidence-sha256.json",
+      "manifest_sha256": "4edd7a3ab79a4cacbf31b6a5c9a2178d220169d241d80ea172c76e8dec03365e",
+      "files": 106,
+      "live_paths": 105,
+      "historical_paths": 1,
+      "bytes": 4401981
+    }
+  ],
+  "manifest_count": 4,
+  "file_references": 436,
+  "historical_references": 3,
+  "unique_source_versions": 434,
+  "note": "Explicit historical byte-integrity replay only; not timing, safety or championship acceptance.",
+  "index_sha256": "7cb54722e135062f89758d87587a0313fb8b981ace83a64b80312bff0e3cbad8"
+}

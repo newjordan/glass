@@ -1,0 +1,57 @@
+[
+  {
+    "label": "terminal-tests",
+    "args": [],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "bound-final-terminal-tests.log",
+    "sha256": "ee39c7239f9c0db3a79545c515951dbf86286c82e7bc172e3e4544cee1617171"
+  },
+  {
+    "label": "inactive_primary_height_shrink_coordinate_defect_is_reproducible",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "engine::tests::inactive_primary_height_shrink_coordinate_defect_is_reproducible"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "bound-final-inactive_primary_height_shrink_coordinate_defect_is_reproducible.log",
+    "sha256": "ee8ae0f8eef2ba52b66039cc5c63fbc654a723cbcb74fcc927102b877cf74e6d"
+  },
+  {
+    "label": "height_growth_picture_coordinate_defect_is_reproducible",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::height_growth_picture_coordinate_defect_is_reproducible"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "bound-final-height_growth_picture_coordinate_defect_is_reproducible.log",
+    "sha256": "948fc9e9137e19ca767b387d727f7d0f1bbec0db91b3a1ee91e1cf380f50bd2c"
+  },
+  {
+    "label": "sweep",
+    "args": [
+      "--ignored",
+      "--exact",
+      "--nocapture",
+      "speed::plain_runs_match_the_parser_over_seeds"
+    ],
+    "settings": {
+      "GLASS_SWEEP_SEEDS": "64",
+      "GLASS_SWEEP_ROUNDS": "200",
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "bound-final-sweep.log",
+    "sha256": "56020fdac903e974ff6d8de384b7137278fb6f14ba6f62d17d47e92ca395a75b"
+  }
+]

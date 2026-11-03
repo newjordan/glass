@@ -1,0 +1,147 @@
+[
+  {
+    "label": "terminal-tests",
+    "args": [
+      "--skip",
+      "movement_authority_growth_coordinate_diagnostic",
+      "--skip",
+      "growth_keeps_picture_on_marker_diagnostic"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "candidate-v2-final-terminal-tests.log",
+    "sha256": "06cff2fcb321919aa718cfad76455618fcb96defdf3a14504dddd83ffb2d8cd2"
+  },
+  {
+    "label": "movement_authority_cursor_history_resize_matrix",
+    "args": [
+      "--nocapture",
+      "movement_authority_cursor_history_resize_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "candidate-v2-final-movement_authority_cursor_history_resize_matrix.log",
+    "sha256": "f3804d179b26e6f851ddb2d403e7f3d82e6abeb2d83ec3da1603511ce6aaa17b"
+  },
+  {
+    "label": "movement_authority_inactive_primary_resize",
+    "args": [
+      "--nocapture",
+      "movement_authority_inactive_primary_resize"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "candidate-v2-final-movement_authority_inactive_primary_resize.log",
+    "sha256": "e1bc00da2caad1e3d2b5fa59349c736b09e71635be5a06fba68853947c23ff28"
+  },
+  {
+    "label": "movement_authority_growth_coordinate_diagnostic",
+    "args": [
+      "--nocapture",
+      "movement_authority_growth_coordinate_diagnostic"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 101,
+    "log": "candidate-v2-final-movement_authority_growth_coordinate_diagnostic.log",
+    "sha256": "f615b2f2997b1b7e07e4818b6b81617111a08964364c24d6db9065f5cd0d3338"
+  },
+  {
+    "label": "growth_keeps_picture_on_marker_diagnostic",
+    "args": [
+      "--nocapture",
+      "growth_keeps_picture_on_marker_diagnostic"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 101,
+    "log": "candidate-v2-final-growth_keeps_picture_on_marker_diagnostic.log",
+    "sha256": "b9deacdd6678cf4b36e2d7bcf333530b10321fff62dc3f0319551433658bad6d"
+  },
+  {
+    "label": "history-0",
+    "args": [
+      "--nocapture",
+      "movement_authority_configured_history"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "0"
+    },
+    "exit": 0,
+    "log": "candidate-v2-final-history-0.log",
+    "sha256": "d449c734d174c3c5b1fed8f464cc7b694dbb2681b2ec514c36d8a9617db45d0d"
+  },
+  {
+    "label": "history-1",
+    "args": [
+      "--nocapture",
+      "movement_authority_configured_history"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "1"
+    },
+    "exit": 0,
+    "log": "candidate-v2-final-history-1.log",
+    "sha256": "668ca8680c631cbeeca59962ea616b3c15f14a2c1842f375b2372299b952edb3"
+  },
+  {
+    "label": "history-2",
+    "args": [
+      "--nocapture",
+      "movement_authority_configured_history"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "2"
+    },
+    "exit": 0,
+    "log": "candidate-v2-final-history-2.log",
+    "sha256": "5518c8def72588f7226357543684e5b32829031590ebbbb60d3a40ada49caa99"
+  },
+  {
+    "label": "history-8",
+    "args": [
+      "--nocapture",
+      "movement_authority_configured_history"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "8"
+    },
+    "exit": 0,
+    "log": "candidate-v2-final-history-8.log",
+    "sha256": "d03950599935ad4c7321ea6c655718639be47f1a1611e259981a3fc62771ee13"
+  },
+  {
+    "label": "history-32",
+    "args": [
+      "--nocapture",
+      "movement_authority_configured_history"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "32"
+    },
+    "exit": 0,
+    "log": "candidate-v2-final-history-32.log",
+    "sha256": "5a802347e5261c45c5bdc966fb131211443cc57e2dd5d66cd3d58ced354f279d"
+  },
+  {
+    "label": "history-10000",
+    "args": [
+      "--nocapture",
+      "movement_authority_configured_history"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "candidate-v2-final-history-10000.log",
+    "sha256": "6c7deccd5c2235556805c4473bb2cc136a25d0e624c625e466f8cd4c1bcab341"
+  }
+]

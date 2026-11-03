@@ -1,0 +1,20 @@
+    /// Characterize a confirmed defect, not a correctness oracle or a fix.
+    /// The inactive primary grid pushes two rows into history, but the
+    /// observer selection was removed on the switch and misses that movement.
+    #[test]
+    fn inactive_primary_height_shrink_coordinate_defect_is_reproducible() {
+        let mut e = Engine::new(4, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1) });
+        e.term.grid_mut().update_history(32);
+        e.process(&b"x\r\n".repeat(24));
+        assert_eq!(e.scrolled_off_top(), 21);
+        e.process(b"\x1b[3;1HM\x1b[4;1H\x1b[?1049h");
+        e.resize(2, 10);
+        e.process(b"\x1b[?1049l");
+        assert_eq!(e.grid_line(0).chars().next(), Some('M'));
+        let absolute_after = e.scrolled_off_top();
+        // M was at absolute line 21+2. It is now at grid row zero, so a
+        // correct coordinate base would be 23 rather than this observed 21.
+        assert_eq!(absolute_after, 21);
+        assert_ne!(absolute_after, 23, "remove this characterization when fixing the defect");
+    }
+

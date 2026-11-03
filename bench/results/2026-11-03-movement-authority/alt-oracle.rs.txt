@@ -1,0 +1,49 @@
+    #[test]
+    fn movement_authority_inactive_primary_resize() {
+        let mut cases = 0; let mut mismatches = 0;
+        for history in [0, 1, 8, 10_000] {
+            for rows in [4, 6, 12] {
+                for cursor in 0..rows {
+                    for height in 1..rows {
+                        for fast in [false, true] {
+                            let mut e = Engine::new(rows, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1) });
+                            e.term.grid_mut().update_history(history);
+                            e.set_fast(fast); e.set_motion(None);
+                            e.process(&b"x\r\n".repeat(24));
+                            let initial = 25 - rows;
+                            e.process(format!("\x1b[{};1H\x1b[?1049h", cursor + 1).as_bytes());
+                            e.resize(height, 10);
+                            let during = e.scrolled_off_top();
+                            e.process(b"\x1b[?1049l");
+                            let after = e.scrolled_off_top();
+                            let expected = initial + (cursor + 1).saturating_sub(height);
+                            let matched = during == expected && after == expected;
+                            if !matched { mismatches += 1; }
+                            eprintln!("inactive-case history={history} rows={rows} cursor={cursor} height={height} fast={fast} expected={expected} actual={during},{after} matched={matched}");
+                            cases += 1;
+                        }
+                    }
+                }
+            }
+        }
+        eprintln!("inactive oracle: {cases} cases checked; {mismatches} mismatches");
+        assert_eq!(cases, 1392); assert_eq!(mismatches, 0);
+    }
+
+    // A marker at an absolute picture line must still share its text row
+    // when growing the viewport retrieves history. This tests coordinates,
+    // not the monotonic count alone.
+    #[test]
+    fn movement_authority_growth_coordinate_diagnostic() {
+        let mut e = Engine::new(4, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1) });
+        e.term.grid_mut().update_history(32);
+        e.process(&b"x\r\n".repeat(12));
+        e.process(b"\x1b[1;1HM");
+        let before = e.scrolled_off_top();
+        e.resize(6, 10);
+        let marker_row = (0..6).find(|&row| e.term.grid()[Line(row)][Column(0)].c == 'M').unwrap();
+        let after = e.scrolled_off_top() + marker_row as usize;
+        eprintln!("growth-coordinate before={before} marker_row={marker_row} after={after} reflow={}", e.take_reflow().is_some());
+        assert_eq!(before, after, "absolute picture and text line must agree after growth");
+    }
+
