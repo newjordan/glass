@@ -13,6 +13,17 @@ A program runs in a pseudo-terminal, and what it writes comes in through
 No dialect is the reference one; each is an adapter onto one shared
 description of what to show.
 
+### Simple-CSI ground-handoff regression and measured follow-up
+
+- Retain 2,160 parser-differential handoff/chunk scenarios. A compiled mutant
+  that fails to revoke ground after parser input produces an actual cell mismatch.
+- Reject a known-ground handoff follow-up to parser-authority removal: 11 fresh
+  pairs retain ASCII/scroll CPU gains but truecolor ratio .927055 fails the
+  frozen all-workload guard. Restore runtime; no selected executable change.
+- 383 terminal tests and 12,800 streams per correct arm, 65 Python tests, and
+  22 evidence-corruption rejections. Preserve 6,100 prior artifacts; provide a
+  read-only exact-source checkpoint. No new Ghostty or championship claim.
+
 ### C1 row-boundary regression and width-handle research
 
 - Add parser-differential coverage for all 32 C1 scalars, row-run thresholds,

@@ -1,0 +1,123 @@
+{
+  "schema": "glass.authority-handoff-corruption/v1",
+  "cases": [
+    {
+      "case": "truncated_pairs",
+      "rejected": true,
+      "reason": "unexpected pair count"
+    },
+    {
+      "case": "summary_ratio",
+      "rejected": true,
+      "reason": "summary mismatch or incomplete report"
+    },
+    {
+      "case": "parsed_without_raw",
+      "rejected": true,
+      "reason": "raw/parsed mismatch: 0/candidate"
+    },
+    {
+      "case": "duplicate_row",
+      "rejected": true,
+      "reason": "missing/duplicate rows: 0/candidate"
+    },
+    {
+      "case": "wrong_order",
+      "rejected": true,
+      "reason": "wrong order: pair 0"
+    },
+    {
+      "case": "failed_exit",
+      "rejected": true,
+      "reason": "nonzero exit: 0/base"
+    },
+    {
+      "case": "wrong_binary",
+      "rejected": true,
+      "reason": "changed binary: base"
+    },
+    {
+      "case": "wrong_shape",
+      "rejected": true,
+      "reason": "raw/parsed mismatch: 0/candidate"
+    },
+    {
+      "case": "missing_summary",
+      "rejected": true,
+      "reason": "summary mismatch or incomplete report"
+    },
+    {
+      "case": "duplicate_key",
+      "rejected": true,
+      "reason": "duplicate JSON key: pairs"
+    },
+    {
+      "case": "control_stale_vte",
+      "rejected": true,
+      "reason": "missing/ambiguous/stale package receipt: vte"
+    },
+    {
+      "case": "control_stale_glass",
+      "rejected": true,
+      "reason": "missing/ambiguous/stale package receipt: glass"
+    },
+    {
+      "case": "control_stale_alacritty_terminal",
+      "rejected": true,
+      "reason": "missing/ambiguous/stale package receipt: alacritty_terminal"
+    },
+    {
+      "case": "candidate_stale_vte",
+      "rejected": true,
+      "reason": "missing/ambiguous/stale package receipt: vte"
+    },
+    {
+      "case": "candidate_stale_glass",
+      "rejected": true,
+      "reason": "missing/ambiguous/stale package receipt: glass"
+    },
+    {
+      "case": "candidate_stale_alacritty_terminal",
+      "rejected": true,
+      "reason": "missing/ambiguous/stale package receipt: alacritty_terminal"
+    },
+    {
+      "case": "mutant_stale_vte",
+      "rejected": true,
+      "reason": "missing/ambiguous/stale package receipt: vte"
+    },
+    {
+      "case": "mutant_stale_glass",
+      "rejected": true,
+      "reason": "missing/ambiguous/stale package receipt: glass"
+    },
+    {
+      "case": "mutant_stale_alacritty_terminal",
+      "rejected": true,
+      "reason": "missing/ambiguous/stale package receipt: alacritty_terminal"
+    },
+    {
+      "case": "restored_stale_vte",
+      "rejected": true,
+      "reason": "missing/ambiguous/stale package receipt: vte"
+    },
+    {
+      "case": "restored_stale_glass",
+      "rejected": true,
+      "reason": "missing/ambiguous/stale package receipt: glass"
+    },
+    {
+      "case": "restored_stale_alacritty_terminal",
+      "rejected": true,
+      "reason": "missing/ambiguous/stale package receipt: alacritty_terminal"
+    }
+  ],
+  "canonical_reports_unchanged": true,
+  "sha256": {
+    "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-authority-handoff/engine-pairs.json": "1fb0ac0ba61e43be38386ee71ef92275a0d017f12d1613887c5e57717fe18690",
+    "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-authority-handoff/build-control/cargo.jsonl": "40aa6db4be0cb2e92812e8d59b5c218a45cb0882255810b3f992e7dacd70b0ba",
+    "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-authority-handoff/build-candidate/cargo.jsonl": "1efeeb6a317adf242c9f451e3273fce8361e046f88a818dfb2f890d71564a512",
+    "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-authority-handoff/build-mutant/cargo.jsonl": "5a14fbdf3236ef7ec023cc91cea078ec3e914b0c6843bbd27d53bba6b50a9d36",
+    "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-authority-handoff/build-restored/cargo.jsonl": "6633e62a04c622c28b6eb1ff32e5532eb9242a1b1a04893c94f9f2e6c4d566c5"
+  }
+}

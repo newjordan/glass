@@ -1,0 +1,9 @@
+{
+  "regression_sha256": "c21c12e4b1e9fc5f97770eaffc61748ed7093e06a75b19f522a27848eb2c874f",
+  "binaries": {
+    "/tmp/glass-i24-control-test": "288161ef4ed3bd64429f996878f28aa820010815c298491eaa844fbbef85766c",
+    "/tmp/glass-i24-candidate-test": "cfa915a6247d228696fdf0438d7ea2aaa30e40024d80df81dfb3e65b5a955ccd",
+    "/tmp/glass-i24-mutant-test": "70e266e9de199bb226645688024cec91da70bb7b7bbac6a383181f3765b80fcd",
+    "/tmp/glass-i24-restored-test": "288161ef4ed3bd64429f996878f28aa820010815c298491eaa844fbbef85766c"
+  }
+}

@@ -1,0 +1,23 @@
+
+running 1 test
+test speed::simple_lane_ground_handoff_boundaries ... FAILED
+
+failures:
+
+failures:
+    speed::simple_lane_ground_handoff_boundaries
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s
+
+
+thread 'speed::simple_lane_ground_handoff_boundaries' (2918431) panicked at crates/term/src/speed.rs:1335:21:
+assertion `left == right` failed: 3x2, prefix [], body [27, 91, 52, 52, 109, 195, 27, 91, 51, 50, 109, 89, 27, 91, 51, 98], chunk 23
+  left: Some("cells")
+ right: None
+stack backtrace:
+   0: __rustc::rust_begin_unwind
+   1: core::panicking::panic_fmt
+   2: core::panicking::assert_failed_inner
+   3: core::panicking::assert_failed::<core::option::Option<&str>, core::option::Option<&str>>
+   4: <glass::speed::simple_lane_ground_handoff_boundaries::{closure#0} as core::ops::function::FnOnce<()>>::call_once
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.

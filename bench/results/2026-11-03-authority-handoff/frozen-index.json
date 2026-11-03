@@ -1,0 +1,11 @@
+{
+  "schema": "glass.historical-evidence-index/v1",
+  "manifests": [
+    {
+      "path": "bench/results/2026-11-03-authority-handoff/evidence-sha256.json",
+      "sha256": "9f83c745ad7a9bc5050448d5d5fb77abb46ebbdb548992c004901e8a896853ff",
+      "source_root": ".",
+      "snapshots": {}
+    }
+  ]
+}

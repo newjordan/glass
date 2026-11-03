@@ -1,0 +1,22 @@
+{
+  "schema": "glass.authority-handoff-protocol/v1",
+  "hypothesis": "Authoritative parser ground with a local known-ground handoff between successful simple CSI lanes. Direct ASCII keeps state ground; every nonempty processor advance invalidates the local fact and requires an authoritative recheck. No empty advance and no duplicate sync/ground check in that proven case. No other runtime variant.",
+  "engine": {
+    "pairs": 11,
+    "scale": 2,
+    "rounds": 5,
+    "order": "alternating AB/BA",
+    "workloads": [
+      "ascii",
+      "unicode",
+      "truecolor",
+      "cursor_motion",
+      "scroll_region",
+      "tui_frames"
+    ],
+    "screen": "At least one ASCII/scroll_region median CPU ratio >=1.02, positive signs and six-workload Holm p<.05; every median >=.98. Fresh exact arms, not pooled with i23."
+  },
+  "correctness": "Both exact arms pass terminal suite, 64x200 differential streams, new ground invalidation boundary scenarios. Mutant omitting invalidation after nonempty advance must fail with actual cell/state difference.",
+  "stop": "One implementation and exactly 11 pairs; no retries/variants/rescue pooling. Reject/restore runtime on screen failure. No PTY run after failed screen. If clears, freeze separate prospective PTY + Ghostty gate before promotion.",
+  "limits": "Shared machine, no overlapping own builds/measurements; best-of-five CPU diagnostic, not terminal throughput or equivalence or all-metric champion. No host process termination/tuning."
+}

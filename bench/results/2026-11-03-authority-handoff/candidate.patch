@@ -1,0 +1,375 @@
+--- a/crates/term/src/engine.rs
++++ b/crates/term/src/engine.rs
+@@ -359,7 +359,6 @@
+     /// Where vte's parser stands, followed beside it, so a run of plain
+     /// text the parser would print a character at a time can be written
+     /// at once (`feed`).
+-    mirror: Mirror,
+     /// Whether such runs are written at once. Always, but for the tests
+     /// that hold the fast path to the parser's own result.
+     fast: bool,
+@@ -412,7 +411,6 @@
+             cells: Vec::new(),
+             effects: Effects::default(),
+             joined: Vec::new(),
+-            mirror: Mirror::default(),
+             fast: true,
+         }
+     }
+@@ -518,7 +516,6 @@
+                 alt_scrolled,
+                 region_top,
+                 region_bottom,
+-                mirror,
+                 fast,
+                 ..
+             } = self;
+@@ -548,7 +545,7 @@
+                 primary: scrolled,
+                 fast: *fast,
+             };
+-            feed(processor, &mut watch, mirror, chunk, *fast);
++            feed(processor, &mut watch, chunk, *fast);
+             self.preceding_char = watch.preceding;
+             *alt_scrolled = watch.alt_scrolled;
+             *region_top = watch.region_top;
+@@ -2769,16 +2766,13 @@
+ /// characters skip the parser too ([`lane`]). Everything else, and every
+ /// byte when `fast` is off, goes through the parser.
+ use std::sync::atomic::Ordering;
+-fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, chunk: &[u8], fast: bool) {
++fn feed(processor: &mut Processor, watch: &mut Watch<'_>, chunk: &[u8], fast: bool) {
+     if !fast {
+-        mirror.follow(chunk);
+         processor.advance(watch, chunk);
+         return;
+     }
+-    // Bytes before `fed` have reached the grid; the mirror's state is
+-    // the parser's at `known`.
++    // The real parser stays at `fed`. Fast runs leave it in ground.
+     let mut fed = 0;
+-    let mut known = 0;
+     // A run lies between two ESCs, so only a stretch between them as long
+     // as a run is looked into: escape-dense output (an SGR and a letter,
+     // over and over) is passed over at the speed of the ESC search.
+@@ -2786,14 +2780,7 @@
+     // Where the last sequence the lane took ended: the parser is in
+     // ground there, with nothing half read.
+     let mut lane_end = None;
+-    // Whether the parser is known to be in ground at `fed`, with no
+-    // sequence or character half read from an earlier chunk. False at a
+-    // chunk's start, where the previous chunk may have ended inside a
+-    // sequence whose payload the gap would be completing; true once a
+-    // parser advance reaches a point the mirror calls ground, a run is
+-    // taken from ground, or the lane takes a sequence. Only then may a
+-    // gap of bare controls be carried out without the parser (`plain_c0`).
+-    let mut ground_at_fed = false;
++    let mut ground_at_fed = processor.is_ground();
+     for esc in memchr::memchr_iter(0x1b, chunk).chain(std::iter::once(chunk.len())) {
+         let mut from = stretch;
+         stretch = esc + 1;
+@@ -2801,21 +2788,7 @@
+             && let Some((start, end, ascii)) = next_run(&chunk[..esc], from)
+         {
+             from = end;
+-            mirror.catch_up(chunk, known, start);
+-            // Where in the run the parser is in ground: a run may begin
+-            // with the tail of a sequence, the parameters of a CSI.
+-            let ground = mirror.stretch(chunk, start, end);
+-            known = end;
+-            if mirror.state != Parse::Ground {
+-                continue;
+-            }
+-            mirror.high = chunk[end - 1] >= 0x80;
+-            // A byte from 0x80 up just before the run may leave a UTF-8
+-            // character half read: the run's first byte would end it.
+-            let before_high = if ground == 0 { mirror.high_at_start } else { chunk[ground - 1] >= 0x80 };
+-            if end - ground < RUN_MIN || before_high {
+-                continue;
+-            }
++            let ground = start;
+             if fed < ground {
+                 if crate::engine::probes::get() != 104 {
+                     let gap = &chunk[fed..ground];
+@@ -2840,7 +2813,13 @@
+                 fed = ground;
+                 ground_at_fed = true;
+             }
+-            if processor.sync_timeout().sync_timeout().is_some() {
++            // A prefix may end in a sequence or partial scalar. In that
++            // case let the authoritative parser consume the whole run;
++            // do not speculate about the point where it reaches ground.
++            if !processor.is_ground() {
++                processor.advance(watch, &chunk[fed..end]);
++                fed = end;
++                ground_at_fed = processor.is_ground();
+                 continue;
+             }
+             let run = &chunk[ground..end];
+@@ -2879,7 +2858,7 @@
+         if esc < chunk.len() {
+             let after_lane = lane_end == Some(fed);
+             lane_end = None;
+-            if let Some(len) = lane(processor, watch, mirror, chunk, esc, &mut fed, &mut known, after_lane) {
++            if let Some(len) = lane(processor, watch, chunk, esc, &mut fed, after_lane) {
+                 // What follows the sequence is looked into from its end.
+                 stretch = esc + len;
+                 lane_end = Some(fed);
+@@ -2887,8 +2866,6 @@
+             }
+         }
+     }
+-    mirror.catch_up(chunk, known, chunk.len());
+-    mirror.high_at_start = mirror.high;
+     if fed < chunk.len() {
+         if counters::counting() {
+             counters::VTE_BYTES.fetch_add((chunk.len() - fed) as u64, Ordering::Relaxed);
+@@ -3130,19 +3107,15 @@
+ fn lane(
+     processor: &mut Processor,
+     watch: &mut Watch<'_>,
+-    mirror: &mut Mirror,
+     chunk: &[u8],
+     esc: usize,
+     fed: &mut usize,
+-    known: &mut usize,
+     after_lane: bool,
+ ) -> Option<usize> {
+     let (len, simple) = simple(&chunk[esc..])?;
+-    mirror.catch_up(chunk, *known, esc);
+-    *known = esc;
+-    if mirror.state != Parse::Ground || (mirror.high && !ends_whole(&chunk[..esc])) {
+-        return None;
+-    }
++    // A successful previous lane proves ground at fed. Direct ASCII
++    // preserves it; any nonempty parser advance revokes that proof.
++    let mut ground = after_lane;
+     if *fed < esc {
+         let text = &chunk[*fed..esc];
+         // One character is enough when the lane applies the whole run:
+@@ -3153,10 +3126,9 @@
+         // that colours every cell (`tui_frames`, `truecolor`,
+         // `cursor_motion`) is exactly this shape, one char per sequence.
+         let floor = if run_whole() { 0 } else { 1 };
+-        if after_lane
++        if ground
+             && text.len() > floor
+             && text.iter().all(|b| (0x20..=0x7e).contains(b))
+-            && processor.sync_timeout().sync_timeout().is_none()
+         {
+             let n = if run_whole() { text.len() } else { text.len() - 1 };
+             // A single cell between colour changes (the tui_frames /
+@@ -3190,10 +3162,13 @@
+             }
+             *fed += t;
+         }
+-        processor.advance(watch, &chunk[*fed..esc]);
+-        *fed = esc;
+-    }
+-    if processor.sync_timeout().sync_timeout().is_some() {
++        if *fed < esc {
++            processor.advance(watch, &chunk[*fed..esc]);
++            ground = false;
++            *fed = esc;
++        }
++    }
++    if !ground && !processor.is_ground() {
+         return None;
+     }
+     let params = &simple.params[..simple.count];
+@@ -3218,27 +3193,7 @@
+         sgr(watch, params);
+     }
+     *fed = esc + len;
+-    *known = esc + len;
+-    mirror.state = Parse::Ground;
+-    mirror.high = false;
+     Some(len)
+-}
+-
+-/// Whether `bytes` ends with a whole UTF-8 character, so the parser holds
+-/// none half read: its last lead byte starts a valid character that ends
+-/// exactly at the end.
+-fn ends_whole(bytes: &[u8]) -> bool {
+-    let Some(lead) = bytes.iter().rev().take(4).position(|&b| b & 0xc0 != 0x80).map(|k| bytes.len() - 1 - k) else {
+-        return false;
+-    };
+-    let need = match bytes[lead] {
+-        0x00..=0x7f => 1,
+-        0xc2..=0xdf => 2,
+-        0xe0..=0xef => 3,
+-        0xf0..=0xf4 => 4,
+-        _ => return false,
+-    };
+-    bytes.len() - lead == need && std::str::from_utf8(&bytes[lead..]).is_ok()
+ }
+ 
+ /// vte 0.15's SGR (`attrs_from_sgr_parameters`) for parameters with no
+@@ -3462,135 +3417,6 @@
+     at + bytes[at..].iter().position(|&b| b < 0x20 || b == 0x7f).unwrap_or(bytes.len() - at)
+ }
+ 
+-/// The states of vte 0.15's parser, as far as telling when it is back
+-/// in ground: its four CSI states act alike on every byte that matters
+-/// here, so they are one; SOS, PM and APC strings are one.
+-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+-enum Parse {
+-    #[default]
+-    Ground,
+-    Escape,
+-    EscapeIntermediate,
+-    Csi,
+-    DcsEntry,
+-    DcsParam,
+-    DcsIntermediate,
+-    DcsIgnore,
+-    DcsPassthrough,
+-    Osc,
+-    String,
+-}
+-
+-/// vte's parser state, followed from the same bytes: its transition
+-/// table (vte 0.15 `Parser::change_state`) less the actions. `high` is
+-/// whether the last byte read in ground was 0x80 or above, so a UTF-8
+-/// character may be half read; `high_at_start` is that, as the last
+-/// chunk left it.
+-#[derive(Default)]
+-struct Mirror {
+-    state: Parse,
+-    high: bool,
+-    high_at_start: bool,
+-}
+-
+-impl Mirror {
+-    /// Follow every byte.
+-    fn follow(&mut self, bytes: &[u8]) {
+-        self.catch_up(bytes, 0, bytes.len());
+-        self.high_at_start = self.high;
+-    }
+-
+-    /// Bring the state from `from` to `to`. Every state of the parser
+-    /// goes to its escape state on ESC, so only the bytes after the last
+-    /// ESC in between need following.
+-    fn catch_up(&mut self, bytes: &[u8], from: usize, to: usize) {
+-        let from = match memchr::memrchr(0x1b, &bytes[from..to]) {
+-            Some(k) => {
+-                self.state = Parse::Escape;
+-                self.high = false;
+-                from + k + 1
+-            }
+-            None => from,
+-        };
+-        if from < to {
+-            let ground = self.stretch(bytes, from, to);
+-            if self.state == Parse::Ground && ground < to {
+-                self.high = bytes[to - 1] >= 0x80;
+-            }
+-        }
+-    }
+-
+-    /// Follow `bytes[at..end]`, which holds no ESC, until the parser is
+-    /// in ground. Returns where ground begins, or `end`.
+-    fn stretch(&mut self, bytes: &[u8], mut at: usize, end: usize) -> usize {
+-        let find = |at: usize, hit: fn(u8) -> bool| bytes[at..end].iter().position(|&b| hit(b)).map(|k| at + k);
+-        while at < end {
+-            match self.state {
+-                Parse::Ground => return at,
+-                // Only a final byte, CAN or SUB changes a CSI.
+-                Parse::Csi => match find(at, |b| (0x40..=0x7e).contains(&b) || b == 0x18 || b == 0x1a) {
+-                    Some(k) => {
+-                        self.state = Parse::Ground;
+-                        at = k + 1;
+-                    }
+-                    None => return end,
+-                },
+-                Parse::Osc => match find(at, |b| b == 0x07 || b == 0x18 || b == 0x1a) {
+-                    Some(k) => {
+-                        self.state = Parse::Ground;
+-                        at = k + 1;
+-                    }
+-                    None => return end,
+-                },
+-                Parse::DcsPassthrough => match find(at, |b| b == 0x9c || b == 0x18 || b == 0x1a) {
+-                    Some(k) => {
+-                        self.state = Parse::Ground;
+-                        at = k + 1;
+-                    }
+-                    None => return end,
+-                },
+-                Parse::String | Parse::DcsIgnore => match find(at, |b| b == 0x18 || b == 0x1a) {
+-                    Some(k) => {
+-                        self.state = Parse::Ground;
+-                        at = k + 1;
+-                    }
+-                    None => return end,
+-                },
+-                state => {
+-                    let b = bytes[at];
+-                    at += 1;
+-                    self.state = match (state, b) {
+-                        (_, 0x18 | 0x1a) => Parse::Ground,
+-                        (Parse::Escape, b) => match b {
+-                            0x20..=0x2f => Parse::EscapeIntermediate,
+-                            b'P' => Parse::DcsEntry,
+-                            b'X' | b'^' | b'_' => Parse::String,
+-                            b'[' => Parse::Csi,
+-                            b']' => Parse::Osc,
+-                            0x30..=0x7e => Parse::Ground,
+-                            _ => Parse::Escape,
+-                        },
+-                        (Parse::EscapeIntermediate, 0x30..=0x7e) => Parse::Ground,
+-                        (Parse::DcsEntry, 0x20..=0x2f) => Parse::DcsIntermediate,
+-                        (Parse::DcsEntry, 0x30..=0x3f) => Parse::DcsParam,
+-                        (Parse::DcsEntry | Parse::DcsParam | Parse::DcsIntermediate, 0x40..=0x7e) => {
+-                            Parse::DcsPassthrough
+-                        }
+-                        (Parse::DcsParam, 0x20..=0x2f) => Parse::DcsIntermediate,
+-                        (Parse::DcsParam, 0x3c..=0x3f) => Parse::DcsIgnore,
+-                        (Parse::DcsIntermediate, 0x30..=0x3f) => Parse::DcsIgnore,
+-                        (state, _) => state,
+-                    };
+-                }
+-            }
+-            if self.state == Parse::Ground {
+-                self.high = false;
+-            }
+-        }
+-        at
+-    }
+-}
+-
+ /// The character UTF-8 encodes at `at`, and its length, when the bytes
+ /// there are a whole, well-formed one (RFC 3629: no overlong form, no
+ /// surrogate, nothing past U+10FFFF). `None` for anything else, which
+--- a/crates/vte/src/lib.rs
++++ b/crates/vte/src/lib.rs
+@@ -100,6 +100,13 @@
+         &self.intermediates[..self.intermediate_idx]
+     }
+ 
++    /// Whether text can begin without completing a sequence or UTF-8 scalar.
++    /// Ground alone is insufficient when a prior call buffered a partial scalar.
++    #[inline]
++    pub fn is_ground(&self) -> bool {
++        matches!(self.state, State::Ground) && self.partial_utf8_len == 0
++    }
++
+     /// Advance the parser state.
+     ///
+     /// Requires a [`Perform`] implementation to handle the triggered actions.
+--- a/crates/vte/src/ansi.rs
++++ b/crates/vte/src/ansi.rs
+@@ -293,6 +293,13 @@
+ 
+     pub fn new() -> Self {
+         Self::default()
++    }
++
++    /// Whether externally printed text would begin in ground, without a
++    /// partial UTF-8 scalar or synchronized-update bytes held back.
++    #[inline]
++    pub fn is_ground(&self) -> bool {
++        self.parser.is_ground() && !self.state.sync_state.timeout.pending_timeout()
+     }
+ 
+     /// Synchronized update timeout.

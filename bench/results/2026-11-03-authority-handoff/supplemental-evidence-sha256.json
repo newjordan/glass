@@ -1,0 +1,14 @@
+{
+  "bench/results/2026-11-03-authority-handoff/corruption-seed-0.json": "07c99493c3eae0d686c13c44e44daee8f890c2d1bc0237bbc7b6d14e94cbb513",
+  "bench/results/2026-11-03-authority-handoff/corruption-seed-1.json": "07c99493c3eae0d686c13c44e44daee8f890c2d1bc0237bbc7b6d14e94cbb513",
+  "bench/results/2026-11-03-authority-handoff/corruption-seed-2.json": "07c99493c3eae0d686c13c44e44daee8f890c2d1bc0237bbc7b6d14e94cbb513",
+  "bench/results/2026-11-03-authority-handoff/corruption-seed-3.json": "07c99493c3eae0d686c13c44e44daee8f890c2d1bc0237bbc7b6d14e94cbb513",
+  "bench/results/2026-11-03-authority-handoff/corruption-seed-4.json": "07c99493c3eae0d686c13c44e44daee8f890c2d1bc0237bbc7b6d14e94cbb513",
+  "bench/results/2026-11-03-authority-handoff/corruption-seed-5.json": "07c99493c3eae0d686c13c44e44daee8f890c2d1bc0237bbc7b6d14e94cbb513",
+  "bench/results/2026-11-03-authority-handoff/corruption-seed-6.json": "07c99493c3eae0d686c13c44e44daee8f890c2d1bc0237bbc7b6d14e94cbb513",
+  "bench/results/2026-11-03-authority-handoff/corruption-seed-7.json": "07c99493c3eae0d686c13c44e44daee8f890c2d1bc0237bbc7b6d14e94cbb513",
+  "bench/build-engine-arm.py": "3a87fe4a7ac2d1956cc8bd53f1088c716519c252d5433e3cb6d06a9a0acf5984",
+  "bench/engine-pairs.py": "6e4603a42f377999b340a2acc133711838b58554b371a54bb0c454e6a56abf80",
+  "bench/replay-engine-pairs.py": "93a3636423590dc343b51c0aaed95d2710fd1beaa226b39a43414f1569fcb307",
+  "bench/replay-evidence-index.py": "a06d0b4cffa3496adb8755a952e1a8bea3157f744ad78df83c94c8093b4647e2"
+}

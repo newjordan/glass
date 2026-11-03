@@ -745,3 +745,31 @@ No runtime selection or performance conclusion changes.
 ```sh
 python3 -B bench/results/2026-11-03-parser-authority-replay/verify.py
 ```
+
+
+### Known-ground simple-CSI handoff follow-up (2026-11-03, iteration 24)
+
+The separately frozen follow-up keeps the authoritative parser route but carries
+known ground across successful simple-CSI/ASCII handoffs, clearing the local fact
+on every nonempty parser advance. Its 11 fresh engine pairs still fail the guard:
+ASCII CPU ratio 1.068749, scroll-region 1.068974, truecolor .927055 (0/11 wins).
+Reject and restore runtime; no PTY escalation, new Ghostty observations or runtime
+promotion. Do not compare two rejected variants by subtracting their separate
+ratios or claim this establishes the instruction-level cause.
+
+Retain 2,160 boundary scenarios; a built stale-ground mutant fails on actual
+cells after a split UTF8 lead byte. Control/candidate/restored each pass 383 tests
+and 12,800 streams; 65 Python tests and 22 corruption challenges pass. Selected
+terminal executable, 119 runtime Rust files and all 6,100 prior tracked artifacts
+are unchanged. Original earlier checkpointers are frozen; their source identity
+predates the new regression. Use this exact-state read-only checkpoint now:
+
+```sh
+python3 -B bench/results/2026-11-03-authority-handoff/verify.py
+python3 -B bench/replay-evidence-index.py \
+  bench/results/2026-11-03-authority-handoff/frozen-index.json
+```
+
+Full sources, frozen protocol, six-workload table, build identities, limits and
+remaining competitive gaps: `bench/results/2026-11-03-authority-handoff/README.md`
+and `reports/research-1eecf9876bb302e9da10ff629e71e6d8-24.txt`.

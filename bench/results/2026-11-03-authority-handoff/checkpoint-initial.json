@@ -1,0 +1,81 @@
+{
+  "schema": "glass.authority-handoff-checkpoint/v1",
+  "engine_pairs": 11,
+  "engine_screen_cleared": false,
+  "runtime_promotion": false,
+  "cpu_ratios": {
+    "ascii": 1.068748722142711,
+    "cursor_motion": 1.0481242895036,
+    "scroll_region": 1.068974319701843,
+    "truecolor": 0.9270553064275038,
+    "tui_frames": 1.0591467356173239,
+    "unicode": 0.9960130482058718
+  },
+  "terminal_tests_per_correct_arm": 383,
+  "differential_streams_per_correct_arm": 12800,
+  "handoff_scenarios_per_correct_arm": 2160,
+  "python_tests": 65,
+  "corruptions_rejected": 22,
+  "unchanged_runtime_rust_sources": 119,
+  "changed_rust_sources": [
+    "crates/term/src/speed.rs"
+  ],
+  "unchanged_prior_artifacts": 6100,
+  "selected_binary_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "ancestor_frozen_file_references": 65,
+  "prior_frozen_file_references": 105,
+  "own_frozen_file_references": 69,
+  "live_checks": [
+    {
+      "argv": [
+        "/tmp/glass-i24-control-test",
+        "--exact",
+        "speed::simple_lane_ground_handoff_boundaries",
+        "--nocapture"
+      ],
+      "exit": 0
+    },
+    {
+      "argv": [
+        "/tmp/glass-i24-candidate-test",
+        "--exact",
+        "speed::simple_lane_ground_handoff_boundaries",
+        "--nocapture"
+      ],
+      "exit": 0
+    },
+    {
+      "argv": [
+        "/tmp/glass-i24-mutant-test",
+        "--exact",
+        "speed::simple_lane_ground_handoff_boundaries",
+        "--nocapture"
+      ],
+      "exit": 101
+    },
+    {
+      "argv": [
+        "/tmp/glass-i24-restored-test",
+        "--exact",
+        "speed::simple_lane_ground_handoff_boundaries",
+        "--nocapture"
+      ],
+      "exit": 0
+    },
+    {
+      "argv": [
+        "/home/frosty40/.local/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "bench",
+        "-p",
+        "test*.py"
+      ],
+      "exit": 0
+    }
+  ],
+  "note": "Integrity/correctness and stored-screen replay only; not new timings or championship acceptance."
+}

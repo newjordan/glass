@@ -1301,3 +1301,43 @@ fn parser_ground_chunk_boundaries() {
     }
     eprintln!("parser ground chunk boundaries: {scenarios} scenarios matched");
 }
+
+/// A successful simple-CSI lane establishes ground only at the consumed
+/// frontier. A following non-ASCII or control prefix must revoke that fact
+/// before the next lane; partial scalars and synchronized output are not plain.
+#[test]
+fn simple_lane_ground_handoff_boundaries() {
+    let prefixes: &[&[u8]] = &[
+        b"", b"\x1b[b", b"\x1b[31m", b"\x1b[2;2H",
+        b"\x1b[31mA", b"\x1b[31m\xc3", b"\x1b[31m\xe6\x97",
+        b"\x1b[31m\xf0\x9f\x99", b"\x1b[31m\xff", b"\x1b[31m\r\n",
+        b"\x1b[31m\x1b[?2026h", b"\x1b[31m\x1b]2;unfinished",
+        b"\x1b[31m\x1bP0q", b"\x1b[31m\x1b_", b"\xc3\x1b[31m",
+    ];
+    let bodies: &[&[u8]] = &[
+        b"\x1b[44mX\x1b[3b\x1b[6n", b"\x1b[44m\x1b[3b\x1b[6n",
+        b"\x1b[44m\xc3\x1b[32mY\x1b[3b", b"\x1b[44m\xe6\x97\x1b[32mZ",
+        b"\x1b[44mA\r\n\x1b[32mB\x1b[2;1H\x1b[3b",
+        b"\x1b[44m\x1b[?2026hDEFER\x1b[32mX\x1b[?2026l\x1b[3b",
+    ];
+    let mut scenarios = 0;
+    for (rows, cols) in [(3, 2), (4, 10), (39, 154)] {
+        for prefix in prefixes {
+            for body in bodies {
+                let mut stream = prefix.to_vec();
+                stream.extend_from_slice(body);
+                stream.extend_from_slice(b"\x18\x1b\\\x1b[?2026l\x1b[0mEND\x1b[3b\x1b[6n");
+                for step in [1, 2, 3, 7, 23, 24, 25, stream.len()] {
+                    let mut cuts: Vec<_> = (0..stream.len()).step_by(step).collect();
+                    cuts.extend([prefix.len(), stream.len()]);
+                    cuts.sort_unstable();
+                    cuts.dedup();
+                    assert_eq!(plain_runs_first_difference(rows, cols, &stream, &cuts), None,
+                        "{rows}x{cols}, prefix {prefix:?}, body {body:?}, chunk {step}");
+                    scenarios += 1;
+                }
+            }
+        }
+    }
+    eprintln!("simple lane ground handoff boundaries: {scenarios} scenarios matched");
+}
