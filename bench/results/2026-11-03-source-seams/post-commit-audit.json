@@ -1,0 +1,13 @@
+{
+  "schema": "glass.source-seam-postcommit/v1",
+  "head": "4f1a6f3a5f4dc55533424d7f2f64d2c1a17eb49c",
+  "checkpoint_identical": true,
+  "frozen_replay_identical": true,
+  "build_source_changes": [
+    "crates/term/src/intake/motion.rs"
+  ],
+  "test_source_identical": true,
+  "file_references": 1752,
+  "unique_source_versions": 1729,
+  "selected_executable_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c"
+}

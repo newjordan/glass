@@ -1,0 +1,16 @@
+{
+  "schema": "glass.immutable-research-evidence/v1",
+  "sha256": {
+    "bench/results/2026-11-03-source-seams/checkpoint-post-commit.json": "dffdcdeb518f699af646857526ee46b6dddf3ff88fbf0a3ba738c5d39588b3f3",
+    "bench/results/2026-11-03-source-seams/checkpoint-post-commit.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bench/results/2026-11-03-source-seams/python-tests-post-commit.log": "f0a7ce3eeadb70d3c801a2d3752572df5ec8643337b6fcf6e9ed67ca93378f71",
+    "bench/results/2026-11-03-source-seams/post-commit-frozen-replay.json": "513dcc00bc08040ded9f257382b6f5af851edf1ce5e14cb5955a3e860be279f7",
+    "bench/results/2026-11-03-source-seams/post-commit-audit.json": "2c4137f11806d7247cefe1a258d8fbd675e2694cd57eb51f31992aa30bdf5e29",
+    "bench/results/2026-11-03-source-seams/final-frozen-index.json": "d859d35b1d1e4a45beee6e618155cf69771bdf427928c2f06c797c1e72bc1bc7",
+    "bench/results/2026-11-03-source-seams/final-frozen-replay.json": "513dcc00bc08040ded9f257382b6f5af851edf1ce5e14cb5955a3e860be279f7",
+    "bench/results/2026-11-03-source-seams/frozen-before-doc-binding.exit": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "bench/results/2026-11-03-source-seams/frozen-before-doc-binding.stderr": "e00fcdf1fd91b9ad57e42880ed48e26ab46726671311a6396b7e1ebeba03b784",
+    "bench/results/2026-11-03-source-seams/frozen-before-doc-binding.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bench/results/2026-11-03-source-seams/explicit-evidence-manifest.json": "3849be2721814cbf7eda4ca0b7dd5a4f721e940e6f515ac3be49ae92a216fd88"
+  }
+}

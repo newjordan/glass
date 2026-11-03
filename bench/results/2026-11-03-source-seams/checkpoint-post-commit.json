@@ -1,0 +1,20 @@
+{
+  "schema": "glass.source-seam-replay/v1",
+  "control": {
+    "cases": 1536,
+    "failures": 384
+  },
+  "candidate": {
+    "cases": 1536,
+    "failures": 0
+  },
+  "production_tests": 394,
+  "ignored": 14,
+  "differential_streams_per_arm": 12800,
+  "binary_sha256": {
+    "control": "62fe250d237c7e3777429ac01b3680cd7468d3b6b12a348507d0dad9abb17fd3",
+    "candidate": "d6f01f419c33a0317804c56f887ae45c3a7500b6ea936307dc752749bb93de0b"
+  },
+  "selected_executable_unchanged": true,
+  "note": "Finite source-row merge fix only. No coverage-mask, resize-witness, timing, memory or competitive acceptance."
+}
