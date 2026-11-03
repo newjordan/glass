@@ -1,0 +1,1 @@
+The host is shared. A process snapshot near the last pair showed multiple unrelated CPU-heavy lean processes. No processes were killed, trials excluded, timings repeated, or threshold changed. The snapshot is qualitative, not a complete per-session contention trace or causal explanation for ratios. Balanced serial signs need not be independent. All 24 sessions retained.

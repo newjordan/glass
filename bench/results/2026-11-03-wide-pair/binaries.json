@@ -1,0 +1,10 @@
+{
+  "candidate": {
+    "path": "/tmp/glass-wide-pair-candidate-test",
+    "sha256": "07fc4141a3e43ecab17fb400e608744667ab84874e5a6515a41abb937fd095a2"
+  },
+  "control": {
+    "path": "/tmp/glass-wide-pair-control-test",
+    "sha256": "63c3f8045e841584ff7d8389498f23eeb33bdac81e69c2f8d8cae77af79ede15"
+  }
+}

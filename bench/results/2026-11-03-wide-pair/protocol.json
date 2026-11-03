@@ -1,0 +1,42 @@
+{
+  "arms": [
+    "control",
+    "candidate"
+  ],
+  "correctness": "Both arms: existing Unicode row-edge and wide-boundary parser differential tests, full release terminal suite, 64 seeds x 200 stream differential. Existing tests identical in both arms. No timer before correctness.",
+  "created_utc": "2026-11-03T19:36:05.317897+00:00",
+  "engine": {
+    "blocks": 12,
+    "orders": [
+      [
+        "control",
+        "candidate"
+      ],
+      [
+        "candidate",
+        "control"
+      ]
+    ],
+    "primary": "Unicode median paired CPU-rate ratio >=1.02, wins>losses, six-workload Holm p<.05, and all six median CPU ratios >=.98. Point guards are not noninferiority proof.",
+    "read": 4095,
+    "rounds": 5,
+    "scale": 2,
+    "stop": "Exactly 12 pairs, no pilots, exclusions, rescue variant, extra timing, pooling, optional stopping or threshold changes. Reject if screen fails; separate fresh PTY/Ghostty and all-metric gates before any promotion.",
+    "workloads": [
+      "ascii",
+      "unicode",
+      "truecolor",
+      "cursor_motion",
+      "scroll_region",
+      "tui_frames"
+    ]
+  },
+  "hypothesis": "Joint pair replacement may shorten emitted cell-drop/store bookkeeping without changing terminal semantics.",
+  "label": "Safe two-cell array assignment for a wide base and spacer",
+  "limits": "Sequential shared-host engine diagnostic; not terminal/Ghostty or championship inference. Cell stores and code layout may change together.",
+  "mechanism": "Compare exact release code generation before timing; stop without timing if relocation-masked hot instructions identical. No instrumented rates.",
+  "no_codegen_change": "If instruction sequences are unchanged, stop before timing.",
+  "runtime_promotion": false,
+  "schema": "glass.wide-pair-protocol/v1",
+  "semantic_scope": "Only put_row wide-width store uses a two-element mutable array view and aggregate assignment; narrow path, width/guard/cursor/wrap/zero-mark handling unchanged."
+}

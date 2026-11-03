@@ -1,0 +1,36 @@
+{
+  "correctness_tests_per_arm": 395,
+  "cpu_ratios": {
+    "ascii": 0.9025931257814517,
+    "cursor_motion": 0.960899569981967,
+    "scroll_region": 0.9599298855338007,
+    "truecolor": 0.9520677358817333,
+    "tui_frames": 0.9359101342484912,
+    "unicode": 0.9788242856486937
+  },
+  "differential_streams_per_arm": 12800,
+  "engine_screen_cleared": false,
+  "ignored_per_arm": 14,
+  "note": "Fixed engine screen and historical byte replay; not timing causality, PTY comparison, campaign acceptance or a fresh Rust-suite run.",
+  "pairs": 12,
+  "point_regression_guards_failed": [
+    "ascii",
+    "cursor_motion",
+    "scroll_region",
+    "truecolor",
+    "tui_frames",
+    "unicode"
+  ],
+  "print_utf8_instructions": {
+    "candidate": 2034,
+    "control": 1967
+  },
+  "prior_references": 2003,
+  "prior_versions": 1908,
+  "rejected_metadata_corruptions": 13,
+  "runtime_candidate_restored": true,
+  "schema": "glass.wide-pair-checkpoint/v1",
+  "selected_executable_unchanged": true,
+  "sessions": 24,
+  "status": "reported"
+}

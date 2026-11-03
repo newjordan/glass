@@ -1,0 +1,27 @@
+--- a/crates/term/src/engine.rs
++++ b/crates/term/src/engine.rs
+@@ -1994,14 +1994,18 @@
+                 // template, as in `print_run`: the assignment's wide
+                 // stores measure faster than the five field stores
+                 // they write the same values as.
+-                {
++                if width == 2 {
++                    // The guards above prove both cells are available and
++                    // carry no live wide fragment. Replace the pair together.
++                    let pair: &mut [_; 2] = (&mut cells[at_col..at_col + 2]).try_into().unwrap();
++                    let mut base = wide.clone();
++                    base.c = last;
++                    *pair = [base, spacer.clone()];
++                    span_clean = false;
++                } else {
+                     let cell = &mut cells[at_col];
+-                    *cell = if width == 2 { wide.clone() } else { narrow.clone() };
++                    *cell = narrow.clone();
+                     cell.c = last;
+-                }
+-                if width == 2 {
+-                    span_clean = false;
+-                    cells[at_col + 1] = spacer.clone();
+                 }
+                 occ_to = column + width;
+                 let end = column + width - 1;

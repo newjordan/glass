@@ -1,0 +1,25 @@
+block 1/12 slot 1/2 control: exit 0
+block 1/12 slot 2/2 candidate: exit 0
+block 2/12 slot 1/2 candidate: exit 0
+block 2/12 slot 2/2 control: exit 0
+block 3/12 slot 1/2 control: exit 0
+block 3/12 slot 2/2 candidate: exit 0
+block 4/12 slot 1/2 candidate: exit 0
+block 4/12 slot 2/2 control: exit 0
+block 5/12 slot 1/2 control: exit 0
+block 5/12 slot 2/2 candidate: exit 0
+block 6/12 slot 1/2 candidate: exit 0
+block 6/12 slot 2/2 control: exit 0
+block 7/12 slot 1/2 control: exit 0
+block 7/12 slot 2/2 candidate: exit 0
+block 8/12 slot 1/2 candidate: exit 0
+block 8/12 slot 2/2 control: exit 0
+block 9/12 slot 1/2 control: exit 0
+block 9/12 slot 2/2 candidate: exit 0
+block 10/12 slot 1/2 candidate: exit 0
+block 10/12 slot 2/2 control: exit 0
+block 11/12 slot 1/2 control: exit 0
+block 11/12 slot 2/2 candidate: exit 0
+block 12/12 slot 1/2 candidate: exit 0
+block 12/12 slot 2/2 control: exit 0
+all 24 prescribed sessions retained; independent raw replay still required

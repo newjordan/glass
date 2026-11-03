@@ -1,0 +1,454 @@
+{
+  "schema": "glass.wide-pair-raw/v1",
+  "protocol_sha256": "8a16e91d1dbe5cf309a88b689bcbb9673d9d4ed007db777a0e236a4a333fedd6",
+  "settings": {
+    "GLASS_BENCH_SCALE": "2.0",
+    "GLASS_BENCH_ROUNDS": "5",
+    "GLASS_BENCH_READ": "4095",
+    "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames"
+  },
+  "binaries": {
+    "candidate": {
+      "path": "/tmp/glass-wide-pair-candidate-test",
+      "sha256": "07fc4141a3e43ecab17fb400e608744667ab84874e5a6515a41abb937fd095a2"
+    },
+    "control": {
+      "path": "/tmp/glass-wide-pair-control-test",
+      "sha256": "63c3f8045e841584ff7d8389498f23eeb33bdac81e69c2f8d8cae77af79ede15"
+    }
+  },
+  "sessions": [
+    {
+      "block": 0,
+      "slot": 0,
+      "arm": "control",
+      "argv": [
+        "/tmp/glass-wide-pair-control-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T19:39:45.163028+00:00",
+      "start_ns": 193898940292456,
+      "end_ns": 193904818300756,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 408 filtered out; finished in 5.87s\n\n",
+      "stderr": "         ascii:  1083.5 MB/s   1088.7 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   110.5 MB/s    111.0 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   203.2 MB/s    209.9 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   160.7 MB/s    166.1 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1193.7 MB/s   1210.0 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   182.5 MB/s    189.9 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 0,
+      "slot": 1,
+      "arm": "candidate",
+      "argv": [
+        "/tmp/glass-wide-pair-candidate-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T19:39:51.041368+00:00",
+      "start_ns": 193904818630065,
+      "end_ns": 193911788138380,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 408 filtered out; finished in 6.96s\n\n",
+      "stderr": "         ascii:   367.4 MB/s    405.6 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:    98.5 MB/s    101.5 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   191.1 MB/s    195.2 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   151.7 MB/s    153.3 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:   956.6 MB/s   1045.7 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   178.5 MB/s    183.1 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 1,
+      "slot": 0,
+      "arm": "candidate",
+      "argv": [
+        "/tmp/glass-wide-pair-candidate-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T19:39:58.011396+00:00",
+      "start_ns": 193911788657376,
+      "end_ns": 193917685345559,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 408 filtered out; finished in 5.89s\n\n",
+      "stderr": "         ascii:  1261.6 MB/s   1266.2 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   117.7 MB/s    118.2 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   193.6 MB/s    195.2 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   174.7 MB/s    175.5 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1340.4 MB/s   1343.7 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   170.7 MB/s    181.3 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 1,
+      "slot": 1,
+      "arm": "control",
+      "argv": [
+        "/tmp/glass-wide-pair-control-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T19:40:03.908536+00:00",
+      "start_ns": 193917685796948,
+      "end_ns": 193923588959960,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 408 filtered out; finished in 5.90s\n\n",
+      "stderr": "         ascii:   798.2 MB/s    809.6 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   140.7 MB/s    141.5 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   206.8 MB/s    207.9 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   162.7 MB/s    167.6 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1115.5 MB/s   1133.9 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   203.3 MB/s    206.4 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 2,
+      "slot": 0,
+      "arm": "control",
+      "argv": [
+        "/tmp/glass-wide-pair-control-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T19:40:09.812423+00:00",
+      "start_ns": 193923589680595,
+      "end_ns": 193929791469810,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 408 filtered out; finished in 6.18s\n\n",
+      "stderr": "         ascii:   996.9 MB/s   1002.4 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   104.9 MB/s    107.2 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   203.3 MB/s    210.3 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   169.3 MB/s    170.3 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1117.3 MB/s   1125.7 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   184.6 MB/s    190.7 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 2,
+      "slot": 1,
+      "arm": "candidate",
+      "argv": [
+        "/tmp/glass-wide-pair-candidate-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T19:40:16.015008+00:00",
+      "start_ns": 193929792268581,
+      "end_ns": 193936267517198,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 408 filtered out; finished in 6.47s\n\n",
+      "stderr": "         ascii:   399.0 MB/s    439.3 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   106.9 MB/s    110.3 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   190.1 MB/s    197.3 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   158.8 MB/s    163.2 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1047.3 MB/s   1099.5 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   176.0 MB/s    178.4 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 3,
+      "slot": 0,
+      "arm": "candidate",
+      "argv": [
+        "/tmp/glass-wide-pair-candidate-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T19:40:22.490864+00:00",
+      "start_ns": 193936268125762,
+      "end_ns": 193942475073240,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 408 filtered out; finished in 6.20s\n\n",
+      "stderr": "         ascii:   827.0 MB/s    854.8 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   112.7 MB/s    115.6 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   219.7 MB/s    227.6 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   170.6 MB/s    171.1 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1567.6 MB/s   1577.6 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   207.1 MB/s    207.9 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 3,
+      "slot": 1,
+      "arm": "control",
+      "argv": [
+        "/tmp/glass-wide-pair-control-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T19:40:28.699289+00:00",
+      "start_ns": 193942476550748,
+      "end_ns": 193949020882521,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 408 filtered out; finished in 6.54s\n\n",
+      "stderr": "         ascii:   525.7 MB/s    534.4 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   116.6 MB/s    117.2 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   211.1 MB/s    215.8 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   162.1 MB/s    164.7 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1196.6 MB/s   1205.7 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   180.4 MB/s    184.2 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 4,
+      "slot": 0,
+      "arm": "control",
+      "argv": [
+        "/tmp/glass-wide-pair-control-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T19:40:35.244676+00:00",
+      "start_ns": 193949021932184,
+      "end_ns": 193955738681483,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 408 filtered out; finished in 6.71s\n\n",
+      "stderr": "         ascii:   437.5 MB/s    498.1 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   102.4 MB/s    104.6 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   199.9 MB/s    200.6 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   163.8 MB/s    164.3 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1214.8 MB/s   1218.8 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   184.5 MB/s    185.0 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 4,
+      "slot": 1,
+      "arm": "candidate",
+      "argv": [
+        "/tmp/glass-wide-pair-candidate-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T19:40:41.962066+00:00",
+      "start_ns": 193955739327808,
+      "end_ns": 193961937854851,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 408 filtered out; finished in 6.19s\n\n",
+      "stderr": "         ascii:  1113.7 MB/s   1117.0 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   111.9 MB/s    115.9 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   194.8 MB/s    202.9 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   167.2 MB/s    168.4 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1093.0 MB/s   1101.9 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   190.9 MB/s    192.7 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 5,
+      "slot": 0,
+      "arm": "candidate",
+      "argv": [
+        "/tmp/glass-wide-pair-candidate-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T19:40:48.161336+00:00",
+      "start_ns": 193961938596625,
+      "end_ns": 193967677406384,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 408 filtered out; finished in 5.74s\n\n",
+      "stderr": "         ascii:  1143.6 MB/s   1150.8 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   102.5 MB/s    104.1 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   197.4 MB/s    198.3 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   224.6 MB/s    225.2 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1743.7 MB/s   1747.3 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   284.4 MB/s    284.9 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 5,
+      "slot": 1,
+      "arm": "control",
+      "argv": [
+        "/tmp/glass-wide-pair-control-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T19:40:53.900767+00:00",
+      "start_ns": 193967678028814,
+      "end_ns": 193973108064013,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 408 filtered out; finished in 5.43s\n\n",
+      "stderr": "         ascii:   484.4 MB/s    548.0 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   189.5 MB/s    190.0 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   207.2 MB/s    207.8 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   215.7 MB/s    216.2 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1547.2 MB/s   1552.0 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   239.0 MB/s    239.7 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 6,
+      "slot": 0,
+      "arm": "control",
+      "argv": [
+        "/tmp/glass-wide-pair-control-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T19:40:59.331402+00:00",
+      "start_ns": 193973108663961,
+      "end_ns": 193978365135043,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 408 filtered out; finished in 5.25s\n\n",
+      "stderr": "         ascii:  1039.2 MB/s   1042.0 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   111.3 MB/s    116.9 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   202.2 MB/s    203.4 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   232.6 MB/s    233.1 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1678.9 MB/s   1682.6 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   231.8 MB/s    236.2 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 6,
+      "slot": 1,
+      "arm": "candidate",
+      "argv": [
+        "/tmp/glass-wide-pair-candidate-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T19:41:04.588435+00:00",
+      "start_ns": 193978365696298,
+      "end_ns": 193985408410247,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 408 filtered out; finished in 7.04s\n\n",
+      "stderr": "         ascii:   608.7 MB/s    689.7 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   103.9 MB/s    106.5 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   188.7 MB/s    193.2 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   150.5 MB/s    151.3 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1143.6 MB/s   1151.1 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   171.4 MB/s    178.2 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 7,
+      "slot": 0,
+      "arm": "candidate",
+      "argv": [
+        "/tmp/glass-wide-pair-candidate-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T19:41:11.631827+00:00",
+      "start_ns": 193985409088903,
+      "end_ns": 193991674218227,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 408 filtered out; finished in 6.26s\n\n",
+      "stderr": "         ascii:  1306.1 MB/s   1313.8 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   115.8 MB/s    117.9 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   191.7 MB/s    192.4 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   155.6 MB/s    158.6 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1049.4 MB/s   1070.3 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   166.3 MB/s    171.8 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 7,
+      "slot": 1,
+      "arm": "control",
+      "argv": [
+        "/tmp/glass-wide-pair-control-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T19:41:17.899616+00:00",
+      "start_ns": 193991676877686,
+      "end_ns": 193998013175458,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 408 filtered out; finished in 6.33s\n\n",
+      "stderr": "         ascii:  1168.1 MB/s   1198.9 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   106.7 MB/s    109.5 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   193.1 MB/s    203.7 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   146.6 MB/s    154.4 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1100.1 MB/s   1107.7 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   182.7 MB/s    185.5 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 8,
+      "slot": 0,
+      "arm": "control",
+      "argv": [
+        "/tmp/glass-wide-pair-control-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T19:41:24.236756+00:00",
+      "start_ns": 193998014015397,
+      "end_ns": 194004242247091,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 408 filtered out; finished in 6.22s\n\n",
+      "stderr": "         ascii:   924.5 MB/s    934.7 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   116.1 MB/s    117.6 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   198.5 MB/s    203.2 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   159.6 MB/s    160.2 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1130.8 MB/s   1135.3 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   182.2 MB/s    185.2 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 8,
+      "slot": 1,
+      "arm": "candidate",
+      "argv": [
+        "/tmp/glass-wide-pair-candidate-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T19:41:30.465700+00:00",
+      "start_ns": 194004242961164,
+      "end_ns": 194010827450426,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 408 filtered out; finished in 6.58s\n\n",
+      "stderr": "         ascii:   635.6 MB/s    662.9 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   100.7 MB/s    107.9 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   190.3 MB/s    194.2 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   149.3 MB/s    154.1 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1095.7 MB/s   1113.5 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   176.1 MB/s    179.8 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 9,
+      "slot": 0,
+      "arm": "candidate",
+      "argv": [
+        "/tmp/glass-wide-pair-candidate-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T19:41:37.051306+00:00",
+      "start_ns": 194010828567707,
+      "end_ns": 194017558391042,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 408 filtered out; finished in 6.72s\n\n",
+      "stderr": "         ascii:   445.4 MB/s    463.9 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   103.1 MB/s    108.3 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   183.9 MB/s    194.4 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   154.8 MB/s    155.5 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1055.6 MB/s   1061.4 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   169.0 MB/s    173.5 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 9,
+      "slot": 1,
+      "arm": "control",
+      "argv": [
+        "/tmp/glass-wide-pair-control-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T19:41:43.781903+00:00",
+      "start_ns": 194017559164636,
+      "end_ns": 194023762995381,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 408 filtered out; finished in 6.20s\n\n",
+      "stderr": "         ascii:   763.1 MB/s    812.9 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   101.2 MB/s    111.5 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   199.9 MB/s    202.0 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   160.7 MB/s    162.0 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1194.3 MB/s   1202.9 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   173.5 MB/s    185.3 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 10,
+      "slot": 0,
+      "arm": "control",
+      "argv": [
+        "/tmp/glass-wide-pair-control-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T19:41:49.987068+00:00",
+      "start_ns": 194023764329218,
+      "end_ns": 194030052475165,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 408 filtered out; finished in 6.28s\n\n",
+      "stderr": "         ascii:  1065.3 MB/s   1104.9 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   105.2 MB/s    112.7 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   180.7 MB/s    200.5 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   163.9 MB/s    164.4 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1101.4 MB/s   1222.6 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   174.1 MB/s    185.8 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 10,
+      "slot": 1,
+      "arm": "candidate",
+      "argv": [
+        "/tmp/glass-wide-pair-candidate-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T19:41:56.276014+00:00",
+      "start_ns": 194030053275970,
+      "end_ns": 194036304813052,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 408 filtered out; finished in 6.25s\n\n",
+      "stderr": "         ascii:  1088.8 MB/s   1103.0 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   113.8 MB/s    115.3 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   185.1 MB/s    193.3 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   150.3 MB/s    155.7 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1158.8 MB/s   1165.9 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   170.1 MB/s    173.5 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 11,
+      "slot": 0,
+      "arm": "candidate",
+      "argv": [
+        "/tmp/glass-wide-pair-candidate-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T19:42:02.528446+00:00",
+      "start_ns": 194036305708716,
+      "end_ns": 194042888744593,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 408 filtered out; finished in 6.58s\n\n",
+      "stderr": "         ascii:   820.6 MB/s    836.6 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   112.0 MB/s    113.5 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   186.4 MB/s    189.7 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   143.0 MB/s    152.9 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1070.8 MB/s   1079.1 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   175.9 MB/s    177.1 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    },
+    {
+      "block": 11,
+      "slot": 1,
+      "arm": "control",
+      "argv": [
+        "/tmp/glass-wide-pair-control-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "started_utc": "2026-11-03T19:42:09.112307+00:00",
+      "start_ns": 194042889567891,
+      "end_ns": 194048175175172,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 408 filtered out; finished in 5.28s\n\n",
+      "stderr": "         ascii:  1033.6 MB/s   1036.8 MB/cpu-s  (50331755 bytes, read 4095)\n       unicode:   106.9 MB/s    108.3 MB/cpu-s  (33554476 bytes, read 4095)\n     truecolor:   207.8 MB/s    208.6 MB/cpu-s  (50334028 bytes, read 4095)\n cursor_motion:   218.1 MB/s    218.6 MB/cpu-s  (33554596 bytes, read 4095)\n scroll_region:  1684.1 MB/s   1689.1 MB/cpu-s  (33554565 bytes, read 4095)\n    tui_frames:   297.7 MB/s    298.3 MB/cpu-s  (41803216 bytes, read 4095)\n"
+    }
+  ]
+}
