@@ -638,3 +638,37 @@ Replay requires the exact retained test executables and checks their hashes;
 correctness re-execution is not a timing rerun. Nine corruptions reject. The
 new prior index binds the old `speed.rs` hash to an exact pre-edit snapshot;
 it does not edit or weaken old manifests. No new competitive/runtime gain.
+
+
+### Row-scoped width-cache handle (iteration 21, rejected)
+
+A [frozen 11-pair screen](results/2026-11-03-width-handle/README.md) moved the
+existing atomic width-cache handle lookup outside the per-glyph row loop.
+Unicode CPU-rate ratio **1.009280**, **9/11 wins**, six-workload Holm **p=.261719**
+failed the predeclared >=1.02 / p<.05 screen. All six point ratios exceeded .98;
+that is not equivalence evidence. No terminal follow-on, rescue series or new
+Ghostty score. Runtime restored exactly; only a C1 differential test remains.
+
+A separately declared post-screen cold diagnostic confirms an eager allocation
+hazard: in six fresh instrumented test processes, C1-only input initializes the
+candidate cache but not the control; ASCII initializes neither and wide Unicode
+initializes both. The 1,114,112-byte cache payload is deduced from representation,
+not an RSS or latency measurement. Instrumentation was restored, not shipped.
+
+Retained C1 coverage spans all 32 scalars and 2,688 mode/size/read-cut scenarios;
+a built C1-to-`?` decoder mutant fails on actual cells. Restored source passes
+381 terminal tests, 12,800 existing differential sweep streams and 49 Python
+tests; nine report corruption cases reject. All 5,869 prior result/report files,
+119 unchanged Rust files and selected executable are preserved. The 120th Rust
+file changes only test code. Historical evidence uses explicit retained source
+mappings; no old manifest was rewritten.
+
+```sh
+python3 -B bench/results/2026-11-03-width-handle/verify.py
+python3 -B bench/replay-evidence-index.py \
+  bench/results/2026-11-03-width-handle/frozen-index.json
+```
+
+Read-only checkpoint needs hashed retained `/tmp` test executables; byte replay
+does not. Missing evidence fails closed. This is evidence closure, not acceptance
+of the every-metric objective. [Full iteration report](../reports/research-1eecf9876bb302e9da10ff629e71e6d8-21.txt).

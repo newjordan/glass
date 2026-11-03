@@ -1,0 +1,23 @@
+{
+  "schema": "glass.width-handle-cold-protocol/v1",
+  "scope": "Post-screen mechanism diagnostic only; cannot reverse failed screen or support promotion.",
+  "instrumentation": "Relocate unchanged cache OnceLock to pub(crate) DIAGNOSTIC_WIDTH_CACHE for observation from one unit test; same exact relocation on control/candidate.",
+  "cases": [
+    "c1: sixteen U+0085 scalars",
+    "ascii: 32 ASCII a bytes",
+    "unicode: sixteen U+754C scalars"
+  ],
+  "observations": "In each separate exact-test process assert cache uninitialized before engine setup; feed one whole stream; read cache get().is_some afterward. Compare fast vs parser cell state in same process. No allocation/latency bytes directly sampled; allocation size is deduced from entry count and AtomicI8 size only.",
+  "expectation": {
+    "control": {
+      "c1": false,
+      "ascii": false,
+      "unicode": true
+    },
+    "candidate": {
+      "c1": true,
+      "ascii": false,
+      "unicode": true
+    }
+  }
+}

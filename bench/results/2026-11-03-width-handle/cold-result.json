@@ -1,0 +1,55 @@
+{
+  "schema": "glass.width-handle-cold-observations/v1",
+  "observations": [
+    {
+      "arm": "control",
+      "case": "c1",
+      "initialized": false,
+      "entries": 1114112,
+      "atomic_bytes": 1,
+      "log_sha256": "b3886b37f0bf6825df18607b4e2adfc4b32f82d2ef0b4874e04ce183b93b08c0"
+    },
+    {
+      "arm": "control",
+      "case": "ascii",
+      "initialized": false,
+      "entries": 1114112,
+      "atomic_bytes": 1,
+      "log_sha256": "c809aa72f2dc6717f6450d6eed10070d49a1cc087bbbaf4acc2d2d3597d424e6"
+    },
+    {
+      "arm": "control",
+      "case": "unicode",
+      "initialized": true,
+      "entries": 1114112,
+      "atomic_bytes": 1,
+      "log_sha256": "d64bcae33b77d35a90d038adffd2a16aa6ed23be980ab26147b77a35797a8896"
+    },
+    {
+      "arm": "candidate",
+      "case": "c1",
+      "initialized": true,
+      "entries": 1114112,
+      "atomic_bytes": 1,
+      "log_sha256": "b0707d49f054e72c085cb020fef2f3e36944d0a0eeafc068e4d3047d1f763d45"
+    },
+    {
+      "arm": "candidate",
+      "case": "ascii",
+      "initialized": false,
+      "entries": 1114112,
+      "atomic_bytes": 1,
+      "log_sha256": "c809aa72f2dc6717f6450d6eed10070d49a1cc087bbbaf4acc2d2d3597d424e6"
+    },
+    {
+      "arm": "candidate",
+      "case": "unicode",
+      "initialized": true,
+      "entries": 1114112,
+      "atomic_bytes": 1,
+      "log_sha256": "d64bcae33b77d35a90d038adffd2a16aa6ed23be980ab26147b77a35797a8896"
+    }
+  ],
+  "deduced_cache_payload_bytes": 1114112,
+  "caveat": "Fresh-process instrumented cache-state observations only, not allocator/RSS/timing measurements. Same OnceLock relocation for both arms. Post-screen diagnostic cannot reverse failed performance gate."
+}

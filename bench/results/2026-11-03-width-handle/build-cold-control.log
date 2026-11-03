@@ -1,0 +1,2 @@
+   Compiling glass-term v0.1.0 (/work/frosty40/glass-repo/tree/crates/term)
+error: could not compile `glass-term` (bin "glass" test) due to 1 previous error

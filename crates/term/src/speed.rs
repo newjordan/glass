@@ -1236,3 +1236,31 @@ fn unicode_row_edges_preserve_pending_wrap() {
         }
     }
 }
+
+/// C1 scalars take the parser's execute path, not the Unicode row writer.
+/// Long C1-only runs cross RUN_MIN; mixed runs also leave a held printable
+/// scalar at a C1 boundary. Splits include every byte of the UTF-8 pair.
+#[test]
+fn c1_row_runs_preserve_parser_state() {
+    for (rows, cols) in [(3, 2), (4, 10), (39, 154)] {
+        for setup in ["", "\x1b[?7l", "\x1b[?1049h", "\x1b[31;44m"] {
+            for c1 in '\u{80}'..='\u{9f}' {
+                let mut stream = setup.as_bytes().to_vec();
+                stream.extend_from_slice(c1.to_string().repeat(16).as_bytes());
+                stream.extend_from_slice(b"\x1b[6n");
+                for prefix in ["", "z", "漢", "e\u{301}"] {
+                    stream.extend_from_slice(prefix.repeat(cols + 2).as_bytes());
+                    stream.extend_from_slice(c1.to_string().repeat(16).as_bytes());
+                    stream.extend_from_slice(b"\x1b[3b\x1b[6n\r\n");
+                }
+                stream.extend_from_slice(b"\x1b[?1049l\x1b[6n");
+                for step in [1, 2, 3, 23, 24, 25, stream.len()] {
+                    let mut cuts: Vec<_> = (0..stream.len()).step_by(step).collect();
+                    cuts.push(stream.len());
+                    assert_eq!(plain_runs_first_difference(rows, cols, &stream, &cuts), None,
+                        "{rows}x{cols}, setup {setup:?}, C1 {c1:?}, chunk {step}");
+                }
+            }
+        }
+    }
+}

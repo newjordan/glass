@@ -1,0 +1,15 @@
+{
+  "schema": "glass.width-handle-protocol/v1",
+  "hypothesis": "Acquire immutable flat width-cache handle once per put_row, keeping atomic entry loads, fill-on-miss and authoritative Unicode policy identical. No decoder, marks, cursor, layout, payload, affinity or reader change.",
+  "engine": {
+    "pairs": 11,
+    "scale": 2,
+    "rounds": 5,
+    "order": "alternating AB/BA",
+    "screen": "Unicode CPU-rate paired median >=1.02, positive signs and six-workload Holm p<.05; all six paired CPU medians >=.98. Diagnostic, not terminal acceptance."
+  },
+  "correctness": "Existing exhaustive width test, parser parity and pending-wrap regression on exact candidate.",
+  "follow_on": "Only if engine screen clears: separately freeze candidate/fresh-control/Ghostty exact terminal binaries, 30 all-six-permutation rounds, require one-sided alpha=.05/6 median bounds candidate/control >.98 for every workload and >1.03 Unicode; all six positive Ghostty leads with Holm p<.05. If fails, stop; if clears require separately frozen replication. User-facing latency/memory/startup gates remain open.",
+  "stop": "Failed screen restores exact production bytes, retains diagnostic evidence. No variants, extra pairs, rescue pooling, score replacement or engine-only runtime promotion.",
+  "limits": "Shared host; no own builds during benchmarks, no changes to host jobs/governors/producer affinity. Alternation does not establish iid. Fastest-of-five engine runs are correlated within invocation."
+}

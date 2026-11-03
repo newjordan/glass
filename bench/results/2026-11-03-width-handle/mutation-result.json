@@ -1,0 +1,7 @@
+{
+  "schema": "glass.width-handle-mutation/v1",
+  "mutant_sha256": "eee619eb45f9869a4847349621c01548453ff86dbd7a215127faa90c5e5df60d",
+  "exit": 101,
+  "detected_field": "cells",
+  "claim": "Deliberate C1-to-visible-glyph decoder mutation is rejected by retained C1 differential test; not a timing result or eager-allocation test."
+}

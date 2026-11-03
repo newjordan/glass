@@ -1,0 +1,16 @@
+{
+  "schema": "glass.historical-evidence-index/v1",
+  "manifests": [
+    {
+      "path": "bench/results/2026-11-03-exclusive-column/evidence-sha256.json",
+      "sha256": "0f3ae1cb19dab326e412255db8508131eabae6c6223f5a94109ea3ac4c2a7690",
+      "source_root": ".",
+      "snapshots": {
+        "crates/term/src/speed.rs": "bench/results/2026-11-03-width-handle/control-speed.rs",
+        "CHANGELOG.md": "bench/results/2026-11-03-width-handle/prior-CHANGELOG.md",
+        "bench/README.md": "bench/results/2026-11-03-width-handle/prior-README.md",
+        "docs/PERFORMANCE.md": "bench/results/2026-11-03-width-handle/prior-PERFORMANCE.md"
+      }
+    }
+  ]
+}

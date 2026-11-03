@@ -1,0 +1,185 @@
+Glass iteration 21 — row-scoped width-cache handle and cold C1 initialization
+UTC 2026-11-03
+
+Disposition: reject runtime candidate, retain C1 semantic regression. No new
+terminal/competitor timing. The every-metric/world-title objective remains open.
+
+1. Question and relation to previous work
+-----------------------------------------
+The iteration starts from f404bcf, the rejected exclusive-column row rewrite
+and retained pending-wrap regression. Instead of another cursor/decoder/marks
+rewrite or placement policy, this experiment tests a distinct invariant work
+item: obtain the existing flat width-cache handle once per put_row, preserving
+all atomic entry reads and fills, instead of calling the OnceLock-backed
+width_of helper on each relevant glyph. No cache-value policy, Unicode crate,
+terminal flags, grid layout, scroll, combining ownership or PTY reader changes.
+
+The starting-state manifest binds all 120 crate Rust sources, all 5,869 tracked
+prior result/report files and the exact selected terminal executable:
+  d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c
+The runtime candidate never overwrote that release terminal executable.
+Fresh release test binaries use identical locked Cargo flags and command.
+
+The previous iteration's interrupted initial historical replay was checked,
+not dismissed: its corrected read-only checkpoint and frozen byte replay pass
+before this candidate. That failure was a live speed.rs mismatch; its explicit
+historical snapshot mapping preserves the old evidence without rewriting it.
+This iteration's further test/document evolution has its own explicit mapping.
+
+2. Frozen experiment and engine result
+---------------------------------------
+Protocol SHA-256:
+  d1cdcc86a5fe9e4ff36ff9ba82e648e0a74de222412b5bfeb6a3de3c5b07cdcc
+Frozen before candidate source and measurements. Eleven fresh control/candidate
+pairs, alternating AB/BA launches, scale 2, five internal rounds per invocation,
+all six workloads, no own build during the series. Existing speed::parse_speed
+selects the fastest CPU pass from internal rounds; these are NOT five
+independent statistical samples. Balanced launch order does not establish iid
+pair signs or remove shared-host/code-layout effects.
+
+Fresh control test executable:
+  c1982de93570ac183da14d5f151f05c2d4fbdd59108376e37b9f7e2fca59344a
+Exact candidate test executable:
+  b13d739ae302d8d7883c349421adf972e0be1d745c9f9f648088cad2b364e9f1
+
+Workload       paired median CPU-rate ratio   wins/11   six-workload Holm p
+ascii                      1.018585             11             .005859
+unicode                    1.009280              9             .261719
+truecolor                  1.009943              9             .261719
+cursor_motion              1.008080             10             .058594
+scroll_region              1.002945              8             .261719
+tui_frames                 1.003923              9             .261719
+
+Ratios are candidate/control CPU throughput, not end-to-end wall timing.
+Unicode fails the frozen >=1.02 point target and corrected p<.05 threshold.
+All six point ratios exceed .98, but that is not confidence-bounded equivalence
+or noninferiority. ASCII bypasses the modified Unicode row lane: its point gain
+cannot be causally attributed to the handle hoist; inlining/layout/shared-host
+variation remain explanations. Do not cherry-pick ASCII to rescue Unicode.
+
+Decision: stop the branch, restore exact runtime bytes. No extra pairs, variant,
+pooling, terminal follow-on or replication after failure. The separately frozen
+candidate/fresh-control/Ghostty six-order follow-on gate was not reached. There
+is no new Ghostty score and no new evidence of competitive superiority.
+
+3. New concrete finding: cold C1 input can allocate without width lookup
+-----------------------------------------------------------------------
+Review identified that width_cache() moved before put_row's C1 stop condition.
+A C1-only run crosses the 24-byte run threshold and reaches the row writer, but
+printing stops before a scalar width is required. Thus the hoist can change
+resource behavior even when all cells and width values remain correct.
+
+This was tested, not merely left as a code-review conjecture. A distinct
+post-screen protocol, cold-protocol.json, pins one instrumented diagnostic on
+both frozen source arms. The same OnceLock is relocated to an observable module
+static; initializer, atomic entries, access policy and row path are otherwise
+unchanged in each arm. Each exact test runs in a new process, asserts the cache
+is initially empty, feeds one whole stream and checks initialization before
+running parser-state comparison. No performance series is repeated/replaced.
+
+Stream                       control initialized    candidate initialized
+16 U+0085 C1 scalars                false                    true
+32 ASCII a bytes                   false                    false
+16 U+754C wide scalars              true                     true
+
+Six exact test processes pass. Cold source snapshots, binary identities and
+per-process logs are retained. analyze-cold.py reconstructs the observations
+and pins each log hash. Cache representation: 0x110000 = 1,114,112 AtomicI8
+entries, one byte each, so payload is 1,114,112 bytes (1.0625 MiB). This is a
+representation-derived allocation payload, not sampled allocator overhead,
+RSS, retained process-memory delta, startup latency, energy or an allocation
+rate estimate. Instrumentation can affect code generation; it is not used for
+timing. The diagnostic does not reverse the failed performance gate. Neither
+the instrumentation nor its extra ignored test remains in production source.
+
+The warm minimum-of-five engine benchmark was not a first-use/resource oracle;
+this is a specific reason an apparent micro-optimization needs separate cold
+behavior review. No claim that a different lazy-hoist variant would succeed:
+that would be a new prospective experiment, not a rescue of this one.
+
+4. Retained regression and real negative control
+-------------------------------------------------
+The only retained Rust edit is speed::c1_row_runs_preserve_parser_state:
+all 32 valid C1 scalars; C1-only and mixed z/wide/combining predecessors;
+REP, cursor reports, alternate screen, no-wrap and colored templates; 3 screen
+sizes; 7 read cuts including individual UTF-8 bytes and RUN_MIN 23/24/25 edges.
+3 x 4 x 32 x 7 = 2,688 parser-differential scenarios. The oracle compares full
+parser-visible grid/history/cursor/modes/reply state through the existing
+plain_runs_first_difference helper, not just text output.
+
+A deliberately defective compiled decoder maps valid C1 values to '?' instead
+of their original scalar. The retained regression fails on actual cells at
+3x2 / U+0080 / chunk 24, exit 101. Restored runtime passes the same test, exit 0.
+Both executable hashes and exact logs are retained; checkpoint reruns this
+contrast. This establishes sensitivity to this concrete decoder defect, not
+all possible semantic bugs. It is a semantic guard, not a cache-allocation
+regression test. The timing candidate's rejected resource behavior is not
+misrepresented as something this test would catch.
+
+5. Verification and provenance
+-------------------------------
+- Candidate: exhaustive width-cache agreement over Unicode, existing parser
+  differential test and pending-wrap regression all pass.
+- Restored release terminal: 381 tests pass, 11 intentionally ignored. A final
+  Cargo test invocation rebuilds the restored source after the mutant and
+  instrumented builds, and also passes 381/0/11.
+- Existing seeded parser sweep: 12,800 streams, 64 seeds, no divergence.
+- Existing Python test entry point: 49 tests pass.
+- Nine corruptions of the engine report reject without changing its bytes:
+  truncated pairs, fabricated summary, bad launch order, bad binary hash,
+  wrong retained log, NaN, duplicate workload, missing CPU time, truncated run.
+- Six separate cold diagnostic exact tests pass, with expected cache state.
+- Selected executable, 119 Rust files and all 5,869 prior result/report files
+  are byte-identical to starting-state.json. Only speed.rs test source evolves.
+- prior-frozen-index.json maps evolved test/docs to retained snapshots; old
+  manifests and result/report files are untouched. This is byte-integrity
+  closure, not measurement-truth or championship acceptance.
+
+Read-only canonical checkpoint:
+  python3 -B bench/results/2026-11-03-width-handle/verify.py
+Frozen integrity replay:
+  python3 -B bench/replay-evidence-index.py \
+    bench/results/2026-11-03-width-handle/frozen-index.json
+
+The checkpoint requires explicitly hashed temporary test executables and fails
+closed if they are missing/changed, never rebuilding or capturing new timings.
+The frozen-manifest replay is independent of temporary binaries. The manifest
+excludes itself/its index to avoid circular hashes. Frozen checks and receipts
+do not substitute for broader performance acceptance.
+
+6. Failures preserved and resolved, not hidden
+---------------------------------------------
+The first engine-run launch used --base/--candidate options while the existing
+runner accepts positional paths. It rejected the CLI before measurements.
+engine-launch-argument-error.log preserves that failure. Exactly one correctly
+formed 11-pair series followed; no timing observations were replaced.
+
+The initial cold diagnostic passed Vec<Vec<u8>>-shaped input to a helper that
+expects &[u8], causing E0308 and no executable observations. Both failed build
+outputs are preserved. The corrected diagnostic calls feed(text.as_bytes());
+only *-corrected builds yielded the six cold results. Its runner restores the
+runtime source and retained regression using an exit trap. The final restored
+Cargo test confirms no mutant/instrumentation was accidentally shipped.
+
+7. Competitive boundary and next necessary action
+--------------------------------------------------
+No new terminal score. The prior unchanged selected-build 30-round comparison
+is still the relevant frozen scoreboard: median Glass/Ghostty throughput
+ASCII .947116, Unicode .929112, truecolor 1.181802, cursor motion 1.098725,
+scroll region .989285, TUI frames 1.062165. Only three of six within-series
+corrected positive leads. Unicode loses 27/30 rounds. These are not pooled
+with earlier favorable series or with this engine diagnostic.
+
+Observed own-throughput gains merely to reach those median parity points are
+about 5.58% ASCII, 7.63% Unicode and 1.08% scroll region; these are not bounded
+superiority targets or a guarantee of any implementation's power. This tested
+handle hoist does not establish those gains. Prospective terminal acceptance
+and separate replication would still be necessary for another candidate.
+
+Startup, busy input, RSS/memory, presentation/key-to-screen, sustained GPU,
+energy, multiple host/platform/competitor-version evidence remains incomplete.
+There is no bound all-metric acceptance command. Do not declare world champion,
+campaign solved or every-metric Ghostty superiority from this local checkpoint.
+The useful advance is a killed mechanism hypothesis, an evidenced cold-resource
+hazard missed by warm throughput, and a mutation-checked regression retained
+without changing the selected runtime or any prior experiment.

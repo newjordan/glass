@@ -1,0 +1,23 @@
+
+running 1 test
+test speed::c1_row_runs_preserve_parser_state ... FAILED
+
+failures:
+
+failures:
+    speed::c1_row_runs_preserve_parser_state
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 391 filtered out; finished in 0.00s
+
+
+thread 'speed::c1_row_runs_preserve_parser_state' (2735715) panicked at crates/term/src/speed.rs:1260:21:
+assertion `left == right` failed: 3x2, setup "", C1 '\u{80}', chunk 24
+  left: Some("cells")
+ right: None
+stack backtrace:
+   0: __rustc::rust_begin_unwind
+   1: core::panicking::panic_fmt
+   2: core::panicking::assert_failed_inner
+   3: core::panicking::assert_failed::<core::option::Option<&str>, core::option::Option<&str>>
+   4: <glass::speed::c1_row_runs_preserve_parser_state::{closure#0} as core::ops::function::FnOnce<()>>::call_once
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.

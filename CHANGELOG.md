@@ -13,6 +13,18 @@ A program runs in a pseudo-terminal, and what it writes comes in through
 No dialect is the reference one; each is an adapter onto one shared
 description of what to show.
 
+### C1 row-boundary regression and width-handle research
+
+- Add parser-differential coverage for all 32 C1 scalars, row-run thresholds,
+  UTF-8 read splits, printable predecessors, REP and mode/reply state. A built
+  C1-to-glyph decoder mutant fails on actual cells; production behavior stays.
+- Reject row-scoped width-cache acquisition: frozen 11-pair Unicode CPU-rate
+  ratio 1.009280, 9/11 wins, six-workload Holm p=.261719. Fresh-process
+  instrumented diagnostics confirm an unnecessary C1-only cache initialization
+  (1,114,112-byte payload inferred, not measured RSS/latency). Restore runtime;
+  381 terminal tests, 12,800 differential streams and 49 Python tests pass.
+  No new Ghostty score or championship claim.
+
 ### Unicode row-edge regression and exclusive-column research
 
 - Add parser-differential coverage for pending wrap across narrow/wide/combining

@@ -678,3 +678,37 @@ for old evidence. All 5,826 tracked prior result/report files remain unchanged.
 See the [full report](../reports/research-1eecf9876bb302e9da10ff629e71e6d8-20.txt)
 and [replay commands](../bench/results/2026-11-03-exclusive-column/README.md).
 The every-metric/world-title objective remains open.
+
+
+### Row-scoped width-cache handle: failed screen and cold-resource finding
+
+Iteration 21 tested one new mechanism, retaining the existing cache values and
+atomic fill policy but acquiring its handle once per Unicode row lane. The
+fresh-control 11-pair diagnostic gave Unicode **1.009280× CPU throughput**,
+9/11 wins, six-workload Holm p=.261719: below the prospectively frozen >=1.02
+and p<.05 requirements. The runtime change is rejected/restored, without extra
+pairs, variant, terminal follow-on, replication or score substitution. All six
+point ratios exceed .98 but do not prove noninferiority/equivalence. ASCII's
+1.018585 point ratio cannot be attributed to the Unicode path it bypasses.
+
+A separate post-screen instrumented fresh-process diagnostic establishes a
+mechanism missed by the warm minimum-of-five timing: C1-only UTF-8 input can
+initialize the candidate's entire cache without a width query. Control C1 and
+both ASCII cases stay uninitialized; both wide-Unicode cases initialize. The
+cache payload is 1,114,112 one-byte atomic entries (1.0625 MiB), derived from the
+representation, **not measured RSS, startup latency, energy or allocator cost**.
+Six exact isolated tests pass; the diagnostic does not reverse the failed gate.
+Neither instrumentation nor diagnostic test is in production source.
+
+Only a 2,688-scenario C1 parser-differential regression remains. It fails on
+actual cells for a built C1-to-glyph decoder mutant. Restored correctness:
+381 terminal tests, 12,800 seeded streams, 49 Python tests and nine corruption
+rejections. Production runtime, selected executable and 5,869 prior result/report
+files are unchanged; test/document evolution has explicit historical snapshots.
+[Report](../reports/research-1eecf9876bb302e9da10ff629e71e6d8-21.txt) and
+[replay](../bench/results/2026-11-03-width-handle/README.md).
+
+No new Ghostty measurement. The preceding exact selected-build series still
+shows only three of six corrected positive throughput leads; startup, memory,
+input/presentation, sustained GPU and multi-platform objectives remain open.
+Do not infer world-title or campaign completion from this local checkpoint.

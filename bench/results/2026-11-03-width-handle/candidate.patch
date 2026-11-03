@@ -1,0 +1,48 @@
+diff --git i/crates/term/src/engine.rs w/crates/term/src/engine.rs
+index 4987a85..9e26b77 100644
+--- i/crates/term/src/engine.rs
++++ w/crates/term/src/engine.rs
+@@ -1909,6 +1909,9 @@ impl Watch<'_> {
+         // where the store is the whole loop.)
+         let span_start = column;
+         let mut span_clean = true;
++        // One stable handle per row lane; entry values still use the same
++        // relaxed atomics and fill-on-miss policy as width_of.
++        let widths = width_cache();
+         row.truncate_uniform(column);
+         // Non-lazy rows guard every column (guard_from = usize::MAX, so
+         // `column < guard_from` always holds); lazy rows guard only their
+@@ -1963,7 +1966,7 @@ impl Watch<'_> {
+                     // Preserve the authoritative table's semantics. See
+                     // bench/results/2026-11-02-glyph-batch for another measured
+                     // attempt to separate lookup/decoding from cursor stride.
+-                    match width_of(last) {
++                    match cached_width(widths, last) {
+                         Some(width @ 1..=2) => width,
+                         Some(0) => {
+                             // A mark joins the cell before it through
+@@ -3639,10 +3642,21 @@ fn utf8_at(bytes: &[u8], at: usize) -> Option<(char, usize)> {
+ /// unasked, -2 is the crate's `None` (widths themselves run 0..=3).
+ #[inline]
+ fn width_of(c: char) -> Option<usize> {
+-    use std::sync::atomic::{AtomicI8, Ordering};
++    cached_width(width_cache(), c)
++}
++
++/// The cache's allocation never moves after OnceLock publishes it. Borrowing
++/// the handle outside a row lane does not hoist its per-codepoint atomic reads.
++#[inline]
++fn width_cache() -> &'static [std::sync::atomic::AtomicI8] {
++    use std::sync::atomic::AtomicI8;
+     static CACHE: std::sync::OnceLock<Box<[AtomicI8]>> = std::sync::OnceLock::new();
+-    let cache = CACHE
+-        .get_or_init(|| (0..0x110000).map(|_| AtomicI8::new(-1)).collect::<Vec<_>>().into_boxed_slice());
++    CACHE.get_or_init(|| (0..0x110000).map(|_| AtomicI8::new(-1)).collect::<Vec<_>>().into_boxed_slice())
++}
++
++#[inline]
++fn cached_width(cache: &[std::sync::atomic::AtomicI8], c: char) -> Option<usize> {
++    use std::sync::atomic::Ordering;
+     let slot = &cache[c as usize];
+     let v = slot.load(Ordering::Relaxed);
+     if v >= 0 {
