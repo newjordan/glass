@@ -1,0 +1,20 @@
+[
+  {
+    "task": "terminal-tests",
+    "exit": 0,
+    "log": "terminal-tests.log",
+    "sha256": "98255f42b1ca554b8334d10cad4a6fa4b0bf1955bee8aba6a5a37a0c6abdee41"
+  },
+  {
+    "task": "sweep",
+    "exit": 0,
+    "log": "sweep.log",
+    "sha256": "80fbdd33da56af31e93acc56424b83d174f7325baf0601f75cb9879a5485c4ed"
+  },
+  {
+    "task": "dump-generated",
+    "exit": 0,
+    "log": "dump-generated.log",
+    "sha256": "2bc4d49a24bd014669271f3b11258704306525a7c0a050922917915b0189ef41"
+  }
+]

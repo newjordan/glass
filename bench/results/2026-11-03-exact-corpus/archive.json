@@ -1,0 +1,98 @@
+{
+  "schema": "glass.exact-corpus-archive/v1",
+  "format": "xz",
+  "files": [
+    {
+      "path": "corpus/ascii.bin.xz",
+      "uncompressed_bytes": 25165955,
+      "uncompressed_sha256": "4d07cfb67f471715bb9ca31ca186a9f2c32e3c54b9e9f527e9d56d44a0bcc76b",
+      "sha256": "ccbb5cf24cc149f9e6e7a3ed8c6b615a5773257b106be28b9974557b08dd873c",
+      "superseded_gzip_sha256": "980a69b72459c8ab8527b23af843739400182996780d19fe7c44aac0c5d22f70"
+    },
+    {
+      "path": "corpus/cursor_motion.bin.xz",
+      "uncompressed_bytes": 16777661,
+      "uncompressed_sha256": "318058c5ab6f572c1ac2fbf53a9ede6f33a6843be41c5765611e3853bf873f25",
+      "sha256": "465c05071b4848a03d2c4cf76dabe23877984996e6930daa25400f2ac4bd6372",
+      "superseded_gzip_sha256": "25937b2e4984e3661a4e5871b7ffc0db340f56726cd9fb5d2fc329b918b224da"
+    },
+    {
+      "path": "corpus/scroll_region.bin.xz",
+      "uncompressed_bytes": 16777365,
+      "uncompressed_sha256": "be5713601ab0f470791ce1e5f9ee6d8cec7acd52077207e0d50b5003b17579d8",
+      "sha256": "64f798332fb967c5b224ba424a77150219344e0fddcf36faaf91ecd56585506d",
+      "superseded_gzip_sha256": "5e7380368c25fea975458b0e8c14470fb9d41f79ea7800f0eed0b0fab161cf0c"
+    },
+    {
+      "path": "corpus/truecolor.bin.xz",
+      "uncompressed_bytes": 25166263,
+      "uncompressed_sha256": "7ecd12fedf9fce5144114f49e07b12ae09f89ac71169082e589fdd55c95cdcab",
+      "sha256": "dcd171f6b4bfa27f7470630b3d4cdae365a3a2e2e5fda6f42125ff490680be4c",
+      "superseded_gzip_sha256": "a2934e9c62769922cc51d82eea699eeccbf350e216c54e38953303fd5370054b"
+    },
+    {
+      "path": "corpus/tui_frames.bin.xz",
+      "uncompressed_bytes": 20901616,
+      "uncompressed_sha256": "271d2a56ebf833438d19c415c5c61b97bbfc6a665ea2bc2d8e9e88c10338efe2",
+      "sha256": "7128119718a260a3f463cc3fc7c92904842ba55f53c79c1743901f6eb736d0da",
+      "superseded_gzip_sha256": "2dd5dfe263b2af1e359b20730408a13a682c0de47521eec9033b6a3b77bf3e22"
+    },
+    {
+      "path": "corpus/unicode.bin.xz",
+      "uncompressed_bytes": 16777256,
+      "uncompressed_sha256": "82e706b13af91d95d513b487459780f941b4a66b5e729c1fe7163bd840c1c193",
+      "sha256": "2aa738bf4e7e092ad560689594c97a12451615791c1f8715f24b3eb93c507d69",
+      "superseded_gzip_sha256": "89bda967ca9758ae909d1954cfb626606529c72e6ad515a95a93eebc3bb824ce"
+    },
+    {
+      "path": "generated/ascii.bin.xz",
+      "uncompressed_bytes": 25165955,
+      "uncompressed_sha256": "8a8fb215501c600b431979b1e600e6eba8073647f2371f438eac852d6395e5db",
+      "sha256": "8078464a46bbfb59496f66ceba341ac6a1e7aa20d580e18275631b8111ca83fa",
+      "superseded_gzip_sha256": "d41a0bdf6d725d5356fc636fc0eef3d646b7c3d62fe4ecaba1ba4db79cfed618"
+    },
+    {
+      "path": "generated/cursor_motion.bin.xz",
+      "uncompressed_bytes": 16778061,
+      "uncompressed_sha256": "79a244cb128174daba30616a4009b9b73451691c13f8b62edf250764ad44ea9c",
+      "sha256": "30d7596f2ed9f22bc2228f0ae6022944b0e0286285085b23d4b9f14cfd1b2f5c",
+      "superseded_gzip_sha256": "9e489ed70a18d33bf984aa0b2ea54280143d2cceaed85a1cf10482595d281f0f"
+    },
+    {
+      "path": "generated/scroll_region.bin.xz",
+      "uncompressed_bytes": 16777365,
+      "uncompressed_sha256": "5a4b089a35724711cb7be22bf11a550462c5ae3fd7e0638a444e7cf4cb1e50e9",
+      "sha256": "de1b4ff6b8bc17a08abc79ed79ace6875238405057dc06f04d2d5a212f794104",
+      "superseded_gzip_sha256": "65106db7f020594828cf97ef050b4d0fbaa52a550ab71ce53650bb132f102870"
+    },
+    {
+      "path": "generated/truecolor.bin.xz",
+      "uncompressed_bytes": 25168645,
+      "uncompressed_sha256": "0620c3746867d73692a56fca754cba76f03c4738f67e10f9778862fc5120b159",
+      "sha256": "6ec2b19f06b4ed76166103935fa18118f4ae0a338282717c13ff46cd92cdefd8",
+      "superseded_gzip_sha256": "dcbd536acaa380b10b703facdba01d067d440ccbbf627325fa6dac3f418c97d6"
+    },
+    {
+      "path": "generated/tui_frames.bin.xz",
+      "uncompressed_bytes": 20901616,
+      "uncompressed_sha256": "271d2a56ebf833438d19c415c5c61b97bbfc6a665ea2bc2d8e9e88c10338efe2",
+      "sha256": "7128119718a260a3f463cc3fc7c92904842ba55f53c79c1743901f6eb736d0da",
+      "superseded_gzip_sha256": "2dd5dfe263b2af1e359b20730408a13a682c0de47521eec9033b6a3b77bf3e22"
+    },
+    {
+      "path": "generated/unicode.bin.xz",
+      "uncompressed_bytes": 16777268,
+      "uncompressed_sha256": "bc3e528d294690d13d0a89adf7111302ba345b568870f6fdfe44c05f4daed55f",
+      "sha256": "c492fd121bb344c6b5ba0d786a23b8551e1008f92eec00706c88fa9d9f0a8b79",
+      "superseded_gzip_sha256": "963a637a57f47a643d379e8ccd3a7ab102fcbd29011c6dd2b38b66e6ceac872d"
+    },
+    {
+      "path": "diagnostic-test-elf.xz",
+      "uncompressed_bytes": 7394288,
+      "uncompressed_sha256": "39fd0bf8b3b5cc36725deb2607ba4416febd8feb7f32c74b5447f18b45fb957c",
+      "sha256": "52ffd1196e151c394c6c91ec718cc8cfc9f3a7142f6024c0bbfa1e8a8f6d70e7",
+      "superseded_gzip_sha256": "53c9cf510595d8a4c236800778a21de2d959e567b3bd6caf38231c5d3b7add82"
+    }
+  ],
+  "note": "Lossless xz replaces identical raw and less efficient gzip copies. Decompression byte-equality checked before redundant files removed."
+}

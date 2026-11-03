@@ -1,0 +1,91 @@
+GLASS EXACT TERMINAL CORPUS BRIDGE — ITERATION 33 (2026-11-03)
+
+RESULT / RETAINED CODE
+A materially distinct benchmark-path improvement, not another rejected decoder
+or handler optimization. Added bench/export-tput-corpus.py and an opt-in
+GLASS_BENCH_CORPUS loader to the existing cfg(test) speed module. Existing
+production terminal/parser source is unchanged. The exporter executes the
+unchanged trusted tput.py generator, not an approximate RNG port. Fixed payload
+filenames and manifest-last publication avoid partial-completion ambiguity;
+loader checks geometry, expected six names and lengths, refuses rescaling.
+The loader does NOT check SHA256; external runners must do so before/after use.
+
+CONCRETE NEW FINDING
+The generated Rust benchmark corpus is not byte-identical to the actual Python
+terminal corpus in five of six workloads. ASCII and scroll-region differ even
+though lengths match. Python minus Rust byte counts: Unicode -12, truecolor
+-2382, cursor-motion -400. Only deterministic TUI is identical. Rust uses
+xorshift and consumes extra random state generating its extra ASCII-LF corpus;
+Python uses random.Random(7). An independent top-level runpy execution of the
+unchanged terminal script, mocking only geometry/waiting and the stop before
+terminal-mode change, matches every exported payload byte-for-byte. This check
+uses no AST extraction and performs no terminal I/O.
+
+FROZEN EXPERIMENT
+Exactly 24 sequential sessions / 12 alternating generated/exact pairs on one
+release test ELF, scale1, 39x154, 4095-byte reads, five internal passes. No
+pilot, retries, exclusions, optional stopping, score pooling or rescue arm.
+The printed rates remain best-of-five, not five independent samples; CPU and
+wall passes minimized separately by the existing harness.
+
+Workload       median CPU ratio   median wall ratio   pairs >1    Holm p
+ASCII          1.000834           1.000997            6/12        1.0
+Unicode        1.021723           1.021765            9/12        .875977
+truecolor      1.004052           1.003942            6/12        1.0
+cursor-motion  1.001558           1.001561            7/12        1.0
+scroll-region  1.007221           1.007578            8/12        1.0
+TUI            .999341            .999177            4/12        1.0
+
+Ratios are exact/generated in-process engine throughput, NOT candidate/control
+performance gains. No significant corpus effect established. Unicode range
+.980916–1.057077; identical-TUI range .982714–1.027740. No correction factor for
+past candidates or revised Ghostty gap is justified. Sequential balanced shared
+host sessions do not establish independent fair signs. Generating versus file
+loading occurs before timing, but allocator/cache/setup carryover is an open
+confound. This is not a causal isolation of corpus byte effects.
+
+VERIFICATION
+- Release test build: Cargo JSON pins exact optimized test artifact; archived
+  ELF SHA256 39fd0bf8b3b5cc36725deb2607ba4416febd8feb7f32c74b5447f18b45fb957c.
+- Existing parser test and new loader guard pass; full suite 385 passed,
+  12 ignored diagnostics; existing sweep 12,800 streams (64 x 200), no divergence.
+- 72 Python tests pass (65 existing + seven exporter contract tests).
+- 20 raw-evidence corruption challenges rejected; archive analysis/corruption/
+  independent-export replays exactly match originals.
+- Thirteen lossless xz archives retain both corpora and exact ELF:
+  250,529,314 raw bytes in 5,246,792 compressed bytes. Equality checked before
+  redundant raw/gzip copies removed; retained manifests pin raw byte hashes.
+- Initial read-only checkpoint passes; final and post-commit checkpoints and
+  frozen reference replay are the final publication gate, not a score gate.
+
+PRESERVATION
+All 6,910 earlier tracked report/result files, four shared docs, 119 other
+tracked Rust sources, and selected target/release/glass remain byte-identical.
+Only crates/term/src/speed.rs changed among 120 tracked crate Rust files;
+main.rs includes it only under cfg(test). No production runtime candidate.
+Selected executable remains SHA256
+ d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c.
+
+FAILURES RETAINED
+One write-time invalid analysis placeholder caught by syntax checking and
+replaced before use. First independent export used unittest.mock side_effect,
+so getframe(1) observed mock globals: KeyError W. Failure JSON/stderr retained;
+new=stop fixes the caller frame and byte-equality passes. No timing retried.
+One archive-adaptation patch failed preflight with no writes; reread and fixed.
+A read-only advisory subagent timed out; no unreturned proposal was adopted.
+
+EVIDENCE / REPLAY
+bench/results/2026-11-03-exact-corpus/ contains protocol, source patch, build
+receipt, archived corpora/ELF, all raw sessions/logs, independent export,
+corruption cases, replay and preservation checker. Commands:
+ python3 -B bench/results/2026-11-03-exact-corpus/verify.py
+ python3 -B bench/replay-evidence-index.py bench/results/2026-11-03-exact-corpus/final-frozen-index.json
+
+DECISION / NEXT REQUIREMENT
+Retain the test-only exact-corpus bridge. Future runtime comparisons can now
+pin the same payloads as tput.py rather than merely the same workload names.
+Do not treat this experiment as a control/candidate speedup or retrofit it to
+historical screens. Fresh selected-build end-to-end wins over Ghostty and an
+agreed startup/memory/VRAM/displayed-latency/correctness/platform scope remain
+necessary. No acceptance command is bound, no runtime build promoted, no
+championship established. Local report only; not independent verification.

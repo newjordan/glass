@@ -1,0 +1,2 @@
+1. An analysis-script write left an invalid placeholder, caught by the automatic syntax check before any analysis. Replaced with the actual replay script. Measurements were unaffected.
+2. The first independent export check used unittest.mock side_effect, so getframe(1) saw mock globals rather than original tput.py globals. Retained failure JSON/stderr; changed mock replacement to new=stop so the caller is the unchanged tput.py. No corpus or performance sessions retried.

@@ -1,0 +1,29 @@
+{
+  "schema": "glass.exact-corpus-checkpoint/v1",
+  "status": "reported",
+  "pairs": 12,
+  "sessions": 24,
+  "cpu_ratios": {
+    "ascii": 1.000833957230389,
+    "unicode": 1.0217233705168995,
+    "truecolor": 1.004052282494567,
+    "cursor_motion": 1.0015576387612415,
+    "scroll_region": 1.007221078627241,
+    "tui_frames": 0.9993407007955051
+  },
+  "all_six_export_payloads_byte_equal": true,
+  "generated_payloads_identical": [
+    "tui_frames"
+  ],
+  "terminal_tests": 385,
+  "differential_streams": 12800,
+  "python_tests": 72,
+  "rejected_corruptions": 20,
+  "unchanged_prior_evidence_files": 6910,
+  "unchanged_other_rust_sources": 119,
+  "selected_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "retained_test_source": "crates/term/src/speed.rs",
+  "runtime_promotion": false,
+  "championship_established": false,
+  "note": "Local archived-source/evidence replay; no new timing, independent audit, terminal/Ghostty comparison, causal inference or acceptance."
+}

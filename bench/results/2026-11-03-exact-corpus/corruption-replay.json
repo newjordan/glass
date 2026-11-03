@@ -1,0 +1,107 @@
+{
+  "schema": "glass.exact-corpus-corruptions/v1",
+  "rejected": 20,
+  "cases": [
+    {
+      "case": "missing session",
+      "rejected": true,
+      "diagnostic": "incomplete sessions"
+    },
+    {
+      "case": "duplicate session",
+      "rejected": true,
+      "diagnostic": "order"
+    },
+    {
+      "case": "wrong order",
+      "rejected": true,
+      "diagnostic": "order"
+    },
+    {
+      "case": "changed corpus env",
+      "rejected": true,
+      "diagnostic": "corpus environment"
+    },
+    {
+      "case": "failed session",
+      "rejected": true,
+      "diagnostic": "session failure/census"
+    },
+    {
+      "case": "false test count",
+      "rejected": true,
+      "diagnostic": "session failure/census"
+    },
+    {
+      "case": "missing stderr",
+      "rejected": true,
+      "diagnostic": "workloads"
+    },
+    {
+      "case": "duplicate workload",
+      "rejected": true,
+      "diagnostic": "workloads"
+    },
+    {
+      "case": "changed shape",
+      "rejected": true,
+      "diagnostic": "shape"
+    },
+    {
+      "case": "changed read",
+      "rejected": true,
+      "diagnostic": "shape"
+    },
+    {
+      "case": "changed setting",
+      "rejected": true,
+      "diagnostic": "settings"
+    },
+    {
+      "case": "changed protocol hash",
+      "rejected": true,
+      "diagnostic": "protocol hash"
+    },
+    {
+      "case": "changed manifest hash",
+      "rejected": true,
+      "diagnostic": "manifest hash"
+    },
+    {
+      "case": "changed binary hash",
+      "rejected": true,
+      "diagnostic": "binary identity"
+    },
+    {
+      "case": "changed argv",
+      "rejected": true,
+      "diagnostic": "argv"
+    },
+    {
+      "case": "overlap",
+      "rejected": true,
+      "diagnostic": "overlap/time"
+    },
+    {
+      "case": "empty interval",
+      "rejected": true,
+      "diagnostic": "overlap/time"
+    },
+    {
+      "case": "missing UTC",
+      "rejected": true,
+      "diagnostic": "Invalid isoformat string: ''"
+    },
+    {
+      "case": "different schema",
+      "rejected": true,
+      "diagnostic": "schema"
+    },
+    {
+      "case": "duplicate JSON key",
+      "rejected": true,
+      "diagnostic": "duplicate JSON key"
+    }
+  ],
+  "limits": "Synthetic raw-evidence validation only, not source correctness or timing validity."
+}

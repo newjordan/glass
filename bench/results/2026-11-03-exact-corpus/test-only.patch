@@ -1,0 +1,130 @@
+diff --git i/crates/term/src/speed.rs w/crates/term/src/speed.rs
+index 854a840..e10db03 100644
+--- i/crates/term/src/speed.rs
++++ w/crates/term/src/speed.rs
+@@ -6,7 +6,10 @@
+ //!
+ //! `GLASS_BENCH_SCALE` scales the workloads (1.0 is the harness's own
+ //! sizes), `GLASS_BENCH_READ` is the read size the stream is cut into,
+-//! and `GLASS_BENCH_ONLY` names one workload.
++//! and `GLASS_BENCH_ONLY` names one workload. `GLASS_BENCH_CORPUS` instead
++//! loads the six payloads exported by `bench/export-tput-corpus.py`, so an
++//! engine diagnostic can use the actual Python terminal corpus. Corpus
++//! hashes are checked by the external runner, not by this loader.
+ 
+ use std::time::Instant;
+ 
+@@ -256,6 +259,98 @@ fn env<T: std::str::FromStr>(name: &str, default: T) -> T {
+     std::env::var(name).ok().and_then(|v| v.parse().ok()).unwrap_or(default)
+ }
+ 
++const CORPUS_NAMES: [&str; 6] = ["ascii", "unicode", "truecolor", "cursor_motion", "scroll_region", "tui_frames"];
++
++/// Fixed filenames, geometry and lengths: never follow a filename from JSON.
++/// This test-only loader does not authenticate a corpus or validate its hashes.
++fn load_corpus(dir: &std::path::Path, rows: usize, cols: usize) -> Result<Vec<(&'static str, Vec<u8>)>, String> {
++    let bytes = std::fs::read(dir.join("manifest.json")).map_err(|e| e.to_string())?;
++    let m: serde_json::Value = serde_json::from_slice(&bytes).map_err(|e| e.to_string())?;
++    if m["schema"] != "glass.tput-corpus/v1"
++        || m["rows"].as_u64() != Some(rows as u64)
++        || m["cols"].as_u64() != Some(cols as u64)
++        || m["workloads"].as_object().map(|w| w.len()) != Some(CORPUS_NAMES.len())
++    {
++        return Err("invalid corpus schema, geometry or workload set".into());
++    }
++    let mut result = Vec::new();
++    for name in CORPUS_NAMES {
++        let size = m["workloads"][name]["bytes"].as_u64().ok_or("missing corpus length")?;
++        if size == 0 || size > 256 * 1024 * 1024 {
++            return Err("invalid corpus length".into());
++        }
++        let path = dir.join(format!("{name}.bin"));
++        if std::fs::metadata(&path).map_err(|e| e.to_string())?.len() != size {
++            return Err(format!("corpus length mismatch: {name}"));
++        }
++        let data = std::fs::read(path).map_err(|e| e.to_string())?;
++        if data.len() as u64 != size {
++            return Err(format!("corpus changed while reading: {name}"));
++        }
++        result.push((name, data));
++    }
++    Ok(result)
++}
++
++#[test]
++fn corpus_loader_checks_manifest_and_lengths() {
++    // Unique create_dir, not a shared process environment variable or fixture.
++    let dir = std::env::temp_dir().join(format!("glass-corpus-{}-{:?}", std::process::id(), std::thread::current().id()));
++    std::fs::create_dir(&dir).unwrap();
++    let run = || {
++        let mut m = serde_json::json!({"schema":"glass.tput-corpus/v1", "rows":39, "cols":154, "workloads":{}});
++        for name in CORPUS_NAMES {
++            std::fs::write(dir.join(format!("{name}.bin")), name.as_bytes()).unwrap();
++            m["workloads"][name] = serde_json::json!({"bytes":name.len()});
++        }
++        let save = |m: &serde_json::Value| std::fs::write(dir.join("manifest.json"), m.to_string()).unwrap();
++        save(&m);
++        let loaded = load_corpus(&dir, 39, 154).unwrap();
++        assert_eq!(loaded.len(), 6);
++        for (name, data) in loaded { assert_eq!(data, name.as_bytes()); }
++        assert!(load_corpus(&dir, 40, 154).is_err());
++        assert!(load_corpus(&dir, 39, 80).is_err());
++        for size in [0, 1, 256 * 1024 * 1024 + 1] {
++            let mut bad = m.clone();
++            bad["workloads"]["ascii"]["bytes"] = serde_json::json!(size);
++            save(&bad);
++            assert!(load_corpus(&dir, 39, 154).is_err());
++        }
++        let mut bad = m.clone();
++        bad["schema"] = serde_json::json!("other");
++        save(&bad);
++        assert!(load_corpus(&dir, 39, 154).is_err());
++        bad = m.clone();
++        let entry = bad["workloads"].as_object_mut().unwrap().remove("ascii").unwrap();
++        bad["workloads"]["../ascii"] = entry;
++        save(&bad);
++        assert!(load_corpus(&dir, 39, 154).is_err());
++        save(&m);
++        std::fs::remove_file(dir.join("ascii.bin")).unwrap();
++        assert!(load_corpus(&dir, 39, 154).is_err());
++        std::fs::write(dir.join("manifest.json"), b"{").unwrap();
++        assert!(load_corpus(&dir, 39, 154).is_err());
++    };
++    let result = std::panic::catch_unwind(run);
++    std::fs::remove_dir_all(&dir).unwrap();
++    result.unwrap();
++}
++
++/// Export the old generated corpus for a byte-level comparison, not timing.
++#[test]
++#[ignore]
++fn dump_generated_corpus() {
++    use std::io::Write;
++    let dir = std::path::PathBuf::from(std::env::var_os("GLASS_BENCH_DUMP").expect("GLASS_BENCH_DUMP required"));
++    std::fs::create_dir(&dir).unwrap();
++    for (name, data) in workloads(1.0, ROWS, COLS) {
++        if CORPUS_NAMES.contains(&name) {
++            let mut out = std::fs::OpenOptions::new().write(true).create_new(true).open(dir.join(format!("{name}.bin"))).unwrap();
++            out.write_all(&data).unwrap();
++        }
++    }
++}
++
+ #[test]
+ #[ignore]
+ fn speed() {
+@@ -263,7 +358,13 @@ fn speed() {
+     let read: usize = env("GLASS_BENCH_READ", 4095);
+     let rounds: usize = env("GLASS_BENCH_ROUNDS", 3);
+     let only: String = env("GLASS_BENCH_ONLY", String::new());
+-    for (name, stream) in workloads(scale, ROWS, COLS) {
++    let payloads = if let Some(dir) = std::env::var_os("GLASS_BENCH_CORPUS") {
++        assert_eq!(scale, 1.0, "a fixed corpus cannot be rescaled");
++        load_corpus(std::path::Path::new(&dir), ROWS, COLS).expect("invalid fixed corpus")
++    } else {
++        workloads(scale, ROWS, COLS)
++    };
++    for (name, stream) in payloads {
+         if !only.is_empty() && !only.split(',').any(|o| o == name) {
+             continue;
+         }

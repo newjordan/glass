@@ -1,0 +1,32 @@
+{
+  "schema": "glass.generated-corpus/v1",
+  "rows": 39,
+  "cols": 154,
+  "source_sha256": "a163b9ac870eb87374902233a77b40ba289deb8acae86a77ba803fd137213f8c",
+  "workloads": {
+    "ascii": {
+      "bytes": 25165955,
+      "sha256": "8a8fb215501c600b431979b1e600e6eba8073647f2371f438eac852d6395e5db"
+    },
+    "unicode": {
+      "bytes": 16777268,
+      "sha256": "bc3e528d294690d13d0a89adf7111302ba345b568870f6fdfe44c05f4daed55f"
+    },
+    "truecolor": {
+      "bytes": 25168645,
+      "sha256": "0620c3746867d73692a56fca754cba76f03c4738f67e10f9778862fc5120b159"
+    },
+    "cursor_motion": {
+      "bytes": 16778061,
+      "sha256": "79a244cb128174daba30616a4009b9b73451691c13f8b62edf250764ad44ea9c"
+    },
+    "scroll_region": {
+      "bytes": 16777365,
+      "sha256": "5a4b089a35724711cb7be22bf11a550462c5ae3fd7e0638a444e7cf4cb1e50e9"
+    },
+    "tui_frames": {
+      "bytes": 20901616,
+      "sha256": "271d2a56ebf833438d19c415c5c61b97bbfc6a665ea2bc2d8e9e88c10338efe2"
+    }
+  }
+}

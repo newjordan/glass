@@ -1,0 +1,33 @@
+{
+  "schema": "glass.exact-corpus-independent-export/v1",
+  "source_sha256": "477b0131f1041bda8dd74a64bf8d164d526685bb7fc0c13500b17f897c06542a",
+  "workloads": {
+    "ascii": {
+      "bytes": 25165955,
+      "sha256": "4d07cfb67f471715bb9ca31ca186a9f2c32e3c54b9e9f527e9d56d44a0bcc76b"
+    },
+    "unicode": {
+      "bytes": 16777256,
+      "sha256": "82e706b13af91d95d513b487459780f941b4a66b5e729c1fe7163bd840c1c193"
+    },
+    "truecolor": {
+      "bytes": 25166263,
+      "sha256": "7ecd12fedf9fce5144114f49e07b12ae09f89ac71169082e589fdd55c95cdcab"
+    },
+    "cursor_motion": {
+      "bytes": 16777661,
+      "sha256": "318058c5ab6f572c1ac2fbf53a9ede6f33a6843be41c5765611e3853bf873f25"
+    },
+    "scroll_region": {
+      "bytes": 16777365,
+      "sha256": "be5713601ab0f470791ce1e5f9ee6d8cec7acd52077207e0d50b5003b17579d8"
+    },
+    "tui_frames": {
+      "bytes": 20901616,
+      "sha256": "271d2a56ebf833438d19c415c5c61b97bbfc6a665ea2bc2d8e9e88c10338efe2"
+    }
+  },
+  "all_six_byte_equal": true,
+  "terminal_io": false,
+  "limits": "Python terminal setup mocked; real terminal behavior and speed not tested."
+}

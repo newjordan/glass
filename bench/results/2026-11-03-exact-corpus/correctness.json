@@ -1,0 +1,34 @@
+{
+  "binary": {
+    "path": "/tmp/glass-i33-corpus-test",
+    "sha256": "39fd0bf8b3b5cc36725deb2607ba4416febd8feb7f32c74b5447f18b45fb957c",
+    "cargo_artifact": "/work/frosty40/glass-repo/tree/target/release/deps/glass-1153e7f1f5d5d9af",
+    "source_sha256": {
+      "crates/term/src/speed.rs": "a163b9ac870eb87374902233a77b40ba289deb8acae86a77ba803fd137213f8c",
+      "crates/term/src/engine.rs": "33198f204ed8829cf687ef1fc5065cb1f5c7bdd064dc8f8409183420a5d1958f",
+      "bench/tput.py": "477b0131f1041bda8dd74a64bf8d164d526685bb7fc0c13500b17f897c06542a",
+      "bench/export-tput-corpus.py": "c4d1406d7f131d8464128c647cad1131cc907453c3f42467f542877d93266a4a"
+    },
+    "build_exit": 0
+  },
+  "checks": [
+    {
+      "task": "terminal-tests",
+      "exit": 0,
+      "log": "terminal-tests.log",
+      "sha256": "98255f42b1ca554b8334d10cad4a6fa4b0bf1955bee8aba6a5a37a0c6abdee41"
+    },
+    {
+      "task": "sweep",
+      "exit": 0,
+      "log": "sweep.log",
+      "sha256": "80fbdd33da56af31e93acc56424b83d174f7325baf0601f75cb9879a5485c4ed"
+    },
+    {
+      "task": "dump-generated",
+      "exit": 0,
+      "log": "dump-generated.log",
+      "sha256": "2bc4d49a24bd014669271f3b11258704306525a7c0a050922917915b0189ef41"
+    }
+  ]
+}

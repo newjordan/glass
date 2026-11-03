@@ -1,0 +1,35 @@
+{
+  "schema": "glass.exact-corpus-protocol/v1",
+  "created_utc": "2026-11-03T13:10:58.268208+00:00",
+  "question": "Does replacing the engine xorshift corpus with exact unchanged tput.py Python payloads materially change same-ELF engine throughput? This is a diagnostic/harness extension, not a runtime candidate.",
+  "corpus": "AST-extract only existing rng-through-W generation statements from unchanged bench/tput.py with rows39 cols154; no terminal IO or timing code. Exact scale1 corpus, all six payloads and source hash retained.",
+  "arms": [
+    "generated",
+    "exact"
+  ],
+  "blocks": 12,
+  "orders": [
+    [
+      "generated",
+      "exact"
+    ],
+    [
+      "exact",
+      "generated"
+    ]
+  ],
+  "scale": 1,
+  "rounds": 5,
+  "read": 4095,
+  "workloads": [
+    "ascii",
+    "unicode",
+    "truecolor",
+    "cursor_motion",
+    "scroll_region",
+    "tui_frames"
+  ],
+  "analysis": "Exact/generated paired CPU and wall rate medians, ranges and sign counts; Holm-adjusted two-sided exact sign p across six workloads. Descriptive same-ELF corpus sensitivity, no release gate or optimization inference.",
+  "stop": "Exactly 24 sequential sessions, no pilot, retry, exclusions, optional stopping, score pooling or rescue variant. Fail closed on incomplete data. Correctness first: full existing terminal tests and new corpus loader tests.",
+  "limitations": "Shared host, sequential balance does not establish independent fair signs. Reported speed rates rounded and best CPU/wall internal passes minimized independently. No PTY/Ghostty comparison or championship acceptance."
+}

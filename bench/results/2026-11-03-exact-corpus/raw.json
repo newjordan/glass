@@ -1,0 +1,484 @@
+{
+  "schema": "glass.exact-corpus-raw/v1",
+  "protocol_sha256": "ef86499a4cccbfef3999bd913c8c65d1dcb72b497c86f875dcdf2aebe1313a11",
+  "binary": {
+    "path": "/tmp/glass-i33-corpus-test",
+    "sha256": "39fd0bf8b3b5cc36725deb2607ba4416febd8feb7f32c74b5447f18b45fb957c",
+    "cargo_artifact": "/work/frosty40/glass-repo/tree/target/release/deps/glass-1153e7f1f5d5d9af",
+    "source_sha256": {
+      "crates/term/src/speed.rs": "a163b9ac870eb87374902233a77b40ba289deb8acae86a77ba803fd137213f8c",
+      "crates/term/src/engine.rs": "33198f204ed8829cf687ef1fc5065cb1f5c7bdd064dc8f8409183420a5d1958f",
+      "bench/tput.py": "477b0131f1041bda8dd74a64bf8d164d526685bb7fc0c13500b17f897c06542a",
+      "bench/export-tput-corpus.py": "c4d1406d7f131d8464128c647cad1131cc907453c3f42467f542877d93266a4a"
+    },
+    "build_exit": 0
+  },
+  "manifests": {
+    "corpus": "1151691a0b5297f188e1e1b67cfb315c3afc24d0a0666e580f5c9c47c4d5abc4",
+    "generated": "540f8f5ba8ff5d0cc6067713721ad19c75e7cdecdf43681aba936a4f92d4c6b8"
+  },
+  "settings": {
+    "GLASS_BENCH_SCALE": "1.0",
+    "GLASS_BENCH_ROUNDS": "5",
+    "GLASS_BENCH_READ": "4095",
+    "GLASS_BENCH_ONLY": "ascii,unicode,truecolor,cursor_motion,scroll_region,tui_frames"
+  },
+  "sessions": [
+    {
+      "block": 0,
+      "slot": 0,
+      "arm": "generated",
+      "argv": [
+        "/tmp/glass-i33-corpus-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "corpus_env": null,
+      "start_ns": 170931905766316,
+      "started_utc": "2026-11-03T13:16:58.128504+00:00",
+      "end_ns": 170933530851320,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 396 filtered out; finished in 1.62s\n\n",
+      "stderr": "         ascii:  1788.1 MB/s   1792.8 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   257.2 MB/s    257.8 MB/cpu-s  (16777268 bytes, read 4095)\n     truecolor:   317.7 MB/s    318.2 MB/cpu-s  (25168645 bytes, read 4095)\n cursor_motion:   254.1 MB/s    254.6 MB/cpu-s  (16778061 bytes, read 4095)\n scroll_region:  1857.9 MB/s   1861.3 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   300.0 MB/s    300.6 MB/cpu-s  (20901616 bytes, read 4095)\n"
+    },
+    {
+      "block": 0,
+      "slot": 1,
+      "arm": "exact",
+      "argv": [
+        "/tmp/glass-i33-corpus-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "corpus_env": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-exact-corpus/corpus",
+      "start_ns": 170933658267170,
+      "started_utc": "2026-11-03T13:16:59.881005+00:00",
+      "end_ns": 170935254126886,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 396 filtered out; finished in 1.59s\n\n",
+      "stderr": "         ascii:  1800.7 MB/s   1805.1 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   266.8 MB/s    267.4 MB/cpu-s  (16777256 bytes, read 4095)\n     truecolor:   322.4 MB/s    323.0 MB/cpu-s  (25166263 bytes, read 4095)\n cursor_motion:   257.2 MB/s    257.6 MB/cpu-s  (16777661 bytes, read 4095)\n scroll_region:  1885.1 MB/s   1888.6 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   298.7 MB/s    299.2 MB/cpu-s  (20901616 bytes, read 4095)\n"
+    },
+    {
+      "block": 1,
+      "slot": 0,
+      "arm": "exact",
+      "argv": [
+        "/tmp/glass-i33-corpus-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "corpus_env": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-exact-corpus/corpus",
+      "start_ns": 170935375621262,
+      "started_utc": "2026-11-03T13:17:01.598359+00:00",
+      "end_ns": 170936943414820,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 396 filtered out; finished in 1.57s\n\n",
+      "stderr": "         ascii:  1692.0 MB/s   1696.1 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   263.6 MB/s    264.1 MB/cpu-s  (16777256 bytes, read 4095)\n     truecolor:   321.2 MB/s    321.8 MB/cpu-s  (25166263 bytes, read 4095)\n cursor_motion:   253.3 MB/s    253.7 MB/cpu-s  (16777661 bytes, read 4095)\n scroll_region:  1914.5 MB/s   1917.3 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   298.9 MB/s    299.4 MB/cpu-s  (20901616 bytes, read 4095)\n"
+    },
+    {
+      "block": 1,
+      "slot": 1,
+      "arm": "generated",
+      "argv": [
+        "/tmp/glass-i33-corpus-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "corpus_env": null,
+      "start_ns": 170937067882787,
+      "started_utc": "2026-11-03T13:17:03.290621+00:00",
+      "end_ns": 170938755864996,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 396 filtered out; finished in 1.68s\n\n",
+      "stderr": "         ascii:  1685.3 MB/s   1689.4 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   255.9 MB/s    256.5 MB/cpu-s  (16777268 bytes, read 4095)\n     truecolor:   318.3 MB/s    318.7 MB/cpu-s  (25168645 bytes, read 4095)\n cursor_motion:   255.0 MB/s    255.6 MB/cpu-s  (16778061 bytes, read 4095)\n scroll_region:  1770.9 MB/s   1775.0 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   299.1 MB/s    299.6 MB/cpu-s  (20901616 bytes, read 4095)\n"
+    },
+    {
+      "block": 2,
+      "slot": 0,
+      "arm": "generated",
+      "argv": [
+        "/tmp/glass-i33-corpus-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "corpus_env": null,
+      "start_ns": 170938879977345,
+      "started_utc": "2026-11-03T13:17:05.102715+00:00",
+      "end_ns": 170940445528647,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 396 filtered out; finished in 1.56s\n\n",
+      "stderr": "         ascii:  1823.8 MB/s   1827.2 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   262.8 MB/s    263.4 MB/cpu-s  (16777268 bytes, read 4095)\n     truecolor:   321.2 MB/s    321.9 MB/cpu-s  (25168645 bytes, read 4095)\n cursor_motion:   254.1 MB/s    254.6 MB/cpu-s  (16778061 bytes, read 4095)\n scroll_region:  1947.1 MB/s   1950.6 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   306.0 MB/s    306.6 MB/cpu-s  (20901616 bytes, read 4095)\n"
+    },
+    {
+      "block": 2,
+      "slot": 1,
+      "arm": "exact",
+      "argv": [
+        "/tmp/glass-i33-corpus-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "corpus_env": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-exact-corpus/corpus",
+      "start_ns": 170940563275718,
+      "started_utc": "2026-11-03T13:17:06.786013+00:00",
+      "end_ns": 170942137982774,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 396 filtered out; finished in 1.57s\n\n",
+      "stderr": "         ascii:  1708.8 MB/s   1713.9 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   267.5 MB/s    268.0 MB/cpu-s  (16777256 bytes, read 4095)\n     truecolor:   331.7 MB/s    332.4 MB/cpu-s  (25166263 bytes, read 4095)\n cursor_motion:   256.7 MB/s    257.3 MB/cpu-s  (16777661 bytes, read 4095)\n scroll_region:  1898.8 MB/s   1903.2 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   300.7 MB/s    301.3 MB/cpu-s  (20901616 bytes, read 4095)\n"
+    },
+    {
+      "block": 3,
+      "slot": 0,
+      "arm": "exact",
+      "argv": [
+        "/tmp/glass-i33-corpus-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "corpus_env": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-exact-corpus/corpus",
+      "start_ns": 170942262236778,
+      "started_utc": "2026-11-03T13:17:08.484973+00:00",
+      "end_ns": 170943822041867,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 396 filtered out; finished in 1.56s\n\n",
+      "stderr": "         ascii:  1864.0 MB/s   1868.2 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   256.4 MB/s    257.0 MB/cpu-s  (16777256 bytes, read 4095)\n     truecolor:   323.5 MB/s    324.0 MB/cpu-s  (25166263 bytes, read 4095)\n cursor_motion:   255.7 MB/s    256.5 MB/cpu-s  (16777661 bytes, read 4095)\n scroll_region:  1738.4 MB/s   1744.5 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   303.2 MB/s    303.7 MB/cpu-s  (20901616 bytes, read 4095)\n"
+    },
+    {
+      "block": 3,
+      "slot": 1,
+      "arm": "generated",
+      "argv": [
+        "/tmp/glass-i33-corpus-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "corpus_env": null,
+      "start_ns": 170943942322892,
+      "started_utc": "2026-11-03T13:17:10.165061+00:00",
+      "end_ns": 170945541243583,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 396 filtered out; finished in 1.60s\n\n",
+      "stderr": "         ascii:  1767.2 MB/s   1771.1 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   261.3 MB/s    262.0 MB/cpu-s  (16777268 bytes, read 4095)\n     truecolor:   320.5 MB/s    321.2 MB/cpu-s  (25168645 bytes, read 4095)\n cursor_motion:   254.5 MB/s    255.1 MB/cpu-s  (16778061 bytes, read 4095)\n scroll_region:  1852.4 MB/s   1856.7 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   303.9 MB/s    304.6 MB/cpu-s  (20901616 bytes, read 4095)\n"
+    },
+    {
+      "block": 4,
+      "slot": 0,
+      "arm": "generated",
+      "argv": [
+        "/tmp/glass-i33-corpus-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "corpus_env": null,
+      "start_ns": 170945663837186,
+      "started_utc": "2026-11-03T13:17:11.886575+00:00",
+      "end_ns": 170947258897118,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 396 filtered out; finished in 1.59s\n\n",
+      "stderr": "         ascii:  1784.8 MB/s   1788.4 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   263.0 MB/s    263.5 MB/cpu-s  (16777268 bytes, read 4095)\n     truecolor:   321.4 MB/s    322.0 MB/cpu-s  (25168645 bytes, read 4095)\n cursor_motion:   253.2 MB/s    253.5 MB/cpu-s  (16778061 bytes, read 4095)\n scroll_region:  1806.1 MB/s   1809.5 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   297.9 MB/s    298.3 MB/cpu-s  (20901616 bytes, read 4095)\n"
+    },
+    {
+      "block": 4,
+      "slot": 1,
+      "arm": "exact",
+      "argv": [
+        "/tmp/glass-i33-corpus-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "corpus_env": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-exact-corpus/corpus",
+      "start_ns": 170947374798148,
+      "started_utc": "2026-11-03T13:17:13.597535+00:00",
+      "end_ns": 170948915230102,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 396 filtered out; finished in 1.54s\n\n",
+      "stderr": "         ascii:  1819.8 MB/s   1823.1 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   264.1 MB/s    264.7 MB/cpu-s  (16777256 bytes, read 4095)\n     truecolor:   321.0 MB/s    321.4 MB/cpu-s  (25166263 bytes, read 4095)\n cursor_motion:   252.1 MB/s    252.4 MB/cpu-s  (16777661 bytes, read 4095)\n scroll_region:  1848.5 MB/s   1851.1 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   303.5 MB/s    303.9 MB/cpu-s  (20901616 bytes, read 4095)\n"
+    },
+    {
+      "block": 5,
+      "slot": 0,
+      "arm": "exact",
+      "argv": [
+        "/tmp/glass-i33-corpus-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "corpus_env": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-exact-corpus/corpus",
+      "start_ns": 170949028996108,
+      "started_utc": "2026-11-03T13:17:15.251733+00:00",
+      "end_ns": 170950572282448,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 396 filtered out; finished in 1.54s\n\n",
+      "stderr": "         ascii:  1820.1 MB/s   1824.0 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   268.7 MB/s    269.1 MB/cpu-s  (16777256 bytes, read 4095)\n     truecolor:   321.9 MB/s    322.3 MB/cpu-s  (25166263 bytes, read 4095)\n cursor_motion:   254.0 MB/s    254.4 MB/cpu-s  (16777661 bytes, read 4095)\n scroll_region:  1935.4 MB/s   1939.1 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   299.6 MB/s    300.2 MB/cpu-s  (20901616 bytes, read 4095)\n"
+    },
+    {
+      "block": 5,
+      "slot": 1,
+      "arm": "generated",
+      "argv": [
+        "/tmp/glass-i33-corpus-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "corpus_env": null,
+      "start_ns": 170950696639046,
+      "started_utc": "2026-11-03T13:17:16.919378+00:00",
+      "end_ns": 170952251586080,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 396 filtered out; finished in 1.55s\n\n",
+      "stderr": "         ascii:  1851.7 MB/s   1855.0 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   257.3 MB/s    257.8 MB/cpu-s  (16777268 bytes, read 4095)\n     truecolor:   326.9 MB/s    327.3 MB/cpu-s  (25168645 bytes, read 4095)\n cursor_motion:   255.9 MB/s    256.4 MB/cpu-s  (16778061 bytes, read 4095)\n scroll_region:  1929.1 MB/s   1933.5 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   300.7 MB/s    301.3 MB/cpu-s  (20901616 bytes, read 4095)\n"
+    },
+    {
+      "block": 6,
+      "slot": 0,
+      "arm": "generated",
+      "argv": [
+        "/tmp/glass-i33-corpus-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "corpus_env": null,
+      "start_ns": 170952374527457,
+      "started_utc": "2026-11-03T13:17:18.597265+00:00",
+      "end_ns": 170953936754399,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 396 filtered out; finished in 1.56s\n\n",
+      "stderr": "         ascii:  1808.9 MB/s   1812.8 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   264.1 MB/s    264.6 MB/cpu-s  (16777268 bytes, read 4095)\n     truecolor:   323.5 MB/s    323.9 MB/cpu-s  (25168645 bytes, read 4095)\n cursor_motion:   254.4 MB/s    254.8 MB/cpu-s  (16778061 bytes, read 4095)\n scroll_region:  1936.2 MB/s   1940.6 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   302.9 MB/s    303.5 MB/cpu-s  (20901616 bytes, read 4095)\n"
+    },
+    {
+      "block": 6,
+      "slot": 1,
+      "arm": "exact",
+      "argv": [
+        "/tmp/glass-i33-corpus-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "corpus_env": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-exact-corpus/corpus",
+      "start_ns": 170954053879620,
+      "started_utc": "2026-11-03T13:17:20.276617+00:00",
+      "end_ns": 170955583061392,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 396 filtered out; finished in 1.53s\n\n",
+      "stderr": "         ascii:  1960.6 MB/s   1964.1 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   269.4 MB/s    269.9 MB/cpu-s  (16777256 bytes, read 4095)\n     truecolor:   326.7 MB/s    327.1 MB/cpu-s  (25166263 bytes, read 4095)\n cursor_motion:   258.6 MB/s    258.9 MB/cpu-s  (16777661 bytes, read 4095)\n scroll_region:  1810.6 MB/s   1814.5 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   305.2 MB/s    305.7 MB/cpu-s  (20901616 bytes, read 4095)\n"
+    },
+    {
+      "block": 7,
+      "slot": 0,
+      "arm": "exact",
+      "argv": [
+        "/tmp/glass-i33-corpus-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "corpus_env": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-exact-corpus/corpus",
+      "start_ns": 170955698393913,
+      "started_utc": "2026-11-03T13:17:21.921131+00:00",
+      "end_ns": 170957248058375,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 396 filtered out; finished in 1.55s\n\n",
+      "stderr": "         ascii:  1757.0 MB/s   1763.8 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   261.4 MB/s    261.9 MB/cpu-s  (16777256 bytes, read 4095)\n     truecolor:   327.5 MB/s    328.1 MB/cpu-s  (25166263 bytes, read 4095)\n cursor_motion:   257.4 MB/s    257.9 MB/cpu-s  (16777661 bytes, read 4095)\n scroll_region:  1945.9 MB/s   1950.7 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   304.4 MB/s    305.0 MB/cpu-s  (20901616 bytes, read 4095)\n"
+    },
+    {
+      "block": 7,
+      "slot": 1,
+      "arm": "generated",
+      "argv": [
+        "/tmp/glass-i33-corpus-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "corpus_env": null,
+      "start_ns": 170957366589801,
+      "started_utc": "2026-11-03T13:17:23.589326+00:00",
+      "end_ns": 170958913350774,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 396 filtered out; finished in 1.54s\n\n",
+      "stderr": "         ascii:  1820.4 MB/s   1825.0 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   263.2 MB/s    263.9 MB/cpu-s  (16777268 bytes, read 4095)\n     truecolor:   322.4 MB/s    323.1 MB/cpu-s  (25168645 bytes, read 4095)\n cursor_motion:   257.3 MB/s    257.7 MB/cpu-s  (16778061 bytes, read 4095)\n scroll_region:  1923.8 MB/s   1929.5 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   306.3 MB/s    306.7 MB/cpu-s  (20901616 bytes, read 4095)\n"
+    },
+    {
+      "block": 8,
+      "slot": 0,
+      "arm": "generated",
+      "argv": [
+        "/tmp/glass-i33-corpus-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "corpus_env": null,
+      "start_ns": 170959032159731,
+      "started_utc": "2026-11-03T13:17:25.254897+00:00",
+      "end_ns": 170960581393313,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 396 filtered out; finished in 1.55s\n\n",
+      "stderr": "         ascii:  1832.8 MB/s   1836.6 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   259.4 MB/s    259.9 MB/cpu-s  (16777268 bytes, read 4095)\n     truecolor:   325.9 MB/s    326.4 MB/cpu-s  (25168645 bytes, read 4095)\n cursor_motion:   257.7 MB/s    258.1 MB/cpu-s  (16778061 bytes, read 4095)\n scroll_region:  1941.3 MB/s   1945.4 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   303.8 MB/s    304.4 MB/cpu-s  (20901616 bytes, read 4095)\n"
+    },
+    {
+      "block": 8,
+      "slot": 1,
+      "arm": "exact",
+      "argv": [
+        "/tmp/glass-i33-corpus-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "corpus_env": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-exact-corpus/corpus",
+      "start_ns": 170960694650392,
+      "started_utc": "2026-11-03T13:17:26.917387+00:00",
+      "end_ns": 170962234631768,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 396 filtered out; finished in 1.54s\n\n",
+      "stderr": "         ascii:  1768.2 MB/s   1772.1 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   270.5 MB/s    271.1 MB/cpu-s  (16777256 bytes, read 4095)\n     truecolor:   325.5 MB/s    326.2 MB/cpu-s  (25166263 bytes, read 4095)\n cursor_motion:   258.6 MB/s    259.0 MB/cpu-s  (16777661 bytes, read 4095)\n scroll_region:  1925.0 MB/s   1929.2 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   303.9 MB/s    304.3 MB/cpu-s  (20901616 bytes, read 4095)\n"
+    },
+    {
+      "block": 9,
+      "slot": 0,
+      "arm": "exact",
+      "argv": [
+        "/tmp/glass-i33-corpus-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "corpus_env": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-exact-corpus/corpus",
+      "start_ns": 170962352964330,
+      "started_utc": "2026-11-03T13:17:28.575701+00:00",
+      "end_ns": 170963878128638,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 396 filtered out; finished in 1.52s\n\n",
+      "stderr": "         ascii:  1863.5 MB/s   1866.9 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   266.1 MB/s    266.6 MB/cpu-s  (16777256 bytes, read 4095)\n     truecolor:   325.3 MB/s    325.9 MB/cpu-s  (25166263 bytes, read 4095)\n cursor_motion:   258.1 MB/s    258.5 MB/cpu-s  (16777661 bytes, read 4095)\n scroll_region:  1944.7 MB/s   1949.4 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   306.5 MB/s    307.0 MB/cpu-s  (20901616 bytes, read 4095)\n"
+    },
+    {
+      "block": 9,
+      "slot": 1,
+      "arm": "generated",
+      "argv": [
+        "/tmp/glass-i33-corpus-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "corpus_env": null,
+      "start_ns": 170963993152669,
+      "started_utc": "2026-11-03T13:17:30.215890+00:00",
+      "end_ns": 170965527400085,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 396 filtered out; finished in 1.53s\n\n",
+      "stderr": "         ascii:  1867.2 MB/s   1871.2 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   260.0 MB/s    260.5 MB/cpu-s  (16777268 bytes, read 4095)\n     truecolor:   329.1 MB/s    329.6 MB/cpu-s  (25168645 bytes, read 4095)\n cursor_motion:   259.1 MB/s    259.5 MB/cpu-s  (16778061 bytes, read 4095)\n scroll_region:  1910.1 MB/s   1913.2 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   306.8 MB/s    307.2 MB/cpu-s  (20901616 bytes, read 4095)\n"
+    },
+    {
+      "block": 10,
+      "slot": 0,
+      "arm": "generated",
+      "argv": [
+        "/tmp/glass-i33-corpus-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "corpus_env": null,
+      "start_ns": 170965644843064,
+      "started_utc": "2026-11-03T13:17:31.867580+00:00",
+      "end_ns": 170967188365027,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 396 filtered out; finished in 1.54s\n\n",
+      "stderr": "         ascii:  1956.8 MB/s   1960.9 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   258.8 MB/s    259.3 MB/cpu-s  (16777268 bytes, read 4095)\n     truecolor:   325.1 MB/s    325.6 MB/cpu-s  (25168645 bytes, read 4095)\n cursor_motion:   256.3 MB/s    256.7 MB/cpu-s  (16778061 bytes, read 4095)\n scroll_region:  1935.2 MB/s   1939.3 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   301.1 MB/s    301.6 MB/cpu-s  (20901616 bytes, read 4095)\n"
+    },
+    {
+      "block": 10,
+      "slot": 1,
+      "arm": "exact",
+      "argv": [
+        "/tmp/glass-i33-corpus-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "corpus_env": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-exact-corpus/corpus",
+      "start_ns": 170967302986171,
+      "started_utc": "2026-11-03T13:17:33.525723+00:00",
+      "end_ns": 170968823391862,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 396 filtered out; finished in 1.52s\n\n",
+      "stderr": "         ascii:  1974.5 MB/s   1978.0 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   273.4 MB/s    274.1 MB/cpu-s  (16777256 bytes, read 4095)\n     truecolor:   322.7 MB/s    323.3 MB/cpu-s  (25166263 bytes, read 4095)\n cursor_motion:   254.5 MB/s    254.9 MB/cpu-s  (16777661 bytes, read 4095)\n scroll_region:  1942.3 MB/s   1946.0 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   302.9 MB/s    303.4 MB/cpu-s  (20901616 bytes, read 4095)\n"
+    },
+    {
+      "block": 11,
+      "slot": 0,
+      "arm": "exact",
+      "argv": [
+        "/tmp/glass-i33-corpus-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "corpus_env": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-exact-corpus/corpus",
+      "start_ns": 170968935958683,
+      "started_utc": "2026-11-03T13:17:35.158696+00:00",
+      "end_ns": 170970482276813,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 396 filtered out; finished in 1.54s\n\n",
+      "stderr": "         ascii:  1865.3 MB/s   1871.1 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   256.5 MB/s    257.1 MB/cpu-s  (16777256 bytes, read 4095)\n     truecolor:   324.5 MB/s    324.9 MB/cpu-s  (25166263 bytes, read 4095)\n cursor_motion:   256.8 MB/s    257.1 MB/cpu-s  (16777661 bytes, read 4095)\n scroll_region:  1936.7 MB/s   1940.5 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   303.4 MB/s    303.8 MB/cpu-s  (20901616 bytes, read 4095)\n"
+    },
+    {
+      "block": 11,
+      "slot": 1,
+      "arm": "generated",
+      "argv": [
+        "/tmp/glass-i33-corpus-test",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "speed::speed"
+      ],
+      "corpus_env": null,
+      "start_ns": 170970591064990,
+      "started_utc": "2026-11-03T13:17:36.813802+00:00",
+      "end_ns": 170972161668440,
+      "exit": 0,
+      "stdout": "\nrunning 1 test\ntest speed::speed ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 396 filtered out; finished in 1.57s\n\n",
+      "stderr": "         ascii:  1886.2 MB/s   1889.6 MB/cpu-s  (25165955 bytes, read 4095)\n       unicode:   259.7 MB/s    260.3 MB/cpu-s  (16777268 bytes, read 4095)\n     truecolor:   325.6 MB/s    326.1 MB/cpu-s  (25168645 bytes, read 4095)\n cursor_motion:   256.1 MB/s    256.5 MB/cpu-s  (16778061 bytes, read 4095)\n scroll_region:  1912.6 MB/s   1915.7 MB/cpu-s  (16777365 bytes, read 4095)\n    tui_frames:   295.2 MB/s    295.6 MB/cpu-s  (20901616 bytes, read 4095)\n"
+    }
+  ]
+}
