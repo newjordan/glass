@@ -5,6 +5,18 @@ All notable changes to glass are recorded here. Versions follow
 
 ## 0.1.0 - unreleased
 
+### Fix — preserve ASCII after split UTF-8 scalars
+
+- Completing a split UTF-8 scalar now consumes only the scalar emitted, not an
+  entire scratch-buffer valid prefix. Preserve ASCII before another partial or
+  invalid scalar and report the exact early-termination boundary.
+- Independent literal parser oracle: 48/2,478 control failures → zero; stopped
+  parser: 2/21 → zero. Direct `Term::input` engine oracle across two lanes and
+  both screens: 72/3,816 control failures → zero. Shared-parser differential
+  tests alone cannot detect this data loss.
+- Evidence: `bench/results/2026-11-03-partial-utf8-accounting/README.md`.
+  No timing, Ghostty-comparison or championship claim.
+
 ### Fix — avoid copy-on-write for no-op cell mark updates
 
 - Ignore combining marks beyond the nine-mark cap before cloning cell extras;

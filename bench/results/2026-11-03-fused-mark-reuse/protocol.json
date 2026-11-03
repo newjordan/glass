@@ -1,0 +1,41 @@
+{
+  "schema": "glass.fused-mark-protocol/v1",
+  "created_utc": "2026-11-03T20:38:22.880562+00:00",
+  "arms": [
+    "control",
+    "candidate"
+  ],
+  "mechanism": "Fuse a locally written positive-width base and a following U+0300..036F zero-width mark only when another printable scalar follows. Reuse exact singleton CellExtra in destination, otherwise existing cache. No Cell representation, UTF8 policy, parser, reader or unsafe change.",
+  "correctness": [
+    "literal fused mark overwrite COW and style oracle",
+    "literal engine base/mark/wrap/REP/cut oracle"
+  ],
+  "engine": {
+    "blocks": 12,
+    "orders": [
+      [
+        "control",
+        "candidate"
+      ],
+      [
+        "candidate",
+        "control"
+      ]
+    ],
+    "primary": "Unicode median paired CPU rate >=1.02, wins>losses, six-workload Holm p<.05; all six point medians >=.98",
+    "scale": 1,
+    "rounds": 5,
+    "read": 4095,
+    "workloads": [
+      "ascii",
+      "unicode",
+      "truecolor",
+      "cursor_motion",
+      "scroll_region",
+      "tui_frames"
+    ],
+    "corpus_manifest_sha256": "1151691a0b5297f188e1e1b67cfb315c3afc24d0a0666e580f5c9c47c4d5abc4",
+    "stop": "Exactly 12 pairs, no pilot/retry/pooling/rescue. On failed correctness no timing; on failed screen restore. Surviving screen still needs fresh same-build PTY and missing metrics."
+  },
+  "runtime_promotion": false
+}

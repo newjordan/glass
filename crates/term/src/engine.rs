@@ -3771,6 +3771,81 @@ mod tests {
         term.take_effects().replies
     }
 
+    /// A direct upstream Term::input oracle, not Watch's shared fast handler.
+    /// Every byte split includes the middle of a multibyte base and mark.
+    #[test]
+    fn partial_utf8_chunks_match_direct_term_input() {
+        use alacritty_terminal::vte::ansi::Handler;
+        let mut cases = 0;
+        let mut failures = 0;
+        for fast in [false, true] {
+            for alternate in [false, true] {
+                for cols in [4, 8, 19] {
+                    for column in [0, cols - 2, cols - 1] {
+                        for text in [
+                            "e\u{301}x",
+                            "漢\u{301}x",
+                            "a\u{308}b\u{301}z",
+                            "e\u{301}\u{308}x",
+                            "e\u{301}",
+                            "漢\u{301}",
+                            "a\u{301}漢\u{308}x",
+                            "a\u{200b}z",
+                        ] {
+                            for styled in [false, true] {
+                                let setup = |e: &mut Engine| {
+                                    e.set_fast(fast);
+                                    if alternate {
+                                        e.process(b"\x1b[?1049h");
+                                    }
+                                    // Seed old extras and wide cells under the write.
+                                    e.process("漢x\u{308}abcdef".as_bytes());
+                                    e.term.goto(0, column);
+                                    if styled {
+                                        e.term.terminal_attribute(Attr::UnderlineColor(Some(
+                                            AnsiColor::Indexed(27),
+                                        )));
+                                        e.term.terminal_attribute(Attr::Underline);
+                                    }
+                                };
+                                for cut in 0..=text.len() {
+                                    let mut expected =
+                                        Engine::new(8, cols, engine().info.lock().unwrap().clone());
+                                    setup(&mut expected);
+                                    for c in text.chars() {
+                                        expected.term.input(c);
+                                    }
+                                    let mut actual =
+                                        Engine::new(8, cols, engine().info.lock().unwrap().clone());
+                                    setup(&mut actual);
+                                    actual.process(&text.as_bytes()[..cut]);
+                                    actual.process(&text.as_bytes()[cut..]);
+                                    let before_rep = actual.grid_state() == expected.grid_state();
+                                    // Literal last-scalar REP oracle, independent of Watch::preceding.
+                                    let last = text.chars().last().unwrap();
+                                    for _ in 0..2 {
+                                        expected.term.input(last);
+                                    }
+                                    actual.process(b"\x1b[2b");
+                                    let after_rep = actual.grid_state() == expected.grid_state();
+                                    if !before_rep || !after_rep {
+                                        failures += 1;
+                                        if failures <= 8 {
+                                            eprintln!("fast={fast} alt={alternate} cols={cols} column={column} styled={styled} text={text:?} cut={cut} before={before_rep} after={after_rep}");
+                                        }
+                                    }
+                                    cases += 1;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        eprintln!("partial-utf8 direct-Term matrix cases={cases} failures={failures}");
+        assert_eq!(cases, 3816);
+        assert_eq!(failures, 0);
+    }
     /// Explicit template expectations, not the fast/plain shared-handler oracle.
     #[test]
     fn pen_dispatch_preserves_template_and_color_boundaries() {

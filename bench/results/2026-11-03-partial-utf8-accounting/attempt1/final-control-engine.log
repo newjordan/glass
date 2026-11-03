@@ -1,0 +1,32 @@
+
+running 1 test
+test engine::tests::partial_utf8_chunks_match_direct_term_input ... FAILED
+
+failures:
+
+failures:
+    engine::tests::partial_utf8_chunks_match_direct_term_input
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 409 filtered out; finished in 0.23s
+
+fast=false alt=false cols=4 column=0 styled=false text="a\u{308}b\u{301}z" cut=2 before=false after=false
+fast=false alt=false cols=4 column=0 styled=true text="a\u{308}b\u{301}z" cut=2 before=false after=false
+fast=false alt=false cols=4 column=2 styled=false text="a\u{308}b\u{301}z" cut=2 before=false after=false
+fast=false alt=false cols=4 column=2 styled=true text="a\u{308}b\u{301}z" cut=2 before=false after=false
+fast=false alt=false cols=4 column=3 styled=false text="a\u{308}b\u{301}z" cut=2 before=false after=false
+fast=false alt=false cols=4 column=3 styled=true text="a\u{308}b\u{301}z" cut=2 before=false after=false
+fast=false alt=false cols=8 column=0 styled=false text="a\u{308}b\u{301}z" cut=2 before=false after=false
+fast=false alt=false cols=8 column=0 styled=true text="a\u{308}b\u{301}z" cut=2 before=false after=false
+partial-utf8 direct-Term matrix cases=3816 failures=72
+
+thread 'engine::tests::partial_utf8_chunks_match_direct_term_input' (1816978) panicked at crates/term/src/engine.rs:3847:9:
+assertion `left == right` failed
+  left: 72
+ right: 0
+stack backtrace:
+   0: __rustc::rust_begin_unwind
+   1: core::panicking::panic_fmt
+   2: core::panicking::assert_failed_inner
+   3: core::panicking::assert_failed::<i32, i32>
+   4: <glass::engine::tests::partial_utf8_chunks_match_direct_term_input::{closure#0} as core::ops::function::FnOnce<()>>::call_once
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.

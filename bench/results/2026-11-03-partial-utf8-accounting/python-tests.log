@@ -1,0 +1,11 @@
+test_complete (__main__.Evidence.test_complete) ... ok
+test_duplicate_key_rejected (__main__.Evidence.test_duplicate_key_rejected) ... ok
+test_metadata_corruptions_rejected (__main__.Evidence.test_metadata_corruptions_rejected) ... ok
+test_rehashed_census_corruptions_rejected (__main__.Evidence.test_rehashed_census_corruptions_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.002s
+
+OK
+rejected metadata corruptions=14
+rejected rehashed census corruptions=10

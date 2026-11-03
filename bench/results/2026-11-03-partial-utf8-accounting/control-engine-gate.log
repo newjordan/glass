@@ -1,0 +1,68 @@
+
+running 1 test
+test engine::tests::partial_utf8_chunks_match_direct_term_input ... FAILED
+
+failures:
+
+failures:
+    engine::tests::partial_utf8_chunks_match_direct_term_input
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 409 filtered out; finished in 0.23s
+
+   Compiling vte v0.15.0 (/work/frosty40/glass-repo/tree/crates/vte)
+   Compiling glass-alacritty-terminal v0.26.0 (/work/frosty40/glass-repo/tree/crates/alacritty-terminal)
+   Compiling glass-term v0.1.0 (/work/frosty40/glass-repo/tree/crates/term)
+warning: method `apply_timed` is never used
+   --> crates/term/src/engine.rs:495:8
+    |
+368 | impl Engine {
+    | ----------- method in this implementation
+...
+495 |     fn apply_timed(&mut self, pass: &[u8]) {
+    |        ^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: static `FEED_NS` is never used
+    --> crates/term/src/engine.rs:2978:16
+     |
+2978 |     pub static FEED_NS: AtomicU64 = AtomicU64::new(0);
+     |                ^^^^^^^
+
+warning: static `FEED_CALLS` is never used
+    --> crates/term/src/engine.rs:2979:16
+     |
+2979 |     pub static FEED_CALLS: AtomicU64 = AtomicU64::new(0);
+     |                ^^^^^^^^^^
+
+warning: constant `FEED` is never used
+    --> crates/term/src/engine.rs:2981:15
+     |
+2981 |     pub const FEED: usize = 1;
+     |               ^^^^
+
+warning: `glass-term` (bin "glass" test) generated 4 warnings
+    Finished `release` profile [optimized] target(s) in 33.90s
+     Running unittests src/main.rs (target/release/deps/glass-1153e7f1f5d5d9af)
+fast=false alt=false cols=4 column=0 styled=false text="a\u{308}b\u{301}z" cut=2 before=false after=false
+fast=false alt=false cols=4 column=0 styled=true text="a\u{308}b\u{301}z" cut=2 before=false after=false
+fast=false alt=false cols=4 column=2 styled=false text="a\u{308}b\u{301}z" cut=2 before=false after=false
+fast=false alt=false cols=4 column=2 styled=true text="a\u{308}b\u{301}z" cut=2 before=false after=false
+fast=false alt=false cols=4 column=3 styled=false text="a\u{308}b\u{301}z" cut=2 before=false after=false
+fast=false alt=false cols=4 column=3 styled=true text="a\u{308}b\u{301}z" cut=2 before=false after=false
+fast=false alt=false cols=8 column=0 styled=false text="a\u{308}b\u{301}z" cut=2 before=false after=false
+fast=false alt=false cols=8 column=0 styled=true text="a\u{308}b\u{301}z" cut=2 before=false after=false
+partial-utf8 direct-Term matrix cases=3816 failures=72
+
+thread 'engine::tests::partial_utf8_chunks_match_direct_term_input' (1804015) panicked at crates/term/src/engine.rs:3830:9:
+assertion `left == right` failed
+  left: 72
+ right: 0
+stack backtrace:
+   0: __rustc::rust_begin_unwind
+   1: core::panicking::panic_fmt
+   2: core::panicking::assert_failed_inner
+   3: core::panicking::assert_failed::<i32, i32>
+   4: <glass::engine::tests::partial_utf8_chunks_match_direct_term_input::{closure#0} as core::ops::function::FnOnce<()>>::call_once
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+error: test failed, to rerun pass `-p glass-term --bin glass`

@@ -1,0 +1,280 @@
+[
+  {
+    "arm": "control",
+    "label": "parser",
+    "argv": [
+      "cargo",
+      "test",
+      "--release",
+      "--locked",
+      "-p",
+      "vte",
+      "partial_utf8_",
+      "--",
+      "--nocapture",
+      "--test-threads=1"
+    ],
+    "settings": {},
+    "exit": 101,
+    "expected_exit": 101,
+    "log_sha256": "1d750f04fd0c98d1d82fc8d2326aef96f6345cc11778c6ad4660e9517b1fa320",
+    "source_sha256": {
+      "crates/term/src/engine.rs": "afb0c774d24166229ec478312b27c98ca3ea33117f7616f4e764f6a0725101a7",
+      "crates/term/src/speed.rs": "486ac678d99766ddca4f35b814a1397cab4cf60c5ef4b4c6d51d00cde43d9419",
+      "crates/vte/src/lib.rs": "bfdf513629570e68ff9c9e31125100d8117f1c617de81d638ca05d5afe367bf1",
+      "crates/vte/src/ansi.rs": "ed3a17b498d5ae08c1667840ab46c177ed82e62f66d25090c95e74f65a1fc166"
+    },
+    "binary_sha256": "c288dea3309b91a3ad3e41d85a8342d7335e8cac731fda8d998d48961cd8e7f0",
+    "start_ns": 198359758261139,
+    "end_ns": 198361913363382
+  },
+  {
+    "arm": "control",
+    "label": "engine",
+    "argv": [
+      "/tmp/glass-i46b-partial-utf8-control-test",
+      "--exact",
+      "engine::tests::partial_utf8_chunks_match_direct_term_input",
+      "--nocapture"
+    ],
+    "settings": {},
+    "exit": 101,
+    "expected_exit": 101,
+    "log_sha256": "747398142995daa4ce4c33ae56e0b3801f59218e09d5756a8abbdd6eca9b240d",
+    "source_sha256": {
+      "crates/term/src/engine.rs": "afb0c774d24166229ec478312b27c98ca3ea33117f7616f4e764f6a0725101a7",
+      "crates/term/src/speed.rs": "486ac678d99766ddca4f35b814a1397cab4cf60c5ef4b4c6d51d00cde43d9419",
+      "crates/vte/src/lib.rs": "bfdf513629570e68ff9c9e31125100d8117f1c617de81d638ca05d5afe367bf1",
+      "crates/vte/src/ansi.rs": "ed3a17b498d5ae08c1667840ab46c177ed82e62f66d25090c95e74f65a1fc166"
+    },
+    "binary_sha256": "c288dea3309b91a3ad3e41d85a8342d7335e8cac731fda8d998d48961cd8e7f0",
+    "start_ns": 198361913452039,
+    "end_ns": 198362142587142
+  },
+  {
+    "arm": "control",
+    "label": "suite",
+    "argv": [
+      "/tmp/glass-i46b-partial-utf8-control-test",
+      "--skip",
+      "partial_utf8_chunks_match_direct_term_input"
+    ],
+    "settings": {},
+    "exit": 0,
+    "expected_exit": 0,
+    "log_sha256": "3c7f93e6b72540bc80ac3b64d75fc347e67d77791e92a6e3685d50ee4c544b32",
+    "source_sha256": {
+      "crates/term/src/engine.rs": "afb0c774d24166229ec478312b27c98ca3ea33117f7616f4e764f6a0725101a7",
+      "crates/term/src/speed.rs": "486ac678d99766ddca4f35b814a1397cab4cf60c5ef4b4c6d51d00cde43d9419",
+      "crates/vte/src/lib.rs": "bfdf513629570e68ff9c9e31125100d8117f1c617de81d638ca05d5afe367bf1",
+      "crates/vte/src/ansi.rs": "ed3a17b498d5ae08c1667840ab46c177ed82e62f66d25090c95e74f65a1fc166"
+    },
+    "binary_sha256": "c288dea3309b91a3ad3e41d85a8342d7335e8cac731fda8d998d48961cd8e7f0",
+    "start_ns": 198362142744929,
+    "end_ns": 198363966470635
+  },
+  {
+    "arm": "control",
+    "label": "sweep",
+    "argv": [
+      "/tmp/glass-i46b-partial-utf8-control-test",
+      "--ignored",
+      "--exact",
+      "speed::plain_runs_match_the_parser_over_seeds",
+      "--nocapture"
+    ],
+    "settings": {
+      "GLASS_SWEEP_SEEDS": "64",
+      "GLASS_SWEEP_ROUNDS": "200",
+      "GLASS_SWEEP_FROM": "1"
+    },
+    "exit": 0,
+    "expected_exit": 0,
+    "log_sha256": "c79f80bcc46298f3334ca0143039d3c9aab1d02cca873d3cbcbfbf50c68edc74",
+    "source_sha256": {
+      "crates/term/src/engine.rs": "afb0c774d24166229ec478312b27c98ca3ea33117f7616f4e764f6a0725101a7",
+      "crates/term/src/speed.rs": "486ac678d99766ddca4f35b814a1397cab4cf60c5ef4b4c6d51d00cde43d9419",
+      "crates/vte/src/lib.rs": "bfdf513629570e68ff9c9e31125100d8117f1c617de81d638ca05d5afe367bf1",
+      "crates/vte/src/ansi.rs": "ed3a17b498d5ae08c1667840ab46c177ed82e62f66d25090c95e74f65a1fc166"
+    },
+    "binary_sha256": "c288dea3309b91a3ad3e41d85a8342d7335e8cac731fda8d998d48961cd8e7f0",
+    "start_ns": 198363966582415,
+    "end_ns": 198374922541778
+  },
+  {
+    "arm": "candidate",
+    "label": "parser",
+    "argv": [
+      "cargo",
+      "test",
+      "--release",
+      "--locked",
+      "-p",
+      "vte",
+      "partial_utf8_",
+      "--",
+      "--nocapture",
+      "--test-threads=1"
+    ],
+    "settings": {},
+    "exit": 0,
+    "expected_exit": 0,
+    "log_sha256": "78b7d1bc2765dbb7b3a175002fa990b519da15e7682c02e44c19995c34b2619a",
+    "source_sha256": {
+      "crates/term/src/engine.rs": "afb0c774d24166229ec478312b27c98ca3ea33117f7616f4e764f6a0725101a7",
+      "crates/term/src/speed.rs": "486ac678d99766ddca4f35b814a1397cab4cf60c5ef4b4c6d51d00cde43d9419",
+      "crates/vte/src/lib.rs": "7fda6587e80de9ca7f160d8247dd4edd10e8746bf1d37e2d9dc41336828d6063",
+      "crates/vte/src/ansi.rs": "ed3a17b498d5ae08c1667840ab46c177ed82e62f66d25090c95e74f65a1fc166"
+    },
+    "binary_sha256": "4dc45dd83b902d3cfec6fb698615993a9be4b4b800a75b3330a3233f0c6aaeb7",
+    "start_ns": 198410613857730,
+    "end_ns": 198412754778597
+  },
+  {
+    "arm": "candidate",
+    "label": "engine",
+    "argv": [
+      "/tmp/glass-i46b-partial-utf8-candidate-test",
+      "--exact",
+      "engine::tests::partial_utf8_chunks_match_direct_term_input",
+      "--nocapture"
+    ],
+    "settings": {},
+    "exit": 0,
+    "expected_exit": 0,
+    "log_sha256": "91df322bcfe8c9d3663364c4e3dca8eaf8d3a5a210fadf1253b84da7cf723979",
+    "source_sha256": {
+      "crates/term/src/engine.rs": "afb0c774d24166229ec478312b27c98ca3ea33117f7616f4e764f6a0725101a7",
+      "crates/term/src/speed.rs": "486ac678d99766ddca4f35b814a1397cab4cf60c5ef4b4c6d51d00cde43d9419",
+      "crates/vte/src/lib.rs": "7fda6587e80de9ca7f160d8247dd4edd10e8746bf1d37e2d9dc41336828d6063",
+      "crates/vte/src/ansi.rs": "ed3a17b498d5ae08c1667840ab46c177ed82e62f66d25090c95e74f65a1fc166"
+    },
+    "binary_sha256": "4dc45dd83b902d3cfec6fb698615993a9be4b4b800a75b3330a3233f0c6aaeb7",
+    "start_ns": 198412754938448,
+    "end_ns": 198412976775325
+  },
+  {
+    "arm": "candidate",
+    "label": "suite",
+    "argv": [
+      "/tmp/glass-i46b-partial-utf8-candidate-test"
+    ],
+    "settings": {},
+    "exit": 0,
+    "expected_exit": 0,
+    "log_sha256": "d25e03d26d5fefb893a3ff8c13e0ee5cecfc026e85f2b3211c675af846dc1006",
+    "source_sha256": {
+      "crates/term/src/engine.rs": "afb0c774d24166229ec478312b27c98ca3ea33117f7616f4e764f6a0725101a7",
+      "crates/term/src/speed.rs": "486ac678d99766ddca4f35b814a1397cab4cf60c5ef4b4c6d51d00cde43d9419",
+      "crates/vte/src/lib.rs": "7fda6587e80de9ca7f160d8247dd4edd10e8746bf1d37e2d9dc41336828d6063",
+      "crates/vte/src/ansi.rs": "ed3a17b498d5ae08c1667840ab46c177ed82e62f66d25090c95e74f65a1fc166"
+    },
+    "binary_sha256": "4dc45dd83b902d3cfec6fb698615993a9be4b4b800a75b3330a3233f0c6aaeb7",
+    "start_ns": 198412976927091,
+    "end_ns": 198414854646761
+  },
+  {
+    "arm": "candidate",
+    "label": "sweep",
+    "argv": [
+      "/tmp/glass-i46b-partial-utf8-candidate-test",
+      "--ignored",
+      "--exact",
+      "speed::plain_runs_match_the_parser_over_seeds",
+      "--nocapture"
+    ],
+    "settings": {
+      "GLASS_SWEEP_SEEDS": "64",
+      "GLASS_SWEEP_ROUNDS": "200",
+      "GLASS_SWEEP_FROM": "1"
+    },
+    "exit": 0,
+    "expected_exit": 0,
+    "log_sha256": "dd53019f8112d5071e6cef87ba9fe014a2055a81fd0e7cd8562ffe7d19038beb",
+    "source_sha256": {
+      "crates/term/src/engine.rs": "afb0c774d24166229ec478312b27c98ca3ea33117f7616f4e764f6a0725101a7",
+      "crates/term/src/speed.rs": "486ac678d99766ddca4f35b814a1397cab4cf60c5ef4b4c6d51d00cde43d9419",
+      "crates/vte/src/lib.rs": "7fda6587e80de9ca7f160d8247dd4edd10e8746bf1d37e2d9dc41336828d6063",
+      "crates/vte/src/ansi.rs": "ed3a17b498d5ae08c1667840ab46c177ed82e62f66d25090c95e74f65a1fc166"
+    },
+    "binary_sha256": "4dc45dd83b902d3cfec6fb698615993a9be4b4b800a75b3330a3233f0c6aaeb7",
+    "start_ns": 198414854871824,
+    "end_ns": 198425772556412
+  },
+  {
+    "arm": "candidate",
+    "label": "library",
+    "argv": [
+      "cargo",
+      "test",
+      "--release",
+      "--locked",
+      "-p",
+      "glass-alacritty-terminal"
+    ],
+    "settings": {},
+    "exit": 0,
+    "expected_exit": 0,
+    "log_sha256": "d1849c3ea8df7e929b98569509849b5655408d9f20d702ff5856d59d69e1f487",
+    "source_sha256": {
+      "crates/term/src/engine.rs": "afb0c774d24166229ec478312b27c98ca3ea33117f7616f4e764f6a0725101a7",
+      "crates/term/src/speed.rs": "486ac678d99766ddca4f35b814a1397cab4cf60c5ef4b4c6d51d00cde43d9419",
+      "crates/vte/src/lib.rs": "7fda6587e80de9ca7f160d8247dd4edd10e8746bf1d37e2d9dc41336828d6063",
+      "crates/vte/src/ansi.rs": "ed3a17b498d5ae08c1667840ab46c177ed82e62f66d25090c95e74f65a1fc166"
+    },
+    "binary_sha256": "4dc45dd83b902d3cfec6fb698615993a9be4b4b800a75b3330a3233f0c6aaeb7",
+    "start_ns": 198425772749766,
+    "end_ns": 198431550860285
+  },
+  {
+    "arm": "candidate",
+    "label": "parser-full",
+    "argv": [
+      "cargo",
+      "test",
+      "--release",
+      "--locked",
+      "-p",
+      "vte"
+    ],
+    "settings": {},
+    "exit": 0,
+    "expected_exit": 0,
+    "log_sha256": "15fefb8837c0dff72b2997a6aeea094478598935f23b3e42bce4825c122fc3de",
+    "source_sha256": {
+      "crates/term/src/engine.rs": "afb0c774d24166229ec478312b27c98ca3ea33117f7616f4e764f6a0725101a7",
+      "crates/term/src/speed.rs": "486ac678d99766ddca4f35b814a1397cab4cf60c5ef4b4c6d51d00cde43d9419",
+      "crates/vte/src/lib.rs": "7fda6587e80de9ca7f160d8247dd4edd10e8746bf1d37e2d9dc41336828d6063",
+      "crates/vte/src/ansi.rs": "ed3a17b498d5ae08c1667840ab46c177ed82e62f66d25090c95e74f65a1fc166"
+    },
+    "binary_sha256": "4dc45dd83b902d3cfec6fb698615993a9be4b4b800a75b3330a3233f0c6aaeb7",
+    "start_ns": 198431551059619,
+    "end_ns": 198431651356379
+  },
+  {
+    "arm": "candidate",
+    "label": "parser-no-default",
+    "argv": [
+      "cargo",
+      "test",
+      "--release",
+      "--locked",
+      "-p",
+      "vte",
+      "--no-default-features"
+    ],
+    "settings": {},
+    "exit": 0,
+    "expected_exit": 0,
+    "log_sha256": "88ac91dca98b05223a66fac52735795f10bb82276a59d8cba034224dbef48bb8",
+    "source_sha256": {
+      "crates/term/src/engine.rs": "afb0c774d24166229ec478312b27c98ca3ea33117f7616f4e764f6a0725101a7",
+      "crates/term/src/speed.rs": "486ac678d99766ddca4f35b814a1397cab4cf60c5ef4b4c6d51d00cde43d9419",
+      "crates/vte/src/lib.rs": "7fda6587e80de9ca7f160d8247dd4edd10e8746bf1d37e2d9dc41336828d6063",
+      "crates/vte/src/ansi.rs": "ed3a17b498d5ae08c1667840ab46c177ed82e62f66d25090c95e74f65a1fc166"
+    },
+    "binary_sha256": "4dc45dd83b902d3cfec6fb698615993a9be4b4b800a75b3330a3233f0c6aaeb7",
+    "start_ns": 198431651571162,
+    "end_ns": 198434142318156
+  }
+]

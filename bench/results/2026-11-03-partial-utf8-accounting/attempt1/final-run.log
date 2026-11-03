@@ -1,0 +1,19 @@
+control parser exit 101 expected 101
+control engine exit 101 expected 101
+control suite exit 0 expected 0
+control sweep exit 0 expected 0
+candidate parser exit 0 expected 0
+candidate engine exit 0 expected 0
+candidate suite exit 0 expected 0
+candidate sweep exit 0 expected 0
+candidate library exit 0 expected 0
+candidate parser-full exit 0 expected 0
+candidate parser-no-default exit 101 expected 0
+Traceback (most recent call last):
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-partial-utf8-accounting/run.py", line 79, in <module>
+    main()
+    ~~~~^^
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-partial-utf8-accounting/run.py", line 72, in main
+    assert p.returncode == expected
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

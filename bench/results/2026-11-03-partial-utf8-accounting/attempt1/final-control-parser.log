@@ -1,0 +1,67 @@
+
+running 5 tests
+test tests::partial_utf8_accounts_only_for_emitted_scalar ... FAILED
+test tests::partial_utf8_into_esc ... ok
+test tests::partial_utf8_keeps_ascii_before_control_or_invalid_tail ... FAILED
+test tests::partial_utf8_separating_utf8 ... ok
+test tests::partial_utf8_termination_reports_only_emitted_scalar_bytes ... FAILED
+
+failures:
+
+failures:
+    tests::partial_utf8_accounts_only_for_emitted_scalar
+    tests::partial_utf8_keeps_ascii_before_control_or_invalid_tail
+    tests::partial_utf8_termination_reports_only_emitted_scalar_bytes
+
+test result: FAILED. 2 passed; 3 failed; 0 ignored; 0 measured; 29 filtered out; finished in 0.00s
+
+   Compiling vte v0.15.0 (/work/frosty40/glass-repo/tree/crates/vte)
+    Finished `release` profile [optimized] target(s) in 2.20s
+     Running unittests src/lib.rs (target/release/deps/vte-22c2463be0e1da4e)
+text="éb\u{301}z" cuts=0,1 until=false actual=[Print('é'), Print('\u{301}'), Print('z')] expected=[Print('é'), Print('b'), Print('\u{301}'), Print('z')]
+text="éb\u{301}z" cuts=0,1 until=true actual=[Print('é'), Print('\u{301}'), Print('z')] expected=[Print('é'), Print('b'), Print('\u{301}'), Print('z')]
+text="éb\u{301}z" cuts=1,1 until=false actual=[Print('é'), Print('\u{301}'), Print('z')] expected=[Print('é'), Print('b'), Print('\u{301}'), Print('z')]
+text="éb\u{301}z" cuts=1,1 until=true actual=[Print('é'), Print('\u{301}'), Print('z')] expected=[Print('é'), Print('b'), Print('\u{301}'), Print('z')]
+text="éb\u{301}z" cuts=1,4 until=false actual=[Print('é'), Print('\u{301}'), Print('z')] expected=[Print('é'), Print('b'), Print('\u{301}'), Print('z')]
+text="éb\u{301}z" cuts=1,4 until=true actual=[Print('é'), Print('\u{301}'), Print('z')] expected=[Print('é'), Print('b'), Print('\u{301}'), Print('z')]
+text="éb\u{301}z" cuts=1,5 until=false actual=[Print('é'), Print('\u{301}'), Print('z')] expected=[Print('é'), Print('b'), Print('\u{301}'), Print('z')]
+text="éb\u{301}z" cuts=1,5 until=true actual=[Print('é'), Print('\u{301}'), Print('z')] expected=[Print('é'), Print('b'), Print('\u{301}'), Print('z')]
+partial-utf8 literal matrix cases=2478 failures=48
+
+thread 'tests::partial_utf8_accounts_only_for_emitted_scalar' (1816971) panicked at crates/vte/src/lib.rs:1472:9:
+assertion `left == right` failed
+  left: 48
+ right: 0
+stack backtrace:
+   0: __rustc::rust_begin_unwind
+   1: core::panicking::panic_fmt
+   2: core::panicking::assert_failed_inner
+   3: core::panicking::assert_failed::<i32, i32>
+   4: <vte::tests::partial_utf8_accounts_only_for_emitted_scalar::{closure#0} as core::ops::function::FnOnce<()>>::call_once
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+
+thread 'tests::partial_utf8_keeps_ascii_before_control_or_invalid_tail' (1816973) panicked at crates/vte/src/lib.rs:1554:13:
+assertion `left == right` failed: tail=[98, 255, 122]
+  left: [Print('é'), Print('�'), Print('z')]
+ right: [Print('é'), Print('b'), Print('�'), Print('z')]
+stack backtrace:
+   0: __rustc::rust_begin_unwind
+   1: core::panicking::panic_fmt
+   2: core::panicking::assert_failed_inner
+   3: core::panicking::assert_failed::<alloc::vec::Vec<vte::tests::Sequence>, alloc::vec::Vec<vte::tests::Sequence>>
+   4: <vte::tests::partial_utf8_keeps_ascii_before_control_or_invalid_tail::{closure#0} as core::ops::function::FnOnce<()>>::call_once
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+partial-utf8 termination matrix cases=21 failures=2
+
+thread 'tests::partial_utf8_termination_reports_only_emitted_scalar_bytes' (1816975) panicked at crates/vte/src/lib.rs:1515:9:
+assertion `left == right` failed
+  left: 2
+ right: 0
+stack backtrace:
+   0: __rustc::rust_begin_unwind
+   1: core::panicking::panic_fmt
+   2: core::panicking::assert_failed_inner
+   3: core::panicking::assert_failed::<i32, i32>
+   4: <vte::tests::partial_utf8_termination_reports_only_emitted_scalar_bytes::{closure#0} as core::ops::function::FnOnce<()>>::call_once
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+error: test failed, to rerun pass `-p vte --lib`

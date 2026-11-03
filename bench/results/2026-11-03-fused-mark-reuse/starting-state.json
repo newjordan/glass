@@ -1,0 +1,8 @@
+{
+  "head": "d9d41d0453adaf00d4efbd6a3565aa2cd5a9910c",
+  "sources": {
+    "crates/term/src/engine.rs": "191c89b938df823368224c59efc1375e1dffd4dc61deb19db17229496645d4db",
+    "crates/alacritty-terminal/src/term/cell.rs": "5bcac4b94b7971f7b118c9670a3e988abe91e0c68dcbb03460e742b7a95c218a"
+  },
+  "selected_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c"
+}

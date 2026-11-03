@@ -1,0 +1,12 @@
+control parser exit 101 expected 101
+control engine exit 101 expected 101
+control suite exit 0 expected 0
+control sweep exit 0 expected 0
+candidate parser exit 0 expected 0
+candidate engine exit 0 expected 0
+candidate suite exit 0 expected 0
+candidate sweep exit 0 expected 0
+candidate library exit 0 expected 0
+candidate parser-full exit 0 expected 0
+candidate parser-no-default exit 0 expected 0
+paired final gates completed; candidate source installed, selected shipping binary not rebuilt

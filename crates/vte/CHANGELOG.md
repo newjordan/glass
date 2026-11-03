@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+## Unreleased (glass fork)
+
+- Fix skipped ASCII bytes when completing a split UTF-8 scalar in a scratch
+  buffer whose valid prefix also contains ASCII before an incomplete or invalid
+  next scalar. Consume only the emitted scalar, preserving subsequent bytes for
+  normal dispatch. Literal byte-cut matrix: 48/2,478 control failures to zero.
+
 ## 0.15.0
 
 - Support `CSI ? 5 W` to reset tabs stops to every 8th column

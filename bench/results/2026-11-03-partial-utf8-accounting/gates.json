@@ -1,0 +1,165 @@
+[
+  {
+    "arm": "control",
+    "label": "parser",
+    "argv": [
+      "cargo",
+      "test",
+      "--release",
+      "--locked",
+      "-p",
+      "vte",
+      "partial_utf8_",
+      "--",
+      "--nocapture"
+    ],
+    "settings": {},
+    "exit": 101,
+    "expected": 101,
+    "lib_sha256": "9f747928b7f719168bbb66e46b0857c5fcaffaf139f32716b5f0fb877c191791"
+  },
+  {
+    "arm": "control",
+    "label": "engine",
+    "argv": [
+      "cargo",
+      "test",
+      "--release",
+      "--locked",
+      "-p",
+      "glass-term",
+      "partial_utf8_chunks_match_direct_term_input",
+      "--",
+      "--nocapture"
+    ],
+    "settings": {},
+    "exit": 101,
+    "expected": 101,
+    "lib_sha256": "9f747928b7f719168bbb66e46b0857c5fcaffaf139f32716b5f0fb877c191791"
+  },
+  {
+    "arm": "control",
+    "label": "suite",
+    "argv": [
+      "cargo",
+      "test",
+      "--release",
+      "--locked",
+      "-p",
+      "glass-term",
+      "--",
+      "--skip",
+      "partial_utf8_chunks_match_direct_term_input"
+    ],
+    "settings": {},
+    "exit": 0,
+    "expected": 0,
+    "lib_sha256": "9f747928b7f719168bbb66e46b0857c5fcaffaf139f32716b5f0fb877c191791"
+  },
+  {
+    "arm": "control",
+    "label": "sweep",
+    "argv": [
+      "cargo",
+      "test",
+      "--release",
+      "--locked",
+      "-p",
+      "glass-term",
+      "plain_runs_match_the_parser_over_seeds",
+      "--",
+      "--ignored",
+      "--exact",
+      "speed::plain_runs_match_the_parser_over_seeds",
+      "--nocapture"
+    ],
+    "settings": {
+      "GLASS_SWEEP_SEEDS": "64",
+      "GLASS_SWEEP_ROUNDS": "200",
+      "GLASS_SWEEP_FROM": "1"
+    },
+    "exit": 0,
+    "expected": 0,
+    "lib_sha256": "9f747928b7f719168bbb66e46b0857c5fcaffaf139f32716b5f0fb877c191791"
+  },
+  {
+    "arm": "candidate",
+    "label": "parser",
+    "argv": [
+      "cargo",
+      "test",
+      "--release",
+      "--locked",
+      "-p",
+      "vte",
+      "partial_utf8_",
+      "--",
+      "--nocapture"
+    ],
+    "settings": {},
+    "exit": 0,
+    "expected": 0,
+    "lib_sha256": "f7182c9967e350b1635080bd4dbe2a9cea7f258e8c5bf803099889d066ae0137"
+  },
+  {
+    "arm": "candidate",
+    "label": "engine",
+    "argv": [
+      "cargo",
+      "test",
+      "--release",
+      "--locked",
+      "-p",
+      "glass-term",
+      "partial_utf8_chunks_match_direct_term_input",
+      "--",
+      "--nocapture"
+    ],
+    "settings": {},
+    "exit": 0,
+    "expected": 0,
+    "lib_sha256": "f7182c9967e350b1635080bd4dbe2a9cea7f258e8c5bf803099889d066ae0137"
+  },
+  {
+    "arm": "candidate",
+    "label": "suite",
+    "argv": [
+      "cargo",
+      "test",
+      "--release",
+      "--locked",
+      "-p",
+      "glass-term"
+    ],
+    "settings": {},
+    "exit": 0,
+    "expected": 0,
+    "lib_sha256": "f7182c9967e350b1635080bd4dbe2a9cea7f258e8c5bf803099889d066ae0137"
+  },
+  {
+    "arm": "candidate",
+    "label": "sweep",
+    "argv": [
+      "cargo",
+      "test",
+      "--release",
+      "--locked",
+      "-p",
+      "glass-term",
+      "plain_runs_match_the_parser_over_seeds",
+      "--",
+      "--ignored",
+      "--exact",
+      "speed::plain_runs_match_the_parser_over_seeds",
+      "--nocapture"
+    ],
+    "settings": {
+      "GLASS_SWEEP_SEEDS": "64",
+      "GLASS_SWEEP_ROUNDS": "200",
+      "GLASS_SWEEP_FROM": "1"
+    },
+    "exit": 0,
+    "expected": 0,
+    "lib_sha256": "f7182c9967e350b1635080bd4dbe2a9cea7f258e8c5bf803099889d066ae0137"
+  }
+]

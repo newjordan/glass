@@ -698,7 +698,10 @@ impl<const OSC_RAW_BUF_SIZE: usize> Parser<OSC_RAW_BUF_SIZE> {
                     performer.print(c);
 
                     self.partial_utf8_len = 0;
-                    return valid_bytes - old_bytes;
+                    // Only the first scalar was emitted. A valid prefix can
+                    // also contain ASCII before the next partial/invalid
+                    // scalar; leave those bytes to the main dispatch loop.
+                    return c.len_utf8() - old_bytes;
                 }
 
                 match err.error_len() {
@@ -1419,6 +1422,141 @@ mod tests {
         assert_eq!(dispatcher.dispatched[2], Sequence::Print('b'));
     }
 
+    /// Literal valid text and explicit control-sequence dispatch expectations.
+    /// The 4-byte scratch buffer can contain a complete scalar, ASCII, and
+    /// only the beginning of the following scalar at the same time.
+    #[test]
+    fn partial_utf8_accounts_only_for_emitted_scalar() {
+        let mut cases = 0;
+        let mut failures = 0;
+        for base in ['é', '\u{308}', '漢', '🦊'] {
+            for tail in [
+                "b\u{301}z",
+                "ab\u{301}z",
+                "abc漢z",
+                "a🦊z",
+                "ab🦊z",
+                "ab漢z",
+            ] {
+                let text = format!("{base}{tail}");
+                let expected: Vec<_> = text.chars().map(Sequence::Print).collect();
+                for first in 0..=text.len() {
+                    for second in first..=text.len() {
+                        for until_terminated in [false, true] {
+                            let mut parser = Parser::new();
+                            let mut dispatcher = Dispatcher::default();
+                            for chunk in [
+                                &text.as_bytes()[..first],
+                                &text.as_bytes()[first..second],
+                                &text.as_bytes()[second..],
+                            ] {
+                                if until_terminated {
+                                    assert_eq!(
+                                        parser.advance_until_terminated(&mut dispatcher, chunk),
+                                        chunk.len()
+                                    );
+                                } else {
+                                    parser.advance(&mut dispatcher, chunk);
+                                }
+                            }
+                            cases += 1;
+                            if dispatcher.dispatched != expected {
+                                failures += 1;
+                                if failures <= 8 {
+                                    eprintln!("text={text:?} cuts={first},{second} until={until_terminated} actual={:?} expected={expected:?}", dispatcher.dispatched);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        eprintln!("partial-utf8 literal matrix cases={cases} failures={failures}");
+        assert_eq!(failures, 0);
+    }
+
+    #[test]
+    fn partial_utf8_termination_reports_only_emitted_scalar_bytes() {
+        #[derive(Default)]
+        struct StopAfterPrint {
+            text: std::string::String,
+        }
+        impl Perform for StopAfterPrint {
+            fn print(&mut self, c: char) {
+                self.text.push(c);
+            }
+            fn terminated(&self) -> bool {
+                !self.text.is_empty()
+            }
+        }
+        let mut cases = 0;
+        let mut failures = 0;
+        for base in ['é', '\u{308}', '漢', '🦊'] {
+            for split in 1..base.len_utf8() {
+                for tail in ["b\u{301}z", "ab漢z", "ab🦊z"] {
+                    let text = format!("{base}{tail}");
+                    let mut parser = Parser::new();
+                    parser.advance(&mut Dispatcher::default(), &text.as_bytes()[..split]);
+                    let mut stop = StopAfterPrint::default();
+                    let consumed =
+                        parser.advance_until_terminated(&mut stop, &text.as_bytes()[split..]);
+                    let mut remaining = Dispatcher::default();
+                    parser.advance(&mut remaining, &text.as_bytes()[split + consumed..]);
+                    let expected: Vec<_> = tail.chars().map(Sequence::Print).collect();
+                    if stop.text != format!("{base}")
+                        || consumed != base.len_utf8() - split
+                        || remaining.dispatched != expected
+                    {
+                        failures += 1;
+                    }
+                    cases += 1;
+                }
+            }
+        }
+        eprintln!("partial-utf8 termination matrix cases={cases} failures={failures}");
+        assert_eq!(cases, 21);
+        assert_eq!(failures, 0);
+    }
+
+    #[test]
+    fn partial_utf8_keeps_ascii_before_control_or_invalid_tail() {
+        // In each case the scratch buffer holds é + ASCII + a byte which
+        // makes from_utf8 fail. ASCII must be dispatched by the ground loop.
+        for (tail, mut expected) in [
+            (
+                &b"b\x1b[2mz"[..],
+                vec![
+                    Sequence::Print('b'),
+                    Sequence::Csi(vec![vec![2]], vec![], false, 'm'),
+                    Sequence::Print('z'),
+                ],
+            ),
+            (
+                &b"b\xffz"[..],
+                vec![
+                    Sequence::Print('b'),
+                    Sequence::Print('�'),
+                    Sequence::Print('z'),
+                ],
+            ),
+            (
+                "b漢z".as_bytes(),
+                vec![
+                    Sequence::Print('b'),
+                    Sequence::Print('漢'),
+                    Sequence::Print('z'),
+                ],
+            ),
+        ] {
+            expected.insert(0, Sequence::Print('é'));
+            let mut parser = Parser::new();
+            let mut dispatcher = Dispatcher::default();
+            parser.advance(&mut dispatcher, b"\xc3");
+            let rest = [&b"\xa9"[..], tail].concat();
+            parser.advance(&mut dispatcher, &rest);
+            assert_eq!(dispatcher.dispatched, expected, "tail={tail:?}");
+        }
+    }
     #[test]
     fn partial_utf8() {
         const INPUT: &[u8] = b"\xF0\x9F\x9A\x80";

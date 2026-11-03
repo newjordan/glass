@@ -1,0 +1,15 @@
+   Compiling vte v0.15.0 (/work/frosty40/glass-repo/tree/crates/vte)
+    Finished `release` profile [optimized] target(s) in 2.10s
+     Running unittests src/lib.rs (target/release/deps/vte-729a8d1601fc0e6c)
+
+running 5 tests
+test tests::partial_utf8_into_esc ... ok
+test tests::partial_utf8_keeps_ascii_before_control_or_invalid_tail ... ok
+partial-utf8 termination matrix cases=21 failures=0
+test tests::partial_utf8_separating_utf8 ... ok
+test tests::partial_utf8_termination_reports_only_emitted_scalar_bytes ... ok
+partial-utf8 literal matrix cases=2478 failures=0
+test tests::partial_utf8_accounts_only_for_emitted_scalar ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 32 filtered out; finished in 0.00s
+

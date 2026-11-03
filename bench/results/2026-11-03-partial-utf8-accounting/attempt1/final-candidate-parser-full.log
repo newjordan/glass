@@ -1,0 +1,48 @@
+
+running 34 tests
+test tests::c1s ... ok
+test tests::csi_reset ... ok
+test tests::csi_subparameters ... ok
+test tests::esc_reset ... ok
+test tests::dcs_reset ... ok
+test tests::execute_anywhere ... ok
+test tests::exceed_max_buffer_size ... ok
+test tests::esc_reset_intermediates ... ok
+test tests::intermediate_reset_on_dcs_exit ... ok
+test tests::osc_bell_terminated ... ok
+test tests::osc_c0_st_terminated ... ok
+test tests::invalid_utf8 ... ok
+test tests::osc_containing_string_terminator ... ok
+test tests::parse_csi_max_params ... ok
+test tests::params_buffer_filled_with_subparam ... ok
+test tests::parse_csi_params_ignore_long_params ... ok
+test tests::parse_csi_params_leading_semicolon ... ok
+test tests::parse_csi_params_trailing_semicolon ... ok
+test tests::parse_dcs ... ok
+test tests::parse_dcs_max_params ... ok
+test tests::parse_empty_osc ... ok
+test tests::parse_long_csi_param ... ok
+test tests::parse_osc ... ok
+test tests::parse_osc_max_params ... ok
+test tests::parse_osc_with_utf8_arguments ... ok
+test tests::partial_invalid_utf8 ... ok
+test tests::partial_invalid_utf8_split ... ok
+test tests::partial_utf8 ... ok
+test tests::partial_utf8_into_esc ... ok
+test tests::partial_utf8_separating_utf8 ... ok
+test tests::partial_utf8_keeps_ascii_before_control_or_invalid_tail ... ok
+test tests::partial_utf8_termination_reports_only_emitted_scalar_bytes ... ok
+test tests::unicode ... ok
+test tests::partial_utf8_accounts_only_for_emitted_scalar ... ok
+
+test result: ok. 34 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Compiling vte v0.15.0 (/work/frosty40/glass-repo/tree/crates/vte)
+    Finished `release` profile [optimized] target(s) in 0.06s
+     Running unittests src/lib.rs (target/release/deps/vte-22c2463be0e1da4e)
+   Doc-tests vte

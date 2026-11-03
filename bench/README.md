@@ -1034,3 +1034,19 @@ Python evidence-checker tests pass. Selected release executable unchanged;
 runtime sources changed. No fractional-size, resize-witness, memory, performance
 or Ghostty superiority claim. Evidence and exact reproduction:
 `bench/results/2026-11-03-cover-transport/README.md`.
+
+
+### 2026-11-03 — split UTF-8 scratch-buffer consumption
+
+The parser emits only its first decoded scalar when completing a partial UTF-8
+buffer. Its valid prefix may also include ASCII before the beginning of another
+scalar; consuming that whole prefix silently skipped the ASCII. Return the
+emitted scalar's byte length minus bytes held from the preceding call instead.
+Literal parser oracle: 48 failures in 2,478 control cases → zero. Early-stop
+consumption: 2/21 → zero. Direct upstream `Term::input` engine oracle: 72/3,816 →
+zero, both parser lanes and primary/alternate screens, every byte split, wrap,
+styles and REP. Fast-versus-slow comparisons share the faulty parser and cannot
+alone detect this class. Evidence and exact reproduction:
+`bench/results/2026-11-03-partial-utf8-accounting/README.md`.
+This is a correctness fix, not throughput evidence, a fresh executable promotion,
+a Ghostty comparison, or championship acceptance.

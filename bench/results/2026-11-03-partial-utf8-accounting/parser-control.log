@@ -1,0 +1,53 @@
+   Compiling arrayvec v0.7.8
+   Compiling vte v0.15.0 (/work/frosty40/glass-repo/tree/crates/vte)
+    Finished `release` profile [optimized] target(s) in 2.16s
+     Running unittests src/lib.rs (target/release/deps/vte-22c2463be0e1da4e)
+
+running 4 tests
+text="éb\u{301}z" cuts=0,1 until=false actual=[Print('é'), Print('\u{301}'), Print('z')] expected=[Print('é'), Print('b'), Print('\u{301}'), Printtest tests::partial_utf8_into_esc ... ('okz
+')]
+text="éb\u{301}z" cuts=0,1 until=true actual=[Print('é'), Print('\u{301}'), Print('z')] expected=[Print('
+thread 'tests::partial_utf8_keeps_ascii_before_control_or_invalid_tail' (1793759) panicked at crates/vte/src/lib.rs:1476:13:
+assertion `left == right` failed: tail=[98, 255, 122]
+  left: [Print('é'), Print('�'), Print('z')]
+ right: [Print('é'), Print('b'), Print('�'), Print('z')]
+étest tests::partial_utf8_separating_utf8 ... ')ok, stack backtrace:
+
+Print('b'), Print('\u{301}'), Print('z')]
+text="éb\u{301}z" cuts=1,1 until=false actual=[Print('é'), Print('\u{301}'), Print('z')] expected=[Print('é'), Print('b'), Print('\u{301}'), Print('z')]
+text="éb\u{301}z" cuts=1,1 until=true actual=[Print('é'), Print('\u{301}'), Print('z')] expected=[Print('é'), Print('b'), Print('\u{301}'), Print('z')]
+text="éb\u{301}z" cuts=1,4 until=false actual=[Print('é'), Print('\u{301}'), Print('z')] expected=[Print('é'), Print('b'), Print('\u{301}'), Print('z')]
+text="éb\u{301}z" cuts=1,4 until=true actual=[Print('é'), Print('\u{301}'), Print('z')] expected=[Print('é'), Print('b'), Print('\u{301}'), Print(' z ' )0]: 
+__rustctext=::"rust_begin_unwindéb
+\u{301} z "  cuts=11: ,core5:: until=panickingfalse:: actual=panic_fmt[
+Print ( ' é2': )core, ::Printpanicking(::'assert_failed_inner\u{301}
+'),  Print ( '3z: 'core)::panicking]:: expected=assert_failed[::Print<(alloc::'vecé::'Vec)<, vtePrint::(tests'::bSequence'>), , allocPrint::(vec'::\u{301}Vec'<)vte, ::Printtests(::'Sequencez>'>)
+]
+ text= " éb4\u{301}: z<"vte cuts=::1tests,::5partial_utf8_keeps_ascii_before_control_or_invalid_tail until=::{trueclosure actual=#[0Print}( as 'coreé::'), Print('\u{301}'), Print('z')] expected=[Printops(::'functioné::'FnOnce)<, ()Print(>'>b::'call_once)
+, Print('\u{301}'), Print('z')]
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+test tests::partial_utf8_keeps_ascii_before_control_or_invalid_tail ... FAILED
+partial-utf8 literal matrix cases=2478 failures=48
+
+thread 'tests::partial_utf8_accounts_only_for_emitted_scalar' (1793757) panicked at crates/vte/src/lib.rs:1458:9:
+assertion `left == right` failed
+  left: 48
+ right: 0
+stack backtrace:
+   0: __rustc::rust_begin_unwind
+   1: core::panicking::panic_fmt
+   2: core::panicking::assert_failed_inner
+   3: core::panicking::assert_failed::<i32, i32>
+   4: <vte::tests::partial_utf8_accounts_only_for_emitted_scalar::{closure#0} as core::ops::function::FnOnce<()>>::call_once
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+test tests::partial_utf8_accounts_only_for_emitted_scalar ... FAILED
+
+failures:
+
+failures:
+    tests::partial_utf8_accounts_only_for_emitted_scalar
+    tests::partial_utf8_keeps_ascii_before_control_or_invalid_tail
+
+test result: FAILED. 2 passed; 2 failed; 0 ignored; 0 measured; 29 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p vte --lib`

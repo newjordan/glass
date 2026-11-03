@@ -1,0 +1,67 @@
+Iteration 46 — split UTF-8 scratch-buffer byte accounting
+
+Concrete new finding
+--------------------
+A shared parser defect silently drops ASCII immediately after a completed split
+UTF-8 scalar when the four-byte scratch buffer contains the beginning of the
+next multibyte scalar (or an invalid byte). The error path emitted only one
+scalar, then consumed the entire valid prefix. Return only the emitted scalar's
+new bytes instead: c.len_utf8() - old_bytes. Subsequent ASCII is dispatched by
+the normal loop. This also fixes early-termination consumed-byte reporting.
+
+This was discovered by a direct upstream Term::input oracle while exploring
+fused combining-mark overwrite. The speculative optimization was shelved,
+removed in full, and not timed. The unchanged control failed the same direct
+oracle. Fast/slow differential tests share the faulty parser and pass despite
+this corruption, so their agreement cannot certify this class of correctness.
+
+Measured final source-bound results
+----------------------------------
+- Literal parser: 48 failing control cases / 2,478 -> zero candidate failures.
+- Stopped parser: 2 failing control cases / 21 -> zero candidate failures.
+- Literal ASCII-before-ESC/invalid/partial-tail expectations: fail -> pass.
+- Direct Term::input engine oracle: 72 / 3,816 -> zero; both parser lanes,
+  primary/alternate screens, widths 4/8/19, edge positions, styles, wide cells,
+  combining marks, every byte cut and literal last-scalar REP.
+- Candidate terminal suite: 396 passed, 14 ignored. Old control suite skips only
+  the new intentionally failing engine regression: 395 passed, 14 ignored.
+- Both arms: 12,800 differential streams, no divergence.
+- Candidate terminal library: 138 unit tests, 45 reference fixtures, 1 doctest.
+- Candidate vte: 34 tests; no-default features: 37 tests and 1 doctest.
+- Four Python evidence-checker tests pass; reject 14 metadata corruptions,
+  10 rehashed census corruptions, and duplicate JSON keys.
+- Prior immutable replay: 2,164 file references / 2,069 source versions.
+- Final frozen replay: 2,294 file references / 2,196 source versions.
+- Selected target/release/glass hash unchanged; candidate source remains installed.
+
+Evidence and integrity
+----------------------
+bench/results/2026-11-03-partial-utf8-accounting/README.md
+bench/results/2026-11-03-partial-utf8-accounting/verify.py
+bench/results/2026-11-03-partial-utf8-accounting/checkpoint-final.json
+bench/results/2026-11-03-partial-utf8-accounting/frozen-replay-final.json
+
+Both final arms require non-fresh compiler artifacts from the pre-existing
+build helper, explicit source/executable hashes, exact test commands, log and
+exit hashes, 64x200 differential settings, and retained compressed test ELFs.
+Explicit snapshots preserve old sources rather than edit old claims/manifests.
+Ad hoc discovery logs and the failed first final run remain retained. The first
+final run failed only because the new test assumed String/ToString in no-std
+prelude; qualifying String/use of format repaired the test without altering
+runtime code. A failed corruption checker test exposed acceptance of a negative
+first timestamp; checker tightened, all corruptions now rejected.
+
+Logical review and limits
+-------------------------
+Only the valid-prefix error branch changes runtime behavior. It already clears
+partial_utf8_len and emits one scalar; completed scalar size exceeds the old
+partial byte count. Its copied trailing bytes are not lost because the caller's
+slice remains authoritative and the next iteration reprocesses them. Existing
+complete-buffer, still-incomplete and invalid-first-scalar paths are unchanged.
+No unsafe code added. No layout, ownership, PTY reader, or renderer changes.
+
+No benchmark sessions ran, no causal speedup is claimed, and no fresh production
+executable was promoted. Ghostty comparison and memory/CPU/latency/resource gates
+remain required on the same candidate production build before any championship
+claim. No global acceptance command is bound; this is reported local correctness
+progress, not a world-title or loop-completion claim.

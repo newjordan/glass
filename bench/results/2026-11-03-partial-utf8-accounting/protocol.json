@@ -1,0 +1,12 @@
+{
+  "schema": "glass.partial-utf8-accounting/v1",
+  "control_head": "d9d41d0453adaf00d4efbd6a3565aa2cd5a9910c",
+  "hypothesis": "advance_partial_utf8 valid-prefix branch emits first scalar but consumes valid prefix including ASCII; return only emitted scalar length minus prior bytes",
+  "parser_matrix": "4 base scalars x 6 tails x every two ordered byte cuts x both advance APIs; literal dispatch oracle",
+  "engine": "3 widths x 3 cursor columns x 8 strings x 2 pen states x every byte cut x direct upstream Term::input oracle and literal REP",
+  "performance_claim": false,
+  "optimization": "fused-mark prototype shelved; no timing performed",
+  "selected_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "termination": "4 base scalar widths x each interior byte cut x 3 tails; stop after first scalar; expected consumed count and literal remaining dispatch, 21 cases",
+  "test_repair": "First final attempt retained under attempt1: no-default build rejected test-only String/ToString prelude reliance. Qualify String and use format macro; runtime unchanged."
+}

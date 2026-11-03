@@ -1,0 +1,19 @@
+test_complete (__main__.Evidence.test_complete) ... ok
+test_duplicate_key_rejected (__main__.Evidence.test_duplicate_key_rejected) ... ok
+test_metadata_corruptions_rejected (__main__.Evidence.test_metadata_corruptions_rejected) ... FAIL
+test_rehashed_census_corruptions_rejected (__main__.Evidence.test_rehashed_census_corruptions_rejected) ... ok
+
+======================================================================
+FAIL: test_metadata_corruptions_rejected (__main__.Evidence.test_metadata_corruptions_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-partial-utf8-accounting/test-verify.py", line 48, in test_metadata_corruptions_rejected
+    with self.assertRaises((ValueError, KeyError)):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: (<class 'ValueError'>, <class 'KeyError'>) not raised
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.003s
+
+FAILED (failures=1)
+rejected rehashed census corruptions=10
