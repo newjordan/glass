@@ -1,0 +1,11 @@
+{
+  "head": "f217a6425d052c782b7931240090c6f0efa80fa7",
+  "checkpoint_first_sha256": "dc54766f8101d0f6435b59223b9f002b79d0efa1f8640e8a0cebe078fa7aebc4",
+  "checkpoint_post_commit_sha256": "dc54766f8101d0f6435b59223b9f002b79d0efa1f8640e8a0cebe078fa7aebc4",
+  "checkpoints_equal": true,
+  "frozen_index_sha256": "d7ec32cb11008a3f8ba724a3600491b25a0b149c7131d96e4c0e5a7f493ca870",
+  "frozen_replay_sha256": "e553ff90e5e47198ba153ebac37e9f4b9959fcee57eff6ee4e061b7e2a46d6e2",
+  "references": 1819,
+  "source_versions": 1790,
+  "selected_release_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c"
+}

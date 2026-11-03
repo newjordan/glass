@@ -1,0 +1,38 @@
+Iteration 44 — original-row provenance for text-covered picture cells
+
+New finding: partial-region scrolling can resurrect text-covered sixel / OSC
+1337 image cells and hide surviving cells even when picture geometry is correct.
+The old apply_moved code inferred original-row cropping from screen displacement;
+these are not equivalent. The fix carries transient per-slice original-row
+provenance from scroll_rect_with_rows and crops coverage relative to that input.
+The geometry-only caller retains its old Rect API. No persistent field added.
+
+Measurements, independently recomputed cell-list oracle:
+- 2,592 cases per arm; setup plus 3 scroll steps = 10,368 observations per arm.
+- Control failures by step: 0, 968, 520, 520 (2,008 total).
+- Candidate failures by step: 0, 0, 0, 0.
+- Real sixel and OSC 1337 PNG intake; both parser lanes; primary/alternate;
+  upward/downward scroll; 3 coverage masks; repeated then reversed scrolling.
+- Full candidate suite: 395 passed, 0 failed, 14 ignored.
+- Differential: 12,800 streams pass independently on each arm.
+- Five Python checker tests pass, including 14 record corruptions, malformed
+  coordinates, duplicate keys, unknown arm and joint expected/actual forgery.
+- Build receipts bind exact touched inputs and non-fresh release-test artifacts.
+- Selected target/release/glass hash unchanged; runtime sources changed.
+- Post-commit verify.py output byte-identical to first checkpoint.
+- Final frozen replay: 14 manifests, 1,819 references / 1,790 source versions.
+
+Evidence: bench/results/2026-11-03-cover-transport/README.md
+Check: python3 -B bench/results/2026-11-03-cover-transport/verify.py
+Replay: python3 -B bench/replay-evidence-index.py bench/results/2026-11-03-cover-transport/final-frozen-index.json
+Implementation/evidence commit: f217a64.
+
+Failed experimental setup is retained and explicitly excluded: initial matrix
+harness did not compile (wrong API names); next run compared pixel source
+coordinates with normalized values. Corrected units yield zero setup failures
+on both control and candidate. Historical replay mappings were explicitly
+updated to retained snapshots, leaving older reports/sources unchanged.
+
+Limits: no performance, memory, Ghostty comparison, fractional-size source
+sampling or resize-witness correctness claim. No championship acceptance check
+is bound. This is a measured correctness advance, not a world-title result.
