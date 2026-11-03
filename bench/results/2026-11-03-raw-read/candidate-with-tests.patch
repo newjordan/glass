@@ -1,0 +1,136 @@
+diff --git i/crates/term/src/read_ahead.rs w/crates/term/src/read_ahead.rs
+index 4e214c1..6f92000 100644
+--- i/crates/term/src/read_ahead.rs
++++ w/crates/term/src/read_ahead.rs
+@@ -99,7 +99,7 @@ impl ReadAhead {
+                 let mut sysreads = 0u32;
+                 let census = crate::census::on();
+                 loop {
+-                    match reader.read(&mut buf[filled..]) {
++                    match read_pty(reader.as_mut(), fd.as_ref(), &mut buf[filled..]) {
+                         Ok(0) => ended = true,
+                         Ok(n) => filled += n,
+                         Err(e) if e.kind() == io::ErrorKind::Interrupted => continue,
+@@ -147,6 +147,28 @@ impl ReadAhead {
+     }
+ }
+ 
++/// Read the owned duplicate directly on Linux. Rust does not use pthread
++/// cancellation for this thread, so the cancellation-enabled libc read wrapper
++/// is unnecessary here. Keep the same blocking descriptor and EINTR behavior;
++/// no descriptor flags (also shared with the writer) are changed.
++fn read_pty(reader: &mut dyn Read, fd: Option<&OwnedFd>, out: &mut [u8]) -> io::Result<usize> {
++    #[cfg(not(target_os = "linux"))]
++    { let _ = fd; return reader.read(out); }
++    #[cfg(target_os = "linux")]
++    let Some(fd) = fd else { return reader.read(out) };
++    // SAFETY: fd stays owned and open during the call. out is exclusively
++    // borrowed writable storage for exactly out.len() bytes. SYS_read has the
++    // same fd/buffer/count ABI on each Linux architecture supported by libc;
++    // libc::syscall translates the kernel error to -1 and errno.
++    #[cfg(target_os = "linux")]
++    {
++        let n = unsafe {
++            libc::syscall(libc::SYS_read, fd.as_raw_fd(), out.as_mut_ptr(), out.len())
++        };
++        if n < 0 { Err(io::Error::last_os_error()) } else { Ok(n as usize) }
++    }
++}
++
+ /// Whether the pty holds bytes not read yet.
+ fn waiting(fd: Option<&OwnedFd>) -> bool {
+     let Some(fd) = fd else {
+@@ -288,6 +310,93 @@ mod tests {
+         assert!(matches!(wait_for_more(Some(&fd), Duration::ZERO), Poll::End));
+     }
+ 
++    /// No PTY descriptor means the boxed reader is authoritative. Interrupts
++    /// must be retried, later errors must not lose already delivered bytes,
++    /// and every producer handoff must tolerate consumer reads of any size.
++    #[test]
++    fn descriptorless_reader_retries_interrupts_and_drains_before_error() {
++        use std::collections::VecDeque;
++        use std::sync::{Arc, atomic::{AtomicUsize, Ordering}};
++
++        struct Script {
++            steps: VecDeque<io::Result<Vec<u8>>>,
++            calls: Arc<AtomicUsize>,
++        }
++        impl Read for Script {
++            fn read(&mut self, out: &mut [u8]) -> io::Result<usize> {
++                self.calls.fetch_add(1, Ordering::SeqCst);
++                let bytes = self.steps.pop_front().expect("read after terminal error")?;
++                assert!(out.len() >= bytes.len());
++                out[..bytes.len()].copy_from_slice(&bytes);
++                Ok(bytes.len())
++            }
++        }
++        for capacity in [1, 2, 4, 8, 64] {
++            let calls = Arc::new(AtomicUsize::new(0));
++            let steps = VecDeque::from([
++                Err(io::ErrorKind::Interrupted.into()),
++                Ok(b"abc".to_vec()),
++                Err(io::ErrorKind::Interrupted.into()),
++                Ok(b"DEFGHI".to_vec()),
++                Err(io::ErrorKind::Other.into()),
++            ]);
++            let mut ahead = ReadAhead::spawn(Box::new(Script { steps, calls: calls.clone() }), None).unwrap();
++            let mut got = Vec::new();
++            let mut out = vec![0; capacity];
++            loop {
++                assert_eq!(ahead.read(&mut []).unwrap(), 0);
++                let n = ahead.read(&mut out).unwrap();
++                if n == 0 { break; }
++                got.extend_from_slice(&out[..n]);
++            }
++            assert_eq!(got, b"abcDEFGHI", "capacity {capacity}");
++            assert_eq!(calls.load(Ordering::SeqCst), 5);
++            assert_eq!(ahead.read(&mut out).unwrap(), 0);
++            assert_eq!(ahead.read(&mut []).unwrap(), 0);
++        }
++    }
++
++    #[test]
++    fn descriptorless_reader_drains_multiple_credits_before_eof() {
++        let data: Vec<u8> = (0..CHUNK * (AHEAD + 3) + 73)
++            .map(|i| (i.wrapping_mul(131) >> 3) as u8).collect();
++        for capacity in [7, CHUNK - 1, CHUNK, CHUNK + 1] {
++            let mut ahead = ReadAhead::spawn(Box::new(io::Cursor::new(data.clone())), None).unwrap();
++            let mut out = vec![0; capacity];
++            let mut got = Vec::new();
++            loop {
++                let n = ahead.read(&mut out).unwrap();
++                if n == 0 { break; }
++                got.extend_from_slice(&out[..n]);
++            }
++            assert_eq!(got, data, "capacity {capacity}");
++            assert_eq!(ahead.read(&mut out).unwrap(), 0);
++        }
++    }
++
++    #[cfg(target_os = "linux")]
++    #[test]
++    fn reading_ahead_drains_final_partial_handoff_on_hangup() {
++        for capacity in [1, 7, 64] {
++            let (master, mut slave) = pty();
++            let fd: OwnedFd = master.try_clone().unwrap().into();
++            slave.write_all(b"last partial handoff").unwrap();
++            drop(slave);
++            // Both flags are present before the reading thread even starts.
++            assert!(matches!(wait_for_more(Some(&fd), Duration::ZERO), Poll::Ready));
++            let mut ahead = ReadAhead::spawn(Box::new(master), Some(fd)).unwrap();
++            let mut out = vec![0; capacity];
++            let mut got = Vec::new();
++            loop {
++                let n = ahead.read(&mut out).unwrap();
++                if n == 0 { break; }
++                got.extend_from_slice(&out[..n]);
++            }
++            assert_eq!(got, b"last partial handoff", "capacity {capacity}");
++            assert_eq!(ahead.read(&mut out).unwrap(), 0);
++        }
++    }
++
+     /// Every byte the program writes comes out once, in order, however it
+     /// is written, and the program's side closing ends the reads.
+     #[test]

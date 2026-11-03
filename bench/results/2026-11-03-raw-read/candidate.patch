@@ -1,0 +1,36 @@
+diff --git i/crates/term/src/read_ahead.rs w/crates/term/src/read_ahead.rs
+index 4e214c1..ecc5107 100644
+--- i/crates/term/src/read_ahead.rs
++++ w/crates/term/src/read_ahead.rs
+@@ -99,7 +99,7 @@ impl ReadAhead {
+                 let mut sysreads = 0u32;
+                 let census = crate::census::on();
+                 loop {
+-                    match reader.read(&mut buf[filled..]) {
++                    match read_pty(reader.as_mut(), fd.as_ref(), &mut buf[filled..]) {
+                         Ok(0) => ended = true,
+                         Ok(n) => filled += n,
+                         Err(e) if e.kind() == io::ErrorKind::Interrupted => continue,
+@@ -147,6 +147,22 @@ impl ReadAhead {
+     }
+ }
+ 
++/// Read the owned duplicate directly on Linux. Rust does not use pthread
++/// cancellation for this thread, so the cancellation-enabled libc read wrapper
++/// is unnecessary here. Keep the same blocking descriptor and EINTR behavior;
++/// no descriptor flags (also shared with the writer) are changed.
++fn read_pty(reader: &mut dyn Read, fd: Option<&OwnedFd>, out: &mut [u8]) -> io::Result<usize> {
++    let Some(fd) = fd else { return reader.read(out) };
++    // SAFETY: fd stays owned and open during the call. out is exclusively
++    // borrowed writable storage for exactly out.len() bytes. SYS_read has the
++    // same fd/buffer/count ABI on each Linux architecture supported by libc;
++    // libc::syscall translates the kernel error to -1 and errno.
++    let n = unsafe {
++        libc::syscall(libc::SYS_read, fd.as_raw_fd(), out.as_mut_ptr(), out.len())
++    };
++    if n < 0 { Err(io::Error::last_os_error()) } else { Ok(n as usize) }
++}
++
+ /// Whether the pty holds bytes not read yet.
+ fn waiting(fd: Option<&OwnedFd>) -> bool {
+     let Some(fd) = fd else {

@@ -459,3 +459,29 @@ The explicit evidence manifest covers this iteration's four result directories,
 raw files, source snapshots and receipts; its verifier does not discover fallback
 sources. Individual timing replays additionally require their recorded temporary
 executables and unchanged harness. Integrity replay is not a timing-accuracy proof.
+
+
+### Read-only real-terminal report replay and raw-read result
+
+`compare-tput.py --summarize-only` regenerates summaries; it is **not** a
+read-only validator of stored comparison fields. Use the independent checker
+when validating frozen `glass.terminal-pairs/v1` reports:
+
+```
+python3 -I bench/test_replay_terminal_pairs.py
+python3 -I bench/replay-terminal-pairs.py \
+  bench/results/2026-11-03-raw-read/gate --verify-binaries
+```
+
+Omit `--verify-binaries` only for explicit artifact-only replay after temporary
+executables are gone. Runner/harness and raw/result checks still apply. Nothing
+is rewritten; unsupported schemas, summary changes, incomplete sets, geometry,
+byte-count, numeric, rounded rate/time/FPS inconsistencies and provenance changes
+are rejected. The checker does not authenticate clocks or actual window display.
+
+`bench/results/2026-11-03-raw-read/README.md` preserves a disposable-copy
+corruption demonstration (old summarizer repairs, new checker rejects), 11 new
+synthetic tests and read-only replay of 630 supported terminal sessions. The
+raw-read candidate itself was rejected after 54 balanced sessions; it did not
+clear ASCII or scroll-region gates. Three new reader regression tests survive;
+the raw-syscall runtime change does not. Earlier reports remain unchanged.

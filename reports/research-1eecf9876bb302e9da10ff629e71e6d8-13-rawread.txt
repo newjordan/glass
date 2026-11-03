@@ -1,0 +1,133 @@
+Raw read does not close the transport gap; independent replay exposes summary repair
+
+Status: reported research, not an all-metric win, championship or loop acceptance.
+Starting HEAD ccb856003f2d747aa6c81f7f51ae27f70a3cafb9. Iteration 13 follow-on;
+the original iteration-13 report/manifest are already published and left unchanged.
+
+New hypothesis and result
+
+Previously sampled reader leaf time is not proof that glibc's cancellation wrapper
+is costly. Replace only Linux Read/portable-pty/libc read dispatch with raw
+libc::syscall(SYS_read) on the existing owned duplicate PTY master. No producer,
+affinity, parser, buffering, poll or credit policy change. A missing-descriptor
+fallback still uses the boxed reader. The producer terminates on either EIO or
+EOF after delivering any gathered bytes, preserving portable-pty's external EOF.
+
+A bounded decision rule was written before timing. Fresh same-toolchain control
+and candidate builds, 18 balanced six-order rounds, three arms including Ghostty:
+54 complete 154x39 real terminal sessions, normal unchanged throughput producer,
+972 internal passes. Historical fastest-of-three within-session estimator remains;
+passes are correlated and are not treated as independent statistical evidence.
+Unrelated shared-host load and excursions were not filtered. No Glass builds or
+other Glass benchmark overlapped the gate. Times end on parsed DA1, not display.
+
+Candidate / fresh control, median paired ratios and two-sided uncorrected sign p:
+  ASCII          1.0368643   11/18 wins           p .4806824
+  Unicode         .9857073    5/18 wins, 1 tie    p .1434631
+  truecolor       .9915164    5/18 wins           p .0962524
+  cursor motion   .9958256    8/18 wins           p .8145294
+  scroll region  1.0165941   12/18 wins           p .2378845
+  TUI frames      .9946711    8/18 wins, 1 tie    p 1
+
+Candidate / Ghostty, exploratory ratios and wins:
+  ASCII          1.0279823   10/18
+  Unicode         .9504098    5/18
+  truecolor      1.1545473   17/18
+  cursor motion  1.1193528   17/18
+  scroll region  1.0426637   10/18
+  TUI frames     1.0453819   15/18
+
+Neither targeted workload clears the predeclared conservative release gate;
+four other workload point estimates are negative. Reject the candidate, not the
+measurements. No replication, new RTT claim or runtime promotion. This does not
+prove zero syscall overhead. It does rule out this measured candidate as an
+established solution under the protocol. Fresh control differs from historical
+selected executable and is not silently substituted for it.
+
+New concrete measurement-integrity finding
+
+On a disposable copy of this complete gate, change stored ASCII wins to 18 and
+median ratio to 9.99. Existing compare-tput.py --summarize-only exits zero and
+repairs the summary instead of rejecting the altered stored result. Its recorded
+runner hash is not validated in that mode either. This is a replay-checker defect,
+not evidence that historical measurements actually suffered corruption.
+
+New independent bench/replay-terminal-pairs.py rejects the mutated copy nonzero
+and leaves it byte-identical. The original dataset never changes. The checker is
+read-only, validates runner/harness provenance, optional temporary binary hashes,
+exact raw file sets and hashes, input byte counts/workloads, geometry, numeric
+validity, all stored comparisons/ratios/sign tests/medians, and rate/time/FPS
+consistency using intervals appropriate for rounded historical output. No exact
+unrecorded timestamps are fabricated. It rejects duplicate JSON keys, unsupported
+schema/statistical claims and incomplete reports. Eleven synthetic corruption
+tests pass; fixtures are not timing measurements. The original generator is kept
+compatible with frozen manifests; the read-only validation path is documented.
+
+Ten supported historical datasets replay successfully: 630 terminal sessions,
+including this gate. Historical binary checks were explicitly not requested;
+this gate also replays with all binary checks. One mixed-schema command first
+stopped at the older glass.cyclic-terminal-comparison/v1 row-alignment report.
+It is explicitly unsupported, not silently accepted. The failed attempt and
+schema inventory are retained. Integrity replay is not timing-accuracy proof,
+clock authentication, screen presentation evidence or an all-metric score.
+
+Retained source/tests and exact restoration
+
+Only three new reader tests remain in runtime source, inside cfg(test):
+- Missing descriptor: retry Interrupted, preserve bytes before later terminal
+  error, zero-sized reads and sticky EOF, five consumer buffer sizes.
+- More than all producer credits: drain every byte across four buffer sizes,
+  exact chunk boundaries and partial tails before EOF.
+- Real raw PTY: bytes and HUP already present before spawning the reader;
+  drain the final partial handoff before sticky EOF, three buffer sizes.
+
+Candidate's four pre-existing reader tests pass. Restored source: seven reader
+tests pass. 100 repetitions: 700 test executions, no failures. This is stress
+coverage, not 700 statistically independent experiments. Final formatted source:
+379 terminal tests pass, zero fail, 11 intentionally ignored. Matched-toolchain
+library 136, reference fixtures 45 and doctest 1 pass. Python checker suites:
+11 new terminal checker, 5 existing engine checker and 10 existing RTT checker
+tests pass. No GPU/platform/presentation claim is made from these tests.
+
+The initial library command passed compiled tests but doctests failed because
+RUSTDOC used stable 1.99.1 while configured RUSTC is 1.99.0. Diagnostic preserved;
+explicit matched RUSTDOC=$(dirname "$RUSTC")/rustdoc rerun passes. An earlier
+editor syntax error in the new checker was fixed before tests or replay passed.
+No failed command is reclassified as a successful receipt.
+
+Remove the added tests/comments from final read_ahead.rs and the starting file
+is reconstructed exactly. Every other crate file equals starting HEAD. Runtime
+source unchanged; selected release restored and byte-compared:
+ d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c
+Fresh control:
+ c14daae87141541f747095ec77644e9189e009251716408e2630abd7a294a1ed
+Measured candidate:
+ 8627654dcea1efdd1058f572ac043b966bb6efa5d87bd9a4c2edaa03f556878d
+
+Previous evidence preservation, not a blanket replay claim
+
+The previous 636-file marks-width manifest also hashes live project docs.
+Its original strict verifier now fails on intentionally updated CHANGELOG.md;
+that failure is retained. Full audit finds exactly three changed live docs:
+CHANGELOG.md, bench/README.md and docs/PERFORMANCE.md. All other 633 hashed
+artifacts remain byte-identical, including prior frozen measurements/reports.
+The three original HEAD document snapshots are retained and match their prior
+manifest hashes exactly. The earlier manifest and verifier are not edited.
+previous-evidence-source-audit.json records paths and hashes explicitly.
+
+New result directory: bench/results/2026-11-03-raw-read/
+README.md records reproduction, decision, provenance and limitations. The new
+explicit evidence inventory freezes raw data, sources, checks and this report;
+verify-evidence.py reads only the named entries. Final replay receipt is excluded
+from its own manifest to avoid self-reference. Source history is snapshotted so
+future intentional source edits need not be confused with measurement corruption.
+
+Next necessary action
+
+Do not repeat raw SYS_read as an undiscovered improvement. New transport research
+needs measured syscall/read-size/blocked-credit evidence on the unmodified full
+pipeline, with instrumentation overhead controls. Do not infer all read leaf time
+is wrapper overhead. The existing archived immutable-mark/width candidate still
+has partial gains and unresolved ASCII/region; nothing here promotes that API.
+The operator's world-champion/all-metric goal remains unverified. This is a tested
+research checkpoint; no acceptance command is bound.

@@ -13,6 +13,19 @@ A program runs in a pseudo-terminal, and what it writes comes in through
 No dialect is the reference one; each is an adapter onto one shared
 description of what to show.
 
+### Raw-read research and read-only measurement replay
+
+- Reject Linux raw `SYS_read` after 54 balanced real-terminal sessions: neither
+  ASCII nor scroll-region clears the paired improvement gate. Runtime and the
+  exact selected executable remain unchanged.
+- Guard descriptor-free reader interrupts/errors, multi-credit EOF and final
+  PTY hangup handoffs. Seven reader tests pass in 100 repeated runs.
+- Add an independent read-only throughput-report checker. Demonstrate, on a
+  disposable copy, that the existing summarizer repairs altered comparisons
+  rather than rejecting them; retain 11 corruption tests and replay 630 supported
+  terminal sessions without rewriting historical evidence. Integrity is not
+  timing accuracy or an all-metric championship. See the raw-read result README.
+
 ### Immutable extras and width research (not promoted)
 
 - Prototype bounded immutable combining-mark records and generated Unicode

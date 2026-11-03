@@ -518,3 +518,29 @@ Miri cell tests, exhaustive scalar widths, parser parity and 12,800 differential
 streams. Quiet RTT (12,000 replies) and eight startup launches per binary are
 descriptive guards, not key-to-screen latency or proof of superiority. The
 retained RTT runner now has standalone fail-closed replay and ten checker tests.
+
+
+### Raw Linux read and independent terminal replay (2026-11-03)
+
+A narrow replacement of the Linux reader's cancellation-enabled libc `read`
+route with raw `SYS_read` did not demonstrate dependable ASCII or scroll-region
+improvement. The full 18-round, six-order, three-arm series contains 54 real-PTY
+sessions at 154x39. Candidate/fresh-control median paired ratios were 1.03686
+for ASCII (11/18 wins, uncorrected sign p=.480682) and 1.01659 for region (12/18,
+p=.237885); the four other workload point estimates were below one. Reject the
+candidate, not the observed data. This does not establish zero syscall-wrapper
+cost or a championship; selected runtime and exact executable are restored.
+
+A concrete disposable-copy corruption experiment found that the old
+`compare-tput.py --summarize-only` rewrites altered comparison summaries instead
+of rejecting them. The independent `replay-terminal-pairs.py` is read-only and
+checks stored derived results, runner/harness hashes, raw sets/shapes/hashes and
+optional executable hashes. Its rounding-aware rate/time checks do not invent
+unrecorded exact timestamps. Eleven synthetic corruption tests pass. Ten frozen
+supported datasets, 630 terminal sessions, replay without modifying their reports.
+One older `glass.cyclic-terminal-comparison/v1` dataset is explicitly unsupported,
+not quietly accepted. This is integrity/consistency evidence, not timing accuracy.
+
+The full protocol, raw data, rejection, corruption demonstration and limitations
+are in `bench/results/2026-11-03-raw-read/README.md`. Do not reclassify sampled time
+in `read` as proof of glibc-wrapper overhead or promote a noisy positive median.

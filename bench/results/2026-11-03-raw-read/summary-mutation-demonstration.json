@@ -1,0 +1,21 @@
+{
+  "schema": "glass.replay-mutation-demonstration/v1",
+  "source": "bench/results/2026-11-03-raw-read/gate",
+  "original_report_sha256": "04055bb5d1654b184a30279e14d60a1d2680da5c58c5eadbb8a47ce6bfa8c197",
+  "mutations": {
+    "comparisons.glass-alt.ascii.wins": 18,
+    "comparisons.glass-alt.ascii.median_ratio": 9.99
+  },
+  "new_checker": {
+    "exit": 1,
+    "mutated_report_unchanged": true,
+    "stderr": "Traceback (most recent call last):\n  File \"/work/frosty40/glass-repo/tree/bench/replay-terminal-pairs.py\", line 163, in <module>\n    main()\n    ~~~~^^\n  File \"/work/frosty40/glass-repo/tree/bench/replay-terminal-pairs.py\", line 159, in main\n    print(json.dumps(validate(directory, args.verify_binaries), sort_keys=True))\n                     ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/frosty40/glass-repo/tree/bench/replay-terminal-pairs.py\", line 146, in validate\n    require(canonical(report[\"comparisons\"]) == canonical(comparisons), \"comparison summary mismatch\")\n    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/work/frosty40/glass-repo/tree/bench/replay-terminal-pairs.py\", line 24, in require\n    raise ValueError(message)\nValueError: comparison summary mismatch\n"
+  },
+  "old_summarizer": {
+    "exit": 0,
+    "repaired_report_instead_of_rejecting": true,
+    "repair_equals_original": true
+  },
+  "original_report_unchanged": true,
+  "note": "Disposable copy only. No timing rerun and no original measurement changed."
+}
