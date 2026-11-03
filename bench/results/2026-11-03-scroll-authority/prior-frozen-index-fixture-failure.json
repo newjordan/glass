@@ -1,0 +1,27 @@
+{
+  "schema": "glass.historical-evidence-index/v1",
+  "manifests": [
+    {
+      "path": "bench/results/2026-11-03-pen-dispatch/evidence-sha256.json",
+      "sha256": "4a7fc3e43ccad24f238e9f56f7391f1a9a09078486111abc83819791ee44c332",
+      "source_root": ".",
+      "snapshots": {}
+    },
+    {
+      "path": "bench/results/2026-11-03-exact-corpus/evidence-sha256.json",
+      "sha256": "1a6d21ec00cfa48bdb826ab812e8c46bc5b54c39727f003cf09912a14652ac37",
+      "source_root": ".",
+      "snapshots": {
+        "crates/term/src/speed.rs": "bench/results/2026-11-03-pass-samples/original-speed.rs"
+      }
+    },
+    {
+      "path": "bench/results/2026-11-03-pass-samples/evidence-sha256.json",
+      "sha256": "980a4f200e93a862a96b888a7b2e6da3fcfecf0af93521eacb362df30915512d",
+      "source_root": ".",
+      "snapshots": {
+        "crates/term/src/engine.rs": "bench/results/2026-11-03-scroll-authority/original-crates_term_src_engine.rs"
+      }
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+
+running 1 test
+test engine::tests::scroll_authority_height_only_resize_preserves_absolute_lines ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 400 filtered out; finished in 0.00s
+
+resize-case rows=4 height=1 fast=false motion=None expected=3,4 actual=3,4 matched=true
+resize-case rows=4 height=2 fast=false motion=None expected=2,3 actual=2,3 matched=true
+resize-case rows=4 height=3 fast=false motion=None expected=1,2 actual=1,2 matched=true
+resize-case rows=6 height=1 fast=false motion=None expected=5,6 actual=5,6 matched=true
+resize-case rows=6 height=2 fast=false motion=None expected=4,5 actual=4,5 matched=true
+resize-case rows=6 height=3 fast=false motion=None expected=3,4 actual=3,4 matched=true
+resize-case rows=6 height=4 fast=false motion=None expected=2,3 actual=2,3 matched=true
+resize-case rows=6 height=5 fast=false motion=None expected=1,2 actual=1,2 matched=true
+resize-case rows=12 height=1 fast=false motion=None expected=11,12 actual=11,12 matched=true
+resize-case rows=12 height=2 fast=false motion=None expected=10,11 actual=10,11 matched=true
+resize-case rows=12 height=3 fast=false motion=None expected=9,10 actual=9,10 matched=true
+resize-case rows=12 height=4 fast=false motion=None expected=8,9 actual=8,9 matched=true
+resize-case rows=12 height=5 fast=false motion=None expected=7,8 actual=7,8 matched=true
+resize-case rows=12 height=6 fast=false motion=None expected=6,7 actual=6,7 matched=true
+resize-case rows=12 height=7 fast=false motion=None expected=5,6 actual=5,6 matched=true
+resize-case rows=12 height=8 fast=false motion=None expected=4,5 actual=4,5 matched=true
+resize-case rows=12 height=9 fast=false motion=None expected=3,4 actual=3,4 matched=true
+resize-case rows=12 height=10 fast=false motion=None expected=2,3 actual=2,3 matched=true
+resize-case rows=12 height=11 fast=false motion=None expected=1,2 actual=1,2 matched=true
+resize-case rows=4 height=1 fast=false motion=Some(18446744073709551615) expected=3,4 actual=3,4 matched=true
+resize-case rows=4 height=2 fast=false motion=Some(18446744073709551615) expected=2,3 actual=2,3 matched=true
+resize-case rows=4 height=3 fast=false motion=Some(18446744073709551615) expected=1,2 actual=1,2 matched=true
+resize-case rows=6 height=1 fast=false motion=Some(18446744073709551615) expected=5,6 actual=5,6 matched=true
+resize-case rows=6 height=2 fast=false motion=Some(18446744073709551615) expected=4,5 actual=4,5 matched=true
+resize-case rows=6 height=3 fast=false motion=Some(18446744073709551615) expected=3,4 actual=3,4 matched=true
+resize-case rows=6 height=4 fast=false motion=Some(18446744073709551615) expected=2,3 actual=2,3 matched=true
+resize-case rows=6 height=5 fast=false motion=Some(18446744073709551615) expected=1,2 actual=1,2 matched=true
+resize-case rows=12 height=1 fast=false motion=Some(18446744073709551615) expected=11,12 actual=11,12 matched=true
+resize-case rows=12 height=2 fast=false motion=Some(18446744073709551615) expected=10,11 actual=10,11 matched=true
+resize-case rows=12 height=3 fast=false motion=Some(18446744073709551615) expected=9,10 actual=9,10 matched=true
+resize-case rows=12 height=4 fast=false motion=Some(18446744073709551615) expected=8,9 actual=8,9 matched=true
+resize-case rows=12 height=5 fast=false motion=Some(18446744073709551615) expected=7,8 actual=7,8 matched=true
+resize-case rows=12 height=6 fast=false motion=Some(18446744073709551615) expected=6,7 actual=6,7 matched=true
+resize-case rows=12 height=7 fast=false motion=Some(18446744073709551615) expected=5,6 actual=5,6 matched=true
+resize-case rows=12 height=8 fast=false motion=Some(18446744073709551615) expected=4,5 actual=4,5 matched=true
+resize-case rows=12 height=9 fast=false motion=Some(18446744073709551615) expected=3,4 actual=3,4 matched=true
+resize-case rows=12 height=10 fast=false motion=Some(18446744073709551615) expected=2,3 actual=2,3 matched=true
+resize-case rows=12 height=11 fast=false motion=Some(18446744073709551615) expected=1,2 actual=1,2 matched=true
+resize-case rows=4 height=1 fast=true motion=None expected=3,4 actual=3,4 matched=true
+resize-case rows=4 height=2 fast=true motion=None expected=2,3 actual=2,3 matched=true
+resize-case rows=4 height=3 fast=true motion=None expected=1,2 actual=1,2 matched=true
+resize-case rows=6 height=1 fast=true motion=None expected=5,6 actual=5,6 matched=true
+resize-case rows=6 height=2 fast=true motion=None expected=4,5 actual=4,5 matched=true
+resize-case rows=6 height=3 fast=true motion=None expected=3,4 actual=3,4 matched=true
+resize-case rows=6 height=4 fast=true motion=None expected=2,3 actual=2,3 matched=true
+resize-case rows=6 height=5 fast=true motion=None expected=1,2 actual=1,2 matched=true
+resize-case rows=12 height=1 fast=true motion=None expected=11,12 actual=11,12 matched=true
+resize-case rows=12 height=2 fast=true motion=None expected=10,11 actual=10,11 matched=true
+resize-case rows=12 height=3 fast=true motion=None expected=9,10 actual=9,10 matched=true
+resize-case rows=12 height=4 fast=true motion=None expected=8,9 actual=8,9 matched=true
+resize-case rows=12 height=5 fast=true motion=None expected=7,8 actual=7,8 matched=true
+resize-case rows=12 height=6 fast=true motion=None expected=6,7 actual=6,7 matched=true
+resize-case rows=12 height=7 fast=true motion=None expected=5,6 actual=5,6 matched=true
+resize-case rows=12 height=8 fast=true motion=None expected=4,5 actual=4,5 matched=true
+resize-case rows=12 height=9 fast=true motion=None expected=3,4 actual=3,4 matched=true
+resize-case rows=12 height=10 fast=true motion=None expected=2,3 actual=2,3 matched=true
+resize-case rows=12 height=11 fast=true motion=None expected=1,2 actual=1,2 matched=true
+resize-case rows=4 height=1 fast=true motion=Some(18446744073709551615) expected=3,4 actual=3,4 matched=true
+resize-case rows=4 height=2 fast=true motion=Some(18446744073709551615) expected=2,3 actual=2,3 matched=true
+resize-case rows=4 height=3 fast=true motion=Some(18446744073709551615) expected=1,2 actual=1,2 matched=true
+resize-case rows=6 height=1 fast=true motion=Some(18446744073709551615) expected=5,6 actual=5,6 matched=true
+resize-case rows=6 height=2 fast=true motion=Some(18446744073709551615) expected=4,5 actual=4,5 matched=true
+resize-case rows=6 height=3 fast=true motion=Some(18446744073709551615) expected=3,4 actual=3,4 matched=true
+resize-case rows=6 height=4 fast=true motion=Some(18446744073709551615) expected=2,3 actual=2,3 matched=true
+resize-case rows=6 height=5 fast=true motion=Some(18446744073709551615) expected=1,2 actual=1,2 matched=true
+resize-case rows=12 height=1 fast=true motion=Some(18446744073709551615) expected=11,12 actual=11,12 matched=true
+resize-case rows=12 height=2 fast=true motion=Some(18446744073709551615) expected=10,11 actual=10,11 matched=true
+resize-case rows=12 height=3 fast=true motion=Some(18446744073709551615) expected=9,10 actual=9,10 matched=true
+resize-case rows=12 height=4 fast=true motion=Some(18446744073709551615) expected=8,9 actual=8,9 matched=true
+resize-case rows=12 height=5 fast=true motion=Some(18446744073709551615) expected=7,8 actual=7,8 matched=true
+resize-case rows=12 height=6 fast=true motion=Some(18446744073709551615) expected=6,7 actual=6,7 matched=true
+resize-case rows=12 height=7 fast=true motion=Some(18446744073709551615) expected=5,6 actual=5,6 matched=true
+resize-case rows=12 height=8 fast=true motion=Some(18446744073709551615) expected=4,5 actual=4,5 matched=true
+resize-case rows=12 height=9 fast=true motion=Some(18446744073709551615) expected=3,4 actual=3,4 matched=true
+resize-case rows=12 height=10 fast=true motion=Some(18446744073709551615) expected=2,3 actual=2,3 matched=true
+resize-case rows=12 height=11 fast=true motion=Some(18446744073709551615) expected=1,2 actual=1,2 matched=true
+scroll resize oracle: 76 independent cases checked; 0 mismatches

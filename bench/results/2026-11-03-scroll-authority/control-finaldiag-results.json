@@ -1,0 +1,44 @@
+[
+  {
+    "test": "scroll_authority_literal_boundaries",
+    "exit": 0,
+    "argv": [
+      "/tmp/glass-i35-control-finaldiag",
+      "--exact",
+      "--nocapture",
+      "engine::tests::scroll_authority_literal_boundaries"
+    ],
+    "settings": {},
+    "log": "control-finaldiag-scroll_authority_literal_boundaries.log",
+    "sha256": "1a6be9c521bb9161d98aeb7e56edb0d5448c923d8a3e14b6d97c080f601a1d31"
+  },
+  {
+    "test": "scroll_authority_height_only_resize_preserves_absolute_lines",
+    "exit": 0,
+    "argv": [
+      "/tmp/glass-i35-control-finaldiag",
+      "--exact",
+      "--nocapture",
+      "engine::tests::scroll_authority_height_only_resize_preserves_absolute_lines"
+    ],
+    "settings": {},
+    "log": "control-finaldiag-scroll_authority_height_only_resize_preserves_absolute_lines.log",
+    "sha256": "ec7904ebfe73911fd0035ea9d9eeb85c7fed32c3ce47be94f977ed24bb6c2bfe"
+  },
+  {
+    "test": "scroll_authority_configured_history_diagnostic",
+    "exit": 101,
+    "argv": [
+      "/tmp/glass-i35-control-finaldiag",
+      "--exact",
+      "--nocapture",
+      "engine::tests::scroll_authority_configured_history_diagnostic",
+      "--ignored"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "8"
+    },
+    "log": "control-finaldiag-scroll_authority_configured_history_diagnostic.log",
+    "sha256": "3926a52731cbfc617089b2b878170c3c7c1170c9130d7f163326e8db9588ed40"
+  }
+]

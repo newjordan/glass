@@ -1,0 +1,56 @@
+[
+  {
+    "label": "terminal-tests",
+    "exit": 0,
+    "argv": [
+      "/tmp/glass-i35-final",
+      "--test-threads=1"
+    ],
+    "settings": {},
+    "log": "final-terminal-tests.log",
+    "sha256": "c2ba4d51a527dfc3ee747eac7df623eaa399812c45d9262cb02c3a3976d2e8b0"
+  },
+  {
+    "label": "literal",
+    "exit": 0,
+    "argv": [
+      "/tmp/glass-i35-final",
+      "engine::tests::scroll_authority_literal_boundaries",
+      "--exact",
+      "--nocapture"
+    ],
+    "settings": {},
+    "log": "final-literal.log",
+    "sha256": "71746e736162a74f5e892df78a66bafbd112585a6d3594c7326b00e6fb30356d"
+  },
+  {
+    "label": "resize",
+    "exit": 0,
+    "argv": [
+      "/tmp/glass-i35-final",
+      "engine::tests::scroll_authority_height_only_resize_preserves_absolute_lines",
+      "--exact",
+      "--nocapture"
+    ],
+    "settings": {},
+    "log": "final-resize.log",
+    "sha256": "35eb14e7365462e05e64fe1645d0f5fde5ade26260c47b9a5051090c846b4076"
+  },
+  {
+    "label": "sweep",
+    "exit": 0,
+    "argv": [
+      "/tmp/glass-i35-final",
+      "speed::plain_runs_match_the_parser_over_seeds",
+      "--exact",
+      "--ignored",
+      "--nocapture"
+    ],
+    "settings": {
+      "GLASS_SWEEP_SEEDS": "64",
+      "GLASS_SWEEP_ROUNDS": "200"
+    },
+    "log": "final-sweep.log",
+    "sha256": "91b4cdc98bde9b7592970b1ccd64c3c30f4cdd8ad5027a473b70ddcfa54cbeae"
+  }
+]

@@ -1,0 +1,11 @@
+{
+  "schema": "glass.scroll-authority-protocol/v1",
+  "hypothesis": "Replace primary-screen synthetic-selection inference with a cumulative authoritative Term output-scroll counter. Keep 8192-byte batching, all alternate-screen accounting and text lanes unchanged. Remove sentinel-only printed-cell pacing.",
+  "correctness_gate": "Full existing terminal suite first. Failure ends performance branch; retain diagnostic and report, no timed runs or repair variant to rescue. If suite passes, existing 12800 stream sweep plus targeted literal primary/alternate/ED2/down/resize/history-cap cases on both exact arms.",
+  "performance_gate": "Only after correctness: exactly 12 alternating control/candidate pairs, 5 internal passes per session, exact tput corpus 39x154 scale1/read4095. Recorder on both arms. Primary estimator median CPU duration per session, paired rate ratio control/candidate. Unicode median >=1.02 and six-workload Holm one-sided sign p<.05; all other point ratios >=.98. No retries/exclusions/extensions. This is a screen, not promotion or competitor acceptance.",
+  "limits": [
+    "Primary output counter independent of history length; ED2 must return exact pushed rows.",
+    "No sampling independence, significance or championship guarantee. No production binary overwritten.",
+    "No performance series if semantic gate fails."
+  ]
+}

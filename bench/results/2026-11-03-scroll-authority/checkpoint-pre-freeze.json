@@ -1,0 +1,25 @@
+{
+  "literal_cases_per_arm": 662,
+  "resize_cases_per_arm": 76,
+  "control_resize_mismatches": 0,
+  "candidate_resize_mismatches": 76,
+  "configured_history_cases_per_arm": 4,
+  "control_history_counts": {
+    "no_picture": 3,
+    "unknown_picture_extent": 10664
+  },
+  "candidate_history_count": 11997,
+  "expected_history_count": 11997,
+  "schema": "glass.scroll-authority-checkpoint/v1",
+  "status": "reported",
+  "runtime_promotion": false,
+  "championship_established": false,
+  "performance_sessions": 0,
+  "tests_per_initial_arm": 386,
+  "final_terminal_tests": 388,
+  "streams_per_arm": 12800,
+  "unchanged_other_rust_sources": 119,
+  "unchanged_prior_evidence_files": 7132,
+  "selected_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "note": "Local semantic rejection and archive replay. Resize rows enter history even without output; authoritative output-only counter is incomplete. Small-history defect is reported, not fixed. No performance/competitor acceptance or independent audit."
+}

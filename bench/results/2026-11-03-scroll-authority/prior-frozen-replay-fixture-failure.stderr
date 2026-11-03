@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/work/frosty40/glass-repo/tree/bench/replay-evidence-index.py", line 135, in <module>
+    main()
+    ~~~~^^
+  File "/work/frosty40/glass-repo/tree/bench/replay-evidence-index.py", line 129, in main
+    result = validate(args.root, load(raw))
+  File "/work/frosty40/glass-repo/tree/bench/replay-evidence-index.py", line 110, in validate
+    need(digest(data) == expected, f"changed source: {original} (read {actual})")
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/frosty40/glass-repo/tree/bench/replay-evidence-index.py", line 20, in need
+    raise ValueError(message)
+ValueError: changed source: crates/term/src/engine.rs (read crates/term/src/engine.rs)

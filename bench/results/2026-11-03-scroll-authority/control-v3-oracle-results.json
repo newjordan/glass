@@ -1,0 +1,12 @@
+[
+  {
+    "arm": "control-v3",
+    "test": "scroll_authority_literal_boundaries",
+    "exit": 101
+  },
+  {
+    "arm": "control-v3",
+    "test": "scroll_authority_height_only_resize_preserves_absolute_lines",
+    "exit": 0
+  }
+]

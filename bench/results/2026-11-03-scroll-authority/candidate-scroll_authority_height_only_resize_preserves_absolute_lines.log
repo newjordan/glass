@@ -1,0 +1,23 @@
+
+running 1 test
+test engine::tests::scroll_authority_height_only_resize_preserves_absolute_lines ... FAILED
+
+failures:
+
+failures:
+    engine::tests::scroll_authority_height_only_resize_preserves_absolute_lines
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 399 filtered out; finished in 0.00s
+
+
+thread 'engine::tests::scroll_authority_height_only_resize_preserves_absolute_lines' (4031375) panicked at crates/term/src/engine.rs:4058:25:
+assertion `left == right` failed: resize 4->1 fast false motion None
+  left: 0
+ right: 3
+stack backtrace:
+   0: __rustc::rust_begin_unwind
+   1: core::panicking::panic_fmt
+   2: core::panicking::assert_failed_inner
+   3: core::panicking::assert_failed::<usize, usize>
+   4: <glass::engine::tests::scroll_authority_height_only_resize_preserves_absolute_lines::{closure#0} as core::ops::function::FnOnce<()>>::call_once
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.

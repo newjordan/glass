@@ -1,0 +1,27 @@
+
+running 1 test
+test engine::tests::scroll_authority_configured_history_diagnostic ... FAILED
+
+failures:
+
+failures:
+    engine::tests::scroll_authority_configured_history_diagnostic
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 400 filtered out; finished in 0.00s
+
+configured-history fast=false motion=None history=8 expected=11997 actual=3
+configured-history fast=false motion=Some(18446744073709551615) history=8 expected=11997 actual=10664
+configured-history fast=true motion=None history=8 expected=11997 actual=3
+configured-history fast=true motion=Some(18446744073709551615) history=8 expected=11997 actual=10664
+
+thread 'engine::tests::scroll_authority_configured_history_diagnostic' (4055589) panicked at crates/term/src/engine.rs:4330:9:
+assertion `left == right` failed
+  left: 4
+ right: 0
+stack backtrace:
+   0: __rustc::rust_begin_unwind
+   1: core::panicking::panic_fmt
+   2: core::panicking::assert_failed_inner
+   3: core::panicking::assert_failed::<i32, i32>
+   4: <glass::engine::tests::scroll_authority_configured_history_diagnostic::{closure#0} as core::ops::function::FnOnce<()>>::call_once
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.

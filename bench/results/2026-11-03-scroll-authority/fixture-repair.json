@@ -1,0 +1,7 @@
+{
+  "candidate_runtime_changed": false,
+  "v1": "Candidate first literal run stopped at inherited alternate cursor fixture; resize was an independent failure.",
+  "v2": "Set explicit home cursor on alternate entry in two streams; unchanged resize expectations now enumerate all 76 combinations rather than abort on first.",
+  "performance_sessions": 0,
+  "v3": "Alternate ED2 Event::Clear carries Watch.count (0 on alternate), not alt_scrolled. Fixture corrected from 1 to 0 to match existing implementation event contract. Independent alternate total remains expected 1. No candidate runtime edits. Retain initial logs and all fixture versions; no performance runs."
+}

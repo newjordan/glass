@@ -1,0 +1,23 @@
+
+running 1 test
+test engine::tests::scroll_authority_literal_boundaries ... FAILED
+
+failures:
+
+failures:
+    engine::tests::scroll_authority_literal_boundaries
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 399 filtered out; finished in 0.01s
+
+
+thread 'engine::tests::scroll_authority_literal_boundaries' (4031369) panicked at crates/term/src/engine.rs:4027:21:
+assertion `left == right` failed: alternate_round_trip cut 0 fast false
+  left: 4
+ right: 1
+stack backtrace:
+   0: __rustc::rust_begin_unwind
+   1: core::panicking::panic_fmt
+   2: core::panicking::assert_failed_inner
+   3: core::panicking::assert_failed::<u64, u64>
+   4: <glass::engine::tests::scroll_authority_literal_boundaries::{closure#0} as core::ops::function::FnOnce<()>>::call_once
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.

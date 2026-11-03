@@ -1,0 +1,785 @@
+diff --git i/crates/alacritty-terminal/src/grid/mod.rs w/crates/alacritty-terminal/src/grid/mod.rs
+index be20d0e..e190d83 100644
+--- i/crates/alacritty-terminal/src/grid/mod.rs
++++ w/crates/alacritty-terminal/src/grid/mod.rs
+@@ -406,7 +406,7 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
+         }
+     }
+ 
+-    pub fn clear_viewport<D>(&mut self)
++    pub fn clear_viewport<D>(&mut self) -> usize
+     where
+         T: ResetDiscriminant<D>,
+         D: PartialEq,
+@@ -430,6 +430,7 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
+         for line in (0..(self.lines - positions)).map(Line::from) {
+             self.raw[line].reset(&self.cursor.template);
+         }
++        positions
+     }
+ 
+     /// Completely reset the grid state.
+diff --git i/crates/alacritty-terminal/src/term/mod.rs w/crates/alacritty-terminal/src/term/mod.rs
+index 38b0937..94d14f9 100644
+--- i/crates/alacritty-terminal/src/term/mod.rs
++++ w/crates/alacritty-terminal/src/term/mod.rs
+@@ -288,6 +288,10 @@ pub struct Term<T> {
+ 
+     pub selection: Option<Selection>,
+ 
++    /// Primary-screen rows output pushed off row zero, independent of retained history.
++    /// Resize/reflow and alternate-screen output are excluded. RIS does not reset it.
++    output_scrolls: u64,
++
+     /// Currently active grid.
+     ///
+     /// Tracks the screen buffer currently in use. While the alternate screen buffer is active,
+@@ -399,6 +403,9 @@ pub enum Osc52 {
+ }
+ 
+ impl<T> Term<T> {
++    #[inline]
++    pub fn output_scrolls(&self) -> u64 { self.output_scrolls }
++
+     #[inline]
+     pub fn scroll_display(&mut self, scroll: Scroll)
+     where
+@@ -453,6 +460,7 @@ impl<T> Term<T> {
+             title_stack: Default::default(),
+             is_focused: Default::default(),
+             selection: Default::default(),
++            output_scrolls: 0,
+             title: Default::default(),
+             mode: Default::default(),
+         }
+@@ -797,6 +805,9 @@ impl<T> Term<T> {
+         }
+ 
+         self.grid.scroll_up(&region, lines);
++        if origin == 0 && !self.mode.contains(TermMode::ALT_SCREEN) {
++            self.output_scrolls = self.output_scrolls.saturating_add(lines as u64);
++        }
+ 
+         // Scroll vi mode cursor.
+         let viewport_top = Line(-(self.grid.display_offset() as i32));
+@@ -1825,7 +1836,8 @@ impl<T: EventListener> Handler for Term<T> {
+                 } else {
+                     let old_offset = self.grid.display_offset();
+ 
+-                    self.grid.clear_viewport();
++                    let pushed = self.grid.clear_viewport();
++                    self.output_scrolls = self.output_scrolls.saturating_add(pushed as u64);
+ 
+                     // Compute number of lines scrolled by clearing the viewport.
+                     let lines = self.grid.display_offset().saturating_sub(old_offset);
+diff --git i/crates/term/src/engine.rs w/crates/term/src/engine.rs
+index 8b6b1d8..a36ae29 100644
+--- i/crates/term/src/engine.rs
++++ w/crates/term/src/engine.rs
+@@ -34,8 +34,7 @@ use alacritty_terminal::vte::ansi::{
+ };
+ use alacritty_terminal::vte::ansi::{Color as AnsiColor, CursorShape, NamedColor, Rgb};
+ use alacritty_terminal::vte::ansi::Processor;
+-use alacritty_terminal::index::{Line, Point as GridPoint, Side};
+-use alacritty_terminal::selection::{Selection as Sentinel, SelectionType};
++use alacritty_terminal::index::Line;
+ 
+ use crate::keys::{MouseProtocolEncoding, MouseProtocolMode};
+ use crate::view::CursorLook;
+@@ -53,56 +52,8 @@ fn scrollback_lines() -> usize {
+             .unwrap_or(10_000)
+     })
+ }
+-/// Bytes fed to `Term` between the engine's own reads of the
+-/// scroll-count sentinel. The sentinel cannot be scrolled out of a
+-/// full history between those reads, but not because this number is
+-/// small: inside a chunk the wrapper paces it — `drained` folds every
+-/// `SYNC_DRAIN_CHUNK` prints and linefeeds, scrolls down fold around
+-/// themselves, and `note_scroll_up` folds when the lines it carries
+-/// by hand reach the same bound — so unread travel stays within a
+-/// screenful of that bound whatever this chunk is. What the chunk
+-/// size does set is how often a feed pays a fresh wrapper, a sentinel
+-/// read and the count's bookkeeping: at 1024 that was a measurable
+-/// slice of a plain-text flood, which reads the sentinel to learn
+-/// nothing the wrapper's pacing had not already counted.
++/// Preserve the existing per-apply batching while changing only scroll observation.
+ const SCROLL_COUNT_CHUNK: usize = 8192;
+-/// When the sentinel has scrolled this far into history, it is replanted on
+-/// the top row, so it always has room to move.
+-const SCROLL_COUNT_REPLANT: usize = 4_096;
+-
+-/// Fold one sentinel line into the scroll count.
+-///
+-/// The sentinel is planted on the top row. A scroll whose top is the
+-/// screen's top moves it into history (a negative line); only a move
+-/// further that way grows the count. A scroll down moves it onto a
+-/// positive line. That is not history: the count stands and the caller
+-/// plants the sentinel on the top row again. A pull back toward the
+-/// screen is the same.
+-///
+-/// Returns whether the caller should plant a fresh sentinel.
+-fn fold_sentinel_line(count: &mut u64, read: &mut usize, alive: &mut bool, line: i32) -> bool {
+-    if line < 0 {
+-        let scrolled = line.unsigned_abs() as usize;
+-        if scrolled >= *read {
+-            *count += (scrolled - *read) as u64;
+-            *read = scrolled;
+-            *alive = true;
+-            scrolled >= SCROLL_COUNT_REPLANT
+-        } else {
+-            true
+-        }
+-    } else if line > 0 || *read > 0 {
+-        true
+-    } else {
+-        *alive = true;
+-        false
+-    }
+-}
+-/// How many bytes the sentinel-reading wrapper lets `Term` apply at once
+-/// while a synchronized update's buffer is drained through it: the same
+-/// pacing `process` uses, so the sentinel can never be scrolled through
+-/// a full history between two of its reads.
+-const SYNC_DRAIN_CHUNK: usize = 1024;
+ 
+ /// What the program's output asked of the window, beyond drawing.
+ #[derive(Default)]
+@@ -304,10 +255,8 @@ pub struct Engine {
+     /// intake can anchor its frames by counting from the start of the
+     /// output.
+     scrolled_off_top: usize,
+-    /// Where the sentinel was last read, in lines above the screen.
+-    sentinel_read: usize,
+-    /// Whether the sentinel was planted and `Term` has dropped it since.
+-    sentinel_dropped: bool,
++    /// Last consumed primary output-scroll counter.
++    scroll_read: u64,
+     /// The synchronized update's hold, kept apart from the processor's:
+     /// a media piece settles the processor's buffer early so a picture
+     /// anchors in the stream, but the frame still shows as one update
+@@ -342,11 +291,6 @@ pub struct Engine {
+     /// store. Height-only resizes leave this empty: the sentinel counts
+     /// those.
+     pending_reflow: Option<crate::intake::motion::Reflow>,
+-    /// Whether the sentinel is planted right now. `Term` drops its
+-    /// selection on ED 2, ED 3 (with the sentinel in history), a screen
+-    /// switch and RIS; the wrapper reads it before those run, so the
+-    /// lines they scrolled away are never lost.
+-    sentinel_alive: bool,
+     /// A snapshot of the cells as they were last taken, reused so drawing
+     /// does not allocate per frame.
+     cells: Vec<Cell>,
+@@ -394,8 +338,7 @@ impl Engine {
+             tail: Vec::new(),
+             sync_since: None,
+             scrolled_off_top: 0,
+-            sentinel_read: 0,
+-            sentinel_dropped: false,
++            scroll_read: 0,
+             events: Vec::new(),
+             in_cell: Vec::new(),
+             // Unknown until the store says what a scroll could move. Reporting
+@@ -407,7 +350,6 @@ impl Engine {
+             region_bottom: rows.max(1) as i32,
+             primary_snap: None,
+             pending_reflow: None,
+-            sentinel_alive: false,
+             hold_since: None,
+             cells: Vec::new(),
+             effects: Effects::default(),
+@@ -500,14 +442,6 @@ impl Engine {
+ 
+     fn apply(&mut self, pass: &[u8]) {
+ 
+-        // The sentinel is planted before the bytes run, so the very first
+-        // scroll of a session already rotates it.
+-        if !self.term.mode().contains(TermMode::ALT_SCREEN) && self.term.selection.is_none() {
+-            self.plant_sentinel();
+-        }
+-        // The scroll counter reads the sentinel after every chunk, so a
+-        // feed that scrolls many screens at once cannot carry it past the
+-        // top of a full history before it is read.
+         for chunk in pass.chunks(SCROLL_COUNT_CHUNK) {
+             let Engine {
+                 term,
+@@ -539,9 +473,7 @@ impl Engine {
+                 alt_scrolled: *alt_scrolled,
+                 region_top: *region_top,
+                 region_bottom: *region_bottom,
+-                sentinel_read: self.sentinel_read,
+-                sentinel_alive: self.sentinel_alive,
+-                drained: chunk.len(),
++                scroll_read: self.scroll_read,
+                 motion_end: self.motion_end,
+                 preceding: self.preceding_char,
+                 primary_snap: None,
+@@ -549,15 +481,12 @@ impl Engine {
+                 fast: *fast,
+             };
+             feed(processor, &mut watch, mirror, chunk, *fast);
++            watch.fold_scrolls();
+             self.preceding_char = watch.preceding;
+             *alt_scrolled = watch.alt_scrolled;
+             *region_top = watch.region_top;
+             *region_bottom = watch.region_bottom;
+-            self.sentinel_read = watch.sentinel_read;
+-            self.sentinel_alive = watch.sentinel_alive;
+-            // A pacing fold inside the chunk may have counted scrolls
+-            // past what the sentinel now reads; the chunk's own count is
+-            // the truth, so take it over wholesale.
++            self.scroll_read = watch.scroll_read;
+             let primary = if watch.alternate { watch.primary } else { watch.count };
+             self.scrolled_off_top = self.scrolled_off_top.max(primary as usize);
+             let raised = std::mem::take(&mut watch.events);
+@@ -568,7 +497,7 @@ impl Engine {
+                 self.primary_snap = Some(snap);
+             }
+             drop(watch);
+-            self.fold_sentinel();
++            self.fold_scrolls();
+         }
+     }
+ 
+@@ -596,68 +525,12 @@ impl Engine {
+         }
+     }
+ 
+-    /// Plant the sentinel selection the scroll counter reads: the top row,
+-    /// spanning two cells so it is never empty. `Term` rotates its
+-    /// selection on every scroll, so the sentinel's line says how many
+-    /// lines have left the top of the screen since it was planted.
+-    fn plant_sentinel(&mut self) {
+-        let column = self.term.last_column();
+-        let top = GridPoint::new(Line(0), Column(0));
+-        let mut sentinel = Sentinel::new(SelectionType::Simple, top, Side::Left);
+-        sentinel.update(GridPoint::new(Line(0), column), Side::Right);
+-        self.term.selection = Some(sentinel);
+-        self.sentinel_read = 0;
+-        self.sentinel_alive = true;
+-    }
+-
+-    /// Fold the sentinel's travels into the count of lines that have
+-    /// left the top of the screen into history, and replant it. The one
+-    /// arithmetic both the engine and its wrapper run: called after
+-    /// every chunk of bytes, and before each `Term` call that drops the
+-    /// sentinel.
+-    ///
+-    /// The count only grows. A sentinel `Term` dropped (ED 2, ED 3 with
+-    /// the sentinel in history, a screen switch, RIS) or that left the
+-    /// grid (a resize that pulled history back to the screen) is
+-    /// replanted where it was: none of those scroll, so the count
+-    /// stands — the wrapper folds the drop itself, so whatever remains
+-    /// here can only be a resize pulling history back.
+-    fn fold_sentinel(&mut self) {
+-        if self.term.mode().contains(TermMode::ALT_SCREEN) {
+-            // The alternate screen has no history of its own; scrolls
+-            // inside it never reach the main grid's, and no sentinel is
+-            // kept while it is up.
+-            self.term.selection = None;
+-            self.sentinel_dropped = true;
+-            self.sentinel_alive = false;
+-            return;
+-        }
+-        if let Some(range) = self
+-            .term
+-            .selection
+-            .as_ref()
+-            .and_then(|s| s.to_range(&self.term))
+-        {
+-            let mut count = self.scrolled_off_top as u64;
+-            let plant = fold_sentinel_line(
+-                &mut count,
+-                &mut self.sentinel_read,
+-                &mut self.sentinel_alive,
+-                range.start.line.0,
+-            );
+-            self.scrolled_off_top = count as usize;
+-            if plant {
+-                // Keep the sentinel on the top row, or well inside the
+-                // history, so a full history can never carry it out of
+-                // sight between reads. Replanting does not scroll.
+-                self.plant_sentinel();
+-            }
+-        } else {
+-            // The sentinel has been carried out of the grid (a resize
+-            // that pulled history back onto the screen). That does not
+-            // scroll, so the count stands and the sentinel is replanted.
+-            self.plant_sentinel();
+-        }
++    /// Consume actual primary output movement, not selection rotation.
++    fn fold_scrolls(&mut self) {
++        let now = self.term.output_scrolls();
++        self.scrolled_off_top = self.scrolled_off_top.saturating_add(
++            now.saturating_sub(self.scroll_read) as usize);
++        self.scroll_read = now;
+     }
+ 
+     /// Settle the engine for a media piece: the bytes it holds back in
+@@ -696,8 +569,7 @@ impl Engine {
+                 alt_scrolled,
+                 region_top,
+                 region_bottom,
+-                sentinel_read,
+-                sentinel_alive,
++                scroll_read,
+                 ..
+             } = self;
+             let alternate = term.mode().contains(TermMode::ALT_SCREEN);
+@@ -717,9 +589,7 @@ impl Engine {
+                 alt_scrolled: *alt_scrolled,
+                 region_top: *region_top,
+                 region_bottom: *region_bottom,
+-                sentinel_read: *sentinel_read,
+-                sentinel_alive: *sentinel_alive,
+-                drained: 0,
++                scroll_read: *scroll_read,
+                 motion_end: self.motion_end,
+                 primary_snap: None,
+                 primary: scrolled,
+@@ -731,9 +601,9 @@ impl Engine {
+             // printed cells, so a large frame cannot scroll it through a
+             // full history before it is counted.
+             processor.stop_sync(&mut watch);
++            watch.fold_scrolls();
+             self.preceding_char = watch.preceding;
+-            self.sentinel_read = watch.sentinel_read;
+-            self.sentinel_alive = watch.sentinel_alive;
++            self.scroll_read = watch.scroll_read;
+             let primary = if watch.alternate { watch.primary } else { watch.count };
+             self.scrolled_off_top = self.scrolled_off_top.max(primary as usize);
+             *alt_scrolled = watch.alt_scrolled;
+@@ -751,7 +621,7 @@ impl Engine {
+             // last read are counted here, as `process` does after each
+             // chunk, so a picture placed right after the frame anchors
+             // by the count the frame left.
+-            self.fold_sentinel();
++            self.fold_scrolls();
+             self.sync_since = None;
+         }
+     }
+@@ -909,7 +779,7 @@ impl Engine {
+             self.scrolled_off_top = reflow.new_scrolled as usize;
+             self.pending_reflow = Some(reflow);
+         }
+-        self.fold_sentinel();
++        self.fold_scrolls();
+         if self.term.mode().contains(TermMode::ALT_SCREEN) {
+             // The primary grid reflowed out of sight. Keep the prediction,
+             // including the scroll count, so the next width change maps
+@@ -1350,13 +1220,8 @@ struct Watch<'a> {
+     /// The scroll region, mirroring `Term`.
+     region_top: i32,
+     region_bottom: i32,
+-    /// The sentinel's state, carried for the engine: where it was last
+-    /// read, and whether it is planted.
+-    sentinel_read: usize,
+-    sentinel_alive: bool,
+-    /// The cells the wrapper has printed since it last read the
+-    /// sentinel, so a long buffered frame drains in paced steps.
+-    drained: usize,
++    /// Last consumed primary output counter, carried across wrappers.
++    scroll_read: u64,
+     /// Exclusive end of anchored content on this screen, or `None` when
+     /// a scroll cannot move anything. See `Engine::set_motion`.
+     motion_end: Option<u64>,
+@@ -1399,9 +1264,7 @@ impl Watch<'_> {
+             alt_scrolled: engine.alt_scrolled,
+             region_top: engine.region_top,
+             region_bottom: engine.region_bottom,
+-            sentinel_read: engine.sentinel_read,
+-            sentinel_alive: engine.sentinel_alive,
+-            drained: 0,
++            scroll_read: engine.scroll_read,
+             motion_end: engine.motion_end,
+             primary_snap: None,
+             primary: scrolled,
+@@ -1410,53 +1273,13 @@ impl Watch<'_> {
+         }
+     }
+ 
+-    /// Plant the sentinel selection the scroll counter reads, mirroring
+-    /// `Engine::plant_sentinel`.
+-    fn plant_sentinel(&mut self) {
+-        let column = self.term.last_column();
+-        let top = GridPoint::new(Line(0), Column(0));
+-        let mut sentinel = Sentinel::new(SelectionType::Simple, top, Side::Left);
+-        sentinel.update(GridPoint::new(Line(0), column), Side::Right);
+-        self.term.selection = Some(sentinel);
+-        self.sentinel_read = 0;
+-        self.sentinel_alive = true;
+-    }
+-
+-    /// Replant the sentinel after a `Term` call that dropped it. The
+-    /// fold has already been run, so what was scrolled is counted; the
+-    /// new sentinel starts again from the top row.
+-    fn replant(&mut self) {
+-        self.plant_sentinel();
+-    }
+-
+-    /// Fold the sentinel's travels into the count, mirroring the
+-    /// engine's own arithmetic: the same numbers, run while `Term` is
+-    /// borrowed. The alternate screen keeps no sentinel and counts
+-    /// nothing here.
+-    fn fold_sentinel(&mut self) {
+-        if self.term.mode().contains(TermMode::ALT_SCREEN) {
+-            self.term.selection = None;
+-            self.sentinel_alive = false;
+-            return;
+-        }
+-        if let Some(range) = self
+-            .term
+-            .selection
+-            .as_ref()
+-            .and_then(|s| s.to_range(self.term))
+-        {
+-            let plant = fold_sentinel_line(
+-                &mut self.count,
+-                &mut self.sentinel_read,
+-                &mut self.sentinel_alive,
+-                range.start.line.0,
+-            );
+-            if plant {
+-                self.plant_sentinel();
+-            }
+-        } else {
+-            self.plant_sentinel();
+-        }
++    /// Consume primary output movement. Alternate output has its existing
++    /// separate mirror; Term's counter never includes alternate scrolling.
++    fn fold_scrolls(&mut self) {
++        if self.alternate { return; }
++        let now = self.term.output_scrolls();
++        self.count = self.count.saturating_add(now.saturating_sub(self.scroll_read));
++        self.scroll_read = now;
+         self.base = self.count;
+     }
+ 
+@@ -1538,11 +1361,7 @@ impl Watch<'_> {
+         } else {
+             grid.cursor.input_needs_wrap = true;
+         }
+-        self.drained += 1;
+-        if self.drained >= SYNC_DRAIN_CHUNK {
+-            self.fold_sentinel();
+-            self.drained = 0;
+-        }
++
+         true
+     }
+ 
+@@ -1599,11 +1418,7 @@ impl Watch<'_> {
+             grid.cursor.point.column = Column(last);
+             grid.cursor.input_needs_wrap = true;
+         }
+-        self.drained += 1;
+-        if self.drained >= SYNC_DRAIN_CHUNK {
+-            self.fold_sentinel();
+-            self.drained = 0;
+-        }
++
+         true
+     }
+ 
+@@ -1795,7 +1610,7 @@ impl Watch<'_> {
+                     grid.cursor.input_needs_wrap = true;
+                 }
+                 taken += written;
+-                self.drained += written;
++
+             }
+             if written < n {
+                 // A wide character underneath: `input` clears it properly.
+@@ -1803,10 +1618,6 @@ impl Watch<'_> {
+                 taken += 1;
+             }
+         }
+-        if self.drained >= SYNC_DRAIN_CHUNK {
+-            self.fold_sentinel();
+-            self.drained = 0;
+-        }
+         taken
+     }
+ 
+@@ -1850,10 +1661,6 @@ impl Watch<'_> {
+             held = Some((c, at));
+             at += len;
+         }
+-        if self.drained >= SYNC_DRAIN_CHUNK {
+-            self.fold_sentinel();
+-            self.drained = 0;
+-        }
+         // Run-whole: the held character is flushed here (the loop
+         // writes each character as the next is decoded, so the last
+         // would otherwise never be written), the same way the loop
+@@ -2025,7 +1832,7 @@ impl Watch<'_> {
+         }
+         grid.cursor.point.column = Column(column);
+         grid.cursor.input_needs_wrap = wrap;
+-        self.drained += written;
++
+         (at, held)
+     }
+ 
+@@ -2095,7 +1902,7 @@ impl Watch<'_> {
+             grid.cursor.point.column = Column(last);
+             grid.cursor.input_needs_wrap = true;
+         }
+-        self.drained += 1;
++
+         true
+     }
+ 
+@@ -2105,7 +1912,6 @@ impl Watch<'_> {
+         self.alternate = false;
+         self.count = self.primary;
+         self.base = self.count;
+-        self.plant_sentinel();
+     }
+ 
+     /// Read the sentinel before and after text moves down. A scroll
+@@ -2115,7 +1921,7 @@ impl Watch<'_> {
+     /// from where they start.
+     fn fold_around_down(&mut self) {
+         if !self.alternate {
+-            self.fold_sentinel();
++            self.fold_scrolls();
+         }
+     }
+ 
+@@ -2138,7 +1944,7 @@ impl Watch<'_> {
+         if self.alternate {
+             self.alt_scrolled
+         } else {
+-            self.fold_sentinel();
++            self.fold_scrolls();
+             self.base = self.count;
+             self.count
+         }
+@@ -2146,7 +1952,7 @@ impl Watch<'_> {
+ 
+     fn after_scroll(&mut self) {
+         if !self.alternate {
+-            self.fold_sentinel();
++            self.fold_scrolls();
+             self.base = self.count;
+         }
+     }
+@@ -2198,23 +2004,6 @@ impl Watch<'_> {
+         // ever carried.
+         let moves = self.scroll_moves_pictures(origin, clears, true);
+         if !moves {
+-            // The fold the band measurement took on every scroll was
+-            // also what replanted a dropped sentinel before `Term`
+-            // scrolled, and a scroll with no sentinel planted is a line
+-            // the count never sees (found by the seed sweep: the fast
+-            // and slow lanes replanted at different drained folds and
+-            // their counts parted by the scrolls in between). That part
+-            // cannot wait for the chunk's own folds — but it is only
+-            // owed when the sentinel is actually missing, or when the
+-            // lines carried by hand since the last fold (`base` ahead
+-            // of `count`) approach what a pacing fold would have read;
+-            // both are one compare on a flood.
+-            if !self.alternate
+-                && (self.term.selection.is_none()
+-                    || self.base.saturating_sub(self.count) >= SYNC_DRAIN_CHUNK as u64)
+-            {
+-                self.fold_sentinel();
+-            }
+             if self.alternate && count_delta > 0 {
+                 self.alt_scrolled = self.alt_scrolled.saturating_add(count_delta);
+             }
+@@ -2329,14 +2118,7 @@ impl alacritty_terminal::vte::ansi::Handler for Watch<'_> {
+                 }
+             }
+         }
+-        // Pace the sentinel while a synchronized update's frame is
+-        // applied: a long frame cannot scroll it through a full history
+-        // before it is read.
+-        self.drained += 1;
+-        if self.drained >= SYNC_DRAIN_CHUNK {
+-            self.fold_sentinel();
+-            self.drained = 0;
+-        }
++
+     }
+     fn goto(&mut self, line: i32, col: usize) {
+         self.term.goto(line, col);
+@@ -2397,11 +2179,7 @@ impl alacritty_terminal::vte::ansi::Handler for Watch<'_> {
+         if emitted {
+             self.after_scroll();
+         }
+-        self.drained += 1;
+-        if self.drained >= SYNC_DRAIN_CHUNK {
+-            self.fold_sentinel();
+-            self.drained = 0;
+-        }
++
+     }
+     fn bell(&mut self) {
+         self.term.bell();
+@@ -2515,43 +2293,18 @@ impl alacritty_terminal::vte::ansi::Handler for Watch<'_> {
+         // sentinel sits in history: read the sentinel first, so the
+         // lines those clears scroll away are still counted.
+         if matches!(mode, ClearMode::All | ClearMode::Saved) {
+-            self.fold_sentinel();
++            self.fold_scrolls();
+         }
+         if matches!(mode, ClearMode::All) {
+             let alternate = self.term.mode().contains(TermMode::ALT_SCREEN);
+-            // How many lines `Term` will push into history, worked out
+-            // the same way its `clear_viewport` does: up to the last row
+-            // that is not empty. The alternate screen pushes nothing.
+-            let pushed = if alternate {
+-                0
+-            } else {
+-                let mut last = 0;
+-                for row in 0..self.term.screen_lines() {
+-                    let line = &self.term.grid()[Line(row as i32)];
+-                    // The observable cells, not `into_iter`'s physical
+-                    // bytes: a lazily recycled row's tail is blank to any
+-                    // reader, stale bytes to the raw slice.
+-                    if line.observable().any(|cell| !cell.is_empty())
+-                        && row + 1 > last
+-                    {
+-                        last = row + 1;
+-                    }
+-                }
+-                last as u64
+-            };
+             // The count the store clears from is the one after the fold,
+             // before the clear pushes anything.
+             let scrolled = self.count;
+             self.term.clear_screen(ClearMode::All);
+-            if !alternate {
+-                self.count += pushed;
+-                self.base = self.count;
+-            }
+-            self.replant();
++            self.fold_scrolls();
+             self.events.push(Event::Clear { alternate, scrolled });
+         } else if matches!(mode, ClearMode::Saved) {
+             self.term.clear_screen(ClearMode::Saved);
+-            self.replant();
+             self.events.push(Event::ClearSaved);
+         } else if matches!(mode, ClearMode::Below) {
+             // ED 0: from the cursor to the end of its line, and every
+@@ -2592,7 +2345,7 @@ impl alacritty_terminal::vte::ansi::Handler for Watch<'_> {
+         // RIS drops the selection and clears the history it held: fold
+         // first. The count only grows: the lines that left before the
+         // reset stay counted, wherever in a feed the reset falls.
+-        self.fold_sentinel();
++        self.fold_scrolls();
+         self.term.reset_state();
+         if self.alternate {
+             // RIS leaves the alternate screen.
+@@ -2600,7 +2353,6 @@ impl alacritty_terminal::vte::ansi::Handler for Watch<'_> {
+         }
+         self.base = self.count;
+         self.reset_region();
+-        self.replant();
+         self.events.push(Event::Reset);
+     }
+     fn reverse_index(&mut self) {
+@@ -2636,7 +2388,7 @@ impl alacritty_terminal::vte::ansi::Handler for Watch<'_> {
+         // sentinel first, so the lines the primary screen scrolled
+         // before the switch stay counted.
+         if entering_alt {
+-            self.fold_sentinel();
++            self.fold_scrolls();
+             // The primary grid is about to leave the screen. Snap it now,
+             // not after every chunk: a later resize while this screen is
+             // up reflows from this picture of the text.
+@@ -2661,7 +2413,7 @@ impl alacritty_terminal::vte::ansi::Handler for Watch<'_> {
+         let leaving_alt = matches!(mode, PrivateMode::Named(NamedPrivateMode::SwapScreenAndSetRestoreCursor))
+             && self.term.mode().contains(TermMode::ALT_SCREEN);
+         if leaving_alt {
+-            self.fold_sentinel();
++            self.fold_scrolls();
+         }
+         self.term.unset_private_mode(mode);
+         if matches!(mode, PrivateMode::Named(NamedPrivateMode::ColumnMode)) {
+@@ -4237,6 +3989,84 @@ mod tests {
+         }
+     }
+ 
++    /// Literal protocol/anchor expectations: independent of the shared fast/slow handler.
++    #[test]
++    fn scroll_authority_literal_boundaries() {
++        let flood = b"a\r\nb\r\nc\r\nd\r\ne";
++        let cases: Vec<(&str, Vec<u8>, usize, u64, Vec<Event>)> = vec![
++            ("linefeed", flood.to_vec(), 1, 0, vec![]),
++            ("wrap", vec![b'x'; 41], 1, 0, vec![]),
++            ("erase_then_scroll", [b"\x1b[H\x1b[2K".as_slice(), flood].concat(), 1, 0, vec![]),
++            ("ed2", b"a\r\nb\x1b[2J".to_vec(), 2, 0,
++                vec![Event::Clear { alternate: false, scrolled: 0 }]),
++            ("ed2_after_scroll", [flood.as_slice(), b"\x1b[2J"].concat(), 5, 0,
++                vec![Event::Clear { alternate: false, scrolled: 1 }]),
++            ("ed3", [flood.as_slice(), b"\x1b[3J\r\nf"].concat(), 2, 0, vec![Event::ClearSaved]),
++            ("ris", [flood.as_slice(), b"\x1bc", flood].concat(), 2, 0, vec![Event::Reset]),
++            ("inner_region", b"\x1b[2;4r\x1b[9S".to_vec(), 0, 0, vec![]),
++            ("top_region_clamp", b"\x1b[1;3r\x1b[9S".to_vec(), 3, 0, vec![]),
++            ("down_then_up", b"\x1b[2S\x1b[1T\x1b[1S".to_vec(), 3, 0, vec![]),
++            ("reverse_then_up", b"\x1b[2S\x1b[H\x1bM\x1b[1S".to_vec(), 3, 0, vec![]),
++            ("delete_top", b"\x1b[H\x1b[4M".to_vec(), 4, 0, vec![]),
++            ("alternate_round_trip", [flood.as_slice(), b"\x1b[?1049h", flood, b"\x1b[?1049l\r\nf"].concat(), 2, 1, vec![]),
++            ("alternate_clear", [b"\x1b[?1049h".as_slice(), flood, b"\x1b[2J\x1b[?1049l"].concat(), 0, 1,
++                vec![Event::Clear { alternate: true, scrolled: 1 }]),
++            ("synchronized", [b"\x1b[?2026h".as_slice(), flood, b"\x1b[2J\x1b[?2026l"].concat(), 5, 0,
++                vec![Event::Clear { alternate: false, scrolled: 1 }]),
++        ];
++        let mut checks = 0;
++        for fast in [false, true] {
++            for (label, stream, primary, alt, events) in &cases {
++                for cut in 0..=stream.len() {
++                    let mut e = Engine::new(4, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1) });
++                    e.set_fast(fast);
++                    e.set_motion(None);
++                    e.process(&stream[..cut]);
++                    e.process(&stream[cut..]);
++                    assert_eq!(e.scrolled_off_top(), *primary, "{label} cut {cut} fast {fast}");
++                    assert_eq!(e.alt_scrolled(), *alt, "{label} cut {cut} fast {fast}");
++                    assert_eq!(e.take_events(), *events, "{label} cut {cut} fast {fast}");
++                    checks += 1;
++                }
++            }
++            // Exhaust a deliberately tiny history. Count cannot be inferred from its length.
++            let mut e = Engine::new(4, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1) });
++            e.set_fast(fast); e.set_motion(None);
++            e.term.grid_mut().update_history(8);
++            e.process(&b"x\r\n".repeat(12000));
++            assert_eq!(e.scrolled_off_top(), 11997, "tiny history fast {fast}");
++            checks += 1;
++        }
++        eprintln!("scroll literal oracle: {checks} independent cases matched");
++    }
++
++    /// Height-only shrinking pushes real rows into history. Picture anchors use
++    /// the same absolute-line count as output scrolling; width reflow is separate.
++    #[test]
++    fn scroll_authority_height_only_resize_preserves_absolute_lines() {
++        let mut checks = 0;
++        for fast in [false, true] {
++            for motion in [None, Some(u64::MAX)] {
++                for rows in [4, 6, 12] {
++                    for height in 1..rows {
++                        let mut e = Engine::new(rows, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1) });
++                        e.set_fast(fast); e.set_motion(motion);
++                        for _ in 1..rows { e.process(b"x\r\n"); }
++                        e.process(b"z");
++                        assert_eq!(e.scrolled_off_top(), 0);
++                        e.resize(height, 10);
++                        assert_eq!(e.scrolled_off_top(), rows-height,
++                            "resize {rows}->{height} fast {fast} motion {motion:?}");
++                        e.process(b"\r\na");
++                        assert_eq!(e.scrolled_off_top(), rows-height+1);
++                        checks += 1;
++                    }
++                }
++            }
++        }
++        eprintln!("scroll resize oracle: {checks} independent cases matched");
++    }
++
+     #[test]
+     fn lines_scrolled_off_top_count_exactly() {
+         // Full-screen scrolling: each line that leaves the top counts.

@@ -1,0 +1,82 @@
+    /// Literal protocol/anchor expectations: independent of the shared fast/slow handler.
+    #[test]
+    fn scroll_authority_literal_boundaries() {
+        let flood = b"a\r\nb\r\nc\r\nd\r\ne";
+        let cases: Vec<(&str, Vec<u8>, usize, u64, Vec<Event>)> = vec![
+            ("linefeed", flood.to_vec(), 1, 0, vec![]),
+            ("wrap", vec![b'x'; 41], 1, 0, vec![]),
+            ("erase_then_scroll", [b"\x1b[H\x1b[2K".as_slice(), flood].concat(), 1, 0, vec![]),
+            ("ed2", b"a\r\nb\x1b[2J".to_vec(), 2, 0,
+                vec![Event::Clear { alternate: false, scrolled: 0 }]),
+            ("ed2_after_scroll", [flood.as_slice(), b"\x1b[2J"].concat(), 5, 0,
+                vec![Event::Clear { alternate: false, scrolled: 1 }]),
+            ("ed3", [flood.as_slice(), b"\x1b[3J\r\nf"].concat(), 2, 0, vec![Event::ClearSaved]),
+            ("ris", [flood.as_slice(), b"\x1bc", flood].concat(), 2, 0, vec![Event::Reset]),
+            ("inner_region", b"\x1b[2;4r\x1b[9S".to_vec(), 0, 0, vec![]),
+            ("top_region_clamp", b"\x1b[1;3r\x1b[9S".to_vec(), 3, 0, vec![]),
+            ("down_then_up", b"\x1b[2S\x1b[1T\x1b[1S".to_vec(), 3, 0, vec![]),
+            ("reverse_then_up", b"\x1b[2S\x1b[H\x1bM\x1b[1S".to_vec(), 3, 0, vec![]),
+            ("delete_top", b"\x1b[H\x1b[4M".to_vec(), 4, 0, vec![]),
+            ("alternate_round_trip", [flood.as_slice(), b"\x1b[?1049h\x1b[H", flood, b"\x1b[?1049l\r\nf"].concat(), 2, 1, vec![]),
+            ("alternate_clear", [b"\x1b[?1049h\x1b[H".as_slice(), flood, b"\x1b[2J\x1b[?1049l"].concat(), 0, 1,
+                vec![Event::Clear { alternate: true, scrolled: 0 }]),
+            ("synchronized", [b"\x1b[?2026h".as_slice(), flood, b"\x1b[2J\x1b[?2026l"].concat(), 5, 0,
+                vec![Event::Clear { alternate: false, scrolled: 1 }]),
+        ];
+        let mut checks = 0;
+        for fast in [false, true] {
+            for (label, stream, primary, alt, events) in &cases {
+                for cut in 0..=stream.len() {
+                    let mut e = Engine::new(4, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1) });
+                    e.set_fast(fast);
+                    e.set_motion(None);
+                    e.process(&stream[..cut]);
+                    e.process(&stream[cut..]);
+                    assert_eq!(e.scrolled_off_top(), *primary, "{label} cut {cut} fast {fast}");
+                    assert_eq!(e.alt_scrolled(), *alt, "{label} cut {cut} fast {fast}");
+                    assert_eq!(e.take_events(), *events, "{label} cut {cut} fast {fast}");
+                    checks += 1;
+                }
+            }
+            // Exhaust a deliberately tiny history. Count cannot be inferred from its length.
+            let mut e = Engine::new(4, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1) });
+            e.set_fast(fast); e.set_motion(None);
+            e.term.grid_mut().update_history(8);
+            e.process(&b"x\r\n".repeat(12000));
+            assert_eq!(e.scrolled_off_top(), 11997, "tiny history fast {fast}");
+            checks += 1;
+        }
+        eprintln!("scroll literal oracle: {checks} independent cases matched");
+    }
+
+    /// Height-only shrinking pushes real rows into history. Picture anchors use
+    /// the same absolute-line count as output scrolling; width reflow is separate.
+    #[test]
+    fn scroll_authority_height_only_resize_preserves_absolute_lines() {
+        let mut checks = 0;
+        let mut failures = 0;
+        for fast in [false, true] {
+            for motion in [None, Some(u64::MAX)] {
+                for rows in [4, 6, 12] {
+                    for height in 1..rows {
+                        let mut e = Engine::new(rows, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1) });
+                        e.set_fast(fast); e.set_motion(motion);
+                        for _ in 1..rows { e.process(b"x\r\n"); }
+                        e.process(b"z");
+                        assert_eq!(e.scrolled_off_top(), 0);
+                        e.resize(height, 10);
+                        let after_resize = e.scrolled_off_top();
+                        e.process(b"\r\na");
+                        let after_output = e.scrolled_off_top();
+                        let matched = after_resize == rows-height && after_output == rows-height+1;
+                        eprintln!("resize-case rows={rows} height={height} fast={fast} motion={motion:?} expected={},{} actual={after_resize},{after_output} matched={matched}", rows-height, rows-height+1);
+                        if !matched { failures += 1; }
+                        checks += 1;
+                    }
+                }
+            }
+        }
+        eprintln!("scroll resize oracle: {checks} independent cases checked; {failures} mismatches");
+        assert_eq!(failures, 0);
+    }
+

@@ -1,0 +1,120 @@
+GLASS SCROLL AUTHORITY — ITERATION 35 (2026-11-03)
+
+DECISION / MATERIAL NEW GROUND
+Rejected an architectural runtime candidate before timing. Replacing the
+synthetic-selection scroll observer with an output-only Term counter loses
+height-only resize movement: shrinking the live grid can push rows into
+history without any output scroll. All 76 independently expected resize cases
+fail the candidate and pass the shipping runtime. Both fast/slow lanes fail,
+so parser equivalence is not a sufficient semantic gate for this change.
+Retained two passing cfg(test) regression tests, not the runtime candidate.
+
+A second, independent finding: the SHIPPING runtime miscounts output after
+setting GLASS_SCROLLBACK=8. After 12,000 repetitions of x CR LF on a four-row
+screen, the correct primary scroll count is 11,997. Shipping reports 3 with
+set_motion(None), or 10,664 with unknown picture extent Some(u64::MAX), in both
+fast and slow lanes. Each isolated process uses the public configuration,
+not just a test-only direct history mutation. The rejected candidate reports
+11,997 in all four cases, but its resize regression prevents adoption. This
+short-history defect is reported, NOT fixed. The diagnostic remains archived,
+not installed as a failing or ignored production-source test.
+
+HYPOTHESIS / EXACT SCOPE
+Removed selection planting, folding, rotation observation and printed-cell
+pacing from Engine/Watch. Added non-atomic saturating primary-output counter
+to Term::scroll_up_relative after the existing line clamp, excluding alternate
+output and regions not starting at row zero. Grid::clear_viewport returned
+actual pushed rows for ED2. Counter persists across screen switches and RIS;
+Watch consumes deltas at existing event boundaries. Kept 8,192-byte apply
+batching, all alternate counters, UTF-8/ASCII lanes, parser ownership, widths,
+row layout, picture write coverage and selected release executable unchanged.
+Candidate source and exact patch retained; no repaired runtime variant timed.
+
+PROTOCOL AND GATES
+Frozen protocol.json before edits: full existing terminal tests first, then
+12,800 streams per arm plus independent literal counts/anchors. Any semantic
+failure stops the performance branch. Performance fallback was predeclared as
+12 fixed alternating pairs with exact tput corpus and median per-pass CPU
+estimator; ZERO sessions ran, because correctness failed. No speedup,
+regression magnitude, significance or competitor result can be inferred.
+
+OBSERVATIONS
+- Both exact initial release arms: 386 terminal tests passed, 12 ignored.
+- Both exact initial arms: 12,800 streams over 64 seeds, no divergence.
+- Final corrected literal oracle on both diagnostic arms: 662 cases across
+  all two-part byte splits, both lanes. Covers linefeed, pending wrap, erase
+  then scroll, ED2/ED3/RIS, inner/top/clamped regions, SU/SD/reverse-index,
+  delete-lines, alternate switch/clear, synchronized updates. All pass.
+- Independent height-only shrink oracle: initial heights 4, 6, 12; every
+  smaller height; fast on/off; no-picture/unknown-picture extent. 76 cases.
+  Control: 0 mismatches. Candidate: 76 mismatches, each reports 0 after resize
+  and 1 after next LF instead of rows-height and rows-height+1.
+- Public eight-line-history diagnostic: four cases per arm, counts above.
+- Final release test executable built from restored runtime plus TWO tests:
+  388 passed, 0 failed, 12 ignored; 662 literal checks; 76 resize checks;
+  12,800-stream sweep all pass.
+- Four Python replay tests pass, including 36 semantically corrupted evidence
+  variants rejected even after their raw-log hashes are recomputed.
+- Source/checkpoint replay confirms shipping executable unchanged, 119 other
+  Rust sources unchanged, shared docs unchanged, 7,132 previously tracked
+  evidence/report files unchanged. Exact all-source starting snapshot retained.
+  These counts use tracked files at start, not the prior iteration's broader
+  snapshot scope; neither claims coverage of unrelated untracked directories.
+
+FAILURES / FIXTURE ACCOUNTING
+Initial make-candidate helper aborted at a six-vs-seven text replacement
+assertion before writing Engine, after writing Term/Grid. Restored its two
+partial outputs, corrected the replacement cardinality, applied one runtime
+candidate. No binary/timing result from the partial application.
+First literal fixture assumed an alternate home cursor: existing mode entry
+retains the primary cursor position. Repaired the fixture with explicit CUP.
+Second fixture expected Event::Clear.scrolled to be the alternate scroll total;
+existing Watch.count carries zero on that screen. Corrected this literal to
+zero; independent alternate total remains one. All fixture versions and failed
+logs retained. The resize expectations never changed, and a later complete
+matrix enumerates rather than aborts at the first mismatch.
+A direct grid.update_history(8) case first exposed the separate short-history
+issue in control; subsequently reproduced via GLASS_SCROLLBACK=8 in isolated
+processes. Removed it from the passing default regression suite and archived
+the explicit configured diagnostic, preserving failure evidence. No threshold,
+expectation or runtime change was used to rescue a failing performance gate.
+
+BUILD / REPLAY LIMITS
+Builder touches six exact Rust inputs including modified alacritty Grid and
+Term, requires non-fresh vte/alacritty/glass compiler receipts, and hashes
+input sources and copied executables. Candidate/control/final sources and
+receipts retained. This is local build provenance, not independent attestation;
+receipts/logs themselves are worker-supplied. Binaries in /tmp are ephemeral;
+replay checks hashes if present and archives retain exact source/build receipts.
+No unsafe memory-path change, production build promotion, end-to-end Ghostty
+comparison, display-latency test, memory result or platform validation occurred.
+
+ARCHIVE FREEZE / CHECKPOINT
+The previous three-manifest index replays 330 references, 329 unique source
+versions. Map the unchanged pre-edit Engine source at its owning pen-dispatch
+manifest; pass-samples references it indirectly. First replay mapped the wrong
+manifest and failed; failed index/stdout/stderr retained, corrected index adds
+only that exact historical mapping. No earlier evidence changed.
+The final frozen index includes the same manifests and the explicit current
+manifest. Final/post-commit checkpoints and frozen receipts are retained in
+this result directory. Successful local receipt is not independent acceptance.
+
+REPLAY COMMANDS
+ python3 -B bench/results/2026-11-03-scroll-authority/verify.py
+ python3 -B bench/results/2026-11-03-scroll-authority/test-verify.py
+ python3 -B bench/replay-evidence-index.py bench/results/2026-11-03-scroll-authority/final-frozen-index.json
+
+NEXT NECESSARY WORK
+A viable authoritative movement counter must include height-only resize pushes
+while respecting the existing width-reflow adjustment, primary/alternate
+attribution and picture-event ordering. Do not simply add history-length
+deltas: capped-history output, growth/pulls and reflow have distinct semantics.
+Reproduce and fix the short-history sentinel-loss defect with explicit counts,
+then rerun full correctness before any fixed performance series. Pending runtime
+workloads remain ASCII, Unicode and scroll-region; all-metric championship still
+requires fresh selected-build competitor, startup, memory and latency gates.
+
+Selected executable SHA256:
+ d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c
+No championship established. No acceptance command is bound. A successful local
+checkpoint is preservation/replay evidence, not campaign acceptance.
