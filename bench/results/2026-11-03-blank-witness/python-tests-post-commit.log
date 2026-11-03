@@ -1,0 +1,10 @@
+test_complete (__main__.Evidence.test_complete) ... ok
+test_coordinate_types (__main__.Evidence.test_coordinate_types) ... ok
+test_deletion_reject_mutations (__main__.Evidence.test_deletion_reject_mutations) ... ok
+test_duplicate_keys (__main__.Evidence.test_duplicate_keys) ... ok
+test_slots_reject_mutations (__main__.Evidence.test_slots_reject_mutations) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 18.114s
+
+OK
