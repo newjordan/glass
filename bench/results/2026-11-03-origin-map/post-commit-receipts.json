@@ -1,0 +1,11 @@
+{
+  "checkpoint_commit": "5b408627875b6b41d9f62b7dd2a7b2f5bf144939",
+  "claim": "Local checkpoint and 975-reference/968-version replay match; no external acceptance bound.",
+  "sha256": {
+    "bench/results/2026-11-03-origin-map/checkpoint-post-commit.json": "6fc5df67cc8bec571fed6352d7ccf218c680006391e4221f057bcfbe7c4a3351",
+    "bench/results/2026-11-03-origin-map/checkpoint-post-commit.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bench/results/2026-11-03-origin-map/python-tests-post-commit.log": "7ac2f64cd80862571302cbe2ce1ebae2d001a81d900d64c41723ca74736dd45b",
+    "bench/results/2026-11-03-origin-map/frozen-replay-post-commit.json": "b8e236a74a8e57cc373c97f74eaa3d7e7372acbeed2e5ad3d8ee9318e741d873",
+    "bench/results/2026-11-03-origin-map/frozen-replay-post-commit.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}
