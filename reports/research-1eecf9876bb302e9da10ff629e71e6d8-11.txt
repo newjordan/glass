@@ -1,0 +1,129 @@
+UTF-8 follow-up: three measured candidates, no runtime promotion
+Iteration 11 / loop 1793647379808-1967957
+Start commit c36c990; 2026-11-02 local Linux / Ryzen 9 9950X3D / RTX 3090.
+Worker status: REPORTED. No championship, terminal ranking, or acceptance claim.
+
+QUESTION
+The previous iteration's exact-selected-binary leaf samples localized Unicode
+work to print_utf8 but did not isolate a causal mechanism. Test three distinct,
+semantics-preserving alternatives instead of rerunning failed tables, staged
+Unicode batches, direct-commit, row outlining, or reader-affinity changes.
+
+CANDIDATES AND FINDINGS
+1. Row failure-continuation reuse: put_row returns an already decoded successor
+   and rejects the held glyph once; its caller avoids both decoding again and
+   a known-failing put_plain retry. Eleven balanced engine pairs, scale 2,
+   five internal rounds: Unicode candidate/control CPU-rate ratio .982443,
+   2 wins/11, two-sided sign p .0654297. Rejected, not proven universally slower.
+   Existing parser-equivalence test passed (1 test).
+
+2. Byte-proven ASCII islands: prove eight printable successor bytes inside a
+   mixed UTF-8 row; fixed-stride writes retain the last successor held, obey
+   row/wide-cell boundaries and the original wrap/REP protocol. Same engine
+   diagnostic: Unicode .889912, 0 wins/11, sign p .0009765625. Rejected.
+   Existing parser-equivalence test passed (1 test).
+
+   A preflight reconstructs the UNCHANGED terminal Unicode generator at 154x39,
+   including the preceding ASCII generator's RNG consumption. Of 16,777,256
+   bytes, 5,483,313 are printable ASCII in 2,008,491 spans. Spans >=8 cover
+   845,824 bytes (5.04% of all bytes); >=16 cover 47,562 (0.284%). These are
+   opportunity counts, NOT CPU shares or speed ceilings. The engine generator
+   is older/different; these terminal-input counts do not describe that payload.
+   Payload SHA256 82e706b13af91d95d513b487459780f941b4a66b5e729c1fe7163bd840c1c193.
+
+3. Masked-word UTF-8 decoder: one bounded four-byte load combines continuation
+   checks, enforces E0/ED/F0/F4 scalar bounds, reconstructs one scalar. Old
+   decoder handles short tails. No width lies, memo, tables, unchecked char,
+   normalization, changed scroll frequency or workload-dependent dispatch.
+   Initial 11 engine pairs: Unicode 1.011570, 7 wins, p .5488281. This weak
+   initial gain did NOT reproduce: rebuilding both arms after identical test
+   additions, 15 balanced pairs at scale 3/seven rounds gave .995212,
+   5 wins/15, p .3017578. Rejected for no dependable target-workload gain.
+   Do not pool the two executable layouts or discard the negative replication.
+   Candidate and control production forms were built/frozen/hashed but were
+   NOT benchmarked through a terminal and are NOT promoted.
+
+METHOD AND LIMITS
+48 balanced AB/BA engine pairs in four datasets; 96 process invocations total.
+All six workloads measured in each dataset, no simultaneous benchmark jobs.
+Raw stdout/stderr, exact binary hashes, launch order, settings and byte/read
+shapes retained. Ratios are medians of paired CPU-rate ratios. Internal best
+of five/seven is an estimator, not independent samples. Host shared, pacing
+and code layout can affect unchanged paths. No outliers filtered; sign tests
+are exploratory, not corrected across metrics/candidates. Engine diagnostics
+are NOT terminal throughput, rendered latency, RTT, or competitor results.
+No new Ghostty comparison and no all-metric victory claim.
+
+Instruction evidence was used only to motivate a decoder candidate:
+selected print_utf8 symbol VA 0x37a400, size 0x22ad. Coarse previous samples at
++0x543 (47), +0x523 (34), +0x54b (13) map to UTF-8 dispatch/bounds instructions.
+The retained +0x96c (31) is not assigned a causal mechanism. Samples are
+coalesced/correlated leaf PCs, not an exact instruction-cost split. A failed
+decoder rewrite does not establish that decoding is free.
+
+KEPT: TWO REGRESSION TESTS AND REPORT REPLAY
+A coverage gap: unpadded 1/2/3-byte scalar tests cannot execute a four-byte
+fast path for those scalars. Added all 1,112,064 valid Unicode scalars at five
+padded offsets with adjacent junk: 5,560,320 padded scalar comparisons, plus
+end-of-slice rejection checks. Existing exhaustive/truncation tests remain.
+Added Linux guarded-page decoder tails: valid 1/2/3/4-byte encodings, malformed
+forms and all their truncations, ASCII prefix lengths 0..32, every in-bounds
+starting offset. Slice ends immediately before PROT_NONE; mmap is RAII-owned
+and unmapped on assertion unwind. This directly guards decoder overreads,
+not just the existing run scanner's page boundaries.
+
+Four decoder tests passed on the word candidate and restored selected source.
+Final selected-source targeted Rust verification: 5 passed, 0 failed
+(four decoder tests plus existing speed::plain_runs_match_the_parser).
+No full-workspace or CI result is claimed.
+
+Added bench/replay-engine-pairs.py: independent read-only fail-closed report
+consistency/provenance validation. Recomputes every ratio/median/sign count,
+checks raw versus parsed rows, order, workload identity, exits, duplicates,
+completeness, and optionally exact executable hashes. Five validator unit
+tests pass, including explicit synthetic mutation fixtures; those fixtures
+are NOT performance evidence. All FOUR real datasets passed exact raw/hash
+replay. The checker validates internal consistency, not measurement accuracy.
+
+RESTORATION
+All three runtime candidates removed. Live engine source after removing only
+the two added test functions byte-equals the frozen starting source. No other
+runtime sources changed. Historical selected target/release/glass restored
+and byte-compared to /tmp/glass-i11-selected, SHA256:
+d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c.
+Fresh control/candidate build hashes are separately recorded; a source restore
+is not misrepresented as reproduction of the historical binary's codegen.
+Earlier iteration reports and unrelated pre-existing untracked work untouched.
+
+ARTIFACTS
+bench/results/2026-11-02-row-continuation/README.md
+  engine.control.rs, engine.candidate.rs, candidate.patch, engine-pairs.json,
+  differential.log, payload-coverage.py, ascii-coverage.json, selected-sha256.txt.
+bench/results/2026-11-02-ascii-islands/README.md
+  engine.control.rs, engine.candidate.rs, candidate.patch, engine-pairs.json,
+  build receipts and differential.log.
+bench/results/2026-11-02-word-decode/README.md
+  frozen source/patch/builds, engine-pairs.json, engine-replication.json,
+  decoder/differential/final test logs, print-utf8.asm/symbol, restoration.json,
+  replay logs, replay-validator-tests.log, evidence-sha256.json.
+bench/README.md, docs/PERFORMANCE.md and CHANGELOG.md link/describe the result.
+
+REPRODUCTION (workspace root)
+python3 -I bench/replay-engine-pairs.py --verify-binaries --pairs 11 \
+  bench/results/2026-11-02-row-continuation/engine-pairs.json \
+  bench/results/2026-11-02-ascii-islands/engine-pairs.json \
+  bench/results/2026-11-02-word-decode/engine-pairs.json
+python3 -I bench/replay-engine-pairs.py --verify-binaries --pairs 15 \
+  bench/results/2026-11-02-word-decode/engine-replication.json
+python3 -I bench/test_replay_engine_pairs.py -v
+cargo test --release -p glass-term --locked utf8_decod -- --nocapture
+cargo test --release -p glass-term --locked speed::plain_runs_match_the_parser
+Note: --verify-binaries requires the exact recorded /tmp executables to remain.
+Rebuilding tests may change target layout; do not substitute rebuilt hashes.
+
+NEXT NECESSARY WORK
+No reproducible new decoder/row-loop win justifies a terminal promotion gate.
+The existing wider cell/page-layout lead needs a bounded design and independent
+correctness review (extras, styles, wide cells, serde and lazy history), followed
+by engine and full balanced terminal controls. These results neither prove that
+lead nor complete the standing all-metric objective. No acceptance check is bound.

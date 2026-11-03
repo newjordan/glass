@@ -3915,6 +3915,77 @@ mod tests {
         }
     }
 
+    /// Unpadded scalar tests never enter a four-byte decoder path for short
+    /// encodings. Adjacent junk must not change the first decoded scalar.
+    #[test]
+    fn utf8_decoding_all_scalars_with_padded_offsets() {
+        let mut encoded = [0; 4];
+        let mut padded = [0xff; 12];
+        for value in 0..=0x10ffff {
+            let Some(c) = char::from_u32(value) else { continue };
+            let bytes = c.encode_utf8(&mut encoded).as_bytes();
+            for at in 0..=4 {
+                padded.fill(0xff);
+                padded[at..at + bytes.len()].copy_from_slice(bytes);
+                assert_eq!(utf8_at(&padded, at), Some((c, bytes.len())),
+                    "padded scalar {value:#x} at {at}");
+                assert_eq!(utf8_at(&padded, padded.len()), None);
+            }
+        }
+    }
+
+    /// A decoder may inspect exactly its slice, never the inaccessible page
+    /// following it, including when a valid scalar is truncated at that edge.
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn utf8_decoding_never_loads_past_a_guarded_slice() {
+        struct Pages { ptr: *mut libc::c_void, len: usize }
+        impl Drop for Pages {
+            fn drop(&mut self) {
+                // SAFETY: this object uniquely owns the mmap allocation.
+                assert_eq!(unsafe { libc::munmap(self.ptr, self.len) }, 0);
+            }
+        }
+        // SAFETY: sysconf has no preconditions for this constant.
+        let page = unsafe { libc::sysconf(libc::_SC_PAGESIZE) };
+        assert!(page >= 256);
+        let page = page as usize;
+        // SAFETY: private anonymous allocation, not a fixed address.
+        let ptr = unsafe { libc::mmap(std::ptr::null_mut(), page * 2,
+            libc::PROT_READ | libc::PROT_WRITE, libc::MAP_PRIVATE | libc::MAP_ANONYMOUS, -1, 0) };
+        assert_ne!(ptr, libc::MAP_FAILED);
+        let pages = Pages { ptr, len: page * 2 };
+        // SAFETY: the protected page lies inside the mapping and is aligned.
+        assert_eq!(unsafe { libc::mprotect(ptr.cast::<u8>().add(page).cast(), page, libc::PROT_NONE) }, 0);
+        let cases: &[&[u8]] = &[b"", b"a", "é".as_bytes(), "漢".as_bytes(),
+            "🙂".as_bytes(), "\u{10ffff}".as_bytes(), b"\xc0\x80",
+            b"\xe0\x9f\xbf", b"\xed\xa0\x80", b"\xf0\x8f\xbf\xbf",
+            b"\xf4\x90\x80\x80", b"\xf5\x80\x80\x80", b"\xff"];
+        for &case in cases {
+            for tail in 0..=case.len() {
+                for prefix in 0..=32 {
+                    let len = prefix + tail;
+                    // SAFETY: this unique slice ends at the writable page's
+                    // boundary; even the empty slice has a nonnull pointer.
+                    let bytes = unsafe { std::slice::from_raw_parts_mut(
+                        pages.ptr.cast::<u8>().add(page - len), len) };
+                    bytes.fill(b'a');
+                    bytes[prefix..].copy_from_slice(&case[..tail]);
+                    for at in 0..=bytes.len() {
+                        let rest = &bytes[at..];
+                        let valid = match std::str::from_utf8(rest) {
+                            Ok(text) => text,
+                            Err(e) => std::str::from_utf8(&rest[..e.valid_up_to()]).unwrap(),
+                        };
+                        let expected = valid.chars().next().map(|c| (c, c.len_utf8()));
+                        assert_eq!(utf8_at(bytes, at), expected,
+                            "case {case:x?} tail {tail} prefix {prefix} at {at}");
+                    }
+                }
+            }
+        }
+    }
+
     #[test]
     fn utf8_decoding_covers_all_scalars_and_boundary_rejections() {
         let mut buf = [0; 4];

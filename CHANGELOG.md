@@ -57,6 +57,16 @@ description of what to show.
   parser-equivalence test and eleven engine pairs. Runtime and exact selected
   executable unchanged; no all-metric performance win claimed.
 
+### UTF-8 research and decoder regression coverage
+
+- Guard decoder tails with an inaccessible page, including truncations and
+  malformed forms; exhaust all valid scalars at five padded offsets so
+  fixed-word paths for short encodings cannot escape coverage.
+- Add a fail-closed read-only replay checker for paired engine reports.
+- Reject row-continuation reuse, ASCII-island batching and masked-word UTF-8
+  decoding after balanced measurements/replication. No runtime promotion;
+  exact selected executable restored. This is not an all-metric Ghostty win.
+
 ### Open intake
 
 ### Measured research and parser regression coverage

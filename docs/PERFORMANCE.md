@@ -445,3 +445,21 @@ real **10,100-record / 10,000-line-history** recycling case. The final relevant
 release test gate passed **3 tests** (two new, one existing filter match).
 The bulk V1 and V3 experiments separately passed **12,800 differential streams
 each**; those receipts are candidate-specific, not a final workspace sweep.
+
+
+### UTF-8 follow-up: no reproducible runtime gain
+
+[Three distinct candidates](../bench/results/2026-11-02-word-decode/README.md)
+passed parser equivalence; none was promoted. Continuation reuse lost 1.76%
+Unicode in 11 engine pairs; byte-proven ASCII islands lost 11.01% in all 11.
+Combined continuation-byte masks and a bounded four-byte load initially gained
+1.16%, then replicated at -0.48% (5/15 wins). These are engine diagnostics,
+not terminal or Ghostty scores, and neither test series is selectively pooled.
+
+A useful safety gap was closed: exhaustive short UTF-8 scalars without padding
+cannot exercise a four-byte decoder path. Added all valid scalars at five
+padded offsets plus valid/malformed/truncated tails immediately before an
+inaccessible page. Four decoder tests and the parser differential pass on
+selected source. Runtime source (apart from tests) and the exact historical
+selected release executable remain unchanged. Raw reports independently
+replay via `bench/replay-engine-pairs.py`.

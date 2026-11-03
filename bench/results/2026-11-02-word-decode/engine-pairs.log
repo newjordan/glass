@@ -1,0 +1,49 @@
+pair 1/11 recorded
+pair 2/11 recorded
+pair 3/11 recorded
+pair 4/11 recorded
+pair 5/11 recorded
+pair 6/11 recorded
+pair 7/11 recorded
+pair 8/11 recorded
+pair 9/11 recorded
+pair 10/11 recorded
+pair 11/11 recorded
+{
+  "ascii": {
+    "median_cpu_ratio": 1.0224533597490508,
+    "wins": 8,
+    "losses": 3,
+    "sign_p_two_sided": 0.2265625
+  },
+  "cursor_motion": {
+    "median_cpu_ratio": 1.0262295081967214,
+    "wins": 6,
+    "losses": 5,
+    "sign_p_two_sided": 1.0
+  },
+  "scroll_region": {
+    "median_cpu_ratio": 1.0073661346680518,
+    "wins": 6,
+    "losses": 5,
+    "sign_p_two_sided": 1.0
+  },
+  "truecolor": {
+    "median_cpu_ratio": 1.008671415298854,
+    "wins": 7,
+    "losses": 4,
+    "sign_p_two_sided": 0.548828125
+  },
+  "tui_frames": {
+    "median_cpu_ratio": 1.0101123595505617,
+    "wins": 6,
+    "losses": 5,
+    "sign_p_two_sided": 1.0
+  },
+  "unicode": {
+    "median_cpu_ratio": 1.0115696104897802,
+    "wins": 7,
+    "losses": 4,
+    "sign_p_two_sided": 0.548828125
+  }
+}

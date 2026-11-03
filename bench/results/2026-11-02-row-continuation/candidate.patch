@@ -1,0 +1,90 @@
+diff --git i/crates/term/src/engine.rs w/crates/term/src/engine.rs
+index 275d5d3..b4f2459 100644
+--- i/crates/term/src/engine.rs
++++ w/crates/term/src/engine.rs
+@@ -1833,17 +1833,20 @@ impl Watch<'_> {
+         loop {
+             // As many as fit go into the cursor's row at once; this loop
+             // takes the one that stopped them.
++            let mut rejected = None;
+             if plain {
+-                (at, held) = self.put_row(text, at, held, ascii);
++                (at, held, rejected) = self.put_row(text, at, held, ascii);
+             }
+-            let Some((c, len)) = utf8_at(text, at) else {
++            // A row rejection already checked this successor and established
++            // that the held glyph needs `input`; do not repeat either check.
++            let Some((c, len)) = rejected.or_else(|| utf8_at(text, at)) else {
+                 break;
+             };
+             if ('\u{7f}'..='\u{9f}').contains(&c) {
+                 break;
+             }
+             if let Some((last, _)) = held
+-                && !self.put_plain(last, plain, ascii)
++                && (rejected.is_some() || !self.put_plain(last, plain, ascii))
+             {
+                 alacritty_terminal::vte::ansi::Handler::input(self, last);
+             }
+@@ -1886,11 +1889,11 @@ impl Watch<'_> {
+     /// a C1 control, or at a held character `put_plain` would refuse, and
+     /// returns where it stopped and what it holds.
+     #[inline(always)]
+-    fn put_row(&mut self, text: &[u8], mut at: usize, mut held: Option<(char, usize)>, ascii: bool) -> (usize, Option<(char, usize)>) {
++    fn put_row(&mut self, text: &[u8], mut at: usize, mut held: Option<(char, usize)>, ascii: bool) -> (usize, Option<(char, usize)>, Option<(char, usize)>) {
+         let columns = self.term.columns();
+         let grid = self.term.grid_mut();
+         if grid.cursor.input_needs_wrap {
+-            return (at, held);
++            return (at, held, None);
+         }
+         let line = grid.cursor.point.line;
+         let mut column = grid.cursor.point.column.0;
+@@ -1943,6 +1946,7 @@ impl Watch<'_> {
+             flags: flags | CellFlags::WIDE_CHAR_SPACER,
+             ..narrow.clone()
+         };
++        let mut rejected = None;
+         while let Some((c, len)) = utf8_at(text, at) {
+             if ('\u{7f}'..='\u{9f}').contains(&c) {
+                 break;
+@@ -1950,6 +1954,7 @@ impl Watch<'_> {
+             if let Some((last, _)) = held {
+                 let width = if (' '..='~').contains(&last) {
+                     if !ascii {
++                        rejected = Some((c, len));
+                         break;
+                     }
+                     1
+@@ -1969,9 +1974,13 @@ impl Watch<'_> {
+                             // A mark joins the cell before it through
+                             // the caller's `input` fallback; it needs
+                             // the row, not this slice.
++                            rejected = Some((c, len));
++                            break;
++                        }
++                        _ => {
++                            rejected = Some((c, len));
+                             break;
+                         }
+-                        _ => break,
+                     }
+                 };
+                 // The wide-char guard reads the slice's physical
+@@ -1986,6 +1995,7 @@ impl Watch<'_> {
+                             || (width == 2
+                                 && cells[at_col + 1].flags.intersects(underneath))))
+                 {
++                    rejected = Some((c, len));
+                     break;
+                 }
+                 // Full-overwrite writes: a recycled row pays no blank
+@@ -2026,7 +2036,7 @@ impl Watch<'_> {
+         grid.cursor.point.column = Column(column);
+         grid.cursor.input_needs_wrap = wrap;
+         self.drained += written;
+-        (at, held)
++        (at, held, rejected)
+     }
+ 
+     /// One character of a run `print_utf8` checked: written straight into

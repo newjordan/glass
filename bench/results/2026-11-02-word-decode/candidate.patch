@@ -1,0 +1,38 @@
+diff --git i/crates/term/src/engine.rs w/crates/term/src/engine.rs
+index 275d5d3..efbf52d 100644
+--- i/crates/term/src/engine.rs
++++ w/crates/term/src/engine.rs
+@@ -3597,6 +3597,33 @@ impl Mirror {
+ /// the parser takes as it always has.
+ #[inline(always)]
+ fn utf8_at(bytes: &[u8], at: usize) -> Option<(char, usize)> {
++    if let Some(word) = bytes.get(at..).and_then(|s| s.first_chunk::<4>()) {
++        let bits = u32::from_le_bytes(*word);
++        let lead = bits as u8;
++        if lead < 0x80 {
++            return Some((char::from(lead), 1));
++        }
++        let second = (bits >> 8) as u8;
++        let (value, len) = match lead {
++            0xc2..=0xdf if bits & 0x0000_c000 == 0x0000_8000 => {
++                ((u32::from(lead & 0x1f) << 6) | ((bits >> 8) & 0x3f), 2)
++            }
++            0xe0..=0xef if bits & 0x00c0_c000 == 0x0080_8000
++                && (lead != 0xe0 || second >= 0xa0)
++                && (lead != 0xed || second <= 0x9f) => {
++                ((u32::from(lead & 0x0f) << 12) | ((bits & 0x3f00) >> 2)
++                    | ((bits >> 16) & 0x3f), 3)
++            }
++            0xf0..=0xf4 if bits & 0xc0c0_c000 == 0x8080_8000
++                && (lead != 0xf0 || second >= 0x90)
++                && (lead != 0xf4 || second <= 0x8f) => {
++                ((u32::from(lead & 7) << 18) | ((bits & 0x3f00) << 4)
++                    | ((bits & 0x003f_0000) >> 10) | (bits >> 24 & 0x3f), 4)
++            }
++            _ => return None,
++        };
++        return Some((char::from_u32(value)?, len));
++    }
+     let lead = *bytes.get(at)?;
+     if lead < 0x80 {
+         return Some((char::from(lead), 1));

@@ -1,0 +1,45 @@
+diff --git i/crates/term/src/engine.rs w/crates/term/src/engine.rs
+index 275d5d3..e8580c5 100644
+--- i/crates/term/src/engine.rs
++++ w/crates/term/src/engine.rs
+@@ -1948,6 +1948,40 @@ impl Watch<'_> {
+                 break;
+             }
+             if let Some((last, _)) = held {
++                // Byte-proven ASCII islands use a fixed-stride write phase.
++                // Keep the final successor held, just as the scalar loop does.
++                if ascii && (' '..='~').contains(&last) && !wrap
++                    && let Some(eight) = text.get(at..).and_then(|s| s.first_chunk::<8>())
++                    && eight.iter().all(|b| (0x20..=0x7e).contains(b))
++                {
++                    let at_col = column - start_column;
++                    let mut n = 8.min(columns - column);
++                    if column < guard_from {
++                        let guarded = n.min(guard_from - column);
++                        if let Some(bad) = cells[at_col..at_col + guarded].iter()
++                            .position(|cell| cell.flags.intersects(underneath))
++                        {
++                            n = bad;
++                        }
++                    }
++                    if n > 0 {
++                        for k in 0..n {
++                            let mut fresh = narrow.clone();
++                            fresh.c = if k == 0 { last } else { char::from(eight[k - 1]) };
++                            cells[at_col + k] = fresh;
++                        }
++                        occ_to = column + n;
++                        column += n;
++                        if column == columns {
++                            column -= 1;
++                            wrap = true;
++                        }
++                        written += n;
++                        held = Some((char::from(eight[n - 1]), at + n - 1));
++                        at += n;
++                        continue;
++                    }
++                }
+                 let width = if (' '..='~').contains(&last) {
+                     if !ascii {
+                         break;

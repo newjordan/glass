@@ -355,3 +355,41 @@ New opt-in tools: `linux/run-pipeline-profile.sh`, `pipeline-profile.py`,
 `analyze-pipeline.py`, `cpu-sample.c`, `run-cpu-sample.sh`, and
 `symbolize-cpu-sample.py`. All summaries have exact-hash replay. No PMU or
 full scheduler-event trace was available; no all-metric Ghostty win is claimed.
+
+
+### UTF-8 continuation, ASCII islands and word decoding (2026-11-02)
+
+Three new, ship-semantics candidates passed existing parser equivalence but
+were rejected. Eleven balanced engine pairs: reusing failed row continuations
+lost 1.76% Unicode (2 wins); byte-proven eight-byte ASCII islands lost 11.01%
+(0 wins); four-byte masked validation initially gained 1.16% (7 wins), then
+replicated at **-0.48% (5/15)** after identical test additions and rebuilds.
+Neither engine gains nor instruction samples are terminal rankings.
+No runtime promotion, competitor/RTT gate or championship claim.
+
+Kept: decoder guard-page tails and exhaustive padded offsets (short encodings
+otherwise miss a four-byte decoder fast path). Final selected-source targeted
+Rust gate: four decoder tests + parser differential, **5 passed, 0 failed**.
+The historical selected release executable is byte-identically restored.
+
+- [Continuation and exact terminal-payload ASCII coverage](results/2026-11-02-row-continuation/README.md)
+- [Byte-proven ASCII islands](results/2026-11-02-ascii-islands/README.md)
+- [Masked-word decode, replication, instruction evidence and restoration](results/2026-11-02-word-decode/README.md)
+
+Read-only independent arithmetic/provenance replay (no benchmark rerun):
+
+```
+python3 -I bench/replay-engine-pairs.py --pairs 11 \
+  bench/results/2026-11-02-row-continuation/engine-pairs.json \
+  bench/results/2026-11-02-ascii-islands/engine-pairs.json \
+  bench/results/2026-11-02-word-decode/engine-pairs.json
+python3 -I bench/replay-engine-pairs.py --pairs 15 \
+  bench/results/2026-11-02-word-decode/engine-replication.json
+python3 -I bench/test_replay_engine_pairs.py -v
+```
+
+Use `--verify-binaries` while the frozen `/tmp` executables are still present.
+Rejects missing/duplicate rows or JSON keys, nonzero exits, changed byte/read
+shape, order errors, and summary/raw-output disagreement. This validates
+internal consistency, not timing accuracy. Five validator mutation tests pass;
+those synthetic fixtures are explicitly not research measurements.

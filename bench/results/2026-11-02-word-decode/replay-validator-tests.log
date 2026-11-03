@@ -1,0 +1,10 @@
+test_duplicate_json_key (__main__.ReplayTests.test_duplicate_json_key) ... ok
+test_reject_bad_reports (__main__.ReplayTests.test_reject_bad_reports) ... ok
+test_reject_changed_workload_shape (__main__.ReplayTests.test_reject_changed_workload_shape) ... ok
+test_requested_pairs_and_binary_checks_fail_closed (__main__.ReplayTests.test_requested_pairs_and_binary_checks_fail_closed) ... ok
+test_valid_and_tie (__main__.ReplayTests.test_valid_and_tie) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.002s
+
+OK

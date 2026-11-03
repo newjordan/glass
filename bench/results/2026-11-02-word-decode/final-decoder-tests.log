@@ -1,0 +1,9 @@
+
+running 4 tests
+test engine::tests::utf8_decoding_never_loads_past_a_guarded_slice ... ok
+test engine::tests::utf8_decoding_matches_the_standard_library ... ok
+test engine::tests::utf8_decoding_covers_all_scalars_and_boundary_rejections ... ok
+test engine::tests::utf8_decoding_all_scalars_with_padded_offsets ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 383 filtered out; finished in 0.02s
+
