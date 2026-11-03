@@ -1,0 +1,35 @@
+{
+  "cell_bytes_per_arm": 24,
+  "correctness_tests_per_arm": 395,
+  "cpu_ratios": {
+    "ascii": 0.9726393274687098,
+    "cursor_motion": 0.9992401083076632,
+    "scroll_region": 0.976000602477499,
+    "truecolor": 0.9897536876809616,
+    "tui_frames": 0.9911195463327842,
+    "unicode": 1.2535574867505526
+  },
+  "differential_streams_per_arm": 12800,
+  "doctests_per_arm": 1,
+  "engine_screen_cleared": false,
+  "ignored_per_arm": 14,
+  "library_tests": {
+    "candidate": 140,
+    "control": 139
+  },
+  "note": "Fixed local engine screen and historical byte replay; not timing causality, fresh Rust tests, PTY/Ghostty superiority, resource measurement, API compatibility or championship acceptance.",
+  "pairs": 12,
+  "point_regression_guards_failed": [
+    "ascii",
+    "scroll_region"
+  ],
+  "prior_references": 2061,
+  "prior_versions": 1966,
+  "reference_fixtures_per_arm": 45,
+  "rejected_metadata_corruptions": 13,
+  "runtime_candidate_restored": true,
+  "schema": "glass.inline-mark-id-checkpoint/v1",
+  "selected_executable_unchanged": true,
+  "sessions": 24,
+  "status": "reported"
+}

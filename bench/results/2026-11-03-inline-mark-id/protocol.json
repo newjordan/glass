@@ -1,0 +1,51 @@
+{
+  "api_break": "Private extra state, plain/from_template/has_extra/clear_extra methods. This is not public Arc-field API compatible.",
+  "arms": [
+    "control",
+    "candidate"
+  ],
+  "correctness": [
+    "Cell layout and wire/trait/ownership gates",
+    "Library and reference fixtures",
+    "395 terminal tests and 12800 differential streams each arm"
+  ],
+  "created_utc": "2026-11-03T20:13:48.518969+00:00",
+  "dictionary": [
+    "0x300",
+    "0x36f"
+  ],
+  "early_kill": [
+    "Cell >24 bytes or larger than original",
+    "serde logical equivalence, COW, thread or reference fixtures fail"
+  ],
+  "engine": {
+    "blocks": 12,
+    "orders": [
+      [
+        "control",
+        "candidate"
+      ],
+      [
+        "candidate",
+        "control"
+      ]
+    ],
+    "primary": "Unicode median paired CPU-rate ratio >=1.02, wins>losses, six-workload Holm p<.05, and all six median CPU ratios >=.98. Point guards not noninferiority.",
+    "read": 4095,
+    "rounds": 5,
+    "scale": 2,
+    "stop": "Exactly 12 balanced pairs, no pilot, exclusions, rescue or pooling. Reject on failed screen. Fresh PTY/every-metric gates required before promotion.",
+    "workloads": [
+      "ascii",
+      "unicode",
+      "truecolor",
+      "cursor_motion",
+      "scroll_region",
+      "tui_frames"
+    ]
+  },
+  "limits": "Research-only private API change. Linux host layout only; compiler padding not stable ABI. Fixed dictionary does not restrict mark acceptance.",
+  "mechanism": "Safe u16 mark dictionary ID in existing Cell padding; common API migration in both arms. Candidate common single marks do not own an Arc. No unsafe/manual reference counts.",
+  "runtime_promotion": false,
+  "schema": "glass.inline-mark-id-protocol/v1"
+}

@@ -1,0 +1,10 @@
+{
+  "candidate": {
+    "path": "/tmp/glass-inline-mark-id-candidate-test",
+    "sha256": "691775835bab34ff2d1bebb0f219c9f04dc3b1e74d880f3a4e6dda4d0232c27e"
+  },
+  "control": {
+    "path": "/tmp/glass-inline-mark-id-control-test",
+    "sha256": "8ebc93fa1f2ea6892aa783be182829aa3da62da9303e9583396226c6fa58384d"
+  }
+}

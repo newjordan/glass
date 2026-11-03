@@ -1,0 +1,109 @@
+Iteration45 additive result: safe inline mark IDs, rejected all-metric screen
+==========================================================================
+
+Status: reported local research. This supplements, and does not replace, the
+immutable campaign-audit report for iteration45. World championship is NOT
+established. The original no-op COW fix remains shipping; this new runtime
+prototype and common API migration were restored exactly out of shipping.
+
+Primary artifacts
+-----------------
+bench/results/2026-11-03-inline-mark-id/README.md
+bench/results/2026-11-03-inline-mark-id/protocol.json
+bench/results/2026-11-03-inline-mark-id/raw.json
+bench/results/2026-11-03-inline-mark-id/analysis.json
+bench/results/2026-11-03-inline-mark-id/candidate.patch
+bench/results/2026-11-03-inline-mark-id/migration.patch
+bench/results/2026-11-03-inline-mark-id/build-control/identity.json
+bench/results/2026-11-03-inline-mark-id/build-candidate/identity.json
+bench/results/2026-11-03-inline-mark-id/checkpoint-first.json
+bench/results/2026-11-03-inline-mark-id/verify.py
+
+Read-only replay (requires the exact retained timing executables):
+python3 -B bench/results/2026-11-03-inline-mark-id/verify.py
+
+New verified finite finding
+---------------------------
+A private u16 dictionary ID for a single U+0300..U+036F mark fits beside the
+ordinary private Option<Arc<CellExtra>> without increasing the measured Cell
+stride: control and candidate are 24 bytes, alignment 8 on Linux x86-64 with
+configured rustc 1.99.0. This avoids Arc ownership for inline singletons without
+raw pointers, manual strong counts or unsafe trait implementations.
+
+The immutable 112-entry dictionary is a process-wide OnceLock. Its ELF storage
+is 6,280 bytes including initialization state; the original one-entry per-thread
+cache remains for non-dictionary marks. Richer mutation materializes an owned
+Arc first and then uses normal COW. Reset/lazy cleanup clear both representations.
+No-op None setters leave inline state alone. Empty/line-length checks, equality,
+Debug and serde operate on logical content. Public extra-field access must be
+replaced with methods, so this is not public API compatible. Both timing arms
+carry that migration; only candidate adds inline storage. The result is not a
+measured candidate-vs-unmodified-shipping comparison.
+
+Fixed prospective engine result
+-------------------------------
+Protocol frozen before builds and timing: exactly 12 balanced AB/BA pairs, six
+generated in-memory workloads, scale 2, read 4095, best-of-five per invocation.
+24 sessions / 144 workload observations, no pilot, discarded session, rescue,
+extension or pooling. Internal five passes are not independent trials.
+
+                  median CPU ratio   median wall ratio   wins/losses
+ASCII                  0.972639          0.973303             2/10
+Unicode                1.253557          1.253027            12/0
+Truecolor              0.989754          0.989732             0/12
+Cursor motion          0.999240          0.999621             5/7
+Scroll region          0.976001          0.975536             0/12
+TUI frames             0.991120          0.991100             0/12
+
+Unicode clears >=1.02, wins>losses and six-workload Holm p<.05 (p=.002930).
+ASCII and scroll-region fail the predeclared .98 point guards, so the candidate
+fails its engine screen. Truecolor and TUI clear the guard but lose every pair.
+Point guards are not noninferiority bounds. Balanced serial order does not prove
+independent fair signs; no campaign-wide adaptive correction is established.
+
+Static census of the exact measured binaries: print_utf8 grows 8,524 -> 8,706
+bytes and 1,967 -> 2,018 instructions; stack references 420 -> 439. Entry
+addresses differ. This is not dynamic attribution or proof of why ASCII/scroll
+regress. No fresh terminal/Ghostty/resource or display-latency test was launched
+after the failed guards. No multiplication into an old PTY result is valid.
+
+Correctness and verification
+----------------------------
+Control: 139 library tests, 45 reference fixtures, one doctest pass.
+Candidate: 140 library tests, 45 reference fixtures, one doctest pass.
+Both exact engine executables: 395 terminal tests pass, 14 ignored; existing
+12,800-stream parser differential sweep passes. Existing edge test passes.
+The common logical-content test covers all dictionary entries and four misses,
+serde/Debug equivalence with owned extras, mutation isolation, line length and
+cross-thread behavior. The candidate-only storage test additionally checks every
+valid Unicode scalar's ID mapping, inline ownership/no-ops/promotion and reset;
+it also passes under debug assertions.
+
+Initial direct-Arc unwrap failure, mismatched rustdoc failure, pre-final builds,
+and no-clobber build refusal are preserved and not counted as final gate passes.
+The matching rustdoc beside configured RUSTC resolves the doctest toolchain issue.
+The ID bounds branch avoids eager narrowing overflow for high scalar misses.
+
+The read-only checkpoint exits 0, reproduces all stored ratios/decisions, binds
+exact binaries to non-fresh Cargo receipts and source snapshots, replays static
+disassembly, rejects 13 decoded metadata/key corruptions, and checks original
+runtime and target/release/glass are unchanged. Historical frozen replay matches
+2,061 earlier references / 1,966 source versions. This is byte-integrity evidence,
+not a new correctness run, proof of arbitrary serde-format compatibility,
+performance causality or a competitive acceptance command.
+
+Literal target delta
+--------------------
+The mandatory iteration45 audit remains intact. Its historical 30-pair selected
+shipping-vs-Ghostty DA1 result has corrected positive leads for truecolor, cursor
+motion and TUI. Reaching observed median parity still requires own-rate gains of
+5.58% ASCII, 7.63% Unicode and 1.08% scroll-region. Those are parity, not positive
+lead margins, and do not apply automatically to later source fixes or prototypes.
+Startup, resources, displayed key/frame latency, compatibility/platform scope and
+a bound world-ranking acceptance command are unresolved.
+
+A safe ownership representation is now evidenced at the existing cell stride,
+and a substantial local Unicode improvement is retained. It is not an all-metric
+win. Next work needs a distinct, preregistered candidate addressing ASCII/scroll
+cost before same-build PTY, Ghostty and missing-metric gates. This closes the
+current fixed experiment, not the world-champion objective.

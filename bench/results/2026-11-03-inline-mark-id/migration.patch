@@ -1,0 +1,323 @@
+--- a/crates/alacritty-terminal/src/grid/storage.rs
++++ b/crates/alacritty-terminal/src/grid/storage.rs
+@@ -872,14 +872,9 @@
+                             // Distinct cells, styles, and shared extras must move
+                             // with their row, including stale lazy-tail contents.
+                             for col in 0..4 {
+-                                let mut cell = Cell {
+-                                    c: char::from_u32(
+-                                        0x100 + ((line + 3) as u32 * 4) + col as u32,
+-                                    )
+-                                    .unwrap(),
+-                                    bg: Color::Indexed((line + 3) as u8),
+-                                    ..Cell::default()
+-                                };
++                                let mut cell = Cell::default();
++                                cell.c = char::from_u32(0x100 + ((line + 3) as u32 * 4) + col as u32).unwrap();
++                                cell.bg = Color::Indexed((line + 3) as u8);
+                                 if line.rem_euclid(3) == 1 {
+                                     cell.push_zerowidth('\u{301}');
+                                 }
+@@ -889,7 +884,9 @@
+                             row.note_uniform_write(0, 4, &specimen);
+                             if line.rem_euclid(2) == 0 {
+                                 row.recycle(&specimen);
+-                                row.write_cell(0, Cell { c: 'X', ..Cell::default() });
++                                let mut replacement = Cell::default();
++                                replacement.c = 'X';
++                                row.write_cell(0, replacement);
+                             }
+                         }
+                         let snapshot = |storage: &Storage<Cell>| -> Vec<_> {
+--- a/crates/alacritty-terminal/src/term/cell.rs
++++ b/crates/alacritty-terminal/src/term/cell.rs
+@@ -179,7 +179,7 @@
+     pub fg: Color,
+     pub bg: Color,
+     pub flags: Flags,
+-    pub extra: Option<Arc<CellExtra>>,
++    extra: Option<Arc<CellExtra>>,
+ }
+ 
+ impl Default for Cell {
+@@ -196,6 +196,26 @@
+ }
+ 
+ impl Cell {
++    fn extra_content(&self) -> Option<&CellExtra> { self.extra.as_deref() }
++
++    /// Construct a cell without additional attributes or marks.
++    pub fn plain(c: char, fg: Color, bg: Color, flags: Flags) -> Self {
++        Self { c, fg, bg, flags, extra: None }
++    }
++
++    /// Copy the complete logical style and extra content of a cursor template.
++    pub fn from_template(c: char, template: &Self) -> Self {
++        let mut cell = template.clone();
++        cell.c = c;
++        cell
++    }
++
++    #[inline]
++    pub fn has_extra(&self) -> bool { self.extra.is_some() }
++
++    #[inline]
++    pub fn clear_extra(&mut self) { self.extra = None; }
++
+     /// Zerowidth characters stored in this cell.
+     #[inline]
+     pub fn zerowidth(&self) -> Option<&[char]> {
+@@ -381,7 +401,8 @@
+         let mut second = Cell::default();
+         first.push_zerowidth('\u{301}');
+         second.push_zerowidth('\u{301}');
+-        assert!(Arc::ptr_eq(first.extra.as_ref().unwrap(), second.extra.as_ref().unwrap()));
++        assert_eq!(first.zerowidth(), second.zerowidth());
++        if let (Some(a), Some(b)) = (first.extra.as_ref(), second.extra.as_ref()) { assert!(Arc::ptr_eq(a, b)); }
+ 
+         first.push_zerowidth('\u{308}');
+         first.set_underline_color(Some(Color::Indexed(3)));
+@@ -403,7 +424,8 @@
+         let mut fresh = Cell::default();
+         fresh.push_zerowidth('\u{300}');
+         assert_eq!(fresh.zerowidth(), Some(&['\u{300}'][..]));
+-        assert!(Arc::ptr_eq(fresh.extra.as_ref().unwrap(), different.extra.as_ref().unwrap()));
++        assert_eq!(fresh.zerowidth(), different.zerowidth());
++        if let (Some(a), Some(b)) = (fresh.extra.as_ref(), different.extra.as_ref()) { assert!(Arc::ptr_eq(a, b)); }
+         assert_eq!(second.zerowidth(), Some(&[][..]));
+     }
+ 
+@@ -509,6 +531,69 @@
+         assert_eq!(serde_json::from_str::<Cell>(&json).unwrap(), owned);
+     }
+ 
++
++    #[test]
++    fn logical_single_marks_layout_wire_and_lifetimes() {
++        fn traits<T: Send + Sync>() {}
++        traits::<Cell>();
++        assert_eq!(std::mem::size_of::<Cell>(), 24);
++        eprintln!("inline-layout bytes={} align={}", std::mem::size_of::<Cell>(), std::mem::align_of::<Cell>());
++        let chars: Vec<char> = (0x300..=0x36f).map(|v| char::from_u32(v).unwrap())
++            .chain(['\u{2ff}', '\u{370}', '\u{1ab0}', '\0']).collect();
++        for mark in chars {
++            let mut cell = Cell::default();
++            cell.push_zerowidth(mark);
++            assert!(cell.has_extra());
++            assert!(!cell.is_empty());
++            assert_eq!(cell.zerowidth(), Some(&[mark][..]));
++            let owner = Cell { extra: Some(Arc::new(CellExtra::with_mark(mark))), ..Cell::default() };
++            assert_eq!(cell, owner);
++            assert_eq!(format!("{cell:?}"), format!("{owner:?}"));
++            #[cfg(feature = "serde")]
++            {
++                let wire = serde_json::to_string(&cell).unwrap();
++                assert_eq!(wire, serde_json::to_string(&owner).unwrap());
++                assert!(!wire.contains("inline"));
++                assert_eq!(serde_json::from_str::<Cell>(&wire).unwrap(), cell);
++            }
++            let mut row = Row::new(4);
++            row[Column(2)] = cell.clone();
++            assert_eq!(row.line_length(), Column(3));
++            for operation in 0..7 {
++                let mut copy = cell.clone();
++                match operation {
++                    0 => copy.push_zerowidth('\u{308}'),
++                    1 => copy.set_underline_color(Some(Color::Indexed(7))),
++                    2 => copy.set_hyperlink(Some(Hyperlink::new(Some("i"), "https://example.net".into()))),
++                    3 => copy.clear_wide(),
++                    4 => copy.clear_extra(),
++                    5 => copy.set_underline_color(None),
++                    _ => copy.set_hyperlink(None),
++                }
++                assert_eq!(cell.zerowidth(), Some(&[mark][..]));
++                match operation {
++                    0 => assert_eq!(copy.zerowidth(), Some(&[mark, '\u{308}'][..])),
++                    1 => { assert_eq!(copy.underline_color(), Some(Color::Indexed(7))); assert_eq!(copy.zerowidth(), Some(&[mark][..])); },
++                    2 => { assert_eq!(copy.hyperlink().unwrap().id(), "i"); assert_eq!(copy.zerowidth(), Some(&[mark][..])); },
++                    3 => assert_eq!(copy.zerowidth(), Some(&[][..])),
++                    4 => assert!(!copy.has_extra()),
++                    _ => assert_eq!(copy.zerowidth(), Some(&[mark][..])),
++                }
++            }
++            let copied = Cell::from_template('x', &cell);
++            assert_eq!(copied.zerowidth(), Some(&[mark][..]));
++            let joined = std::thread::spawn(move || {
++                let mut changed = copied.clone();
++                changed.push_zerowidth('\u{308}');
++                assert_eq!(copied.zerowidth(), Some(&[mark][..]));
++                changed
++            }).join().unwrap();
++            assert_eq!(joined.zerowidth(), Some(&[mark, '\u{308}'][..]));
++        }
++        let empty = Cell { extra: Some(Arc::new(CellExtra::default())), ..Cell::default() };
++        assert_ne!(empty, Cell::default());
++    }
++
+     #[test]
+     fn line_length_works() {
+         let mut row = Row::<Cell>::new(10);
+--- a/crates/alacritty-terminal/src/term/mod.rs
++++ b/crates/alacritty-terminal/src/term/mod.rs
+@@ -1002,10 +1002,7 @@
+     #[inline(always)]
+     fn write_at_cursor(&mut self, c: char) {
+         let c = self.grid.cursor.charsets[self.active_charset].map(c);
+-        let fg = self.grid.cursor.template.fg;
+-        let bg = self.grid.cursor.template.bg;
+-        let flags = self.grid.cursor.template.flags;
+-        let extra = self.grid.cursor.template.extra.clone();
++        let cell = Cell::from_template(c, &self.grid.cursor.template);
+ 
+         let point = self.grid.cursor.point;
+ 
+@@ -1016,13 +1013,7 @@
+         // the wide-char handling below needs no second read. The clears
+         // touch only neighbor cells, so running them after the store is
+         // equivalent to upstream's before-the-store order.
+-        let under_flags = self.grid.write_cell(point.line, point.column, Cell {
+-            c,
+-            fg,
+-            bg,
+-            flags,
+-            extra,
+-        });
++        let under_flags = self.grid.write_cell(point.line, point.column, cell);
+ 
+         // Clear all related cells when overwriting a fullwidth cell.
+         if under_flags.intersects(Flags::WIDE_CHAR | Flags::WIDE_CHAR_SPACER) {
+--- a/crates/term/src/engine.rs
++++ b/crates/term/src/engine.rs
+@@ -1518,7 +1518,7 @@
+         let columns = self.term.columns();
+         let grid = self.term.grid_mut();
+         let cursor = &grid.cursor;
+-        if cursor.input_needs_wrap || cursor.template.extra.is_some() || cursor.charsets != Default::default() {
++        if cursor.input_needs_wrap || cursor.template.has_extra() || cursor.charsets != Default::default() {
+             return false;
+         }
+         let point = cursor.point;
+@@ -1532,7 +1532,7 @@
+         cell.fg = fg;
+         cell.bg = bg;
+         cell.flags = flags;
+-        cell.extra = None;
++        cell.clear_extra();
+         if point.column.0 + 1 < columns {
+             grid.cursor.point.column.0 += 1;
+         } else {
+@@ -1561,7 +1561,7 @@
+         let grid = self.term.grid_mut();
+         let cursor = &grid.cursor;
+         let wide = CellFlags::WIDE_CHAR | CellFlags::WIDE_CHAR_SPACER | CellFlags::LEADING_WIDE_CHAR_SPACER;
+-        if cursor.input_needs_wrap || cursor.template.extra.is_some() || cursor.template.flags.intersects(wide) {
++        if cursor.input_needs_wrap || cursor.template.has_extra() || cursor.template.flags.intersects(wide) {
+             return false;
+         }
+         let point = cursor.point;
+@@ -1583,14 +1583,14 @@
+         cell.fg = fg;
+         cell.bg = bg;
+         cell.flags = if width == 2 { flags | CellFlags::WIDE_CHAR } else { flags };
+-        cell.extra = None;
++        cell.clear_extra();
+         if width == 2 {
+             let spacer = &mut row[Column(column + 1)];
+             spacer.c = ' ';
+             spacer.fg = fg;
+             spacer.bg = bg;
+             spacer.flags = flags | CellFlags::WIDE_CHAR_SPACER;
+-            spacer.extra = None;
++            spacer.clear_extra();
+         }
+         let last = column + width - 1;
+         if last + 1 < columns {
+@@ -1621,7 +1621,7 @@
+         }
+         {
+             let cursor = &self.term.grid().cursor;
+-            if cursor.template.extra.is_some() || cursor.charsets != Default::default() {
++            if cursor.template.has_extra() || cursor.charsets != Default::default() {
+                 return 0;
+             }
+         }
+@@ -1687,7 +1687,7 @@
+                     cell.fg = fg;
+                     cell.bg = bg;
+                     cell.flags = flags;
+-                    cell.extra = None;
++                    cell.clear_extra();
+                     written += 1;
+                 },
+                 _ if uniform => {
+@@ -1741,7 +1741,7 @@
+                     // writes are prints the parser never sees, so `input`
+                     // cannot track them itself.
+                     let template =
+-                        alacritty_terminal::term::cell::Cell { c: ' ', fg, bg, flags, extra: None };
++                        alacritty_terminal::term::cell::Cell::plain(' ', fg, bg, flags);
+                     let mut last = None;
+                     if dropless {
+                         for (cell, &b) in
+@@ -1824,7 +1824,7 @@
+         // inside it, whatever `input` does with a character.
+         let plain = self.fast && self.in_cell.is_empty() && !self.term.mode().contains(TermMode::INSERT) && {
+             let template = &self.term.grid().cursor.template;
+-            template.extra.is_none()
++            template.has_extra() == false
+                 && !template.flags.intersects(CellFlags::WIDE_CHAR | CellFlags::WIDE_CHAR_SPACER | CellFlags::LEADING_WIDE_CHAR_SPACER)
+         };
+         let ascii = plain && self.term.grid().cursor.charsets == Default::default();
+@@ -1921,7 +1921,7 @@
+             other => other.unwrap_or(usize::MAX),
+         };
+         // The cells this run writes, built once (see the write below).
+-        let narrow = alacritty_terminal::term::cell::Cell { c: ' ', fg, bg, flags, extra: None };
++        let narrow = alacritty_terminal::term::cell::Cell::plain(' ', fg, bg, flags);
+         // Materialize the gap left of the run once, then write into
+         // the raw slice for the rest of the run: per glyph this saves
+         // overwrite_cell's frontier branches and the guard's
+@@ -1935,14 +1935,8 @@
+         let _ = row.lane_cells(column, 0);
+         let cells = row.lane_slice_from(column);
+         let mut occ_to = column;
+-        let wide = alacritty_terminal::term::cell::Cell {
+-            flags: flags | CellFlags::WIDE_CHAR,
+-            ..narrow.clone()
+-        };
+-        let spacer = alacritty_terminal::term::cell::Cell {
+-            flags: flags | CellFlags::WIDE_CHAR_SPACER,
+-            ..narrow.clone()
+-        };
++        let wide = alacritty_terminal::term::cell::Cell::plain(' ', fg, bg, flags | CellFlags::WIDE_CHAR);
++        let spacer = alacritty_terminal::term::cell::Cell::plain(' ', fg, bg, flags | CellFlags::WIDE_CHAR_SPACER);
+         while let Some((c, len)) = utf8_at(text, at) {
+             if ('\u{7f}'..='\u{9f}').contains(&c) {
+                 break;
+@@ -2078,7 +2072,7 @@
+             cell.fg = fg;
+             cell.bg = bg;
+             cell.flags = if width == 2 { flags | CellFlags::WIDE_CHAR } else { flags };
+-            cell.extra = None;
++            cell.clear_extra();
+         }
+         if width == 2 {
+             let spacer = row.overwrite_cell(column + 1);
+@@ -2086,7 +2080,7 @@
+             spacer.fg = fg;
+             spacer.bg = bg;
+             spacer.flags = flags | CellFlags::WIDE_CHAR_SPACER;
+-            spacer.extra = None;
++            spacer.clear_extra();
+         }
+         let last = column + width - 1;
+         if last + 1 < columns {
+@@ -3169,7 +3163,7 @@
+                 watch.fast
+                     && watch.in_cell.is_empty()
+                     && !watch.term.mode().contains(TermMode::INSERT)
+-                    && template.extra.is_none()
++                    && template.has_extra() == false
+                     && !template.flags.intersects(
+                         CellFlags::WIDE_CHAR
+                             | CellFlags::WIDE_CHAR_SPACER

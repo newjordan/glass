@@ -1,0 +1,49 @@
+[
+  {
+    "label": "edge",
+    "argv": [
+      "/tmp/glass-inline-mark-id-candidate-test",
+      "--exact",
+      "speed::unicode_row_edges_preserve_pending_wrap",
+      "--nocapture"
+    ],
+    "settings": {},
+    "exit": 0,
+    "start_ns": 196421450176098,
+    "end_ns": 196422318426599,
+    "binary_sha256": "691775835bab34ff2d1bebb0f219c9f04dc3b1e74d880f3a4e6dda4d0232c27e",
+    "log_sha256": "e86501cebbd6ca77fd5f3f02caf274cf6eee04b9fbbca2555dfcbf69eadb7e5d"
+  },
+  {
+    "label": "suite",
+    "argv": [
+      "/tmp/glass-inline-mark-id-candidate-test"
+    ],
+    "settings": {},
+    "exit": 0,
+    "start_ns": 196422318516929,
+    "end_ns": 196424295917145,
+    "binary_sha256": "691775835bab34ff2d1bebb0f219c9f04dc3b1e74d880f3a4e6dda4d0232c27e",
+    "log_sha256": "ecb18937ede157f08a27c79d460661bf84dcfb22166263f7d0e71e46d9832421"
+  },
+  {
+    "label": "sweep",
+    "argv": [
+      "/tmp/glass-inline-mark-id-candidate-test",
+      "--ignored",
+      "--exact",
+      "speed::plain_runs_match_the_parser_over_seeds",
+      "--nocapture"
+    ],
+    "settings": {
+      "GLASS_SWEEP_SEEDS": "64",
+      "GLASS_SWEEP_ROUNDS": "200",
+      "GLASS_SWEEP_FROM": "1"
+    },
+    "exit": 0,
+    "start_ns": 196424296084539,
+    "end_ns": 196435269695651,
+    "binary_sha256": "691775835bab34ff2d1bebb0f219c9f04dc3b1e74d880f3a4e6dda4d0232c27e",
+    "log_sha256": "c1fa9e40fe4368307a4658dd185f09337dc66f8050764e3168e20ab34dea17c5"
+  }
+]

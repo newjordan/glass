@@ -1,0 +1,285 @@
+--- a/crates/alacritty-terminal/src/term/cell.rs
++++ b/crates/alacritty-terminal/src/term/cell.rs
+@@ -172,14 +172,62 @@
+ }
+ 
+ /// Content and attributes of a single cell in the terminal grid.
+-#[derive(Clone, Debug, Eq, PartialEq)]
+-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
++#[derive(Clone)]
+ pub struct Cell {
+     pub c: char,
+     pub fg: Color,
+     pub bg: Color,
+     pub flags: Flags,
+     extra: Option<Arc<CellExtra>>,
++    inline_mark: u16,
++}
++
++impl PartialEq for Cell {
++    fn eq(&self, other: &Self) -> bool {
++        self.c == other.c && self.fg == other.fg && self.bg == other.bg
++            && self.flags == other.flags && self.extra_content() == other.extra_content()
++    }
++}
++impl Eq for Cell {}
++impl std::fmt::Debug for Cell {
++    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
++        f.debug_struct("Cell").field("c", &self.c).field("fg", &self.fg)
++            .field("bg", &self.bg).field("flags", &self.flags)
++            .field("extra", &self.extra_content()).finish()
++    }
++}
++
++#[cfg(feature = "serde")]
++impl Serialize for Cell {
++    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
++        use serde::ser::SerializeStruct;
++        let mut state = serializer.serialize_struct("Cell", 5)?;
++        state.serialize_field("c", &self.c)?;
++        state.serialize_field("fg", &self.fg)?;
++        state.serialize_field("bg", &self.bg)?;
++        state.serialize_field("flags", &self.flags)?;
++        state.serialize_field("extra", &self.extra_content())?;
++        state.end()
++    }
++}
++#[cfg(feature = "serde")]
++impl<'de> Deserialize<'de> for Cell {
++    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
++        #[derive(Deserialize)]
++        #[serde(rename = "Cell")]
++        struct Wire { c: char, fg: Color, bg: Color, flags: Flags, extra: Option<Arc<CellExtra>> }
++        let w = Wire::deserialize(deserializer)?;
++        let mut cell = Self { c: w.c, fg: w.fg, bg: w.bg, flags: w.flags, extra: w.extra, inline_mark: 0 };
++        if let Some(extra) = cell.extra.as_ref() {
++            if extra.zerowidth.len() == 1 && extra.underline_color.is_none() && extra.hyperlink.is_none() {
++                if let Some(id) = Self::mark_id(extra.zerowidth[0]) {
++                    cell.inline_mark = id;
++                    cell.extra = None;
++                }
++            }
++        }
++        Ok(cell)
++    }
+ }
+ 
+ impl Default for Cell {
+@@ -191,16 +239,15 @@
+             fg: Color::Named(NamedColor::Foreground),
+             flags: Flags::empty(),
+             extra: None,
++            inline_mark: 0,
+         }
+     }
+ }
+ 
+ impl Cell {
+-    fn extra_content(&self) -> Option<&CellExtra> { self.extra.as_deref() }
+-
+     /// Construct a cell without additional attributes or marks.
+     pub fn plain(c: char, fg: Color, bg: Color, flags: Flags) -> Self {
+-        Self { c, fg, bg, flags, extra: None }
++        Self { c, fg, bg, flags, extra: None, inline_mark: 0 }
+     }
+ 
+     /// Copy the complete logical style and extra content of a cursor template.
+@@ -211,24 +258,50 @@
+     }
+ 
+     #[inline]
+-    pub fn has_extra(&self) -> bool { self.extra.is_some() }
+-
+-    #[inline]
+-    pub fn clear_extra(&mut self) { self.extra = None; }
++    pub fn has_extra(&self) -> bool { self.inline_mark != 0 || self.extra.is_some() }
++
++    #[inline]
++    pub fn clear_extra(&mut self) { self.extra = None; self.inline_mark = 0; }
+ 
+     /// Zerowidth characters stored in this cell.
++    fn mark_id(c: char) -> Option<u16> {
++        let offset = (c as u32).checked_sub(0x300)?;
++        if offset < 112 { Some(offset as u16 + 1) } else { None }
++    }
++
++    fn pooled(id: u16) -> &'static CellExtra {
++        static MARKS: std::sync::OnceLock<[CellExtra; 112]> = std::sync::OnceLock::new();
++        &MARKS.get_or_init(|| std::array::from_fn(|i| CellExtra::with_mark(char::from_u32(0x300 + i as u32).unwrap())))[usize::from(id) - 1]
++    }
++
++    /// Logical content, independent of its immutable or owned storage.
++    fn extra_content(&self) -> Option<&CellExtra> {
++        if self.inline_mark != 0 { Some(Self::pooled(self.inline_mark)) }
++        else { self.extra.as_deref() }
++    }
++
++    fn materialize_extra(&mut self) {
++        if self.inline_mark != 0 {
++            let owned = Arc::new(Self::pooled(self.inline_mark).clone());
++            self.extra = Some(owned);
++            self.inline_mark = 0;
++        }
++    }
++
+     #[inline]
+     pub fn zerowidth(&self) -> Option<&[char]> {
+-        self.extra.as_ref().map(|extra| extra.zerowidth.as_slice())
++        self.extra_content().map(|extra| extra.zerowidth.as_slice())
+     }
+ 
+     /// Write a new zerowidth character to this cell.
+     #[inline]
+     pub fn push_zerowidth(&mut self, character: char) {
+-        if self.extra.is_none() {
+-            self.extra = Some(CellExtra::single_mark(character));
++        if !self.has_extra() {
++            if let Some(id) = Self::mark_id(character) { self.inline_mark = id; }
++            else { self.extra = Some(CellExtra::single_mark(character)); }
+             return;
+         }
++        self.materialize_extra();
+         let extra = self.extra.as_mut().unwrap();
+         // A full buffer ignores this mark. Check before `make_mut`: cloning
+         // shared attributes (or dissociating Weak owners) cannot change it.
+@@ -242,6 +315,7 @@
+     #[inline(never)]
+     pub fn clear_wide(&mut self) {
+         self.flags.remove(Flags::WIDE_CHAR);
++        self.materialize_extra();
+         if let Some(extra) = self.extra.as_mut().filter(|extra| !extra.zerowidth.is_empty()) {
+             Arc::make_mut(extra).zerowidth = ArrayVec::new();
+         }
+@@ -250,15 +324,16 @@
+ 
+     /// Set underline color on the cell.
+     pub fn set_underline_color(&mut self, color: Option<Color>) {
++        if self.inline_mark != 0 && color.is_none() { return; }
+         // If we reset color and we don't have zerowidth we should drop extra storage.
+         if color.is_none()
+             && self
+-                .extra
+-                .as_ref()
++                .extra_content()
+                 .is_none_or(|extra| extra.zerowidth.is_empty() && extra.hyperlink.is_none())
+         {
+-            self.extra = None;
++            self.clear_extra();
+         } else {
++            self.materialize_extra();
+             let extra = self.extra.get_or_insert(Default::default());
+             Arc::make_mut(extra).underline_color = color;
+         }
+@@ -267,20 +342,21 @@
+     /// Underline color stored in this cell.
+     #[inline]
+     pub fn underline_color(&self) -> Option<Color> {
+-        self.extra.as_ref()?.underline_color
++        self.extra_content()?.underline_color
+     }
+ 
+     /// Set hyperlink.
+     pub fn set_hyperlink(&mut self, hyperlink: Option<Hyperlink>) {
++        if self.inline_mark != 0 && hyperlink.is_none() { return; }
+         let should_drop = hyperlink.is_none()
+             && self
+-                .extra
+-                .as_ref()
++                .extra_content()
+                 .is_none_or(|extra| extra.zerowidth.is_empty() && extra.underline_color.is_none());
+ 
+         if should_drop {
+-            self.extra = None;
++            self.clear_extra();
+         } else {
++            self.materialize_extra();
+             let extra = self.extra.get_or_insert(Default::default());
+             Arc::make_mut(extra).hyperlink = hyperlink;
+         }
+@@ -289,7 +365,7 @@
+     /// Hyperlink stored in this cell.
+     #[inline]
+     pub fn hyperlink(&self) -> Option<Hyperlink> {
+-        self.extra.as_ref()?.hyperlink.clone()
++        self.extra_content()?.hyperlink.clone()
+     }
+ }
+ 
+@@ -307,7 +383,7 @@
+                     | Flags::WIDE_CHAR_SPACER
+                     | Flags::LEADING_WIDE_CHAR_SPACER,
+             )
+-            && self.extra.as_ref().map(|extra| extra.zerowidth.is_empty()) != Some(false)
++            && self.extra_content().map(|extra| extra.zerowidth.is_empty()) != Some(false)
+     }
+ 
+     #[inline]
+@@ -322,17 +398,17 @@
+ 
+     #[inline]
+     fn strip_stale(&mut self) {
+-        self.extra = None;
++        self.clear_extra();
+     }
+ 
+     #[inline]
+     fn has_extra(&self) -> bool {
+-        self.extra.is_some()
++        Cell::has_extra(self)
+     }
+ 
+     #[inline]
+     fn style_eq(&self, other: &Self) -> bool {
+-        self.fg == other.fg && self.bg == other.bg && self.flags == other.flags && self.extra == other.extra
++        self.fg == other.fg && self.bg == other.bg && self.flags == other.flags && self.extra_content() == other.extra_content()
+     }
+ 
+     fn reset(&mut self, template: &Self) {
+@@ -366,7 +442,7 @@
+         let physical = self.physical_len();
+         for (index, cell) in self.physical_cells().iter().rev().enumerate() {
+             if cell.c != ' '
+-                || cell.extra.as_ref().map(|extra| extra.zerowidth.is_empty()) == Some(false)
++                || cell.extra_content().map(|extra| extra.zerowidth.is_empty()) == Some(false)
+             {
+                 length = Column(physical - index);
+                 break;
+@@ -531,6 +607,38 @@
+         assert_eq!(serde_json::from_str::<Cell>(&json).unwrap(), owned);
+     }
+ 
++
++    #[test]
++    fn inline_id_storage_and_scalar_mapping() {
++        for v in 0..=0x10ffff {
++            if let Some(c) = char::from_u32(v) {
++                let expected = if (0x300..=0x36f).contains(&v) { Some((v - 0x300 + 1) as u16) } else { None };
++                assert_eq!(Cell::mark_id(c), expected);
++            }
++        }
++        for v in 0x300..=0x36f {
++            let mark = char::from_u32(v).unwrap();
++            let mut cell = Cell::default();
++            cell.push_zerowidth(mark);
++            assert!(cell.extra.is_none());
++            assert_eq!(cell.inline_mark, (v - 0x300 + 1) as u16);
++            let mut copy = cell.clone();
++            copy.set_underline_color(None);
++            copy.set_hyperlink(None);
++            assert_eq!(copy.inline_mark, cell.inline_mark);
++            assert!(copy.extra.is_none());
++            copy.push_zerowidth('\u{308}');
++            assert_eq!(copy.inline_mark, 0);
++            assert!(copy.extra.is_some());
++            cell.strip_stale();
++            assert_eq!(cell.inline_mark, 0);
++            assert!(cell.extra.is_none());
++            cell.push_zerowidth(mark);
++            cell.reset(&Cell::default());
++            assert_eq!(cell, Cell::default());
++            assert_eq!(cell.inline_mark, 0);
++        }
++    }
+ 
+     #[test]
+     fn logical_single_marks_layout_wire_and_lifetimes() {

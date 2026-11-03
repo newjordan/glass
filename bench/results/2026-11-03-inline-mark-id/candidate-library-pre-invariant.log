@@ -1,0 +1,214 @@
+   Compiling vte v0.15.0 (/work/frosty40/glass-repo/tree/crates/vte)
+   Compiling glass-alacritty-terminal v0.26.0 (/work/frosty40/glass-repo/tree/crates/alacritty-terminal)
+    Finished `release` profile [optimized] target(s) in 5.57s
+     Running unittests src/lib.rs (target/release/deps/alacritty_terminal-adde43eb4a19dee3)
+
+running 139 tests
+test grid::storage::tests::grow_after_zero ... ok
+test grid::storage::tests::grow_before_zero ... ok
+test grid::storage::tests::indexing ... ok
+test grid::storage::tests::initialize ... ok
+test grid::storage::tests::region_rotation_reads_as_rotation ... ok
+test grid::storage::tests::rotate ... ok
+test grid::storage::tests::rotate_region_preserves_lazy_rows_and_history ... ok
+test grid::storage::tests::rotate_wrap_zero ... ok
+test grid::storage::tests::shrink_after_zero ... ok
+test grid::storage::tests::shrink_before_and_after_zero ... ok
+test grid::storage::tests::shrink_before_zero ... ok
+test grid::storage::tests::shrink_then_grow ... ok
+test grid::storage::tests::truncate_invisible_lines ... ok
+test grid::storage::tests::truncate_invisible_lines_beginning ... ok
+test grid::storage::tests::with_capacity ... ok
+test grid::tests::accurate_size_hint ... ok
+test grid::tests::grow_reflow ... ok
+test grid::tests::grow_reflow_disabled ... ok
+test grid::tests::grow_reflow_multiline ... ok
+test grid::tests::scroll_down ... ok
+test grid::tests::scroll_down_with_history ... ok
+test grid::tests::scroll_up ... ok
+test grid::tests::shrink_reflow ... ok
+test grid::tests::shrink_reflow_disabled ... ok
+test grid::tests::shrink_reflow_empty_cell_inside_line ... ok
+test grid::tests::shrink_reflow_twice ... ok
+test grid::tests::test_iter ... ok
+test index::tests::add ... ok
+test index::tests::add_clamp ... ok
+test index::tests::add_grid_clamp ... ok
+test index::tests::add_none_clamp ... ok
+test index::tests::add_wrap ... ok
+test index::tests::location_ordering ... ok
+test index::tests::sub ... ok
+test index::tests::sub_clamp ... ok
+test index::tests::sub_grid_clamp ... ok
+test index::tests::sub_none_clamp ... ok
+test index::tests::sub_wrap ... ok
+test selection::tests::across_adjacent_lines_upward_final_cell_exclusive ... ok
+test selection::tests::between_adjacent_cells_left_to_right ... ok
+test selection::tests::between_adjacent_cells_right_to_left ... ok
+test selection::tests::block_is_empty ... ok
+test selection::tests::block_selection ... ok
+test selection::tests::line_selection ... ok
+test selection::tests::range_intersection ... ok
+test selection::tests::rotate_in_region_down ... ok
+test selection::tests::rotate_in_region_up ... ok
+test selection::tests::rotate_in_region_up_block ... ok
+test selection::tests::selection_bigger_then_smaller ... ok
+test selection::tests::semantic_selection ... ok
+test selection::tests::simple_is_empty ... ok
+test selection::tests::simple_selection ... ok
+test selection::tests::single_cell_left_to_right ... ok
+test selection::tests::single_cell_right_to_left ... ok
+test term::cell::tests::cell_size_is_below_cap ... ok
+test term::cell::tests::line_length_works ... ok
+test term::cell::tests::line_length_works_with_wrapline ... ok
+test term::cell::tests::logical_single_marks_layout_wire_and_lifetimes ... inline-layout bytes=24 align=8
+ok
+test term::cell::tests::marks_preserve_existing_extra_attributes ... ok
+test term::cell::tests::noop_extra_updates_preserve_shared_and_weak_owners ... extra-noop owners=0 occupied=0 retained=true strong=true weak=true
+extra-noop owners=0 occupied=9 retained=true strong=true weak=true
+extra-noop owners=1 occupied=0 retained=true strong=true weak=true
+extra-noop owners=1 occupied=9 retained=true strong=true weak=true
+extra-noop owners=2 occupied=0 retained=true strong=true weak=true
+extra-noop owners=2 occupied=9 retained=true strong=true weak=true
+ok
+test term::cell::tests::real_extra_updates_still_isolate_shared_and_weak_owners ... ok
+test term::cell::tests::shared_mark_serializes_like_an_owned_extra ... ok
+test term::cell::tests::shared_marks_are_isolated_from_cell_mutations_and_cache_replacement ... ok
+test term::search::tests::anchored_empty ... ok
+test term::search::tests::empty_match ... ok
+test term::search::tests::empty_match_multibyte ... ok
+test term::search::tests::empty_match_multiline ... ok
+test term::search::tests::end_on_fullwidth ... ok
+test term::search::tests::end_on_multibyte_unicode ... ok
+test term::search::tests::fullwidth ... ok
+test term::search::tests::fullwidth_across_lines ... ok
+test term::search::tests::fullwidth_into_halfwidth_across_lines ... ok
+test term::search::tests::fullwidth_semantic ... ok
+test term::search::tests::greed_is_good ... ok
+test term::search::tests::include_linebreak_left ... ok
+test term::search::tests::include_linebreak_right ... ok
+test term::search::tests::inline_word_search ... ok
+test term::search::tests::leading_spacer ... ok
+test term::search::tests::multibyte_unicode ... ok
+test term::search::tests::multiline ... ok
+test term::search::tests::nested_regex ... ok
+test term::search::tests::newline_breaking_semantic ... ok
+test term::search::tests::nfa_compile_error ... ok
+test term::search::tests::no_match_left ... ok
+test term::search::tests::no_match_right ... ok
+test term::search::tests::no_spacer_fullwidth_linewrap ... ok
+test term::search::tests::regex_left ... ok
+test term::search::tests::regex_right ... ok
+test term::search::tests::reverse_search_dead_recovery ... ok
+test term::search::tests::runtime_cache_error ... ok
+test term::search::tests::singlecell_fullwidth ... ok
+test term::search::tests::skip_dead_cell ... ok
+test term::search::tests::wide_without_spacer ... ok
+test term::search::tests::wrap_around_to_another_end ... ok
+test term::search::tests::wrapping ... ok
+test term::search::tests::wrapping_into_fullwidth ... ok
+test term::tests::block_selection_works ... ok
+test term::tests::clear_saved_lines ... ok
+test term::tests::clearing_scrollback_resets_display_offset ... ok
+test term::tests::clearing_scrollback_sets_vi_cursor_into_viewport ... ok
+test term::tests::clearing_viewport_keeps_history_position ... ok
+test term::tests::clearing_viewport_with_vi_mode_keeps_history_position ... ok
+test term::tests::damage_cursor_movements ... ok
+test term::tests::damage_public_usage ... ok
+test term::tests::full_damage ... ok
+test term::tests::grid_serde ... ok
+test term::tests::grow_lines_updates_active_cursor_pos ... ok
+test term::tests::grow_lines_updates_inactive_cursor_pos ... ok
+test term::tests::input_line_drawing_character ... ok
+test term::tests::line_selection_works ... ok
+test term::tests::parse_cargo_version ... ok
+test term::tests::scroll_display_page_down ... ok
+test term::tests::scroll_display_page_up ... ok
+test term::tests::semantic_selection_works ... ok
+test term::tests::shrink_lines_updates_active_cursor_pos ... ok
+test term::tests::shrink_lines_updates_inactive_cursor_pos ... ok
+test term::tests::simple_selection_works ... ok
+test term::tests::vi_cursor_keep_pos_on_scrollback_buffer ... ok
+test term::tests::window_title ... ok
+test tty::unix::test_get_pw_entry ... ok
+test vi_mode::tests::motion_bracket ... ok
+test vi_mode::tests::motion_first_occupied ... ok
+test vi_mode::tests::motion_high_middle_low ... ok
+test vi_mode::tests::motion_semantic_left_end ... ok
+test vi_mode::tests::motion_semantic_left_start ... ok
+test vi_mode::tests::motion_semantic_right_end ... ok
+test vi_mode::tests::motion_semantic_right_start ... ok
+test vi_mode::tests::motion_simple ... ok
+test vi_mode::tests::motion_start_end ... ok
+test vi_mode::tests::motion_word ... ok
+test vi_mode::tests::scroll_over_bottom ... ok
+test vi_mode::tests::scroll_over_top ... ok
+test vi_mode::tests::scroll_semantic ... ok
+test vi_mode::tests::scroll_simple ... ok
+test vi_mode::tests::scroll_word ... ok
+test vi_mode::tests::semantic_wide ... ok
+test vi_mode::tests::simple_wide ... ok
+test vi_mode::tests::wide_semantic_char ... ok
+test vi_mode::tests::word_wide ... ok
+
+test result: ok. 139 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+     Running tests/ref.rs (target/release/deps/ref-b0f7454e5425beab)
+
+running 45 tests
+test alt_reset ... ok
+test clear_underline ... ok
+test colored_reset ... ok
+test colored_underline ... ok
+test csi_rep ... ok
+test decaln_reset ... ok
+test deccolm_reset ... ok
+test delete_chars_reset ... ok
+test delete_lines ... ok
+test erase_chars_reset ... ok
+test erase_in_line ... ok
+test fish_cc ... ok
+test grid_reset ... ok
+test history ... ok
+test hyperlinks ... ok
+test indexed_256_colors ... ok
+test insert_blank_reset ... ok
+test issue_855 ... ok
+test ll ... ok
+test newline_with_cursor_beyond_scroll_region ... ok
+test origin_goto ... ok
+test region_scroll_down ... ok
+test row_reset ... ok
+test saved_cursor ... ok
+test saved_cursor_alt ... ok
+test scroll_in_region_up_preserves_history ... ok
+test scroll_up_reset ... ok
+test selective_erasure ... ok
+test sgr ... ok
+test tab_rendering ... ok
+test tmux_git_log ... ok
+test tmux_htop ... ok
+test underline ... ok
+test vim_24bitcolors_bce ... ok
+test vim_large_window_scroll ... ok
+test vim_simple_edit ... ok
+test vttest_cursor_movement_1 ... ok
+test vttest_insert ... ok
+test vttest_origin_mode_1 ... ok
+test vttest_origin_mode_2 ... ok
+test vttest_scroll ... ok
+test vttest_tab_clear_set ... ok
+test wrapline_alt_toggle ... ok
+test zerowidth ... ok
+test zsh_tab_completion ... ok
+
+test result: ok. 45 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+
+   Doc-tests alacritty_terminal
+
+running 1 test
+test crates/alacritty-terminal/src/term/mod.rs - term::test::mock_term (line 2481) ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+all doctests ran in 0.41s; merged doctests compilation took 0.41s
