@@ -1,0 +1,30 @@
+{
+  "Cargo.lock": {
+    "restored_exact": true,
+    "sha256": "92e01ee0de21e0d2edd141032fbfaeeaa4099ee863a6c342e6e0bffa43bdb518"
+  },
+  "crates/term/Cargo.toml": {
+    "restored_exact": true,
+    "sha256": "a429903cb71d6b327f4a8aec8689f23742e46c7e1542276419ba07635b8273d7"
+  },
+  "crates/term/src/intake/mod.rs": {
+    "restored_exact": true,
+    "sha256": "4224d22e41ea25d996a7d3db038fd100a8af2f0b92a9825acee293c2c2cfa57a"
+  },
+  "crates/term/src/speed.rs": {
+    "restored_exact": true,
+    "sha256": "352b10238d5df24b7597179be73196a7fd7eec7ab7787a40ec8a63d73a05d290"
+  },
+  "crates/term/src/engine.rs": {
+    "restored_exact": true,
+    "sha256": "a8ce762cc7c76ec1226942b363c3bd020d73189c3b9a917b4fb20d1496b9efce"
+  },
+  "crates/term/src/read_ahead.rs": {
+    "runtime_prefix_restored_exact": true,
+    "sha256": "beab1263f9d51175ca16a15aa170363b030cd09f2ebb40b8f4a3c9f62902e570"
+  },
+  "crates/term/src/session.rs": {
+    "runtime_prefix_restored_exact": true,
+    "sha256": "3a76696530f79a5dfabc8735eac29721d2aa85eb1a5616e29cb88072864b091a"
+  }
+}

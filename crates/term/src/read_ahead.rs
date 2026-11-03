@@ -243,6 +243,36 @@ mod tests {
 
     #[cfg(target_os = "linux")]
     #[test]
+    fn queued_handoffs_preserve_all_bytes_and_return_each_credit_once() {
+        for capacity in [1, 2, 3, 5, 7, 8, 64] {
+            let (full_tx, full) = mpsc::channel();
+            let (empty, empty_rx) = mpsc::channel();
+            for (bytes, end) in [(b"abcd".as_slice(), 3), (b"EF".as_slice(), 99), (b"ghijk".as_slice(), 5)] {
+                full_tx.send((bytes.to_vec(), end)).unwrap();
+            }
+            drop(full_tx);
+            let mut ahead = ReadAhead { full, empty, current: Vec::new(), at: 0, end: 0 };
+            let mut out = vec![0; capacity];
+            let mut got = Vec::new();
+            loop {
+                // Empty reads neither consume queued bytes nor return credit.
+                assert_eq!(ahead.read(&mut []).unwrap(), 0);
+                let n = ahead.read(&mut out).unwrap();
+                if n == 0 { break; }
+                got.extend_from_slice(&out[..n]);
+            }
+            assert_eq!(got, b"abcEFghijk", "capacity {capacity}");
+            for expected in [b"abcd".as_slice(), b"EF".as_slice(), b"ghijk".as_slice()] {
+                assert_eq!(empty_rx.try_recv().unwrap(), expected);
+            }
+            assert!(matches!(empty_rx.try_recv(), Err(TryRecvError::Empty)));
+            assert_eq!(ahead.read(&mut out).unwrap(), 0);
+            assert!(matches!(empty_rx.try_recv(), Err(TryRecvError::Empty)));
+        }
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
     fn readable_bytes_are_drained_before_a_hangup_ends_the_reader() {
         let (mut master, mut slave) = pty();
         let fd: OwnedFd = master.try_clone().unwrap().into();

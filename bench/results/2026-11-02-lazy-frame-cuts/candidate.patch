@@ -1,0 +1,65 @@
+diff --git i/crates/term/src/session.rs w/crates/term/src/session.rs
+index 497422c..91ea14f 100644
+--- i/crates/term/src/session.rs
++++ w/crates/term/src/session.rs
+@@ -85,14 +85,12 @@ fn find_escape(bytes: &[u8], needle: &[u8], from: usize) -> Option<usize> {
+ /// Where a read splits for the gate: at each synchronized update's
+ /// start (past the read's first byte), so the frame before it can be
+ /// drawn before the next begins.
+-fn frame_cuts(bytes: &[u8]) -> Vec<usize> {
+-    let mut cuts = Vec::new();
+-    let mut at = 1;
+-    while let Some(p) = find_escape(bytes, FRAME_BEGIN, at) {
+-        cuts.push(p);
+-        at = p + 1;
+-    }
+-    cuts
++fn frame_cuts(bytes: &[u8]) -> impl Iterator<Item = usize> + '_ {
++    // Search as the caller consumes each cut. Ordinary reads have no frame
++    // starts: neither they nor their final boundary need a heap allocation.
++    std::iter::successors(find_escape(bytes, FRAME_BEGIN, 1), move |&p| {
++        find_escape(bytes, FRAME_BEGIN, p + 1)
++    })
+ }
+ 
+ /// What reaches the terminal's thread.
+@@ -765,10 +763,8 @@ impl Session {
+                     // A read is taken in pieces cut at each synchronized
+                     // frame's start; a frame starting while the one before
+                     // it waits to be drawn waits with it (`FrameGate`).
+-                    let mut starts = frame_cuts(&buf[..n]);
+-                    starts.push(n);
+                     let mut from = 0;
+-                    for to in starts {
++                    for to in frame_cuts(&buf[..n]).chain(std::iter::once(n)) {
+                         let piece = &buf[from..to];
+                         from = to;
+                         if piece.starts_with(FRAME_BEGIN) {
+@@ -1457,12 +1453,12 @@ mod gate_tests {
+     #[test]
+     fn reads_are_cut_at_each_frame_start_but_the_first_byte() {
+         let read = b"\x1b[?2026hA\x1b[?2026l\x1b[c\x1b[?2026hB\x1b[?2026l\x1b[?2026$p";
+-        assert_eq!(frame_cuts(read), vec![20]);
+-        assert_eq!(frame_cuts(b"text only"), Vec::<usize>::new());
+-        assert_eq!(frame_cuts(b"x\x1b[?2026h"), vec![1]);
++        assert_eq!(frame_cuts(read).collect::<Vec<_>>(), vec![20]);
++        assert_eq!(frame_cuts(b"text only").collect::<Vec<_>>(), Vec::<usize>::new());
++        assert_eq!(frame_cuts(b"x\x1b[?2026h").collect::<Vec<_>>(), vec![1]);
+         // A start split across reads is not a cut; the next read's
+         // first byte never is.
+-        assert_eq!(frame_cuts(b"x\x1b[?20"), Vec::<usize>::new());
++        assert_eq!(frame_cuts(b"x\x1b[?20").collect::<Vec<_>>(), Vec::<usize>::new());
+         assert_eq!(find_escape(b"ab\x1b[?2026l", FRAME_END, 0), Some(2));
+         assert_eq!(find_escape(b"\x1b\x1b[?2026l", FRAME_END, 0), Some(1));
+     }
+@@ -1484,6 +1480,10 @@ mod gate_tests {
+                 let frame: &[u8] = if rng.below(2) == 0 { FRAME_BEGIN } else { FRAME_END };
+                 stream.splice(at..at, frame.iter().copied());
+             }
++            let expected: Vec<_> = (1..stream.len())
++                .filter(|&at| stream[at..].starts_with(FRAME_BEGIN))
++                .collect();
++            assert_eq!(frame_cuts(&stream).collect::<Vec<_>>(), expected);
+             for from in 0..=stream.len() + 1 {
+                 for needle in [FRAME_BEGIN, FRAME_END] {
+                     assert_eq!(find_escape(&stream, needle, from), stepping(&stream, needle, from));

@@ -1,0 +1,104 @@
+diff --git i/crates/term/Cargo.toml w/crates/term/Cargo.toml
+index 8455ef2..b9de3a4 100644
+--- i/crates/term/Cargo.toml
++++ w/crates/term/Cargo.toml
+@@ -46,6 +46,8 @@ unicode-width = "0.2.2"
+ # Finding the next escape in a read without stepping byte by byte; the
+ # version already in the workspace lock.
+ memchr = "2"
++# The usual read produces one borrowed text piece; keep its collection inline.
++smallvec = "1"
+ # The allocator. The system's is slow at the many small allocations and
+ # frees a flood of text makes (a combining accent costs a cell two of
+ # each), on macOS most of all: wide text there went from 230 to 252 MB/s.
+diff --git i/crates/term/src/intake/mod.rs w/crates/term/src/intake/mod.rs
+index 6a4ae77..e4b8c68 100644
+--- i/crates/term/src/intake/mod.rs
++++ w/crates/term/src/intake/mod.rs
+@@ -488,6 +488,20 @@ pub enum Piece<'a> {
+     Media(Media),
+ }
+ 
++/// Ordered destination for the splitter. The parser only appends; callers
++/// choose heap storage or a small inline buffer without changing its states.
++pub trait PieceSink<'a> {
++    fn push(&mut self, piece: Piece<'a>);
++}
++
++impl<'a> PieceSink<'a> for Vec<Piece<'a>> {
++    fn push(&mut self, piece: Piece<'a>) { Vec::push(self, piece); }
++}
++
++impl<'a> PieceSink<'a> for smallvec::SmallVec<[Piece<'a>; 4]> {
++    fn push(&mut self, piece: Piece<'a>) { smallvec::SmallVec::push(self, piece); }
++}
++
+ /// OSC `1337` subcommands the intake lifts. Anything else in OSC 1337
+ /// (CurrentDir, SetUserVar, ...) passes through. `FileEnd` may carry
+ /// nothing after it; the other three end at `=`.
+@@ -722,7 +736,7 @@ impl Splitter {
+     /// input while the splitter sits in plain text; the pieces a
+     /// pass-through sequence produces own their bytes, since they may
+     /// join bytes from an earlier read.
+-    pub fn split<'a>(&mut self, input: &'a [u8], out: &mut Vec<Piece<'a>>) {
++    pub fn split<'a>(&mut self, input: &'a [u8], out: &mut impl PieceSink<'a>) {
+         // Where the open text run of this read began, if one is open. It
+         // closes when a sequence starts, so nothing a sequence produces
+         // can come before the text in front of it. The run lives in the
+@@ -755,7 +769,7 @@ impl Splitter {
+     /// next special byte, a lifted body up to its next special byte.
+     /// Returns where to go on from, or `None` to step one byte.
+     #[inline]
+-    fn bulk<'a>(&mut self, i: usize, input: &'a [u8], run: &mut Option<usize>, out: &mut Vec<Piece<'a>>) -> Option<usize> {
++    fn bulk<'a>(&mut self, i: usize, input: &'a [u8], run: &mut Option<usize>, out: &mut impl PieceSink<'a>) -> Option<usize> {
+         let rest = &input[i..];
+         // The bytes that end or abort a string body: ESC, BEL, CAN, SUB.
+         // A DCS body (and a tmux one) is not ended by BEL.
+@@ -838,7 +852,7 @@ impl Splitter {
+     /// if it had arrived directly. Text comes out owned, because it cannot
+     /// borrow the body once this returns. A nested wrap is not unwrapped
+     /// again: `passthrough_depth` is raised for the feed.
+-    fn finish_passthrough<'a>(&mut self, body: Vec<u8>, out: &mut Vec<Piece<'a>>) {
++    fn finish_passthrough<'a>(&mut self, body: Vec<u8>, out: &mut impl PieceSink<'a>) {
+         self.passthrough_depth = self.passthrough_depth.saturating_add(1);
+         let mut inner = Vec::new();
+         self.split(&body, &mut inner);
+@@ -863,7 +877,7 @@ impl Splitter {
+         i: usize,
+         input: &'a [u8],
+         run: &mut Option<usize>,
+-        out: &mut Vec<Piece<'a>>,
++        out: &mut impl PieceSink<'a>,
+     ) {
+         // Every arm yields the state for the byte that follows; a lifted
+         // body aborted by an ESC that is not a terminator re-enters here
+diff --git i/crates/term/src/session.rs w/crates/term/src/session.rs
+index 497422c..57fc0ac 100644
+--- i/crates/term/src/session.rs
++++ w/crates/term/src/session.rs
+@@ -778,7 +778,7 @@ impl Session {
+                         // splitter, the engine and the intake together, and
+                         // write back what the program is owed.
+                         let pumped = {
+-                            let mut pieces = Vec::new();
++                            let mut pieces = smallvec::SmallVec::<[intake::Piece<'_>; 4]>::new();
+                             lock(&splitter).split(piece, &mut pieces);
+                             let _wait = glass_window::keytrace::Wait::for_lock("engine");
+                             let began = crate::census::on().then(std::time::Instant::now);
+diff --git i/crates/term/src/speed.rs w/crates/term/src/speed.rs
+index dfb2699..c651a36 100644
+--- i/crates/term/src/speed.rs
++++ w/crates/term/src/speed.rs
+@@ -521,10 +521,10 @@ fn splitter_bulk_matches_byte_steps() {
+         let (mut bulk, mut step) = (Splitter::with_body_cap(cap), Splitter::with_body_cap(cap));
+         for w in cuts.windows(2) {
+             let read = &stream[w[0]..w[1]];
+-            let (mut a, mut b) = (Vec::new(), Vec::new());
++            let (mut a, mut b) = (smallvec::SmallVec::<[Piece<'_>; 4]>::new(), Vec::new());
+             bulk.split(read, &mut a);
+             step.split_stepwise(read, &mut b);
+-            assert_eq!(a, b, "round {round}, read {:?}", String::from_utf8_lossy(read));
++            assert_eq!(a.as_slice(), b.as_slice(), "round {round}, read {:?}", String::from_utf8_lossy(read));
+         }
+     }
+ }

@@ -1,0 +1,128 @@
+Glass iteration 9: three independent session-overhead ablations
+
+STATUS: reported research, all runtime candidates rejected. No championship,
+all-metric victory, official submission, or loop acceptance is claimed.
+
+Starting commit f17bc98b660a12d920efae89f3a5d80bcdf56407.
+Host Ryzen 9 9950X3D / RTX 3090, Linux / Hyprland, shared unrelated load.
+Configured compiler RUSTC 1.99.0. Identical release flags: thin LTO, one codegen
+unit. No builds or other Glass benchmarks overlapped terminal throughput.
+
+1. New hypotheses, independently tested
+
+A. Consumer coalescing: append at most one already-queued producer handoff
+via try_recv to the parser's existing 64-KiB buffer. Keep producer 16-KiB
+chunks, two credits, immediate recycling, partial-tail retention and affinity.
+This differs from previously rejected larger producer chunks, extra credits,
+borrowed buffers and scheduler placement. Six reader tests passed.
+
+B. Lazy frame cuts: yield complete synchronized-frame starts lazily, then
+chain the final read boundary. Removes the ordinary read's boundary-vector
+allocation without changing read size or parser. Seven reader/gate tests
+passed, including direct-scan randomized cut equivalence.
+
+C. Inline pieces: append-only splitter output abstraction, four-element
+SmallVec in the production session, heap spill beyond four. No splitter
+state transitions changed. Existing Vec byte-step reference retained.
+Existing differential test passed over 600 random streams/read cuts.
+A direct smallvec dependency reused its pinned transitive version; dependency,
+lockfile, storage/API and temporary differential edits restored afterward.
+No candidate combined any of A/B/C. All snapshots/patches remain explicit.
+
+2. Measurement
+
+Each candidate: 18 balanced rounds, six candidate/control/Ghostty orders
+repeated three times = 54 sessions. Across three independent gates: 162
+terminal sessions. Unchanged historical tput.py workloads and bytes, 154x39,
+three passes/workload with fastest selected, timing ending at DA1 reply.
+No throughput is visible-frame latency or keyboard-to-screen latency.
+All three complete:true reports and exact-hash summarize-only replays passed.
+Hashes bind binaries, harness, launch orders, and all raw result JSON.
+No favorable outlier removal or replacement scoreboard.
+
+Median within-round candidate/fresh-control ratios, wins out of 18:
+                         coalescing      lazy cuts        inline pieces
+  ASCII                  0.9433  6       1.0209 10        1.0948 10
+  Unicode                0.9851  5       0.9944  7        0.9848  4
+  truecolor              1.0013 10       0.9824  5        0.9677  5
+  cursor motion          0.9956  9       1.0055 12        0.9762  4
+  scroll region          1.0062 10       1.0069 10        0.9966  8
+  TUI frames             0.9998  9       0.9864  6        0.9696  1
+
+None merits promotion. Inconclusive ratios are not universal regression
+proof. Inline TUI's 17/18 losses have exploratory two-sided sign p=0.000274658;
+ASCII's tempting +9.5% won only 10/18 (p=.814529). All sign tests are
+uncorrected across metrics/candidates, on a shared host, not championship gates.
+Candidate/Ghostty results and raw sign tests live in each README and JSON;
+there are no dependable wins on all three weak metrics. Early positive
+escape-heavy inline-piece ratios disappeared by the full gate.
+
+3. Quiet latency guard
+
+Coalescing only, measured after throughput: six AB/BA rounds, 300 quiet DA1
+samples/session. Median of run medians .065275 ms candidate / .06591125 ms
+control, pooled p99 1.24915 / 1.208864 ms. Paired run-median deltas split
+three positive/three negative. Large session variation: no reliable latency
+change. Samples correlated within sessions, not 1800 independent trials.
+
+4. Important measurement limitation / new observations
+
+Unchanged control ASCII rates ranged 64.1-1119.3 MB/s in A, 67.1-1115.7 in B,
+65.8-1132.6 in C. Inline-piece candidate ranged 62.9-1116.2. In C the control
+recorded 65.8 MB/s with .45 s terminal CPU in one session and 1099.2 MB/s /
+.04 s in another. This is evidence of instability, not a proven causal
+explanation, and not an excuse to filter results or claim a universal gain.
+
+A lightweight /proc observer was added partway through C, after severe early
+excursions. 176 one-second snapshots are retained; 25 sampled observations
+for each Glass hot thread/arm all show masks 0-7,16-23; Ghostty original mask
+0-31. No competitor affinity changed. Sparse snapshots cannot diagnose
+producer placement, migration timing, blocked time or coherence. Observer
+overhead is unmeasured and explicitly part of that run's limitations. No
+environment or command-line data was collected. perf is absent from PATH,
+perf_event_paranoid=2; no PMU trace or causal CPU explanation is claimed.
+
+5. Exact restoration and lasting code changes
+
+All runtime source restored byte-for-byte to starting commit. Cargo.lock,
+term Cargo.toml, intake, speed and engine fully identical; reader/session
+runtime prefixes before cfg(test) identical. Final edits are test-only:
+- Queue byte order and exactly-once credit return over capacities 1/2/3/5/7/8/64,
+  short logical lengths, overlarge end clamp, empty destination reads, EOF.
+- Empty, first-byte, adjacent and random complete synchronized-frame cuts.
+Final command:
+  cargo test --release -p glass-term --locked -- gate_tests:: read_ahead::tests
+7 passed, 0 failed, 378 filtered. Existing warnings remain. No fresh full
+workspace, clippy or doctest claim; this narrowly validates affected paths.
+
+The exact historical selected release executable was restored and compared,
+not rebuilt and silently substituted. Its SHA256:
+  d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c
+Fresh control SHA256 (different exact build, same runtime source):
+  eb14bd5e80f5a4cca770a4272bdd416bd05f9a11f427fbfd6633cb8685e51ce0
+Do not merge those binary identities or cross-run medians.
+
+6. Explicit evidence
+
+bench/results/2026-11-02-consumer-coalesce/README.md
+  read_ahead.control.rs, read_ahead.candidate.rs, candidate.patch,
+  control/candidate build receipts, reader-tests.log, terminal/ raw+summary,
+  terminal-gate.log, replay.log, rtt/ all samples and summary, rtt.log.
+bench/results/2026-11-02-lazy-frame-cuts/README.md
+  session source snapshots, candidate.patch, logic-tests.log, build receipts,
+  terminal/ raw+summary, terminal-gate.log, replay.log.
+bench/results/2026-11-02-inline-pieces/README.md
+  source snapshots/patch, Cargo.control.lock, splitter-tests.log,
+  build receipts, terminal/ raw+summary, terminal-gate.log, replay.log,
+  placement-observations.jsonl, final-restored-tests.log,
+  restored-source.json, selected-restored.sha256.
+Each directory has evidence-sha256.json binding all its explicit artifacts.
+
+7. Next necessary action
+
+Obtain matched-input CPU/wall stage profiles and scheduler/blocked-time
+traces on the frozen control before another speculative session-loop,
+reader or parser-codegen optimization. Separate genuine parser cost from
+unexpected pipeline/transport/host states without changing competitor
+placement or using unrepresentative engine wins as the terminal gate.
+No unbound acceptance command or official title is invented.

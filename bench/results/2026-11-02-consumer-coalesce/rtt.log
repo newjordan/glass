@@ -1,0 +1,57 @@
+/tmp/glass-i9-coalesce: OK
+/tmp/glass-i9-control: OK
+{
+  "glass": {
+    "run_medians_ms": [
+      0.066755,
+      0.0688095,
+      0.0396595,
+      0.027001,
+      0.0698215,
+      0.06379499999999999
+    ],
+    "median_of_run_medians_ms": 0.065275,
+    "pooled_median_ms": 0.061055,
+    "pooled_p90_ms": 0.126879,
+    "pooled_p99_ms": 1.24915
+  },
+  "glass-alt": {
+    "run_medians_ms": [
+      0.040286,
+      0.065914,
+      0.072667,
+      0.06590850000000001,
+      0.075181,
+      0.030898000000000002
+    ],
+    "median_of_run_medians_ms": 0.06591125,
+    "pooled_median_ms": 0.066129,
+    "pooled_p90_ms": 0.135295,
+    "pooled_p99_ms": 1.208864
+  },
+  "paired_run_median_deltas_ms": [
+    0.026468999999999993,
+    0.0028954999999999953,
+    -0.033007499999999995,
+    -0.03890750000000001,
+    -0.005359500000000003,
+    0.03289699999999999
+  ],
+  "raw_sha256": {
+    "rtt-glass-1.json": "5978ef34719499b4a9760e6a905dcbb6470614d48cec4080eff122d7ca981d31",
+    "rtt-glass-2.json": "fbf7d514f4fcf57f4770b1989549d3b4a80a5e7372a3c7352b2b8218bb00ce76",
+    "rtt-glass-3.json": "8fe186b593e8ed7fbc8d4616a6d8426327de481bf11ae685ef99d67090384d3f",
+    "rtt-glass-4.json": "f6af4896f9275cb3d2bd11752dc062e53203317f9fcd269687648e6623d8d4ca",
+    "rtt-glass-5.json": "283e65a88432208c08c32a47320155930f0d8870d3886eaa213ce287aaba38ee",
+    "rtt-glass-6.json": "eac967cd3a47b3f3bda42fe8cbe610b375126958f8baabc25a1b91a9a389d4de",
+    "rtt-glass-alt-1.json": "e7bd7cee83f6f19dc720b1bbcfaa0a173809b0a8b86a30854cdfdbfd031a146d",
+    "rtt-glass-alt-2.json": "b71499112bf8182e3126818943ad8977885568a9ab9b9bc866589c2b51f4bffa",
+    "rtt-glass-alt-3.json": "b390a85fdab71560d5d27088df239e6ca7450f1ed6e6fd10dc0e514bf4352d37",
+    "rtt-glass-alt-4.json": "d121560a53294c0ccbf57662d097ba5e78e8bf04a12c514602cecd1b9f0ccf95",
+    "rtt-glass-alt-5.json": "d4815def83e48f17b7c557aefed54c92415cb967627940a45c8bea2ff97d8472",
+    "rtt-glass-alt-6.json": "418789c636147a4af51df80060b578ccd363d93dbdc8e133dcd769e05464b694"
+  },
+  "rounds": 6,
+  "samples_per_run": 300,
+  "note": "Samples correlated within sessions; not key-to-screen latency."
+}

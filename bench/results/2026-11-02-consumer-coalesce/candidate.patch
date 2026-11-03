@@ -1,0 +1,132 @@
+diff --git i/crates/term/src/read_ahead.rs w/crates/term/src/read_ahead.rs
+index ff93733..cfbf479 100644
+--- i/crates/term/src/read_ahead.rs
++++ w/crates/term/src/read_ahead.rs
+@@ -9,8 +9,9 @@
+ //!
+ //! Only two producer hand-offs exist. Once a hand-off has been copied into
+ //! the parser's buffer it is recycled immediately, letting the producer fill
+-//! both while parsing proceeds. Thus at most two hand-offs plus the copied
+-//! one being parsed can be outstanding beyond the pty itself.
++//! both while parsing proceeds. A read may append one already-queued hand-off
++//! without waiting: at most two producer hand-offs plus two copied ones being
++//! parsed can be outstanding beyond the pty itself.
+ 
+ use std::io::{self, Read};
+ use std::time::Duration;
+@@ -182,7 +183,7 @@ impl Read for ReadAhead {
+                 Err(_) => return Ok(0),
+             }
+         }
+-        let n = out.len().min(self.end - self.at);
++        let mut n = out.len().min(self.end - self.at);
+         out[..n].copy_from_slice(&self.current[self.at..self.at + n]);
+         self.at += n;
+         if self.at == self.end {
+@@ -193,6 +194,26 @@ impl Read for ReadAhead {
+             self.end = 0;
+             let _ = self.empty.send(spent);
+         }
++        // Amortize the caller's per-read work only when another hand-off is
++        // already here. One attempt, no waiting, and no unbounded queue drain:
++        // a quiet echo returns at once and a flood still yields between reads.
++        if n < out.len() && self.at == self.end
++            && let Ok((buf, end)) = self.full.try_recv()
++        {
++            self.end = end.min(buf.len());
++            self.current = buf;
++            self.at = 0;
++            let more = (out.len() - n).min(self.end);
++            out[n..n + more].copy_from_slice(&self.current[..more]);
++            n += more;
++            self.at = more;
++            if self.at == self.end {
++                let spent = std::mem::take(&mut self.current);
++                self.at = 0;
++                self.end = 0;
++                let _ = self.empty.send(spent);
++            }
++        }
+         Ok(n)
+     }
+ }
+@@ -241,6 +262,79 @@ mod tests {
+         assert!(matches!(empty_rx.try_recv(), Err(TryRecvError::Empty)));
+     }
+ 
++    #[test]
++    fn coalescing_takes_at_most_one_extra_queued_handoff() {
++        let (full_tx, full) = mpsc::channel();
++        let (empty, empty_rx) = mpsc::channel();
++        for bytes in [b"abc", b"def", b"ghi"] {
++            full_tx.send((bytes.to_vec(), bytes.len())).unwrap();
++        }
++        let mut ahead = ReadAhead { full, empty, current: Vec::new(), at: 0, end: 0 };
++        let mut out = [0; 64];
++        assert_eq!(ahead.read(&mut out).unwrap(), 6);
++        assert_eq!(&out[..6], b"abcdef");
++        assert_eq!(empty_rx.try_recv().unwrap(), b"abc");
++        assert_eq!(empty_rx.try_recv().unwrap(), b"def");
++        assert!(matches!(empty_rx.try_recv(), Err(TryRecvError::Empty)));
++        drop(full_tx);
++        assert_eq!(ahead.read(&mut out).unwrap(), 3);
++        assert_eq!(&out[..3], b"ghi");
++        assert_eq!(empty_rx.try_recv().unwrap(), b"ghi");
++        assert_eq!(ahead.read(&mut out).unwrap(), 0);
++        assert!(matches!(empty_rx.try_recv(), Err(TryRecvError::Empty)));
++    }
++
++    #[test]
++    fn coalescing_retains_the_second_handoffs_uncopied_tail() {
++        let (full_tx, full) = mpsc::channel();
++        let (empty, empty_rx) = mpsc::channel();
++        full_tx.send((b"cdEF".to_vec(), 4)).unwrap();
++        let mut ahead = ReadAhead { full, empty, current: b"xab".to_vec(), at: 1, end: 3 };
++        let mut out = [0; 4];
++        assert_eq!(ahead.read(&mut out).unwrap(), 4);
++        assert_eq!(&out, b"abcd");
++        assert_eq!(empty_rx.try_recv().unwrap(), b"xab");
++        assert!(matches!(empty_rx.try_recv(), Err(TryRecvError::Empty)));
++        assert_eq!((ahead.at, ahead.end), (2, 4));
++        assert_eq!(ahead.read(&mut out).unwrap(), 2);
++        assert_eq!(&out[..2], b"EF");
++        assert_eq!(empty_rx.try_recv().unwrap(), b"cdEF");
++        // The sender is still live but no second message exists: the read
++        // above must return its bytes instead of waiting for another message.
++        drop(full_tx);
++        assert_eq!(ahead.read(&mut out).unwrap(), 0);
++        assert!(matches!(empty_rx.try_recv(), Err(TryRecvError::Empty)));
++    }
++
++    #[test]
++    fn queued_handoffs_preserve_all_bytes_and_return_each_credit_once() {
++        for capacity in [1, 2, 3, 5, 7, 8, 64] {
++            let (full_tx, full) = mpsc::channel();
++            let (empty, empty_rx) = mpsc::channel();
++            for (bytes, end) in [(b"abcd".as_slice(), 3), (b"EF".as_slice(), 99), (b"ghijk".as_slice(), 5)] {
++                full_tx.send((bytes.to_vec(), end)).unwrap();
++            }
++            drop(full_tx);
++            let mut ahead = ReadAhead { full, empty, current: Vec::new(), at: 0, end: 0 };
++            let mut out = vec![0; capacity];
++            let mut got = Vec::new();
++            loop {
++                // Empty reads neither consume queued bytes nor return credit.
++                assert_eq!(ahead.read(&mut []).unwrap(), 0);
++                let n = ahead.read(&mut out).unwrap();
++                if n == 0 { break; }
++                got.extend_from_slice(&out[..n]);
++            }
++            assert_eq!(got, b"abcEFghijk", "capacity {capacity}");
++            for expected in [b"abcd".as_slice(), b"EF".as_slice(), b"ghijk".as_slice()] {
++                assert_eq!(empty_rx.try_recv().unwrap(), expected);
++            }
++            assert!(matches!(empty_rx.try_recv(), Err(TryRecvError::Empty)));
++            assert_eq!(ahead.read(&mut out).unwrap(), 0);
++            assert!(matches!(empty_rx.try_recv(), Err(TryRecvError::Empty)));
++        }
++    }
++
+     #[cfg(target_os = "linux")]
+     #[test]
+     fn readable_bytes_are_drained_before_a_hangup_ends_the_reader() {

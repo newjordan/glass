@@ -1463,6 +1463,10 @@ mod gate_tests {
         // A start split across reads is not a cut; the next read's
         // first byte never is.
         assert_eq!(frame_cuts(b"x\x1b[?20"), Vec::<usize>::new());
+        assert!(frame_cuts(b"").is_empty());
+        assert!(frame_cuts(b"\x1b[?2026h").is_empty());
+        assert_eq!(frame_cuts(b"x\x1b[?2026h\x1b[?2026h"), vec![1, 9]);
+        assert_eq!(frame_cuts(b"\x1b[?2026h\x1b[?2026h"), vec![8]);
         assert_eq!(find_escape(b"ab\x1b[?2026l", FRAME_END, 0), Some(2));
         assert_eq!(find_escape(b"\x1b\x1b[?2026l", FRAME_END, 0), Some(1));
     }
@@ -1484,6 +1488,10 @@ mod gate_tests {
                 let frame: &[u8] = if rng.below(2) == 0 { FRAME_BEGIN } else { FRAME_END };
                 stream.splice(at..at, frame.iter().copied());
             }
+            let expected: Vec<_> = (1..stream.len())
+                .filter(|&at| stream[at..].starts_with(FRAME_BEGIN))
+                .collect();
+            assert_eq!(frame_cuts(&stream), expected);
             for from in 0..=stream.len() + 1 {
                 for needle in [FRAME_BEGIN, FRAME_END] {
                     assert_eq!(find_escape(&stream, needle, from), stepping(&stream, needle, from));

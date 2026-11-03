@@ -27,6 +27,15 @@ description of what to show.
   checks. Preserve rejected Unicode and third-buffer experiments rather than
   inferring a terminal win from engine microbenchmarks alone.
 
+### Session-overhead research and regression coverage
+
+- Reject independent opportunistic read coalescing, lazy frame-cut iteration,
+  and stack-backed splitter output after full six-order terminal gates;
+  preserve the selected runtime and exact executable.
+- Cover queued hand-off byte order/credit return across output sizes and
+  empty/adjacent/random synchronized-frame cut boundaries. Seven final
+  reader/frame-gate tests pass; no universal performance claim.
+
 ### Scanner and UTF-8 regression coverage
 
 - Test exact SIMD text masks across 16/32/64/128-byte boundaries and legal

@@ -279,6 +279,18 @@ and validated summaries so a restricted-child diagnostic cannot silently pass
 for default behavior. The next causal controls are a fast sink, fixed minimal
 PTY reader, and scheduler/blocked-time traces, not a more favorable leaderboard.
 
+## Session-overhead ablations: no promotion
+
+Three independent 18-round six-order comparisons tested consumer-side
+nonblocking coalescing, lazy frame cuts, and stack-backed splitter output.
+None established dependable ASCII/Unicode/scroll-region wins while guarding
+other metrics. The tempting inline-piece ASCII +9.5% median won only 10/18
+pairs, while TUI lost 17/18. Severe variation also affected unchanged controls;
+this is not a causal diagnosis. See the [reports and raw provenance](../bench/README.md#session-overhead-ablations-2026-11-02).
+Runtime source and exact selected executable were restored; seven final
+reader/frame-gate tests pass. The necessary next evidence is matched-input
+stage and scheduling traces, not a favorable subset of these measurements.
+
 ## The film
 
 "Mind's eye" is 95 seconds at 1080p and 60 fps. Every frame is a program

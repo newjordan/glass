@@ -314,3 +314,19 @@ was rejected too. Both 18-round, six-order gates and hash replays completed:
 and fresh rebuilt-control binaries; do not mix their identities. Runtime source
 and selected executable restored, two test-only CRLF/history regressions retained.
 No benchmark workload or competitor placement changed and no title is claimed.
+
+
+### Session-overhead ablations (2026-11-02)
+
+Independent gates tested [one opportunistic consumer hand-off](results/2026-11-02-consumer-coalesce/README.md),
+[lazy frame-boundary cuts](results/2026-11-02-lazy-frame-cuts/README.md), and
+[stack-backed splitter pieces](results/2026-11-02-inline-pieces/README.md).
+All three completed 18 rounds / six launch orders and hash replay: 162 terminal
+sessions total. None established a dependable joint weak-metric win without
+tradeoffs, and no runtime change remains. Queue byte/credit and synchronized
+frame-boundary regression tests remain; final relevant gate was 7/7 passing.
+Raw control throughput also showed severe session variation, so do not promote
+an allocation hypothesis from favorable medians. Separate coalescing DA1 RTT
+was inconclusive. Exact selected executable restored, not the fresh-control
+artifact. Reports retain source snapshots, patches, binary identities and raw
+hashes; no all-metric or world-champion claim is supported.

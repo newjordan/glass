@@ -1,0 +1,45 @@
+   Compiling glass-term v0.1.0 (/work/frosty40/glass-repo/tree/crates/term)
+warning: method `apply_timed` is never used
+   --> crates/term/src/engine.rs:495:8
+    |
+368 | impl Engine {
+    | ----------- method in this implementation
+...
+495 |     fn apply_timed(&mut self, pass: &[u8]) {
+    |        ^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: static `FEED_NS` is never used
+    --> crates/term/src/engine.rs:2978:16
+     |
+2978 |     pub static FEED_NS: AtomicU64 = AtomicU64::new(0);
+     |                ^^^^^^^
+
+warning: static `FEED_CALLS` is never used
+    --> crates/term/src/engine.rs:2979:16
+     |
+2979 |     pub static FEED_CALLS: AtomicU64 = AtomicU64::new(0);
+     |                ^^^^^^^^^^
+
+warning: constant `FEED` is never used
+    --> crates/term/src/engine.rs:2981:15
+     |
+2981 |     pub const FEED: usize = 1;
+     |               ^^^^
+
+warning: `glass-term` (bin "glass" test) generated 4 warnings
+    Finished `release` profile [optimized] target(s) in 30.37s
+     Running unittests src/main.rs (target/release/deps/glass-1153e7f1f5d5d9af)
+
+running 7 tests
+test read_ahead::tests::queued_handoffs_preserve_all_bytes_and_return_each_credit_once ... ok
+test session::gate_tests::reads_are_cut_at_each_frame_start_but_the_first_byte ... ok
+test read_ahead::tests::copied_handoff_returns_credit_after_its_last_byte_only ... ok
+test read_ahead::tests::readable_bytes_are_drained_before_a_hangup_ends_the_reader ... ok
+test read_ahead::tests::reading_ahead_gives_every_byte_in_order_then_the_end ... ok
+test session::gate_tests::frame_escapes_are_found_as_stepping_finds_them ... ok
+test session::gate_tests::a_frame_waits_for_the_draw_it_is_owed_and_no_longer ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 378 filtered out; finished in 0.07s
+
