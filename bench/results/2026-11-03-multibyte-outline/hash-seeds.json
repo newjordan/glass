@@ -1,0 +1,310 @@
+{
+  "schema": "glass.multibyte-outline-hash-replay/v1",
+  "runs": [
+    {
+      "seed": "0",
+      "exit": 0,
+      "matches_initial_checkpoint": true,
+      "stdout": {
+        "schema": "glass.multibyte-outline-checkpoint/v1",
+        "runtime_promotion": false,
+        "engine_screen_cleared": false,
+        "pairs": 12,
+        "sessions": 24,
+        "cpu_ratios": {
+          "ascii": 1.010890713391856,
+          "cursor_motion": 0.9899270542297616,
+          "scroll_region": 1.0048869194861378,
+          "truecolor": 0.9946558209736465,
+          "tui_frames": 0.9894513624833723,
+          "unicode": 0.9150495291114258
+        },
+        "failed_point_guards": [
+          "unicode"
+        ],
+        "terminal_tests_per_arm": 383,
+        "differential_streams_per_arm": 12800,
+        "corruption_cases_rejected": 23,
+        "print_utf8_bytes": {
+          "control": 8524,
+          "candidate": 7987
+        },
+        "multibyte_helper_bytes": 427,
+        "unchanged_runtime_rust_sources": 120,
+        "unchanged_prior_result_report_files": 6601,
+        "selected_binary_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+        "prior_checkpoint_replayed_without_adapter": true,
+        "frozen_file_references": 53,
+        "note": "Local evidence replay, not dynamic causal attribution, PTY/Ghostty comparison or championship acceptance."
+      },
+      "stderr": ""
+    },
+    {
+      "seed": "1",
+      "exit": 0,
+      "matches_initial_checkpoint": true,
+      "stdout": {
+        "schema": "glass.multibyte-outline-checkpoint/v1",
+        "runtime_promotion": false,
+        "engine_screen_cleared": false,
+        "pairs": 12,
+        "sessions": 24,
+        "cpu_ratios": {
+          "ascii": 1.010890713391856,
+          "cursor_motion": 0.9899270542297616,
+          "scroll_region": 1.0048869194861378,
+          "truecolor": 0.9946558209736465,
+          "tui_frames": 0.9894513624833723,
+          "unicode": 0.9150495291114258
+        },
+        "failed_point_guards": [
+          "unicode"
+        ],
+        "terminal_tests_per_arm": 383,
+        "differential_streams_per_arm": 12800,
+        "corruption_cases_rejected": 23,
+        "print_utf8_bytes": {
+          "control": 8524,
+          "candidate": 7987
+        },
+        "multibyte_helper_bytes": 427,
+        "unchanged_runtime_rust_sources": 120,
+        "unchanged_prior_result_report_files": 6601,
+        "selected_binary_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+        "prior_checkpoint_replayed_without_adapter": true,
+        "frozen_file_references": 53,
+        "note": "Local evidence replay, not dynamic causal attribution, PTY/Ghostty comparison or championship acceptance."
+      },
+      "stderr": ""
+    },
+    {
+      "seed": "7",
+      "exit": 0,
+      "matches_initial_checkpoint": true,
+      "stdout": {
+        "schema": "glass.multibyte-outline-checkpoint/v1",
+        "runtime_promotion": false,
+        "engine_screen_cleared": false,
+        "pairs": 12,
+        "sessions": 24,
+        "cpu_ratios": {
+          "ascii": 1.010890713391856,
+          "cursor_motion": 0.9899270542297616,
+          "scroll_region": 1.0048869194861378,
+          "truecolor": 0.9946558209736465,
+          "tui_frames": 0.9894513624833723,
+          "unicode": 0.9150495291114258
+        },
+        "failed_point_guards": [
+          "unicode"
+        ],
+        "terminal_tests_per_arm": 383,
+        "differential_streams_per_arm": 12800,
+        "corruption_cases_rejected": 23,
+        "print_utf8_bytes": {
+          "control": 8524,
+          "candidate": 7987
+        },
+        "multibyte_helper_bytes": 427,
+        "unchanged_runtime_rust_sources": 120,
+        "unchanged_prior_result_report_files": 6601,
+        "selected_binary_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+        "prior_checkpoint_replayed_without_adapter": true,
+        "frozen_file_references": 53,
+        "note": "Local evidence replay, not dynamic causal attribution, PTY/Ghostty comparison or championship acceptance."
+      },
+      "stderr": ""
+    },
+    {
+      "seed": "42",
+      "exit": 0,
+      "matches_initial_checkpoint": true,
+      "stdout": {
+        "schema": "glass.multibyte-outline-checkpoint/v1",
+        "runtime_promotion": false,
+        "engine_screen_cleared": false,
+        "pairs": 12,
+        "sessions": 24,
+        "cpu_ratios": {
+          "ascii": 1.010890713391856,
+          "cursor_motion": 0.9899270542297616,
+          "scroll_region": 1.0048869194861378,
+          "truecolor": 0.9946558209736465,
+          "tui_frames": 0.9894513624833723,
+          "unicode": 0.9150495291114258
+        },
+        "failed_point_guards": [
+          "unicode"
+        ],
+        "terminal_tests_per_arm": 383,
+        "differential_streams_per_arm": 12800,
+        "corruption_cases_rejected": 23,
+        "print_utf8_bytes": {
+          "control": 8524,
+          "candidate": 7987
+        },
+        "multibyte_helper_bytes": 427,
+        "unchanged_runtime_rust_sources": 120,
+        "unchanged_prior_result_report_files": 6601,
+        "selected_binary_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+        "prior_checkpoint_replayed_without_adapter": true,
+        "frozen_file_references": 53,
+        "note": "Local evidence replay, not dynamic causal attribution, PTY/Ghostty comparison or championship acceptance."
+      },
+      "stderr": ""
+    },
+    {
+      "seed": "99",
+      "exit": 0,
+      "matches_initial_checkpoint": true,
+      "stdout": {
+        "schema": "glass.multibyte-outline-checkpoint/v1",
+        "runtime_promotion": false,
+        "engine_screen_cleared": false,
+        "pairs": 12,
+        "sessions": 24,
+        "cpu_ratios": {
+          "ascii": 1.010890713391856,
+          "cursor_motion": 0.9899270542297616,
+          "scroll_region": 1.0048869194861378,
+          "truecolor": 0.9946558209736465,
+          "tui_frames": 0.9894513624833723,
+          "unicode": 0.9150495291114258
+        },
+        "failed_point_guards": [
+          "unicode"
+        ],
+        "terminal_tests_per_arm": 383,
+        "differential_streams_per_arm": 12800,
+        "corruption_cases_rejected": 23,
+        "print_utf8_bytes": {
+          "control": 8524,
+          "candidate": 7987
+        },
+        "multibyte_helper_bytes": 427,
+        "unchanged_runtime_rust_sources": 120,
+        "unchanged_prior_result_report_files": 6601,
+        "selected_binary_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+        "prior_checkpoint_replayed_without_adapter": true,
+        "frozen_file_references": 53,
+        "note": "Local evidence replay, not dynamic causal attribution, PTY/Ghostty comparison or championship acceptance."
+      },
+      "stderr": ""
+    },
+    {
+      "seed": "31337",
+      "exit": 0,
+      "matches_initial_checkpoint": true,
+      "stdout": {
+        "schema": "glass.multibyte-outline-checkpoint/v1",
+        "runtime_promotion": false,
+        "engine_screen_cleared": false,
+        "pairs": 12,
+        "sessions": 24,
+        "cpu_ratios": {
+          "ascii": 1.010890713391856,
+          "cursor_motion": 0.9899270542297616,
+          "scroll_region": 1.0048869194861378,
+          "truecolor": 0.9946558209736465,
+          "tui_frames": 0.9894513624833723,
+          "unicode": 0.9150495291114258
+        },
+        "failed_point_guards": [
+          "unicode"
+        ],
+        "terminal_tests_per_arm": 383,
+        "differential_streams_per_arm": 12800,
+        "corruption_cases_rejected": 23,
+        "print_utf8_bytes": {
+          "control": 8524,
+          "candidate": 7987
+        },
+        "multibyte_helper_bytes": 427,
+        "unchanged_runtime_rust_sources": 120,
+        "unchanged_prior_result_report_files": 6601,
+        "selected_binary_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+        "prior_checkpoint_replayed_without_adapter": true,
+        "frozen_file_references": 53,
+        "note": "Local evidence replay, not dynamic causal attribution, PTY/Ghostty comparison or championship acceptance."
+      },
+      "stderr": ""
+    },
+    {
+      "seed": "8675309",
+      "exit": 0,
+      "matches_initial_checkpoint": true,
+      "stdout": {
+        "schema": "glass.multibyte-outline-checkpoint/v1",
+        "runtime_promotion": false,
+        "engine_screen_cleared": false,
+        "pairs": 12,
+        "sessions": 24,
+        "cpu_ratios": {
+          "ascii": 1.010890713391856,
+          "cursor_motion": 0.9899270542297616,
+          "scroll_region": 1.0048869194861378,
+          "truecolor": 0.9946558209736465,
+          "tui_frames": 0.9894513624833723,
+          "unicode": 0.9150495291114258
+        },
+        "failed_point_guards": [
+          "unicode"
+        ],
+        "terminal_tests_per_arm": 383,
+        "differential_streams_per_arm": 12800,
+        "corruption_cases_rejected": 23,
+        "print_utf8_bytes": {
+          "control": 8524,
+          "candidate": 7987
+        },
+        "multibyte_helper_bytes": 427,
+        "unchanged_runtime_rust_sources": 120,
+        "unchanged_prior_result_report_files": 6601,
+        "selected_binary_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+        "prior_checkpoint_replayed_without_adapter": true,
+        "frozen_file_references": 53,
+        "note": "Local evidence replay, not dynamic causal attribution, PTY/Ghostty comparison or championship acceptance."
+      },
+      "stderr": ""
+    },
+    {
+      "seed": "4294967295",
+      "exit": 0,
+      "matches_initial_checkpoint": true,
+      "stdout": {
+        "schema": "glass.multibyte-outline-checkpoint/v1",
+        "runtime_promotion": false,
+        "engine_screen_cleared": false,
+        "pairs": 12,
+        "sessions": 24,
+        "cpu_ratios": {
+          "ascii": 1.010890713391856,
+          "cursor_motion": 0.9899270542297616,
+          "scroll_region": 1.0048869194861378,
+          "truecolor": 0.9946558209736465,
+          "tui_frames": 0.9894513624833723,
+          "unicode": 0.9150495291114258
+        },
+        "failed_point_guards": [
+          "unicode"
+        ],
+        "terminal_tests_per_arm": 383,
+        "differential_streams_per_arm": 12800,
+        "corruption_cases_rejected": 23,
+        "print_utf8_bytes": {
+          "control": 8524,
+          "candidate": 7987
+        },
+        "multibyte_helper_bytes": 427,
+        "unchanged_runtime_rust_sources": 120,
+        "unchanged_prior_result_report_files": 6601,
+        "selected_binary_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+        "prior_checkpoint_replayed_without_adapter": true,
+        "frozen_file_references": 53,
+        "note": "Local evidence replay, not dynamic causal attribution, PTY/Ghostty comparison or championship acceptance."
+      },
+      "stderr": ""
+    }
+  ],
+  "note": "Read-only checkpoint reproducibility under hash randomization; not runtime performance, semantic or competitive acceptance."
+}

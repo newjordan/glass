@@ -1,0 +1,10 @@
+{
+  "schema": "glass.immutable-research-evidence/v1",
+  "sha256": {
+    "bench/results/2026-11-03-multibyte-outline/checkpoint-initial.json": "9559a360ea3e43a23bccca81c311c30156cd761fa306e316036f224286a65b88",
+    "bench/results/2026-11-03-multibyte-outline/hash-seeds.json": "8e9468a5b3c7829ff2a9d7ec3e3cf5f94563b9162667ca71751587bfb77dde26",
+    "bench/results/2026-11-03-multibyte-outline/frozen-replay.json": "48e9fd3010cd9250525e4addb7de396bb5092a4cb9e4a9c50add2469bb5cbd62",
+    "bench/results/2026-11-03-multibyte-outline/frozen-index.json": "b17c8fb4a608368b93ebb65b1e564fecc266e8f98fd903840642b0b93a482447",
+    "bench/results/2026-11-03-multibyte-outline/completion.json": "4ce09a6135237f9fca64aa041371bf5d628d5c1a2424279db2f230690c2f5645"
+  }
+}

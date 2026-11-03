@@ -1,0 +1,51 @@
+{
+  "schema": "glass.multibyte-outline-completion/v1",
+  "created_utc": "2026-11-03T11:41:49.299885+00:00",
+  "claim": "reported",
+  "runtime_promotion": false,
+  "result": "Reject: smaller caller, measured Unicode slowdown vetoes prospective engine screen. No real-terminal/Ghostty ranking or championship acceptance.",
+  "checkpoint": {
+    "schema": "glass.multibyte-outline-checkpoint/v1",
+    "runtime_promotion": false,
+    "engine_screen_cleared": false,
+    "pairs": 12,
+    "sessions": 24,
+    "cpu_ratios": {
+      "ascii": 1.010890713391856,
+      "cursor_motion": 0.9899270542297616,
+      "scroll_region": 1.0048869194861378,
+      "truecolor": 0.9946558209736465,
+      "tui_frames": 0.9894513624833723,
+      "unicode": 0.9150495291114258
+    },
+    "failed_point_guards": [
+      "unicode"
+    ],
+    "terminal_tests_per_arm": 383,
+    "differential_streams_per_arm": 12800,
+    "corruption_cases_rejected": 23,
+    "print_utf8_bytes": {
+      "control": 8524,
+      "candidate": 7987
+    },
+    "multibyte_helper_bytes": 427,
+    "unchanged_runtime_rust_sources": 120,
+    "unchanged_prior_result_report_files": 6601,
+    "selected_binary_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+    "prior_checkpoint_replayed_without_adapter": true,
+    "frozen_file_references": 53,
+    "note": "Local evidence replay, not dynamic causal attribution, PTY/Ghostty comparison or championship acceptance."
+  },
+  "hash_seed_replays": 8,
+  "hash_seed_receipt_sha256": "8e9468a5b3c7829ff2a9d7ec3e3cf5f94563b9162667ca71751587bfb77dde26",
+  "frozen_replay_references": 53,
+  "read_only_review": "One spawned reviewer timed out without an answer; no review success claimed. Direct self advisory based only on supplied exact extraction/codegen data.",
+  "input_index_correction": "Original output-contaminated prospective index retained; explicit sole empty build-output exception; all 18 actual inputs unchanged. See input-audit.json.",
+  "documentation_policy": "Earlier shared documents and tracked research files unchanged; standalone result avoids historical source remapping.",
+  "receipt_sha256": {
+    "bench/results/2026-11-03-multibyte-outline/checkpoint-initial.json": "9559a360ea3e43a23bccca81c311c30156cd761fa306e316036f224286a65b88",
+    "bench/results/2026-11-03-multibyte-outline/hash-seeds.json": "8e9468a5b3c7829ff2a9d7ec3e3cf5f94563b9162667ca71751587bfb77dde26",
+    "bench/results/2026-11-03-multibyte-outline/frozen-replay.json": "48e9fd3010cd9250525e4addb7de396bb5092a4cb9e4a9c50add2469bb5cbd62",
+    "bench/results/2026-11-03-multibyte-outline/frozen-index.json": "b17c8fb4a608368b93ebb65b1e564fecc266e8f98fd903840642b0b93a482447"
+  }
+}

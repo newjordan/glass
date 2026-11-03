@@ -1,0 +1,40 @@
+{
+  "schema": "glass.multibyte-outline-protocol/v1",
+  "created_utc": "2026-11-03T11:29:20.076762+00:00",
+  "hypothesis": "Duplicated inlined multibyte validation inflates print_utf8. One shared out-of-line multibyte decoder may reduce caller code footprint enough to outweigh a call on each multibyte attempt. This is unverified; no causal bottleneck share is assumed.",
+  "intervention": "Only extract the unchanged multibyte body from utf8_at into #[inline(never)] utf8_multibyte_at(bytes, at, lead). ASCII inline return and all validation predicates, checked scalar conversion, widths, row loop and parser remain unchanged.",
+  "arms": [
+    "control",
+    "candidate"
+  ],
+  "build": "Fresh serial exact release test builds via build-engine-arm.py. Control byte-matches retained i28 control. Restore source bytes in finally. Selected terminal untouched.",
+  "correctness": "Both arms: existing release terminal tests (383 passed, 11 ignored), exhaustive decoder and guarded-tail tests included; 64x200 differential streams before timing.",
+  "engine": {
+    "blocks": 12,
+    "scale": 2,
+    "rounds": 5,
+    "read": 4095,
+    "workloads": [
+      "ascii",
+      "unicode",
+      "truecolor",
+      "cursor_motion",
+      "scroll_region",
+      "tui_frames"
+    ],
+    "orders": [
+      [
+        "control",
+        "candidate"
+      ],
+      [
+        "candidate",
+        "control"
+      ]
+    ],
+    "primary": "Unicode median paired CPU-rate ratio >=1.02, wins>losses, six-workload Holm p<.05, and all six median CPU ratios >=.98. Point guards are not noninferiority proof.",
+    "stop": "Exactly 12 pairs; no pilot, exclusions, reruns, rescue variants, pooling, threshold changes or optional stopping. Reject if screen fails. If it clears, separate fresh prospective PTY/Ghostty gates required before promotion."
+  },
+  "mechanism": "Exact timing ELF static census of print_utf8, Engine::apply and new multibyte helper. Caller bytes and call edges describe codegen, not dynamic causal cost.",
+  "limits": "Sequential shared-host best-of-five engine sessions, not independent inner samples, real-terminal/Ghostty ranking or world-championship acceptance. Calls and code/data layout change together."
+}

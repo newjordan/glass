@@ -1,0 +1,26 @@
+{
+  "schema": "glass.multibyte-outline-prospective-inputs/v1",
+  "created_utc": "2026-11-03T11:29:56.533561+00:00",
+  "note": "Frozen exact inputs before correctness completion or timing; new report-specific scripts derived from i28, no stale hypothesis/build prose.",
+  "sha256": {
+    "bench/results/2026-11-03-multibyte-outline/analyze.py": "1d38d7634b432e2d6648ff096a3c85676a267c1443458a6d7874cf7726b66990",
+    "bench/results/2026-11-03-multibyte-outline/build-control.json": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bench/results/2026-11-03-multibyte-outline/build.py": "a9bb5bb5800438fb1d5232f6deaff95ddca5d7ac0a9d4b2d9fec3c202f5c669b",
+    "bench/results/2026-11-03-multibyte-outline/candidate-crates_term_src_engine.rs": "f7fb2ea49e471bac5260d0c75d0fdb5d2cd17e35019a783ed4d159ae6af7c276",
+    "bench/results/2026-11-03-multibyte-outline/candidate-crates_term_src_speed.rs": "c21c12e4b1e9fc5f97770eaffc61748ed7093e06a75b19f522a27848eb2c874f",
+    "bench/results/2026-11-03-multibyte-outline/candidate-crates_vte_src_ansi.rs": "ed3a17b498d5ae08c1667840ab46c177ed82e62f66d25090c95e74f65a1fc166",
+    "bench/results/2026-11-03-multibyte-outline/candidate-crates_vte_src_lib.rs": "fac2b9feef901019e1fcb3d413238d3b032001395abd8e727c26b4cafffba758",
+    "bench/results/2026-11-03-multibyte-outline/candidate.patch": "776f1cf6905d4a4b133b4d14d0f36c16d5ce659bcbba24d399181b0de61f4bfb",
+    "bench/results/2026-11-03-multibyte-outline/codegen.py": "4c2c8313b720b7ea5cdd5a681af09a09bfb946256826964973b8cf94b55dc8cc",
+    "bench/results/2026-11-03-multibyte-outline/control-crates_term_src_engine.rs": "64366a899f9e0b6e88da40d61f3d28869c78ad8b0b89be20dcd4dcf27415706a",
+    "bench/results/2026-11-03-multibyte-outline/control-crates_term_src_speed.rs": "c21c12e4b1e9fc5f97770eaffc61748ed7093e06a75b19f522a27848eb2c874f",
+    "bench/results/2026-11-03-multibyte-outline/control-crates_vte_src_ansi.rs": "ed3a17b498d5ae08c1667840ab46c177ed82e62f66d25090c95e74f65a1fc166",
+    "bench/results/2026-11-03-multibyte-outline/control-crates_vte_src_lib.rs": "fac2b9feef901019e1fcb3d413238d3b032001395abd8e727c26b4cafffba758",
+    "bench/results/2026-11-03-multibyte-outline/corruption.py": "418779d09976d1371698395ad249db8dcfed45784d3793dee3fa822a384c246d",
+    "bench/results/2026-11-03-multibyte-outline/prior-checkpoint.json": "eff5d39073cd342bec7b9ae9a0e25c3d77e3a7e9fbfcf8008035d5dd2ff45205",
+    "bench/results/2026-11-03-multibyte-outline/protocol.json": "7e381ab67e683c902303e15df6ba84b07bdd1d4fb85cf6c08e03cee94d0ab6f1",
+    "bench/results/2026-11-03-multibyte-outline/run.py": "975acc13dd120084043d321eb741097c9ea06989ce2ca44452d0c842c9813af3",
+    "bench/results/2026-11-03-multibyte-outline/starting-state.json": "3c0cb72bd8a7048d62a94d423b3d82efdf9ecdd4b079203fa3e6f987007c96f6",
+    "bench/results/2026-11-03-multibyte-outline/toolchain.json": "a50b94d57bcd34510a2b858fe8297b84b56585fc43ee03c4c271d89d5d00e55f"
+  }
+}

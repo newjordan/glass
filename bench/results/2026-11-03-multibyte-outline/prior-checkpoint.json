@@ -1,0 +1,30 @@
+{
+  "schema": "glass.scalar-domain-checkpoint/v1",
+  "runtime_promotion": false,
+  "engine_screen_cleared": false,
+  "pairs": 12,
+  "sessions": 24,
+  "cpu_ratios": {
+    "ascii": 1.0042500177564708,
+    "cursor_motion": 0.9814287473176909,
+    "scroll_region": 1.0003839476154641,
+    "truecolor": 0.9837404706121295,
+    "tui_frames": 0.9857661157505182,
+    "unicode": 1.0051255196588686
+  },
+  "failed_point_guards": [],
+  "terminal_tests_per_arm": 383,
+  "differential_streams_per_arm": 12800,
+  "corruption_cases_rejected": 23,
+  "print_utf8_bytes": {
+    "control": 8524,
+    "candidate": 8595
+  },
+  "unchanged_runtime_rust_sources": 120,
+  "unchanged_prior_result_report_files": 6514,
+  "selected_binary_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "restored_build_byte_identical": true,
+  "prior_checkpoint_replayed": true,
+  "frozen_file_references": 89,
+  "note": "Local evidence replay, not dynamic causal attribution, PTY/Ghostty comparison or championship acceptance."
+}

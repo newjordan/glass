@@ -1,0 +1,15 @@
+--- a/crates/term/src/engine.rs
++++ b/crates/term/src/engine.rs
+@@ -3601,6 +3601,12 @@
+     if lead < 0x80 {
+         return Some((char::from(lead), 1));
+     }
++    utf8_multibyte_at(bytes, at, lead)
++}
++
++/// Shared multibyte validation; keep the ASCII fast return in `utf8_at`.
++#[inline(never)]
++fn utf8_multibyte_at(bytes: &[u8], at: usize, lead: u8) -> Option<(char, usize)> {
+     let next = |k: usize, low: u8, high: u8| bytes.get(at + k).copied().filter(|b| (low..=high).contains(b));
+     let tail = |b: u8| u32::from(b & 0x3f);
+     let (value, len) = match lead {

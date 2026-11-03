@@ -1,0 +1,17 @@
+{
+  "schema": "glass.historical-evidence-index/v1",
+  "manifests": [
+    {
+      "path": "bench/results/2026-11-03-multibyte-outline/evidence-sha256.json",
+      "sha256": "5b6dfa8150a525f4703a72b8618d235ea13063fad4309e9fa9c96d06300cbd3a",
+      "source_root": ".",
+      "snapshots": {}
+    },
+    {
+      "path": "bench/results/2026-11-03-multibyte-outline/receipt-evidence-sha256.json",
+      "sha256": "d0955e78b34b16d3f08c17992df2d9b31185953c561d6415a0efac2ed312b544",
+      "source_root": ".",
+      "snapshots": {}
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+Advisory review of supplied exact extraction (self consultation; not independent source execution).
+
+No decoding invariant was identified as lost: checked initial lead read and ASCII return remain in the wrapper, and the only helper caller passes that exact lead. Bounds checks, RFC3629 restrictions and checked scalar conversion are unchanged. Tests support, but do not prove, semantic equivalence.
+
+Invalid inference to avoid: the caller alone shrinks 537 bytes / 147 instructions, but the new helper adds 427 bytes / 120 instructions. Across these two named symbols, net savings is only 110 bytes / 27 instructions; not whole-ELF size. Two static call sites do not establish dynamic calls or savings. Identical apply code does not fix callee/layout cost. Smaller code proves neither cache improvement nor speedup. Sign-test significance would not prove a >=2% effect; median guards are not noninferiority proof.
+
+A separate read-only spawned reviewer timed out before returning any answer. That attempted review is not audit evidence or a correctness pass. The direct advisory above used supplied exact facts and no repository execution.

@@ -1,0 +1,122 @@
+{
+  "schema": "glass.multibyte-outline-corruption/v1",
+  "rejected": 23,
+  "cases": [
+    {
+      "case": "missing session",
+      "rejected": true,
+      "diagnostic": "incomplete sessions"
+    },
+    {
+      "case": "extra session",
+      "rejected": true,
+      "diagnostic": "incomplete sessions"
+    },
+    {
+      "case": "swapped sessions",
+      "rejected": true,
+      "diagnostic": "order"
+    },
+    {
+      "case": "wrong arm",
+      "rejected": true,
+      "diagnostic": "order"
+    },
+    {
+      "case": "wrong block",
+      "rejected": true,
+      "diagnostic": "order"
+    },
+    {
+      "case": "wrong slot",
+      "rejected": true,
+      "diagnostic": "order"
+    },
+    {
+      "case": "failed test",
+      "rejected": true,
+      "diagnostic": "session failure/census"
+    },
+    {
+      "case": "boolean exit",
+      "rejected": true,
+      "diagnostic": "session failure/census"
+    },
+    {
+      "case": "zero tests",
+      "rejected": true,
+      "diagnostic": "session failure/census"
+    },
+    {
+      "case": "duplicate census",
+      "rejected": true,
+      "diagnostic": "session failure/census"
+    },
+    {
+      "case": "missing workloads",
+      "rejected": true,
+      "diagnostic": "workloads"
+    },
+    {
+      "case": "duplicate workloads",
+      "rejected": true,
+      "diagnostic": "workloads"
+    },
+    {
+      "case": "zero rate",
+      "rejected": true,
+      "diagnostic": "nonpositive/nonfinite result"
+    },
+    {
+      "case": "different bytes",
+      "rejected": true,
+      "diagnostic": "workload shape drift"
+    },
+    {
+      "case": "different read size",
+      "rejected": true,
+      "diagnostic": "read size"
+    },
+    {
+      "case": "wrong settings",
+      "rejected": true,
+      "diagnostic": "settings"
+    },
+    {
+      "case": "wrong protocol hash",
+      "rejected": true,
+      "diagnostic": "protocol hash"
+    },
+    {
+      "case": "wrong binary hash",
+      "rejected": true,
+      "diagnostic": "binary identities"
+    },
+    {
+      "case": "different launch argv",
+      "rejected": true,
+      "diagnostic": "argv"
+    },
+    {
+      "case": "overlap",
+      "rejected": true,
+      "diagnostic": "overlap/time"
+    },
+    {
+      "case": "empty interval",
+      "rejected": true,
+      "diagnostic": "overlap/time"
+    },
+    {
+      "case": "missing UTC",
+      "rejected": true,
+      "diagnostic": "missing UTC"
+    },
+    {
+      "case": "duplicate JSON key",
+      "rejected": true,
+      "diagnostic": "duplicate JSON key: schema"
+    }
+  ],
+  "limits": "Synthetic corruption of real evidence checks replay validation, not benchmark accuracy or source semantics."
+}
