@@ -67,6 +67,17 @@ description of what to show.
   decoding after balanced measurements/replication. No runtime promotion;
   exact selected executable restored. This is not an all-metric Ghostty win.
 
+### Row locality research and regression coverage
+
+- Compare global boxed row storage and cache-line row alignment in 39 engine
+  pairs, then 54 real-terminal sessions and 12 quiet-RTT sessions for alignment.
+  Reject both: boxing regresses Unicode/ASCII; alignment's engine Unicode gain
+  reverses through the real PTY. No runtime promotion or all-metric win claim.
+- Cover 1,260 region/origin/count combinations with history, ring seams, empty
+  ranges, lazy-tail state, colors, uniform metadata and shared cell extras.
+  Final restored-source checks: 137 library, 45 reference, 376 terminal and
+  five validator tests pass (11 terminal tests intentionally ignored).
+
 ### Open intake
 
 ### Measured research and parser regression coverage

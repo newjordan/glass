@@ -1,0 +1,1 @@
+/work/frosty40/glass-repo/tree/target/release/deps/libalacritty_terminal-729e216391a04e7f.rlib

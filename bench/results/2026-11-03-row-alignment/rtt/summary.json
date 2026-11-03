@@ -1,0 +1,55 @@
+{
+  "glass": {
+    "run_medians_ms": [
+      0.024496,
+      0.034099000000000004,
+      0.032872,
+      0.035848000000000005,
+      0.027702499999999998,
+      0.035226
+    ],
+    "median_of_run_medians_ms": 0.0334855,
+    "pooled_median_ms": 0.032841499999999996,
+    "pooled_p90_ms": 0.044113,
+    "pooled_p99_ms": 0.073789
+  },
+  "glass-alt": {
+    "run_medians_ms": [
+      0.0217105,
+      0.021644999999999998,
+      0.038391999999999996,
+      0.034089,
+      0.034044000000000005,
+      0.029490000000000002
+    ],
+    "median_of_run_medians_ms": 0.031767000000000004,
+    "pooled_median_ms": 0.0293755,
+    "pooled_p90_ms": 0.042349,
+    "pooled_p99_ms": 0.050445
+  },
+  "paired_run_median_deltas_ms": [
+    0.0027854999999999998,
+    0.012454000000000007,
+    -0.005519999999999997,
+    0.0017590000000000036,
+    -0.006341500000000007,
+    0.005735999999999998
+  ],
+  "raw_sha256": {
+    "rtt-glass-1.json": "2c1ed4a3e38de4313a3aa29dd6825379ef664062fe8348bfa79cb45f6aabe157",
+    "rtt-glass-2.json": "d236f6f74897ad9637a3f9c38b0c79d28a1c4eaf293d5fdc81d11b3a16a8c134",
+    "rtt-glass-3.json": "cc14f484078b6b8bdb5b2bc730a1d346019542d678b69408f128378f98df2186",
+    "rtt-glass-4.json": "b01c3cb18ea70b157266939cd10fec6903e44d08ffb118c300452497468547e7",
+    "rtt-glass-5.json": "08b331adbb7936b2f4533dda2217568bb42ce034200d45bcfb328c158109faeb",
+    "rtt-glass-6.json": "787663db54bd2240a08b48dfd09ad0631a98c3357c35799a29ebcca2620a5765",
+    "rtt-glass-alt-1.json": "3b2805438656eb0981d8786d0171907e51061e474a5536ae65c19eb19651eb17",
+    "rtt-glass-alt-2.json": "b02b8ac1c0d9d841c887bd42f4b12b2e993e7390d3aec7736542988ce0490270",
+    "rtt-glass-alt-3.json": "d2bf30bb3529b67bd40e0824b0a3cc9b57c9809f1d7da2fae3ebc384640c76cd",
+    "rtt-glass-alt-4.json": "5eda8e57c7aeafda6a18d7945470549cc4693a8917551f3e230c4e5661adf404",
+    "rtt-glass-alt-5.json": "e899870bb958e10144e9eda726aa0a42146a12de529b133f5095dafb7d5681ff",
+    "rtt-glass-alt-6.json": "b1dca6385a41bcf5303822e42ee4c9bb9df9437a598beb97d4d401c66b5dc0e2"
+  },
+  "rounds": 6,
+  "samples_per_run": 300,
+  "note": "Samples correlated within sessions; not key-to-screen latency."
+}

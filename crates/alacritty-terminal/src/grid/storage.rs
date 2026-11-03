@@ -850,6 +850,79 @@ mod tests {
         }
     }
 
+    /// Compare logical cells, not just row equality: lazy rows keep stale
+    /// physical cells which must travel with their virtual blank/frontier.
+    #[test]
+    fn rotate_region_preserves_lazy_rows_and_history() {
+        use crate::term::cell::Cell;
+        use vte::ansi::Color;
+
+        let visible = 6;
+        let total = 9;
+        for zero in 0..total {
+            for start in 0..=visible {
+                for end in start..=visible {
+                    for positions in 0..=2 * (end - start) {
+                        let mut storage = Storage::<Cell>::with_capacity(visible, 4);
+                        storage.initialize(total - visible, 4);
+                        storage.inner.truncate(total);
+                        storage.zero = zero;
+                        for line in -(total as i32 - visible as i32)..visible as i32 {
+                            let row = &mut storage[Line(line)];
+                            // Distinct cells, styles, and shared extras must move
+                            // with their row, including stale lazy-tail contents.
+                            for col in 0..4 {
+                                let mut cell = Cell {
+                                    c: char::from_u32(
+                                        0x100 + ((line + 3) as u32 * 4) + col as u32,
+                                    )
+                                    .unwrap(),
+                                    bg: Color::Indexed((line + 3) as u8),
+                                    ..Cell::default()
+                                };
+                                if line.rem_euclid(3) == 1 {
+                                    cell.push_zerowidth('\u{301}');
+                                }
+                                row.write_cell(col, cell);
+                            }
+                            let specimen = row.virtual_cell(0).clone();
+                            row.note_uniform_write(0, 4, &specimen);
+                            if line.rem_euclid(2) == 0 {
+                                row.recycle(&specimen);
+                                row.write_cell(0, Cell { c: 'X', ..Cell::default() });
+                            }
+                        }
+                        let snapshot = |storage: &Storage<Cell>| -> Vec<_> {
+                            (-(total as i32 - visible as i32)..visible as i32)
+                                .map(|line| {
+                                    let row = &storage[Line(line)];
+                                    (
+                                        row.observable().cloned().collect::<Vec<_>>(),
+                                        row.occ,
+                                        row.lazy_frontier(),
+                                        row.uniform_to(),
+                                        row.extra_free(),
+                                    )
+                                })
+                                .collect()
+                        };
+                        let mut expected = snapshot(&storage);
+                        let history = total - visible;
+                        if end > start {
+                            expected[history + start..history + end]
+                                .rotate_left(positions % (end - start));
+                        }
+                        storage.rotate_region(start as i32, end as i32, positions);
+                        assert_eq!(
+                            snapshot(&storage), expected,
+                            "zero={zero} region={start}..{end} positions={positions}"
+                        );
+                    }
+                }
+            }
+        }
+    }
+
     fn filled_row(content: char) -> Row<char> {
         let mut row = Row::new(1);
         row[Column(0)] = content;

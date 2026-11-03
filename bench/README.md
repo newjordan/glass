@@ -393,3 +393,30 @@ Rejects missing/duplicate rows or JSON keys, nonzero exits, changed byte/read
 shape, order errors, and summary/raw-output disagreement. This validates
 internal consistency, not timing accuracy. Five validator mutation tests pass;
 those synthetic fixtures are explicitly not research measurements.
+
+
+### Row locality experiments (UTC 2026-11-03)
+
+[Boxed rows](results/2026-11-03-boxed-rows/README.md) trade a +7.74%
+scroll-region engine result for -5.20% Unicode: rejected. [Row cache-line
+alignment](results/2026-11-03-row-alignment/README.md) replicates +2.93%
+Unicode in the engine, but loses 1.53% in 16/18 real-PTY paired rounds:
+also rejected. The 54-session terminal protocol is cyclic-balanced, not the
+canonical full-permutation schedule. Three engine datasets and all terminal
+raw files have replay receipts. Six paired quiet-RTT rounds are separate and
+are explicitly not key-to-screen latency. The exact selected executable was
+restored, with only a strengthened lazy-row/history rotation test retained.
+
+```
+python3 -I bench/replay-engine-pairs.py --pairs 11 \
+  bench/results/2026-11-03-boxed-rows/engine-pairs.json \
+  bench/results/2026-11-03-row-alignment/engine-pairs.json
+python3 -I bench/replay-engine-pairs.py --pairs 17 \
+  bench/results/2026-11-03-row-alignment/engine-replication.json
+python3 -I bench/results/2026-11-03-row-alignment/summarize-terminal.py
+```
+
+The terminal replay verifies all 54 raw hashes and exact summary equality,
+and verifies the recorded executable/harness hashes while they are present.
+It deliberately does not relabel the observed cyclic orders as the standard
+runner's permutation schedule. See the experiment's execution-error notes.

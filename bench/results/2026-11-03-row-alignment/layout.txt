@@ -1,0 +1,2 @@
+Control Row<Cell>: size=64 alignment=8; Cell: size=24 alignment=8
+Pointer slot (Box<Row<Cell>>): size=8 alignment=8

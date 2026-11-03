@@ -1,0 +1,13 @@
+error[E0514]: found crate `alacritty_terminal` compiled by an incompatible version of rustc
+ --> bench/results/2026-11-03-row-alignment/layout-probe.rs:1:5
+  |
+1 | use alacritty_terminal::{grid::Row,term::cell::Cell};
+  |     ^^^^^^^^^^^^^^^^^^
+  |
+  = note: the following crate versions were found:
+          crate `alacritty_terminal` compiled by rustc 1.99.0 (b940084d7 2026-09-28): /work/frosty40/glass-repo/tree/target/release/deps/libalacritty_terminal-729e216391a04e7f.rlib
+  = help: please recompile that crate using this compiler (rustc 1.99.1 (58cf8f9c3 2026-10-13)) (consider running `cargo clean` first)
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0514`.

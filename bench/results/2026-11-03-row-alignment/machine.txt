@@ -1,0 +1,9 @@
+CPU(s):                                  32
+On-line CPU(s) list:                     0-31
+Model name:                              AMD Ryzen 9 9950X3D 16-Core Processor
+Thread(s) per core:                      2
+Core(s) per socket:                      16
+CPU(s) scaling MHz:                      90%
+L3 cache:                                128 MiB (2 instances)
+NUMA node0 CPU(s):                       0-31
+2026-11-02T20:12:50-06:00

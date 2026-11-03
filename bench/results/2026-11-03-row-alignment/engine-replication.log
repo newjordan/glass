@@ -1,0 +1,55 @@
+pair 1/17 recorded
+pair 2/17 recorded
+pair 3/17 recorded
+pair 4/17 recorded
+pair 5/17 recorded
+pair 6/17 recorded
+pair 7/17 recorded
+pair 8/17 recorded
+pair 9/17 recorded
+pair 10/17 recorded
+pair 11/17 recorded
+pair 12/17 recorded
+pair 13/17 recorded
+pair 14/17 recorded
+pair 15/17 recorded
+pair 16/17 recorded
+pair 17/17 recorded
+{
+  "ascii": {
+    "median_cpu_ratio": 0.9945185644844349,
+    "wins": 7,
+    "losses": 10,
+    "sign_p_two_sided": 0.629058837890625
+  },
+  "cursor_motion": {
+    "median_cpu_ratio": 1.0077130736598534,
+    "wins": 11,
+    "losses": 6,
+    "sign_p_two_sided": 0.332305908203125
+  },
+  "scroll_region": {
+    "median_cpu_ratio": 1.0023415627386103,
+    "wins": 10,
+    "losses": 7,
+    "sign_p_two_sided": 0.629058837890625
+  },
+  "truecolor": {
+    "median_cpu_ratio": 1.0146094215861658,
+    "wins": 14,
+    "losses": 3,
+    "sign_p_two_sided": 0.012725830078125
+  },
+  "tui_frames": {
+    "median_cpu_ratio": 1.0063959066197634,
+    "wins": 11,
+    "losses": 6,
+    "sign_p_two_sided": 0.332305908203125
+  },
+  "unicode": {
+    "median_cpu_ratio": 1.0293233082706768,
+    "wins": 14,
+    "losses": 3,
+    "sign_p_two_sided": 0.012725830078125
+  }
+}

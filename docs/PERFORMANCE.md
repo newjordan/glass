@@ -463,3 +463,27 @@ inaccessible page. Four decoder tests and the parser differential pass on
 selected source. Runtime source (apart from tests) and the exact historical
 selected release executable remain unchanged. Raw reports independently
 replay via `bench/replay-engine-pairs.py`.
+
+
+### Row locality: structural gains that failed the all-metric gate
+
+[Boxing physical rows](../bench/results/2026-11-03-boxed-rows/README.md)
+improved scroll-region engine CPU throughput 7.74% in 11 alternating pairs,
+but lost 5.20% Unicode and 1.25% ASCII in all 11 pairs. Moving pointers instead
+of row metadata is not a free region optimization: reject the global design.
+
+[64-byte row alignment](../bench/results/2026-11-03-row-alignment/README.md)
+kept inline storage and gained 2.93% Unicode in an independent 17-pair engine
+replication. In 18 cyclic-balanced real-terminal rounds (54 sessions), however,
+Unicode lost 1.53%, 16/18 pairs. The engine gain did not transfer. These rounds
+balance launch position but are not the full-permutation canonical protocol.
+Quiet DA1 RTT also supplied no latency benefit; it is not key-to-screen latency.
+Neither candidate ships, and neither result is an all-metric Ghostty win.
+
+The retained storage regression compares 1,260 region/origin/count combinations,
+including history, ring seams, empty ranges, per-row backgrounds, uniform
+metadata, shared extras and partially overwritten lazy tails. Restored-source
+checks passed 137 library, 45 reference and 376 terminal tests (11 ignored),
+plus five replay-validator tests. All three new engine reports and all 54
+terminal sessions replay. Runtime source and the exact selected executable
+remain unchanged; see the report's restoration hashes and scoped test receipts.

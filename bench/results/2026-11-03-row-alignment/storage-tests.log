@@ -1,0 +1,24 @@
+   Compiling glass-alacritty-terminal v0.26.0 (/work/frosty40/glass-repo/tree/crates/alacritty-terminal)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.53s
+     Running unittests src/lib.rs (target/debug/deps/alacritty_terminal-2cbb80f59ccdbffa)
+
+running 16 tests
+test grid::storage::tests::indexing ... ok
+test grid::storage::tests::rotate ... ok
+test grid::storage::tests::region_rotation_reads_as_rotation ... ok
+test grid::storage::tests::rotate_wrap_zero ... ok
+test grid::storage::tests::shrink_before_and_after_zero ... ok
+test grid::storage::tests::grow_after_zero ... ok
+test grid::storage::tests::shrink_after_zero ... ok
+test grid::storage::tests::shrink_before_zero ... ok
+test grid::storage::tests::truncate_invisible_lines ... ok
+test grid::storage::tests::grow_before_zero ... ok
+test grid::storage::tests::shrink_then_grow ... ok
+test grid::storage::tests::with_capacity ... ok
+test grid::storage::tests::truncate_invisible_lines_beginning ... ok
+test grid::storage::tests::initialize ... ok
+test grid::storage::tests::indexing_above_inner_len - should panic ... ok
+test grid::storage::tests::rotate_region_preserves_lazy_rows_and_history ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 121 filtered out; finished in 0.21s
+

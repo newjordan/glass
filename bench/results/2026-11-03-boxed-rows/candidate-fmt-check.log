@@ -1,0 +1,447 @@
+Warning: can't set `wrap_comments = true`, unstable features are only available in nightly channel.
+Warning: can't set `format_code_in_doc_comments = true`, unstable features are only available in nightly channel.
+Warning: can't set `comment_width = 100`, unstable features are only available in nightly channel.
+Warning: can't set `normalize_comments = true`, unstable features are only available in nightly channel.
+Warning: can't set `normalize_doc_attributes = true`, unstable features are only available in nightly channel.
+Warning: can't set `format_strings = true`, unstable features are only available in nightly channel.
+Warning: can't set `imports_granularity = Module`, unstable features are only available in nightly channel.
+Warning: can't set `reorder_impl_items = true`, unstable features are only available in nightly channel.
+Warning: can't set `overflow_delimited_expr = true`, unstable features are only available in nightly channel.
+Warning: can't set `condense_wildcard_suffixes = true`, unstable features are only available in nightly channel.
+Diff in /work/frosty40/glass-repo/tree/crates/alacritty-terminal/src/grid/mod.rs:381:
+                             );
+                         }
+                     }
+[31m-                }
+(B[m[32m+                },
+(B[m                 // =3: the flags pass plus dropping any stale CellExtra —
+                 // tests whether the residual is the Arc drop each
+                 // overwrite then pays on a cell reset would have cleared.
+Diff in /work/frosty40/glass-repo/tree/crates/alacritty-terminal/src/grid/mod.rs:396:
+                             cell.strip_stale();
+                         }
+                     }
+[31m-                }
+(B[m[31m-                _ => {}
+(B[m[32m+                },
+(B[m[32m+                _ => {},
+(B[m             }
+             return;
+         }
+Diff in /work/frosty40/glass-repo/tree/crates/alacritty-terminal/src/grid/row.rs:8:
+ use std::ops::{Index, IndexMut, Range, RangeFrom, RangeFull, RangeTo, RangeToInclusive};
+ use std::{iter, slice};
+ 
+[31m-
+(B[m use crate::grid::GridCell;
+ use crate::index::Column;
+ use crate::term::cell::ResetDiscriminant;
+Diff in /work/frosty40/glass-repo/tree/crates/alacritty-terminal/src/grid/row.rs:91:
+     fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+         #[derive(serde::Deserialize)]
+         #[serde(field_identifier, rename_all = "lowercase", crate = "serde")]
+[31m-        enum Field { Inner, Occ }
+(B[m[32m+        enum Field {
+(B[m[32m+            Inner,
+(B[m[32m+            Occ,
+(B[m[32m+        }
+(B[m         struct RowVisitor<T>(std::marker::PhantomData<T>);
+         impl<'de, T: serde::Deserialize<'de>> serde::de::Visitor<'de> for RowVisitor<T> {
+             type Value = Row<T>;
+Diff in /work/frosty40/glass-repo/tree/crates/alacritty-terminal/src/grid/row.rs:102:
+                 self,
+                 mut seq: V,
+             ) -> Result<Self::Value, V::Error> {
+[31m-                let inner: Vec<T> = seq
+(B[m[31m-                    .next_element()?
+(B[m[31m-                    .ok_or_else(|| serde::de::Error::missing_field("inner"))?;
+(B[m[31m-                let occ: usize = seq
+(B[m[31m-                    .next_element()?
+(B[m[31m-                    .ok_or_else(|| serde::de::Error::missing_field("occ"))?;
+(B[m[32m+                let inner: Vec<T> =
+(B[m[32m+                    seq.next_element()?.ok_or_else(|| serde::de::Error::missing_field("inner"))?;
+(B[m[32m+                let occ: usize =
+(B[m[32m+                    seq.next_element()?.ok_or_else(|| serde::de::Error::missing_field("occ"))?;
+(B[m                 Ok(Row { inner, occ, blank: None, extra_free: false, uniform_to: 0 })
+             }
+             fn visit_map<V: serde::de::MapAccess<'de>>(
+Diff in /work/frosty40/glass-repo/tree/crates/alacritty-terminal/src/grid/row.rs:123:
+                                 return Err(serde::de::Error::duplicate_field("inner"));
+                             }
+                             inner = Some(map.next_value()?);
+[31m-                        }
+(B[m[32m+                        },
+(B[m                         Field::Occ => {
+                             if occ.is_some() {
+                                 return Err(serde::de::Error::duplicate_field("occ"));
+Diff in /work/frosty40/glass-repo/tree/crates/alacritty-terminal/src/grid/row.rs:130:
+                             }
+                             occ = Some(map.next_value()?);
+[31m-                        }
+(B[m[32m+                        },
+(B[m                     }
+                 }
+                 let inner = inner.ok_or_else(|| serde::de::Error::missing_field("inner"))?;
+Diff in /work/frosty40/glass-repo/tree/crates/alacritty-terminal/src/grid/row.rs:317:
+     /// past this are observably the lazy blank when one is set.
+     #[inline(always)]
+     pub(crate) fn physical_len(&self) -> usize {
+[31m-        if self.blank.is_some() {
+(B[m[31m-            self.occ.min(self.inner.len())
+(B[m[31m-        } else {
+(B[m[31m-            self.inner.len()
+(B[m[31m-        }
+(B[m[32m+        if self.blank.is_some() { self.occ.min(self.inner.len()) } else { self.inner.len() }
+(B[m     }
+ 
+     /// The physical prefix of the row, for scanners that must not read
+Diff in /work/frosty40/glass-repo/tree/crates/alacritty-terminal/src/grid/row.rs:537:
+         }
+         // For a lazily recycled row the tail is observably `blank`, so
+         // only the physical prefix can hold content.
+[31m-        let physical = if self.blank.is_some() {
+(B[m[31m-            self.occ.min(self.inner.len())
+(B[m[31m-        } else {
+(B[m[31m-            self.inner.len()
+(B[m[31m-        };
+(B[m[32m+        let physical =
+(B[m[32m+            if self.blank.is_some() { self.occ.min(self.inner.len()) } else { self.inner.len() };
+(B[m         self.inner[..physical].iter().all(GridCell::is_empty)
+     }
+ 
+Diff in /work/frosty40/glass-repo/tree/crates/alacritty-terminal/src/grid/row.rs:644:
+             None => true,
+             Some(_) => col < self.occ,
+         };
+[31m-        let under = if physical_write {
+(B[m[31m-            self.inner[col].flags()
+(B[m[31m-        } else {
+(B[m[31m-            self.virtual_cell(col).flags()
+(B[m[31m-        };
+(B[m[32m+        let under =
+(B[m[32m+            if physical_write { self.inner[col].flags() } else { self.virtual_cell(col).flags() };
+(B[m         let under = *under;
+         if !physical_write {
+             self.materialize_to(col);
+Diff in /work/frosty40/glass-repo/tree/crates/alacritty-terminal/src/grid/row.rs:772:
+             "fill-census: notes={} cells={} widths w0(already-physical)={} w1={} w2={} w3-4={} w5-8={} w9-16={} w17+=({} {} {})",
+             NOTES.load(Ordering::Relaxed),
+             CELLS.load(Ordering::Relaxed),
+[31m-            w[0], w[1], w[2], w[3], w[4], w[5], w[6],
+(B[m[32m+            w[0],
+(B[m[32m+            w[1],
+(B[m[32m+            w[2],
+(B[m[32m+            w[3],
+(B[m[32m+            w[4],
+(B[m[32m+            w[5],
+(B[m[32m+            w[6],
+(B[m             w.iter().sum::<u64>(),
+             w[1] + w[3] + w[4] + w[5] + w[6] // every width > 0
+         );
+Diff in /work/frosty40/glass-repo/tree/crates/alacritty-terminal/src/grid/row.rs:780:
+         let notes: Vec<u64> = SITE_NOTES.iter().map(|c| c.load(Ordering::Relaxed)).collect();
+         eprintln!(
+             "fill-sites: write_cell {}|{}  idx_col {}|{}  idx_range {}|{}  flags_remove {}|{}  lane {}|{}  other {}|{}  (no-fill|filled)",
+[31m-            sites[0], notes[0], sites[1], notes[1], sites[2], notes[2], sites[3], notes[3], sites[4], notes[4], sites[5], notes[5]
+(B[m[32m+            sites[0],
+(B[m[32m+            notes[0],
+(B[m[32m+            sites[1],
+(B[m[32m+            notes[1],
+(B[m[32m+            sites[2],
+(B[m[32m+            notes[2],
+(B[m[32m+            sites[3],
+(B[m[32m+            notes[3],
+(B[m[32m+            sites[4],
+(B[m[32m+            notes[4],
+(B[m[32m+            sites[5],
+(B[m[32m+            notes[5]
+(B[m         );
+     }
+ }
+Diff in /work/frosty40/glass-repo/tree/crates/alacritty-terminal/src/grid/storage.rs:825:
+             for (start, end) in [(0, 6), (1, 5), (2, 6), (0, 3)] {
+                 for positions in 1..4usize {
+                     let mut storage: Storage<char> = Storage {
+[31m-                        inner: (0..8)
+(B[m[31m-                            .map(|i| filled_row(char::from(b'a' + i as u8)))
+(B[m[31m-                            .collect(),
+(B[m[32m+                        inner: (0..8).map(|i| filled_row(char::from(b'a' + i as u8))).collect(),
+(B[m                         zero,
+                         visible_lines: visible,
+                         len: 8,
+Diff in /work/frosty40/glass-repo/tree/crates/alacritty-terminal/src/grid/storage.rs:870:
+                             let row = &mut storage[Line(line)];
+                             // Give every physical cell a distinct nonblank value.
+                             for col in 0..4 {
+[31m-                                row[Column(col)].c = char::from_u32(
+(B[m[31m-                                    0x100 + ((line + 3) as u32 * 4) + col as u32,
+(B[m[31m-                                ).unwrap();
+(B[m[32m+                                row[Column(col)].c =
+(B[m[32m+                                    char::from_u32(0x100 + ((line + 3) as u32 * 4) + col as u32)
+(B[m[32m+                                        .unwrap();
+(B[m                             }
+                             if line.rem_euclid(2) == 0 {
+                                 row.recycle(&Cell::default());
+Diff in /work/frosty40/glass-repo/tree/crates/alacritty-terminal/src/grid/storage.rs:883:
+                             (-(total as i32 - visible as i32)..visible as i32)
+                                 .map(|line| {
+                                     let row = &storage[Line(line)];
+[31m-                                    (row.observable().cloned().collect::<Vec<_>>(),
+(B[m[31m-                                     row.occ, row.lazy_frontier(), row.uniform_to(), row.extra_free())
+(B[m[32m+                                    (
+(B[m[32m+                                        row.observable().cloned().collect::<Vec<_>>(),
+(B[m[32m+                                        row.occ,
+(B[m[32m+                                        row.lazy_frontier(),
+(B[m[32m+                                        row.uniform_to(),
+(B[m[32m+                                        row.extra_free(),
+(B[m[32m+                                    )
+(B[m                                 })
+                                 .collect()
+                         };
+Diff in /work/frosty40/glass-repo/tree/crates/alacritty-terminal/src/grid/storage.rs:893:
+                         expected[history + start..history + end]
+                             .rotate_left(positions % (end - start));
+                         storage.rotate_region(start as i32, end as i32, positions);
+[31m-                        assert_eq!(snapshot(&storage), expected,
+(B[m[31m-                            "zero={zero} region={start}..{end} positions={positions}");
+(B[m[32m+                        assert_eq!(
+(B[m[32m+                            snapshot(&storage),
+(B[m[32m+                            expected,
+(B[m[32m+                            "zero={zero} region={start}..{end} positions={positions}"
+(B[m[32m+                        );
+(B[m                     }
+                 }
+             }
+Diff in /work/frosty40/glass-repo/tree/crates/alacritty-terminal/src/selection.rs:433:
+         let mut selection = Selection::new(SelectionType::Simple, location, Side::Left);
+         selection.update(location, Side::Right);
+ 
+[31m-        assert_eq!(selection.to_range(&term(1, 2)).unwrap(), SelectionRange {
+(B[m[31m-            start: location,
+(B[m[31m-            end: location,
+(B[m[31m-            is_block: false
+(B[m[31m-        });
+(B[m[32m+        assert_eq!(
+(B[m[32m+            selection.to_range(&term(1, 2)).unwrap(),
+(B[m[32m+            SelectionRange { start: location, end: location, is_block: false }
+(B[m[32m+        );
+(B[m     }
+ 
+     /// Test case of single cell selection.
+Diff in /work/frosty40/glass-repo/tree/crates/alacritty-terminal/src/selection.rs:451:
+         let mut selection = Selection::new(SelectionType::Simple, location, Side::Right);
+         selection.update(location, Side::Left);
+ 
+[31m-        assert_eq!(selection.to_range(&term(1, 2)).unwrap(), SelectionRange {
+(B[m[31m-            start: location,
+(B[m[31m-            end: location,
+(B[m[31m-            is_block: false
+(B[m[31m-        });
+(B[m[32m+        assert_eq!(
+(B[m[32m+            selection.to_range(&term(1, 2)).unwrap(),
+(B[m[32m+            SelectionRange { start: location, end: location, is_block: false }
+(B[m[32m+        );
+(B[m     }
+ 
+     /// Test adjacent cell selection from left to right.
+Diff in /work/frosty40/glass-repo/tree/crates/alacritty-terminal/src/selection.rs:541:
+         selection.update(Point::new(Line(4), Column(1)), Side::Right);
+         selection = selection.rotate(&size, &(Line(0)..Line(size.0 as i32)), 4).unwrap();
+ 
+[31m-        assert_eq!(selection.to_range(&term(size.0, size.1)).unwrap(), SelectionRange {
+(B[m[31m-            start: Point::new(Line(0), Column(0)),
+(B[m[31m-            end: Point::new(Line(5), Column(4)),
+(B[m[31m-            is_block: false,
+(B[m[31m-        });
+(B[m[32m+        assert_eq!(
+(B[m[32m+            selection.to_range(&term(size.0, size.1)).unwrap(),
+(B[m[32m+            SelectionRange {
+(B[m[32m+                start: Point::new(Line(0), Column(0)),
+(B[m[32m+                end: Point::new(Line(5), Column(4)),
+(B[m[32m+                is_block: false,
+(B[m[32m+            }
+(B[m[32m+        );
+(B[m     }
+ 
+     #[test]
+Diff in /work/frosty40/glass-repo/tree/crates/alacritty-terminal/src/selection.rs:556:
+         selection.update(Point::new(Line(4), Column(1)), Side::Right);
+         selection = selection.rotate(&size, &(Line(0)..Line(size.0 as i32)), 4).unwrap();
+ 
+[31m-        assert_eq!(selection.to_range(&term(size.0, size.1)).unwrap(), SelectionRange {
+(B[m[31m-            start: Point::new(Line(0), Column(1)),
+(B[m[31m-            end: Point::new(Line(5), Column(3)),
+(B[m[31m-            is_block: false,
+(B[m[31m-        });
+(B[m[32m+        assert_eq!(
+(B[m[32m+            selection.to_range(&term(size.0, size.1)).unwrap(),
+(B[m[32m+            SelectionRange {
+(B[m[32m+                start: Point::new(Line(0), Column(1)),
+(B[m[32m+                end: Point::new(Line(5), Column(3)),
+(B[m[32m+                is_block: false,
+(B[m[32m+            }
+(B[m[32m+        );
+(B[m     }
+ 
+     #[test]
+Diff in /work/frosty40/glass-repo/tree/crates/alacritty-terminal/src/selection.rs:571:
+         selection.update(Point::new(Line(4), Column(1)), Side::Right);
+         selection = selection.rotate(&size, &(Line(0)..Line(size.0 as i32)), 4).unwrap();
+ 
+[31m-        assert_eq!(selection.to_range(&term(size.0, size.1)).unwrap(), SelectionRange {
+(B[m[31m-            start: Point::new(Line(0), Column(2)),
+(B[m[31m-            end: Point::new(Line(5), Column(3)),
+(B[m[31m-            is_block: false,
+(B[m[31m-        });
+(B[m[32m+        assert_eq!(
+(B[m[32m+            selection.to_range(&term(size.0, size.1)).unwrap(),
+(B[m[32m+            SelectionRange {
+(B[m[32m+                start: Point::new(Line(0), Column(2)),
+(B[m[32m+                end: Point::new(Line(5), Column(3)),
+(B[m[32m+                is_block: false,
+(B[m[32m+            }
+(B[m[32m+        );
+(B[m     }
+ 
+     #[test]
+Diff in /work/frosty40/glass-repo/tree/crates/alacritty-terminal/src/selection.rs:586:
+         selection.update(Point::new(Line(4), Column(1)), Side::Right);
+         selection = selection.rotate(&size, &(Line(0)..Line(size.0 as i32)), 4).unwrap();
+ 
+[31m-        assert_eq!(selection.to_range(&term(size.0, size.1)).unwrap(), SelectionRange {
+(B[m[31m-            start: Point::new(Line(0), Column(2)),
+(B[m[31m-            end: Point::new(Line(5), Column(3)),
+(B[m[31m-            is_block: true
+(B[m[31m-        });
+(B[m[32m+        assert_eq!(
+(B[m[32m+            selection.to_range(&term(size.0, size.1)).unwrap(),
+(B[m[32m+            SelectionRange {
+(B[m[32m+                start: Point::new(Line(0), Column(2)),
+(B[m[32m+                end: Point::new(Line(5), Column(3)),
+(B[m[32m+                is_block: true
+(B[m[32m+            }
+(B[m[32m+        );
+(B[m     }
+ 
+     #[test]
+Diff in /work/frosty40/glass-repo/tree/crates/alacritty-terminal/src/selection.rs:629:
+         selection.update(Point::new(Line(4), Column(1)), Side::Right);
+         selection = selection.rotate(&size, &(Line(1)..Line(size.0 as i32 - 1)), 4).unwrap();
+ 
+[31m-        assert_eq!(selection.to_range(&term(size.0, size.1)).unwrap(), SelectionRange {
+(B[m[31m-            start: Point::new(Line(1), Column(0)),
+(B[m[31m-            end: Point::new(Line(3), Column(3)),
+(B[m[31m-            is_block: false,
+(B[m[31m-        });
+(B[m[32m+        assert_eq!(
+(B[m[32m+            selection.to_range(&term(size.0, size.1)).unwrap(),
+(B[m[32m+            SelectionRange {
+(B[m[32m+                start: Point::new(Line(1), Column(0)),
+(B[m[32m+                end: Point::new(Line(3), Column(3)),
+(B[m[32m+                is_block: false,
+(B[m[32m+            }
+(B[m[32m+        );
+(B[m     }
+ 
+     #[test]
+Diff in /work/frosty40/glass-repo/tree/crates/alacritty-terminal/src/selection.rs:644:
+         selection.update(Point::new(Line(1), Column(1)), Side::Left);
+         selection = selection.rotate(&size, &(Line(1)..Line(size.0 as i32 - 1)), -5).unwrap();
+ 
+[31m-        assert_eq!(selection.to_range(&term(size.0, size.1)).unwrap(), SelectionRange {
+(B[m[31m-            start: Point::new(Line(6), Column(1)),
+(B[m[31m-            end: Point::new(Line(8), size.last_column()),
+(B[m[31m-            is_block: false,
+(B[m[31m-        });
+(B[m[32m+        assert_eq!(
+(B[m[32m+            selection.to_range(&term(size.0, size.1)).unwrap(),
+(B[m[32m+            SelectionRange {
+(B[m[32m+                start: Point::new(Line(6), Column(1)),
+(B[m[32m+                end: Point::new(Line(8), size.last_column()),
+(B[m[32m+                is_block: false,
+(B[m[32m+            }
+(B[m[32m+        );
+(B[m     }
+ 
+     #[test]
+Diff in /work/frosty40/glass-repo/tree/crates/alacritty-terminal/src/selection.rs:659:
+         selection.update(Point::new(Line(4), Column(1)), Side::Right);
+         selection = selection.rotate(&size, &(Line(1)..Line(size.0 as i32 - 1)), 4).unwrap();
+ 
+[31m-        assert_eq!(selection.to_range(&term(size.0, size.1)).unwrap(), SelectionRange {
+(B[m[31m-            start: Point::new(Line(1), Column(2)),
+(B[m[31m-            end: Point::new(Line(3), Column(3)),
+(B[m[31m-            is_block: true,
+(B[m[31m-        });
+(B[m[32m+        assert_eq!(
+(B[m[32m+            selection.to_range(&term(size.0, size.1)).unwrap(),
+(B[m[32m+            SelectionRange {
+(B[m[32m+                start: Point::new(Line(1), Column(2)),
+(B[m[32m+                end: Point::new(Line(3), Column(3)),
+(B[m[32m+                is_block: true,
+(B[m[32m+            }
+(B[m[32m+        );
+(B[m     }
+ 
+     #[test]
+Diff in /work/frosty40/glass-repo/tree/crates/alacritty-terminal/src/term/cell.rs:306:
+ 
+     #[inline]
+     fn style_eq(&self, other: &Self) -> bool {
+[31m-        self.fg == other.fg && self.bg == other.bg && self.flags == other.flags && self.extra == other.extra
+(B[m[32m+        self.fg == other.fg
+(B[m[32m+            && self.bg == other.bg
+(B[m[32m+            && self.flags == other.flags
+(B[m[32m+            && self.extra == other.extra
+(B[m     }
+ 
+     fn reset(&mut self, template: &Self) {
+Diff in /work/frosty40/glass-repo/tree/crates/alacritty-terminal/src/term/cell.rs:417:
+     fn shared_mark_serializes_like_an_owned_extra() {
+         let mut shared = Cell::default();
+         shared.push_zerowidth('\u{301}');
+[31m-        let owned = Cell { extra: Some(Arc::new(CellExtra::with_mark('\u{301}'))), ..Cell::default() };
+(B[m[32m+        let owned =
+(B[m[32m+            Cell { extra: Some(Arc::new(CellExtra::with_mark('\u{301}'))), ..Cell::default() };
+(B[m         let json = serde_json::to_string(&shared).unwrap();
+         assert_eq!(json, serde_json::to_string(&owned).unwrap());
+         assert_eq!(serde_json::from_str::<Cell>(&json).unwrap(), owned);
+Diff in /work/frosty40/glass-repo/tree/crates/alacritty-terminal/src/term/mod.rs:1016:
+         // the wide-char handling below needs no second read. The clears
+         // touch only neighbor cells, so running them after the store is
+         // equivalent to upstream's before-the-store order.
+[31m-        let under_flags = self.grid.write_cell(point.line, point.column, Cell {
+(B[m[31m-            c,
+(B[m[31m-            fg,
+(B[m[31m-            bg,
+(B[m[31m-            flags,
+(B[m[31m-            extra,
+(B[m[31m-        });
+(B[m[32m+        let under_flags =
+(B[m[32m+            self.grid.write_cell(point.line, point.column, Cell { c, fg, bg, flags, extra });
+(B[m 
+         // Clear all related cells when overwriting a fullwidth cell.
+         if under_flags.intersects(Flags::WIDE_CHAR | Flags::WIDE_CHAR_SPACER) {
+Diff in /work/frosty40/glass-repo/tree/crates/alacritty-terminal/src/term/mod.rs:1029:
+             // Remove wide char and spacer.
+             let wide = under_flags.contains(Flags::WIDE_CHAR);
+             if wide && point.column < self.last_column() {
+[31m-                self.grid.cell_flags_remove(
+(B[m[31m-                    point.line,
+(B[m[31m-                    point.column + 1,
+(B[m[31m-                    Flags::WIDE_CHAR_SPACER,
+(B[m[31m-                );
+(B[m[32m+                self.grid.cell_flags_remove(point.line, point.column + 1, Flags::WIDE_CHAR_SPACER);
+(B[m             } else if point.column > 0 {
+                 let prev = Column(point.column.0 - 1);
+                 self.grid[point.line][prev].clear_wide();
+Warning: can't set `wrap_comments = true`, unstable features are only available in nightly channel.
+Warning: can't set `format_code_in_doc_comments = true`, unstable features are only available in nightly channel.
+Warning: can't set `comment_width = 100`, unstable features are only available in nightly channel.
+Warning: can't set `normalize_comments = true`, unstable features are only available in nightly channel.
+Warning: can't set `normalize_doc_attributes = true`, unstable features are only available in nightly channel.
+Warning: can't set `format_strings = true`, unstable features are only available in nightly channel.
+Warning: can't set `imports_granularity = Module`, unstable features are only available in nightly channel.
+Warning: can't set `reorder_impl_items = true`, unstable features are only available in nightly channel.
+Warning: can't set `overflow_delimited_expr = true`, unstable features are only available in nightly channel.
+Warning: can't set `condense_wildcard_suffixes = true`, unstable features are only available in nightly channel.

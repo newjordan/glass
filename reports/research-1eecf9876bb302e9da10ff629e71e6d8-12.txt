@@ -1,0 +1,157 @@
+Research iteration 12: row locality, an engine-to-real-PTY sign reversal
+
+Status: reported; no championship claim and no runtime promotion.
+Start commit: 1661f5a. Local date 2026-11-02; UTC 2026-11-03.
+Machine: shared Ryzen 9 9950X3D, RTX 3090, Linux/Hyprland. Cargo pinned rustc
+1.99.0. No GPU kernels, competitor configuration, affinity, parser payloads,
+font/geometry settings or canonical benchmark estimators were changed.
+
+New finding 1 — Global pointer indirection is a measured structural tradeoff
+
+Candidate changes Storage<T> from Vec<Row<T>> to Vec<Box<Row<T>>>. It keeps
+observable row/indexing/reflow interfaces using boxing adapters, adds no
+unsafe code and moves pointers rather than full metadata during rotation.
+Measured control layout: Row<Cell> size 64 align 8; Cell size 24 align 8;
+Box<Row<Cell>> slot size 8 align 8. Do not infer that reduced byte traffic is
+the only mechanism: allocation, cache residency, indirection and compiler
+layout change together.
+
+11 alternating engine pairs, scale 2/five rounds, CPU throughput ratios:
+  ascii          0.987488   0 wins / 11 losses
+  unicode        0.947979   0 wins / 11 losses
+  truecolor      1.004242   8 / 3
+  cursor_motion  1.005399   8 / 2 plus one tie
+  scroll_region  1.077415  11 / 0
+  tui_frames     1.011707   8 / 3
+Unadjusted sign p=0.0009765625 for the three all-one-direction workloads.
+Region +7.74% is not free; reject global boxing for Unicode -5.20% and ASCII
+-1.25%. No terminal time was spent on this known-regressing candidate.
+
+Sources: bench/results/2026-11-03-boxed-rows/README.md, candidate-with-test.patch,
+storage.start.rs, storage.control.rs, storage.candidate.rs, start.json,
+control-build-final.*, candidate-build.*, candidate-library-tests.log,
+candidate-differential.log, engine-pairs.json/log and evidence-sha256.json.
+Initial package/target selection mistakes and the one missed fixture boxing
+conversion are retained separately. Only successful builds were measured.
+The final strengthened test was NOT retroactively run on the boxed candidate.
+
+New finding 2 — Row alignment replicates in-engine and reverses through PTY
+
+Separate candidate adds repr(align(64)) to Row<T>, keeping inline contiguous
+rows, no indirection. Initial 11 engine pairs then independent 17 pairs on
+the same frozen executables; settings identical to boxed experiment.
+                 first CPU ratio      replication CPU ratio (wins/losses)
+  ascii              0.998697            0.994519 (7/10)
+  unicode            1.018932            1.029323 (14/3)
+  truecolor          1.011714            1.014609 (14/3)
+  cursor_motion      1.036740            1.007713 (11/6)
+  scroll_region      1.001333            1.002342 (10/7)
+  tui_frames         0.990883            1.006396 (11/6)
+Unicode/truecolor replication unadjusted sign p=0.01272583 each. Independent
+series are not selectively pooled. Shared host had unrelated CPU work; no
+mechanistic cache-miss attribution or universal speedup is made.
+
+Fresh control and aligned release binaries then ran 18 cyclic-balanced
+rounds with Ghostty: 54 sessions, all 154x39. Orders repeat control/candidate/
+Ghostty, candidate/Ghostty/control, Ghostty/control/candidate, six times.
+Positions are balanced; pairwise predecessor order is NOT counterbalanced.
+This is explicitly a distinct cyclic protocol, NOT the canonical six-
+permutation runner. All six unchanged tput.py workloads, fastest of three
+DA1-completion passes as in the existing harness. No visible-frame latency
+is measured. Observed 54 launch records are checked against the stated order.
+
+               aligned/control ratio (W/L)   aligned/Ghostty ratio (W/L)
+  ascii          1.086237 (11/7)               1.019395 (10/8)
+  unicode        0.984723 (2/16)               0.935558 (6/12)
+  truecolor      1.006140 (12/6)               1.175294 (18/0)
+  cursor_motion  0.999586 (8/9, tie)           1.111834 (18/0)
+  scroll_region  0.986085 (8/10)              0.981659 (8/10)
+  tui_frames     1.005954 (12/5, tie)         1.058747 (18/0)
+These are medians of paired wall-throughput ratios, not ratios of medians.
+Candidate/control Unicode loses 16/18, p=0.00131226 unadjusted. The engine
++2.93% gain did NOT transfer: -1.53% real-PTY throughput. Reject alignment.
+ASCII +8.62% is noisy (p=0.48068); cannot selectively promote that number.
+Against Ghostty: three clear wins, Unicode/region deficits, ASCII mixed;
+not an all-metric victory. Exact selected runtime was never promoted to this.
+
+Medians (MB/s; final line is FPS):
+                 fresh control   aligned candidate    Ghostty
+  ascii               978.4             988.0           989.8
+  unicode             279.15            274.5           292.35
+  truecolor           277.9             279.4           236.45
+  cursor_motion       238.9             239.6           214.75
+  scroll_region      1110.65           1084.35         1121.55
+  TUI fps            3945.65           3965.35         3745.0
+CPU snapshots are coarse 0.01-second counters, not precise small-delta data.
+
+Quiet real-PTY RTT ran separately: six paired alternating rounds, 300 timed
+samples/arm/round, 3,600 total. Here rtt/glass is candidate; rtt/glass-alt is
+control (unlike throughput labels). Median of run medians: aligned 33.4855us,
+control 31.767us. Four of six candidate sessions slower; paired deltas mixed.
+Pooled p99: 73.789us aligned, 50.445us control. Samples within sessions are
+correlated. Not key-to-screen latency and not evidence of a latency benefit.
+
+Sources: bench/results/2026-11-03-row-alignment/README.md, candidate.patch,
+row.candidate.rs, engine-pairs.json, engine-replication.json, their build,
+raw output and replay receipts, release-sha256.txt, terminal-run.log,
+terminal-summary.json, terminal/tput-*.json, run-terminal-cyclic.sh,
+summarize-terminal.py, rtt/summary.json and all rtt/rtt-*.json.
+
+The appended original summarize command used unsupported CLI flags, exiting
+2 AFTER all 54 sessions completed. This error is retained; the subsequent
+explicit cyclic replay succeeds and must not be confused with completion
+of the standard full-permutation protocol. Bare-rustc layout probe had a
+1.99.1-vs-1.99.0 E0514; using the pinned compiler succeeded. No old artifacts
+were overwritten or removed to conceal these errors.
+
+New retained regression and final verification
+
+Added storage::tests::rotate_region_preserves_lazy_rows_and_history: 1,260
+physical origin/region/count combinations, nine rows with six visible,
+actual history outside the region, zero-length and singleton ranges, ring
+seams, positions through twice the region width, styles/combining-mark extras,
+uniform-prefix metadata, and partial lazy-tail overwrites. Cells AND occ,
+lazy frontier, uniform prefix and extra-free state are compared to an owned
+logical rotation model. Runtime rotation implementation is unchanged.
+
+Final restored-source commands and explicit results:
+  cargo test -p glass-alacritty-terminal --features serde --lib --test ref
+    137 library passed, 45 reference passed, 0 failed.
+  cargo test -p glass-term --locked
+    376 passed, 11 ignored, 0 failed.
+  python3 -I -m unittest discover -s bench -p test_replay_engine_pairs.py
+    5 passed, 0 failed (synthetic validator fixtures, NOT measurements).
+  engine replay --verify-binaries --pairs 11, both initial reports: success.
+  engine replay --verify-binaries --pairs 17, replication: success.
+  summarize-terminal.py: exact summary replay; all 54 raw hashes plus binary,
+    harness hashes and observed launch order checked.
+  Source/docs/script whitespace check: clean. Full staged diff --check flags
+    raw retained logs (EOF blank lines and formatter diagnostic whitespace).
+    Those hashed bytes are preserved, NOT claimed as a clean full diff.
+
+Restoration.json checks all 120 starting Rust source paths: only storage.rs
+changed, and its runtime prefix before cfg(test) is byte-identical to start.
+Boxing and alignment are removed. Exact selected target/release/glass is
+byte-equal to saved /tmp/glass-i12-selected and has SHA-256:
+  d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c
+Fresh terminal control SHA-256 (not historical selected):
+  c14daae87141541f747095ec77644e9189e009251716408e2630abd7a294a1ed
+Aligned rejected executable SHA-256:
+  cf13bb222fe75e157a64832f3826e98def8b6719a4d53cca5628741d3c081fee
+
+Evidence manifests retain 23 boxed artifacts and 106 alignment artifacts;
+replay validates hashes and arithmetic, not timing accuracy. Executable hash
+replay requires the named /tmp binaries while available; raw engine replay
+without that option survives their removal. Earlier iteration reports and
+unrelated pre-existing untracked work are preserved.
+
+Next necessary action
+
+Do not repeat global boxing/alignment as assumed solutions. An indirection
+scheme confined to region/page boundaries must preserve direct Unicode row
+access; its implementation and benefit are not yet proven. A compact cell/
+page design with styles/extras in side storage remains a distinct structural
+lead, with cursor-template, serde, reflow and ownership obligations. The
+Unicode/region deficits and unresolved ASCII result require actual end-to-end
+and latency gates,
+not further celebration of an engine-only gain. Campaign is not complete.

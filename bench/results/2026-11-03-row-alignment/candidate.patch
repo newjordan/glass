@@ -1,0 +1,12 @@
+diff --git i/crates/alacritty-terminal/src/grid/row.rs w/crates/alacritty-terminal/src/grid/row.rs
+index 2448882..3ad6236 100644
+--- i/crates/alacritty-terminal/src/grid/row.rs
++++ w/crates/alacritty-terminal/src/grid/row.rs
+@@ -15,6 +15,7 @@ use crate::term::cell::ResetDiscriminant;
+ 
+ /// A row in the grid.
+ #[derive(Default, Clone, Debug)]
++#[repr(align(64))]
+ pub struct Row<T> {
+     inner: Vec<T>,
+ 
