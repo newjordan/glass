@@ -1,0 +1,182 @@
+[
+  {
+    "capacity": 0,
+    "test": "blank_witness_marker_matrix",
+    "argv": [
+      "/tmp/glass-i40-persistent-v4",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "exit": 101,
+    "log": "persistent-v4-blank_witness_marker_matrix-0.log",
+    "log_sha256": "5a74cf3755f514f00980023fa037d3b099594d18195c74f94119c765b6a309ed",
+    "binary_sha256": "1903ee5b3cc36570c1999e5aee9b6cf4e6fc6fb57e0c46300ca2d369f6185629"
+  },
+  {
+    "capacity": 0,
+    "test": "blank_witness_deleted_line_matrix",
+    "argv": [
+      "/tmp/glass-i40-persistent-v4",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "exit": 0,
+    "log": "persistent-v4-blank_witness_deleted_line_matrix-0.log",
+    "log_sha256": "17ff6b715af2e9c2ca421ceef4211cf1c6940d18a40ae936eae5094257447c99",
+    "binary_sha256": "1903ee5b3cc36570c1999e5aee9b6cf4e6fc6fb57e0c46300ca2d369f6185629"
+  },
+  {
+    "capacity": 1,
+    "test": "blank_witness_marker_matrix",
+    "argv": [
+      "/tmp/glass-i40-persistent-v4",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "exit": 101,
+    "log": "persistent-v4-blank_witness_marker_matrix-1.log",
+    "log_sha256": "66fc5937e4302ce94f46c60c631f77fa9ee2120d1d1d8e2fb268d9b9f7bd5adc",
+    "binary_sha256": "1903ee5b3cc36570c1999e5aee9b6cf4e6fc6fb57e0c46300ca2d369f6185629"
+  },
+  {
+    "capacity": 1,
+    "test": "blank_witness_deleted_line_matrix",
+    "argv": [
+      "/tmp/glass-i40-persistent-v4",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "exit": 0,
+    "log": "persistent-v4-blank_witness_deleted_line_matrix-1.log",
+    "log_sha256": "1516bd3058304666101b8b9679052537338fc95cd378c06978ffcaf5fc955e2b",
+    "binary_sha256": "1903ee5b3cc36570c1999e5aee9b6cf4e6fc6fb57e0c46300ca2d369f6185629"
+  },
+  {
+    "capacity": 2,
+    "test": "blank_witness_marker_matrix",
+    "argv": [
+      "/tmp/glass-i40-persistent-v4",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "exit": 101,
+    "log": "persistent-v4-blank_witness_marker_matrix-2.log",
+    "log_sha256": "3aa10d14d64f83f58f3b40acccf3e747007f9799422adb6813bd4a5035b4cb73",
+    "binary_sha256": "1903ee5b3cc36570c1999e5aee9b6cf4e6fc6fb57e0c46300ca2d369f6185629"
+  },
+  {
+    "capacity": 2,
+    "test": "blank_witness_deleted_line_matrix",
+    "argv": [
+      "/tmp/glass-i40-persistent-v4",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "exit": 0,
+    "log": "persistent-v4-blank_witness_deleted_line_matrix-2.log",
+    "log_sha256": "d2901853a89965670a0b3c637f791848bc7db1fb98415e3fadc5f20df93eefde",
+    "binary_sha256": "1903ee5b3cc36570c1999e5aee9b6cf4e6fc6fb57e0c46300ca2d369f6185629"
+  },
+  {
+    "capacity": 8,
+    "test": "blank_witness_marker_matrix",
+    "argv": [
+      "/tmp/glass-i40-persistent-v4",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "exit": 101,
+    "log": "persistent-v4-blank_witness_marker_matrix-8.log",
+    "log_sha256": "25519641c888c75bc9665212c95663a16d748c8cf230be3d41b1d3333fca1543",
+    "binary_sha256": "1903ee5b3cc36570c1999e5aee9b6cf4e6fc6fb57e0c46300ca2d369f6185629"
+  },
+  {
+    "capacity": 8,
+    "test": "blank_witness_deleted_line_matrix",
+    "argv": [
+      "/tmp/glass-i40-persistent-v4",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "exit": 0,
+    "log": "persistent-v4-blank_witness_deleted_line_matrix-8.log",
+    "log_sha256": "7060468029c3545d31c11976f5cc7b46fe48d43e908af2d331890aee3ad90ac0",
+    "binary_sha256": "1903ee5b3cc36570c1999e5aee9b6cf4e6fc6fb57e0c46300ca2d369f6185629"
+  },
+  {
+    "capacity": 32,
+    "test": "blank_witness_marker_matrix",
+    "argv": [
+      "/tmp/glass-i40-persistent-v4",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "exit": 101,
+    "log": "persistent-v4-blank_witness_marker_matrix-32.log",
+    "log_sha256": "f582453b5d2a3557f257480f7906fbf44e002752cd2767b0a8cb0634ff512fc1",
+    "binary_sha256": "1903ee5b3cc36570c1999e5aee9b6cf4e6fc6fb57e0c46300ca2d369f6185629"
+  },
+  {
+    "capacity": 32,
+    "test": "blank_witness_deleted_line_matrix",
+    "argv": [
+      "/tmp/glass-i40-persistent-v4",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "exit": 0,
+    "log": "persistent-v4-blank_witness_deleted_line_matrix-32.log",
+    "log_sha256": "f7989fe5dd69db98bc601b73a890c81d6b117ece19bd44fdb445462827ac7893",
+    "binary_sha256": "1903ee5b3cc36570c1999e5aee9b6cf4e6fc6fb57e0c46300ca2d369f6185629"
+  },
+  {
+    "capacity": 10000,
+    "test": "blank_witness_marker_matrix",
+    "argv": [
+      "/tmp/glass-i40-persistent-v4",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "exit": 101,
+    "log": "persistent-v4-blank_witness_marker_matrix-10000.log",
+    "log_sha256": "7c6f4ed8516d48f74772fa9cbf1f19cb135663ef62d6370ae0aa5d0a0dc1e53f",
+    "binary_sha256": "1903ee5b3cc36570c1999e5aee9b6cf4e6fc6fb57e0c46300ca2d369f6185629"
+  },
+  {
+    "capacity": 10000,
+    "test": "blank_witness_deleted_line_matrix",
+    "argv": [
+      "/tmp/glass-i40-persistent-v4",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "exit": 0,
+    "log": "persistent-v4-blank_witness_deleted_line_matrix-10000.log",
+    "log_sha256": "35333e5ccf0bef4e6e1d94b49c9f3778eaa719f379b46d610392e8bbdb536b6a",
+    "binary_sha256": "1903ee5b3cc36570c1999e5aee9b6cf4e6fc6fb57e0c46300ca2d369f6185629"
+  }
+]

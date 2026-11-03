@@ -1,0 +1,32 @@
+
+running 1 test
+roundtrip-case alt=false fast=false name=tail step=0 pictures=[(1, 0)] expected=(1, 0) anchor={3: Witness { line: 0, column: 0.0, delta: 3.0 }}
+roundtrip-case alt=false fast=false name=tail step=1 pictures=[(0, 3)] expected=(0, 3) anchor={3: Witness { line: 0, column: 0.0, delta: 3.0 }}
+roundtrip-case alt=false fast=false name=tail step=2 pictures=[(1, 0)] expected=(1, 0) anchor={3: Witness { line: 0, column: 0.0, delta: 3.0 }}
+roundtrip-case alt=false fast=false name=tail step=3 pictures=[(0, 3)] expected=(0, 3) anchor={3: Witness { line: 0, column: 0.0, delta: 3.0 }}
+roundtrip-case alt=false fast=false name=blank step=0 pictures=[(1, 0)] expected=(1, 0) anchor={3: Physical}
+roundtrip-case alt=false fast=false name=blank step=1 pictures=[(1, 0)] expected=(1, 0) anchor={3: Physical}
+roundtrip-case alt=false fast=false name=blank step=2 pictures=[(1, 0)] expected=(1, 0) anchor={3: Physical}
+roundtrip-case alt=false fast=false name=blank step=3 pictures=[(1, 0)] expected=(1, 0) anchor={3: Physical}
+roundtrip-case alt=false fast=false name=right step=0 pictures=[(-1, 1)] expected=(1, 1) anchor={3: Witness { line: 2, column: 0.0, delta: -2.0 }}
+
+thread 'intake::position_tests::persistent_witness_roundtrips' (348362) panicked at crates/term/src/intake/position_tests.rs:1045:17:
+assertion `left == right` failed
+  left: [(-1, 1)]
+ right: [(1, 1)]
+stack backtrace:
+   0: __rustc::rust_begin_unwind
+   1: core::panicking::panic_fmt
+   2: core::panicking::assert_failed_inner
+   3: core::panicking::assert_failed::<alloc::vec::Vec<(i32, i32)>, alloc::vec::Vec<(i32, i32)>>
+   4: <glass::intake::position_tests::persistent_witness_roundtrips::{closure#0} as core::ops::function::FnOnce<()>>::call_once
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+test intake::position_tests::persistent_witness_roundtrips ... FAILED
+
+failures:
+
+failures:
+    intake::position_tests::persistent_witness_roundtrips
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 412 filtered out; finished in 0.00s
+

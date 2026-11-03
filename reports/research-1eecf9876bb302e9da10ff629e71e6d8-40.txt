@@ -1,0 +1,56 @@
+Iteration 40 — Persistent own-content identity resolves stateless resize collapse
+
+Research claim: persistent, per-placement resize witness state distinguishes
+histories that identical text and current picture coordinates cannot distinguish.
+It is not a production fix, performance win, or world-championship claim.
+
+New evidence:
+- Two real-picture histories collapse at 2x3 to (1,0), with identical text. One
+  retains a glyph witness with offset +3; one retains explicit physical mode.
+  Widening to 4x10 recovers both original positions, (0,3) and (1,0), without
+  deleting either picture. Two cycles, both parser lanes, active and inactive
+  primary resizing, right-hand/negative-offset and wide-glyph cases: 64 checked
+  observations pass.
+- Existing blank-slot matrix: 221,184 observations over six history capacities.
+  Full failures drop from the prior stateless rescue's 10,584 to 2,728. In the
+  unchanged 168,296 continuously-in-bounds lens, failures drop from 7,856 to zero.
+  No ineligible or failing observations are removed from raw results.
+- Eligible deleted-own-witness checks: zero failures in 1,632 observations
+  (6,912 total generated). Height-only 56,160, mixed 20,736, and Unicode marker
+  124,416 observations pass with zero failures in the source-bound final arm.
+
+Promotion rejected:
+- 2,728 broader slot observations still fail. A retained capacity-zero example
+  loses an out-of-bounds slot on the first resize; widening makes the logical
+  slot valid again, but permanent deletion prevents its return. Dormant and dead
+  attachment lifetimes need a distinct explicit policy.
+- Intervening band scrolling moves text but not the prototype's cached witness.
+  Both parser lanes reproduce marker (1,0), picture (2,3), wanted picture (1,3).
+  This is a passing failure-characterization test, not a passing fix.
+- Movement, writing and lifecycle events are not integrated with the cache;
+  shadow resize allocation is still a research cost. No timing was attempted.
+
+Verification:
+- All 13 experimental source files bound by nonfresh locked release Cargo build
+  receipts. Final bound binary reruns every gate; actual exit 101 retained for
+  all six full-slot matrices.
+- Candidate: 389 tests pass, three old defect-reproduction assertions fail,
+  21 ignored. The assertions were not changed to hide these differences.
+- Restored shipping: 392 tests pass, 14 ignored; 12,800 differential streams
+  pass in each arm. Shipping runtime, tests, and selected executable unchanged.
+- Seven Python checker tests pass, rejecting 54 record corruptions, seven invalid
+  coordinate shapes, and duplicate JSON keys. Initial incorrect test-oracle and
+  ineligible-mutation attempts remain in evidence rather than being erased.
+- Read-only checkpoint replays the prior checkpoint and verifies 8,498 earlier
+  tracked Git blob identities. Saved first and final checkpoints match.
+
+Sources and reproduction:
+bench/results/2026-11-03-persistent-witness/README.md
+bench/results/2026-11-03-persistent-witness/verify.py
+bench/results/2026-11-03-persistent-witness/test-verify.py
+bench/results/2026-11-03-persistent-witness/candidate-final-runs.json
+bench/results/2026-11-03-persistent-witness/checkpoint-final.json
+
+Next necessary work: event-integrated witness identity plus a separately tested
+out-of-retention lifetime contract. No acceptance check is bound; no campaign
+completion or competitive superiority is claimed.

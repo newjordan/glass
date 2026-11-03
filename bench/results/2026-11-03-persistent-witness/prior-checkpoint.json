@@ -1,0 +1,288 @@
+{
+  "final_tests": 392,
+  "height_observations": 56160,
+  "matrices": {
+    "control": [
+      {
+        "capacity": 0,
+        "deletion": {
+          "cases": 1152,
+          "eligible": 352,
+          "failures": 40
+        },
+        "slots": {
+          "absent": 9216,
+          "cases": 36864,
+          "continuous_in_bounds_cases": 26448,
+          "continuous_in_bounds_failures": 8944,
+          "failures": 9504
+        }
+      },
+      {
+        "capacity": 1,
+        "deletion": {
+          "cases": 1152,
+          "eligible": 352,
+          "failures": 88
+        },
+        "slots": {
+          "absent": 10368,
+          "cases": 36864,
+          "continuous_in_bounds_cases": 25248,
+          "continuous_in_bounds_failures": 7668,
+          "failures": 8068
+        }
+      },
+      {
+        "capacity": 2,
+        "deletion": {
+          "cases": 1152,
+          "eligible": 368,
+          "failures": 32
+        },
+        "slots": {
+          "absent": 7296,
+          "cases": 36864,
+          "continuous_in_bounds_cases": 28160,
+          "continuous_in_bounds_failures": 7628,
+          "failures": 8064
+        }
+      },
+      {
+        "capacity": 8,
+        "deletion": {
+          "cases": 1152,
+          "eligible": 272,
+          "failures": 40
+        },
+        "slots": {
+          "absent": 5824,
+          "cases": 36864,
+          "continuous_in_bounds_cases": 29480,
+          "continuous_in_bounds_failures": 6912,
+          "failures": 7412
+        }
+      },
+      {
+        "capacity": 32,
+        "deletion": {
+          "cases": 1152,
+          "eligible": 144,
+          "failures": 60
+        },
+        "slots": {
+          "absent": 5824,
+          "cases": 36864,
+          "continuous_in_bounds_cases": 29480,
+          "continuous_in_bounds_failures": 5916,
+          "failures": 6416
+        }
+      },
+      {
+        "capacity": 10000,
+        "deletion": {
+          "cases": 1152,
+          "eligible": 144,
+          "failures": 60
+        },
+        "slots": {
+          "absent": 5824,
+          "cases": 36864,
+          "continuous_in_bounds_cases": 29480,
+          "continuous_in_bounds_failures": 5916,
+          "failures": 6416
+        }
+      }
+    ],
+    "physical": [
+      {
+        "capacity": 0,
+        "deletion": {
+          "cases": 1152,
+          "eligible": 352,
+          "failures": 0
+        },
+        "slots": {
+          "absent": 9216,
+          "cases": 36864,
+          "continuous_in_bounds_cases": 26448,
+          "continuous_in_bounds_failures": 4848,
+          "failures": 5408
+        }
+      },
+      {
+        "capacity": 1,
+        "deletion": {
+          "cases": 1152,
+          "eligible": 352,
+          "failures": 0
+        },
+        "slots": {
+          "absent": 10368,
+          "cases": 36864,
+          "continuous_in_bounds_cases": 25248,
+          "continuous_in_bounds_failures": 4448,
+          "failures": 4848
+        }
+      },
+      {
+        "capacity": 2,
+        "deletion": {
+          "cases": 1152,
+          "eligible": 368,
+          "failures": 0
+        },
+        "slots": {
+          "absent": 7296,
+          "cases": 36864,
+          "continuous_in_bounds_cases": 28160,
+          "continuous_in_bounds_failures": 4960,
+          "failures": 5384
+        }
+      },
+      {
+        "capacity": 8,
+        "deletion": {
+          "cases": 1152,
+          "eligible": 272,
+          "failures": 0
+        },
+        "slots": {
+          "absent": 5824,
+          "cases": 36864,
+          "continuous_in_bounds_cases": 29480,
+          "continuous_in_bounds_failures": 5080,
+          "failures": 5528
+        }
+      },
+      {
+        "capacity": 32,
+        "deletion": {
+          "cases": 1152,
+          "eligible": 144,
+          "failures": 0
+        },
+        "slots": {
+          "absent": 5824,
+          "cases": 36864,
+          "continuous_in_bounds_cases": 29480,
+          "continuous_in_bounds_failures": 5080,
+          "failures": 5528
+        }
+      },
+      {
+        "capacity": 10000,
+        "deletion": {
+          "cases": 1152,
+          "eligible": 144,
+          "failures": 0
+        },
+        "slots": {
+          "absent": 5824,
+          "cases": 36864,
+          "continuous_in_bounds_cases": 29480,
+          "continuous_in_bounds_failures": 5080,
+          "failures": 5528
+        }
+      }
+    ],
+    "witness": [
+      {
+        "capacity": 0,
+        "deletion": {
+          "cases": 1152,
+          "eligible": 352,
+          "failures": 0
+        },
+        "slots": {
+          "absent": 9216,
+          "cases": 36864,
+          "continuous_in_bounds_cases": 26448,
+          "continuous_in_bounds_failures": 1360,
+          "failures": 1920
+        }
+      },
+      {
+        "capacity": 1,
+        "deletion": {
+          "cases": 1152,
+          "eligible": 352,
+          "failures": 0
+        },
+        "slots": {
+          "absent": 10368,
+          "cases": 36864,
+          "continuous_in_bounds_cases": 25248,
+          "continuous_in_bounds_failures": 1200,
+          "failures": 1600
+        }
+      },
+      {
+        "capacity": 2,
+        "deletion": {
+          "cases": 1152,
+          "eligible": 368,
+          "failures": 0
+        },
+        "slots": {
+          "absent": 7296,
+          "cases": 36864,
+          "continuous_in_bounds_cases": 28160,
+          "continuous_in_bounds_failures": 1312,
+          "failures": 1736
+        }
+      },
+      {
+        "capacity": 8,
+        "deletion": {
+          "cases": 1152,
+          "eligible": 272,
+          "failures": 0
+        },
+        "slots": {
+          "absent": 5824,
+          "cases": 36864,
+          "continuous_in_bounds_cases": 29480,
+          "continuous_in_bounds_failures": 1328,
+          "failures": 1776
+        }
+      },
+      {
+        "capacity": 32,
+        "deletion": {
+          "cases": 1152,
+          "eligible": 144,
+          "failures": 0
+        },
+        "slots": {
+          "absent": 5824,
+          "cases": 36864,
+          "continuous_in_bounds_cases": 29480,
+          "continuous_in_bounds_failures": 1328,
+          "failures": 1776
+        }
+      },
+      {
+        "capacity": 10000,
+        "deletion": {
+          "cases": 1152,
+          "eligible": 144,
+          "failures": 0
+        },
+        "slots": {
+          "absent": 5824,
+          "cases": 36864,
+          "continuous_in_bounds_cases": 29480,
+          "continuous_in_bounds_failures": 1328,
+          "failures": 1776
+        }
+      }
+    ]
+  },
+  "mixed_observations": 20736,
+  "runtime_promoted": false,
+  "schema": "glass.blank-witness-checkpoint/v1",
+  "selected_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "streams_per_arm": 12800,
+  "unicode_observations": 124416
+}

@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-persistent-witness/build.py", line 113, in <module>
+    main()
+    ~~~~^^
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-persistent-witness/build.py", line 83, in main
+    need(not args.receipt_dir.exists(), "receipt directory already exists")
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-persistent-witness/build.py", line 32, in need
+    raise ValueError(message)
+ValueError: receipt directory already exists

@@ -1,0 +1,17 @@
+{
+  "control": {
+    "slot_failures": 45880,
+    "continuous_in_bounds_failures": 42984,
+    "deleted_failures": 320
+  },
+  "physical": {
+    "slot_failures": 32224,
+    "continuous_in_bounds_failures": 29496,
+    "deleted_failures": 0
+  },
+  "witness": {
+    "slot_failures": 10584,
+    "continuous_in_bounds_failures": 7856,
+    "deleted_failures": 0
+  }
+}

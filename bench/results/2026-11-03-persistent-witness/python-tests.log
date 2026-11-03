@@ -1,0 +1,12 @@
+test_complete (__main__.Evidence.test_complete) ... ok
+test_coordinate_types (__main__.Evidence.test_coordinate_types) ... ok
+test_deletion_mutations (__main__.Evidence.test_deletion_mutations) ... ok
+test_duplicate_keys (__main__.Evidence.test_duplicate_keys) ... ok
+test_roundtrip_mutations (__main__.Evidence.test_roundtrip_mutations) ... ok
+test_scroll_mutations (__main__.Evidence.test_scroll_mutations) ... ok
+test_slot_mutations (__main__.Evidence.test_slot_mutations) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 23.480s
+
+OK

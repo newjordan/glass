@@ -1,0 +1,20 @@
+{
+  "hypothesis": "Persistent own-content witness plus signed cell offset distinguishes blank-slot histories through repeated resizes.",
+  "scope": "Resize-only bursts after real picture intake. No shipping promotion. No writes/scrolls/placement mutation while state is live.",
+  "witness": "Nearest non-whitespace glyph (not wide spacers) within old wrap chain, ties toward smaller old cell index. Preserve signed cell offset; never reacquire after collapse. Contentless chain uses persistent physical-only mode.",
+  "lifetime": "Drop if selected witness is physically erased or derived final slot is outside retained grid. No resurrection. This is a selected-witness contract, not all possible logical-line contracts.",
+  "capacities": [
+    0,
+    1,
+    2,
+    8,
+    32,
+    10000
+  ],
+  "gates": [
+    "two-history roundtrip through real intake",
+    "unchanged previous marker and deletion matrices, continuous-in-bounds lens",
+    "right witness and negative offsets, wide spacer boundary, intervening write falsification"
+  ],
+  "shipping": "restore exact starting sources and executable"
+}

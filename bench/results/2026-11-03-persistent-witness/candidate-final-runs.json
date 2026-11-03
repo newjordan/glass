@@ -1,0 +1,509 @@
+[
+  {
+    "label": "height-0",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "0"
+    },
+    "exit": 0,
+    "log": "candidate-final-height-0.log",
+    "sha256": "ab7d2e6fa978537323c6147dbc23e20b3255b89402829d9acd94bb57a37f0946"
+  },
+  {
+    "label": "height-1",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "1"
+    },
+    "exit": 0,
+    "log": "candidate-final-height-1.log",
+    "sha256": "b1e00ee7762dece34166b54f59eda15880581a6087698e18379f29b85b44436b"
+  },
+  {
+    "label": "height-2",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "2"
+    },
+    "exit": 0,
+    "log": "candidate-final-height-2.log",
+    "sha256": "8c513ecfe163b6e0b40f277423a6f895ddf5318c27b9f4a3604d7022ad483387"
+  },
+  {
+    "label": "height-8",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "8"
+    },
+    "exit": 0,
+    "log": "candidate-final-height-8.log",
+    "sha256": "6cfd69ed0ceaded2f029fa6541bf1c3a84e5560e85ba9769e42425476da0a2a8"
+  },
+  {
+    "label": "height-32",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "32"
+    },
+    "exit": 0,
+    "log": "candidate-final-height-32.log",
+    "sha256": "d2c590c0d53b5582a68338da51b7a5a0233bdd4f00f4efa20f0bd0b6132cd720"
+  },
+  {
+    "label": "height-10000",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "candidate-final-height-10000.log",
+    "sha256": "51418e219509ffccd94fe68bad8e888664ac9b678c80f001e6122c64aa1dd684"
+  },
+  {
+    "label": "mixed-0",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "0"
+    },
+    "exit": 0,
+    "log": "candidate-final-mixed-0.log",
+    "sha256": "d0ec038ab7d8957563bd7fdbf919b2705ce0f8be3cc437be9b855c15377a41ae"
+  },
+  {
+    "label": "mixed-1",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "1"
+    },
+    "exit": 0,
+    "log": "candidate-final-mixed-1.log",
+    "sha256": "2ddd847a7eda45f61b0525c6eb98966a57920561b50d6e2c43b5c10c22f8f92a"
+  },
+  {
+    "label": "mixed-2",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "2"
+    },
+    "exit": 0,
+    "log": "candidate-final-mixed-2.log",
+    "sha256": "c4e99692c049eb7d715628df219f9e49e4a4cc6d1857374f3f317e6824f99197"
+  },
+  {
+    "label": "mixed-8",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "8"
+    },
+    "exit": 0,
+    "log": "candidate-final-mixed-8.log",
+    "sha256": "cd84d49ba8ee9748b32267bc92f5a383f6f45e2e67167e0a0d4bb8ecacef3a5a"
+  },
+  {
+    "label": "mixed-32",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "32"
+    },
+    "exit": 0,
+    "log": "candidate-final-mixed-32.log",
+    "sha256": "89756349a521a41439b7267bfe766e81ff383d499043a7f3a13663d89f5e14ea"
+  },
+  {
+    "label": "mixed-10000",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "candidate-final-mixed-10000.log",
+    "sha256": "19b4e1d8d5859fe3828b18caf61ff1368ffe4886a806eb678fc9507b64d50577"
+  },
+  {
+    "label": "unicode-0",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::origin_map_unicode_marker_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "0"
+    },
+    "exit": 0,
+    "log": "candidate-final-unicode-0.log",
+    "sha256": "115d33f546c4a1c9979e0e8d2ea08518ce0e057a56a35cbeff2d768676ab7c09"
+  },
+  {
+    "label": "unicode-1",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::origin_map_unicode_marker_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "1"
+    },
+    "exit": 0,
+    "log": "candidate-final-unicode-1.log",
+    "sha256": "d90e7c7b678e1876a55cd9377ad989586dd97641ecd5c6b948070dce100c2637"
+  },
+  {
+    "label": "unicode-2",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::origin_map_unicode_marker_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "2"
+    },
+    "exit": 0,
+    "log": "candidate-final-unicode-2.log",
+    "sha256": "2058d97b6a80f24e34713971c81cfe086c1002b2c8a6a3d19e0732776f6e38be"
+  },
+  {
+    "label": "unicode-8",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::origin_map_unicode_marker_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "8"
+    },
+    "exit": 0,
+    "log": "candidate-final-unicode-8.log",
+    "sha256": "9e495f2d9fa08b9fadac3f630ad51875cff90d8d6e8e65409b4530b76da28f79"
+  },
+  {
+    "label": "unicode-32",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::origin_map_unicode_marker_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "32"
+    },
+    "exit": 0,
+    "log": "candidate-final-unicode-32.log",
+    "sha256": "9bf72aca1717963ab82537a4a7c25ea6b506d390c3541d089e4f6ac278285338"
+  },
+  {
+    "label": "unicode-10000",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::origin_map_unicode_marker_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "candidate-final-unicode-10000.log",
+    "sha256": "abf57ca8651fb0f492dc8d052886044b24b365508f5ca2710a02cbd8541b907c"
+  },
+  {
+    "label": "slots-0",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "0"
+    },
+    "exit": 101,
+    "log": "candidate-final-slots-0.log",
+    "sha256": "42c1d1648c25fd5ae7ee72e96c2656b2e5d4118c98051d1c6a27334b3790fe93"
+  },
+  {
+    "label": "slots-1",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "1"
+    },
+    "exit": 101,
+    "log": "candidate-final-slots-1.log",
+    "sha256": "f8372744f5eef196f2e81417942482c99de99c5f48cc24f563d276ad1f65c9b2"
+  },
+  {
+    "label": "slots-2",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "2"
+    },
+    "exit": 101,
+    "log": "candidate-final-slots-2.log",
+    "sha256": "f5afe22d73da595a5716d48331a4ed95676339739fa9d912f6cee1d7b9ad3c92"
+  },
+  {
+    "label": "slots-8",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "8"
+    },
+    "exit": 101,
+    "log": "candidate-final-slots-8.log",
+    "sha256": "d313a09343caed9bdff2bfe49b8bdf5e7de018a370575267d2cf53e6e780aefe"
+  },
+  {
+    "label": "slots-32",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "32"
+    },
+    "exit": 101,
+    "log": "candidate-final-slots-32.log",
+    "sha256": "d168e4d58bbf8183392d9e8ca9700aa00d0ec8a732b2a2a9d5da7b07705a6d13"
+  },
+  {
+    "label": "slots-10000",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 101,
+    "log": "candidate-final-slots-10000.log",
+    "sha256": "e66a1854500e787a43994ff2847bcfe10176c8374a97b9be80a5d1c3be4847a4"
+  },
+  {
+    "label": "deleted-0",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "0"
+    },
+    "exit": 0,
+    "log": "candidate-final-deleted-0.log",
+    "sha256": "2a50d039530d768f301c8666be7ee32ff6750ae649134d1035b15d9f431067de"
+  },
+  {
+    "label": "deleted-1",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "1"
+    },
+    "exit": 0,
+    "log": "candidate-final-deleted-1.log",
+    "sha256": "202a16a61ef58a7575200bf6a4203fce356593b464253d2b1f8f1b0fb26c218a"
+  },
+  {
+    "label": "deleted-2",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "2"
+    },
+    "exit": 0,
+    "log": "candidate-final-deleted-2.log",
+    "sha256": "9508c62fae666bfeb89afb2a293527f82ed04d643c8a9a4ea7e511ce8cffda98"
+  },
+  {
+    "label": "deleted-8",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "8"
+    },
+    "exit": 0,
+    "log": "candidate-final-deleted-8.log",
+    "sha256": "f45d7e5fa1fe8b81dba402bebb4059985b8f8a99c26adc024e26f923df4be3e4"
+  },
+  {
+    "label": "deleted-32",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "32"
+    },
+    "exit": 0,
+    "log": "candidate-final-deleted-32.log",
+    "sha256": "0332e3d32aa89f3e8263e0c9ddec0f1c8a22f40c644281837868a1c4a76b96c1"
+  },
+  {
+    "label": "deleted-10000",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "candidate-final-deleted-10000.log",
+    "sha256": "515e88b2a83dfd332ddad635ddfac2d41feb0af1dd404fc424a94289e139dc00"
+  },
+  {
+    "label": "persistent_witness_roundtrips",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::persistent_witness_roundtrips"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "candidate-final-persistent_witness_roundtrips.log",
+    "sha256": "a7b8672b15fe47317dfa8d1a0e9708b70e3f8170e9050c407ac466571ba8b9f1"
+  },
+  {
+    "label": "persistent_witness_intervening_scroll_characterization",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::persistent_witness_intervening_scroll_characterization"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "candidate-final-persistent_witness_intervening_scroll_characterization.log",
+    "sha256": "704edfb4ac5d00319c88e022f25805862be1e7f03aa33c8021e1d819ec977196"
+  },
+  {
+    "label": "terminal",
+    "args": [],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 101,
+    "log": "candidate-final-terminal.log",
+    "sha256": "dda3cebc094878f61992e6ff85aee938c572ee17a0eaf698a1c5709726ce5a11"
+  },
+  {
+    "label": "sweep",
+    "args": [
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "speed::plain_runs_match_the_parser_over_seeds"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000",
+      "GLASS_SWEEP_SEEDS": "64",
+      "GLASS_SWEEP_ROUNDS": "200"
+    },
+    "exit": 0,
+    "log": "candidate-final-sweep.log",
+    "sha256": "df9e480b0e19d71bf3c040127069b52c39acb03182ac0125f757d0c0909252a0"
+  }
+]

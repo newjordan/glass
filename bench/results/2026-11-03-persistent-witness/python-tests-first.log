@@ -1,0 +1,32 @@
+test_complete (__main__.Evidence.test_complete) ... ok
+test_coordinate_types (__main__.Evidence.test_coordinate_types) ... ok
+test_deletion_mutations (__main__.Evidence.test_deletion_mutations) ... 
+  test_deletion_mutations (__main__.Evidence.test_deletion_mutations) (mutation='own=0') ... FAIL
+  test_deletion_mutations (__main__.Evidence.test_deletion_mutations) (mutation='pictures=0') ... FAIL
+test_duplicate_keys (__main__.Evidence.test_duplicate_keys) ... ok
+test_roundtrip_mutations (__main__.Evidence.test_roundtrip_mutations) ... ok
+test_scroll_mutations (__main__.Evidence.test_scroll_mutations) ... ok
+test_slot_mutations (__main__.Evidence.test_slot_mutations) ... ok
+
+======================================================================
+FAIL: test_deletion_mutations (__main__.Evidence.test_deletion_mutations) (mutation='own=0')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-persistent-witness/test-verify.py", line 11, in reject
+    with self.assertRaises(ValueError):check(changed)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_deletion_mutations (__main__.Evidence.test_deletion_mutations) (mutation='pictures=0')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-persistent-witness/test-verify.py", line 11, in reject
+    with self.assertRaises(ValueError):check(changed)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 7 tests in 23.739s
+
+FAILED (failures=2)

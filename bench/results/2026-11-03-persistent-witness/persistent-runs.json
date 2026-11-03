@@ -1,0 +1,182 @@
+[
+  {
+    "capacity": 0,
+    "test": "blank_witness_marker_matrix",
+    "argv": [
+      "/tmp/glass-i40-persistent-v1",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "exit": 101,
+    "log": "persistent-blank_witness_marker_matrix-0.log",
+    "log_sha256": "4a17872191ab83c831fb685d16277390a62d4b53633d503c77c1acb329c0d656",
+    "binary_sha256": "bf0f1397902f49d38679123a9dc338cf3610176368c98a9c2cedd18086395e59"
+  },
+  {
+    "capacity": 0,
+    "test": "blank_witness_deleted_line_matrix",
+    "argv": [
+      "/tmp/glass-i40-persistent-v1",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "exit": 0,
+    "log": "persistent-blank_witness_deleted_line_matrix-0.log",
+    "log_sha256": "2f7f7b31c09b84f53090f8c9bb26cfdbbb995dba9ab641e24f12e1e909049e7a",
+    "binary_sha256": "bf0f1397902f49d38679123a9dc338cf3610176368c98a9c2cedd18086395e59"
+  },
+  {
+    "capacity": 1,
+    "test": "blank_witness_marker_matrix",
+    "argv": [
+      "/tmp/glass-i40-persistent-v1",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "exit": 101,
+    "log": "persistent-blank_witness_marker_matrix-1.log",
+    "log_sha256": "7b6516e84cd6ffea32fd4ad9ad4e7630a9e18e907c07f8906dd6d1a6df97b2f3",
+    "binary_sha256": "bf0f1397902f49d38679123a9dc338cf3610176368c98a9c2cedd18086395e59"
+  },
+  {
+    "capacity": 1,
+    "test": "blank_witness_deleted_line_matrix",
+    "argv": [
+      "/tmp/glass-i40-persistent-v1",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "exit": 0,
+    "log": "persistent-blank_witness_deleted_line_matrix-1.log",
+    "log_sha256": "c184008a954d16a824e82700d8a9e9f7127f771dc668a4b16949d4c8524db345",
+    "binary_sha256": "bf0f1397902f49d38679123a9dc338cf3610176368c98a9c2cedd18086395e59"
+  },
+  {
+    "capacity": 2,
+    "test": "blank_witness_marker_matrix",
+    "argv": [
+      "/tmp/glass-i40-persistent-v1",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "exit": 101,
+    "log": "persistent-blank_witness_marker_matrix-2.log",
+    "log_sha256": "a82324fa76f2201216f16a79a09ad2d2a248c428112eb87b713cb0c117abb01a",
+    "binary_sha256": "bf0f1397902f49d38679123a9dc338cf3610176368c98a9c2cedd18086395e59"
+  },
+  {
+    "capacity": 2,
+    "test": "blank_witness_deleted_line_matrix",
+    "argv": [
+      "/tmp/glass-i40-persistent-v1",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "exit": 0,
+    "log": "persistent-blank_witness_deleted_line_matrix-2.log",
+    "log_sha256": "cbca58f0ca802a30c1d056e7a50c535ad96ec397df55ba34c9fc8817fa0fa5f5",
+    "binary_sha256": "bf0f1397902f49d38679123a9dc338cf3610176368c98a9c2cedd18086395e59"
+  },
+  {
+    "capacity": 8,
+    "test": "blank_witness_marker_matrix",
+    "argv": [
+      "/tmp/glass-i40-persistent-v1",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "exit": 101,
+    "log": "persistent-blank_witness_marker_matrix-8.log",
+    "log_sha256": "3bdc42f99aec32b3ec00091dcf49de4f2c0f42bdb389b71c194dfae245012f93",
+    "binary_sha256": "bf0f1397902f49d38679123a9dc338cf3610176368c98a9c2cedd18086395e59"
+  },
+  {
+    "capacity": 8,
+    "test": "blank_witness_deleted_line_matrix",
+    "argv": [
+      "/tmp/glass-i40-persistent-v1",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "exit": 0,
+    "log": "persistent-blank_witness_deleted_line_matrix-8.log",
+    "log_sha256": "8ea7309336492736997b3e00c2fba45444e5712bc69248cf45361cadfd72d17f",
+    "binary_sha256": "bf0f1397902f49d38679123a9dc338cf3610176368c98a9c2cedd18086395e59"
+  },
+  {
+    "capacity": 32,
+    "test": "blank_witness_marker_matrix",
+    "argv": [
+      "/tmp/glass-i40-persistent-v1",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "exit": 101,
+    "log": "persistent-blank_witness_marker_matrix-32.log",
+    "log_sha256": "532c3f12f6da7a142fba3b20334c23fe4c13df6e49d32d2736a1f314a60ee772",
+    "binary_sha256": "bf0f1397902f49d38679123a9dc338cf3610176368c98a9c2cedd18086395e59"
+  },
+  {
+    "capacity": 32,
+    "test": "blank_witness_deleted_line_matrix",
+    "argv": [
+      "/tmp/glass-i40-persistent-v1",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "exit": 0,
+    "log": "persistent-blank_witness_deleted_line_matrix-32.log",
+    "log_sha256": "299f715fd3aea09832a87d931bc07031542c9af49662bd40a93e451d02365b55",
+    "binary_sha256": "bf0f1397902f49d38679123a9dc338cf3610176368c98a9c2cedd18086395e59"
+  },
+  {
+    "capacity": 10000,
+    "test": "blank_witness_marker_matrix",
+    "argv": [
+      "/tmp/glass-i40-persistent-v1",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_marker_matrix"
+    ],
+    "exit": 101,
+    "log": "persistent-blank_witness_marker_matrix-10000.log",
+    "log_sha256": "585326c66ab2042ec8f42a8aa2af610113e09bad693de2385bc0a1998199cb3b",
+    "binary_sha256": "bf0f1397902f49d38679123a9dc338cf3610176368c98a9c2cedd18086395e59"
+  },
+  {
+    "capacity": 10000,
+    "test": "blank_witness_deleted_line_matrix",
+    "argv": [
+      "/tmp/glass-i40-persistent-v1",
+      "--exact",
+      "--ignored",
+      "--nocapture",
+      "intake::position_tests::blank_witness_deleted_line_matrix"
+    ],
+    "exit": 0,
+    "log": "persistent-blank_witness_deleted_line_matrix-10000.log",
+    "log_sha256": "b604439c483afa6a25cb208dd27e2528119dcebb16b0cdd9cb6b7836589bc413",
+    "binary_sha256": "bf0f1397902f49d38679123a9dc338cf3610176368c98a9c2cedd18086395e59"
+  }
+]

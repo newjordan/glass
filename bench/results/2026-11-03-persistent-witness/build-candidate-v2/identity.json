@@ -1,0 +1,29 @@
+{
+  "schema": "glass.engine-arm-build/v1",
+  "command": [
+    "cargo",
+    "test",
+    "--release",
+    "-p",
+    "glass-term",
+    "--locked",
+    "--no-run",
+    "--message-format=json"
+  ],
+  "source_sha256": {
+    "crates/term/src/engine.rs": "3bc890a3cb9f1908424baa0f6656ce5ebda2366207a725508ac3def0c6700a7e",
+    "crates/term/src/speed.rs": "486ac678d99766ddca4f35b814a1397cab4cf60c5ef4b4c6d51d00cde43d9419",
+    "crates/vte/src/lib.rs": "fac2b9feef901019e1fcb3d413238d3b032001395abd8e727c26b4cafffba758",
+    "crates/vte/src/ansi.rs": "ed3a17b498d5ae08c1667840ab46c177ed82e62f66d25090c95e74f65a1fc166"
+  },
+  "previous_mtime_ns": {
+    "crates/term/src/engine.rs": 1793724047937280524,
+    "crates/term/src/speed.rs": 1793724047937280524,
+    "crates/vte/src/lib.rs": 1793724047937280524,
+    "crates/vte/src/ansi.rs": 1793724047937280524
+  },
+  "touched_mtime_ns": 1793724169723703890,
+  "executable": "/tmp/glass-i40-persistent-v2",
+  "sha256": "74d28606253e9acfc0bd5d904b7f789b72c61babe31cd97207d34c70d8d03c40",
+  "note": "Content-preserving input touch and non-fresh compiler receipts; exclusive build ownership required."
+}

@@ -1,0 +1,500 @@
+
+running 413 tests
+test affinity::tests::only_a_larger_domain_is_chosen ... ok
+test affinity::tests::cpu_lists_and_sizes_read_as_sysfs_writes_them ... ok
+test affinity::tests::the_setting_turns_it_off ... ok
+test blink::tests::activity_holds_steady_then_resumes_on ... ok
+test blink::tests::hidden_or_steady_cursor_does_not_wake ... ok
+test blink::tests::blinks_530_on_and_530_off ... ok
+test blink::tests::unfocused_is_steady_and_does_not_wake ... ok
+test engine::tests::classified_text_never_loads_past_a_guarded_slice ... ok
+test engine::tests::cells_carry_style_and_links ... ok
+test engine::tests::cursor_style_follows_the_program ... ok
+test engine::tests::replies_keep_stream_order_in_one_feed ... ok
+test engine::tests::cursor_and_scrollback_move_together ... ok
+test engine::tests::mouse_modes_and_encodings_are_reported ... ok
+test engine::tests::wide_characters_copy_once ... ok
+test engine::tests::lines_scrolled_off_top_count_exactly ... ok
+test intake::animation::a_equals_a_runs_stops_and_sets_current ... ok
+test engine::tests::lines_scrolled_inside_a_region_do_not_count ... ok
+test engine::tests::lines_scrolled_off_top_survive_a_cleared_history ... ok
+test engine::tests::utf8_decoding_never_loads_past_a_guarded_slice ... ok
+test engine::tests::keyboard_dialect_flags_are_tracked ... ok
+test engine::tests::marks_on_one_cell_are_capped ... ok
+test engine::tests::split_sequences_are_still_answered ... ok
+test engine::tests::the_alternate_screen_scrolls_are_not_counted ... ok
+test intake::animation::a_frame_larger_than_the_picture_is_refused ... ok
+test intake::animation::a_frame_over_a_blank_canvas_places_the_data_at_x_y ... ok
+test engine::tests::lines_scrolled_after_the_sentinel_is_erased_still_count ... ok
+test intake::animation::a_gapless_frame_is_skipped_over ... ok
+test intake::animation::a_gapless_frame_is_negative ... ok
+test intake::animation::a_frame_with_a_background_colour_fills_the_canvas ... ok
+test intake::animation::a_frame_without_an_image_answers_enoent ... ok
+test engine::tests::modes_titles_and_clipboard_are_tracked ... ok
+test intake::animation::a_frame_from_a_base_frame_carries_its_pixels ... ok
+test engine::tests::startup_queries_are_answered ... ok
+test intake::animation::an_edit_writes_the_frame_r_names ... ok
+test intake::animation::a_frame_blends_by_default_and_replaces_with_x_1 ... ok
+test intake::animation::composition_copies_a_rectangle_with_blending ... ok
+test intake::animation::composition_out_of_bounds_answers_einval ... ok
+test intake::animation::composition_with_c_1_replaces_without_blending ... ok
+test intake::animation::deleting_the_frames_keeps_the_picture ... ok
+test intake::animation::eviction_gives_the_frame_room_back ... ok
+test intake::animation::falling_behind_skips_frames_rather_than_drifting ... ok
+test intake::animation::frame_1_is_the_picture_as_first_transmitted ... ok
+test intake::animation::frame_data_outside_the_picture_is_refused ... ok
+test intake::animation::frame_zero_and_absent_gap_are_ignored ... ok
+test engine::tests::every_handler_method_is_forwarded ... ok
+test engine::tests::pen_dispatch_preserves_template_and_color_boundaries ... ok
+test intake::animation::loading_mode_waits_for_more_frames ... ok
+test intake::animation::r_with_z_changes_one_frames_gap ... ok
+test intake::animation::icat_animation_controls_are_silent_on_success ... ok
+test intake::animation::the_deadline_the_session_reports_is_right ... ok
+test intake::animation::the_show_names_the_current_frames_gpu_and_uploads_each_once ... ok
+test intake::animation::the_loops_off_by_one_rule_plays_the_sequence_then_rests ... ok
+test intake::animation::a_real_animated_gif_plays_its_frames_and_gaps ... ok
+test intake::conformance::a_delete_aborts_an_open_transmission ... ok
+test intake::conformance::a_chunked_transmission_without_an_id_decodes ... ok
+test intake::conformance::a_sixel_does_not_replace_an_apc_image_with_the_same_id ... ok
+test intake::conformance::a_sixel_is_in_cell_and_text_over_its_cells_takes_it ... ok
+test intake::animation::frames_count_against_the_budget_and_free_with_the_picture ... ok
+test intake::conformance::a_sixel_on_the_alternate_screen_takes_no_primary_showing ... ok
+test intake::animation::window_loop_advances_an_icat_animation ... ok
+test intake::conformance::a_virtual_placement_draws_nothing_and_moves_no_cursor ... ok
+test intake::conformance::an_empty_final_chunk_completes_the_transmission ... ok
+test intake::conformance::apc_introducer_then_can_does_not_hold_text ... ok
+test intake::conformance::both_c_and_r_fill_the_box_whatever_the_shape ... ok
+test intake::animation::frames_are_capped_store_wide_and_the_room_comes_back ... ok
+test intake::conformance::both_c_and_r_move_the_cursor_by_the_box ... ok
+test intake::conformance::clear_screen_on_the_alternate_screen_takes_only_its_own ... ok
+test intake::conformance::covered_takes_only_in_cell_pictures_under_the_area ... ok
+test intake::conformance::delete_c_tests_the_whole_cell_rectangle ... ok
+test intake::conformance::delete_i_takes_showings_in_the_scrollback_too ... ok
+test intake::conformance::delete_i_with_p_reads_the_p_key_after_d ... ok
+test intake::conformance::a_file_transmission_reads_a_real_png ... ok
+test engine::tests::inactive_primary_height_shrink_coordinate_defect_is_reproducible ... FAILED
+test intake::conformance::delete_p_reads_x_and_y_wherever_they_sit ... ok
+test intake::conformance::delete_r_takes_placed_images ... ok
+test intake::conformance::delete_z_reads_the_z_key_after_d ... ok
+test intake::conformance::errors_without_an_id_stay_quiet ... ok
+test intake::conformance::escape_escape_sends_the_first_as_text ... ok
+test intake::conformance::escape_intermediate_then_escape_passes_both_bytes_once ... ok
+test intake::conformance::escape_paren_b_ends_at_b ... ok
+test intake::conformance::lowercase_delete_of_one_placement_keeps_the_data ... ok
+test intake::conformance::minted_ids_never_collide_with_client_ids ... ok
+test intake::conformance::passing_apc_aborted_by_escape_keeps_every_byte ... ok
+test intake::conformance::passing_osc_aborted_by_escape_keeps_every_byte ... ok
+test intake::conformance::primary_scrollback_showings_survive_the_alternate_screen ... ok
+test intake::conformance::a_temporary_file_transmission_does_not_unlink_through_dotdot ... ok
+test intake::conformance::sgr0_then_media_is_lifted ... ok
+test intake::conformance::review1_splitter_inputs_still_hold ... ok
+test intake::conformance::sgr0_then_sixel_is_lifted ... ok
+test intake::conformance::sixel_codes_draw_their_six_bit_pattern ... ok
+test intake::conformance::sixel_raster_pan_does_not_panic ... ok
+test intake::conformance::stray_dcs_does_not_hide_media ... ok
+test intake::conformance::stray_dcs_lets_output_through ... ok
+test intake::conformance::the_dec_aspect_table_by_p1 ... ok
+test intake::conformance::the_first_chunks_quiet_governs_the_transmission ... ok
+test intake::conformance::the_source_rectangle_sets_the_displayed_size ... ok
+test intake::conformance::uppercase_delete_frees_the_data ... ok
+test intake::glass_conformance::a_bel_terminates_the_dialect_too ... ok
+test intake::glass_conformance::a_g_head_that_is_not_the_dialect_passes_through ... ok
+test intake::glass_conformance::a_chunked_picture_assembles_under_its_first_chunk_keys ... ok
+test intake::glass_conformance::a_group_past_the_layer_cap_is_refused ... ok
+test intake::glass_conformance::a_layer_covers_every_field ... ok
+test intake::glass_conformance::alternate_screen_layers_go_when_it_is_left ... ok
+test intake::glass_conformance::an_unknown_op_is_an_error_and_never_a_panic ... ok
+test intake::glass_conformance::anchor_window_keeps_its_own_row_wherever_the_view_is ... ok
+test intake::glass_conformance::a_png_picture_decodes_through_the_shared_loader ... ok
+test intake::glass_conformance::events_opt_in_is_a_showcase_key_and_stays_off_by_default ... ok
+test intake::glass_conformance::every_kind_is_reached ... ok
+test intake::glass_conformance::glass_sequences_survive_every_split ... ok
+test engine::tests::utf8_decoding_matches_the_standard_library ... ok
+test intake::glass_conformance::hello_with_no_token_is_silent ... ok
+test intake::glass_conformance::each_showcase_op_keeps_its_store_state ... ok
+test intake::glass_conformance::hello_answers_the_version_and_ops ... ok
+test intake::glass_conformance::opacity_out_of_range_and_bad_keys_are_errors ... ok
+test intake::glass_conformance::px_pins_to_the_window_and_at_scrolls_with_the_text ... ok
+test intake::glass_conformance::malformed_values_are_errors_never_panics ... ok
+test intake::glass_conformance::rings_and_lines_are_strokes_with_their_width_and_glow ... ok
+test intake::glass_conformance::ris_removes_everything_the_dialect_made ... ok
+test intake::glass_conformance::remove_takes_one_layer_a_range_a_group_or_all ... ok
+test intake::glass_conformance::scene_placement_and_size_errors_reach_the_program ... ok
+test intake::glass_conformance::scene_round_trips_and_remove_covers_it ... ok
+test intake::glass_conformance::showcase_events_are_encoded_only_when_opted_in ... ok
+test intake::glass_conformance::the_dialect_is_lifted_and_text_stays_exact ... ok
+test intake::glass_conformance::text_anchored_layers_leave_with_their_text ... ok
+test intake::glass_conformance::the_showcase_opens_on_an_uploaded_picture_and_closes ... ok
+test intake::glass_scene::tests::a_default_camera_looks_down_z_from_the_default_eye ... ok
+test intake::glass_scene::tests::an_inline_triangle_round_trips_into_a_mesh ... ok
+test intake::glass_scene::tests::chrome_liquid_and_the_rounded_cube_parse_with_their_defaults ... ok
+test intake::glass_scene::tests::faces_and_an_edge_dress_a_cubes_groups ... ok
+test intake::glass_scene::tests::every_finish_and_dress_rejection_names_itself ... ok
+test intake::glass_scene::tests::every_wire_rejection_names_itself ... ok
+test intake::glass_scene::tests::pixel_size_rejects_zero_and_over_cap ... ok
+test intake::glass_scene::tests::the_demo_cube_wire_is_lit_from_the_stated_eye ... ok
+test intake::gltf_tests::a_node_matrix_decomposes_into_its_translation_rotation_and_scale ... ok
+test intake::gltf_tests::a_glb_made_in_code_loads_its_meshes_materials_and_tree ... ok
+test intake::gltf_tests::a_gltf_with_its_buffer_as_a_data_uri_loads_the_same ... ok
+test intake::gltf_tests::a_primitive_without_normals_takes_flat_ones ... ok
+test intake::gltf_tests::a_node_shows_a_program_picture_on_its_mesh ... ok
+test intake::gltf_tests::a_skinned_asset_rests_in_its_bind_pose_and_bends_as_its_clip_turns_a_joint ... ok
+test intake::gltf_tests::a_base_colour_texture_is_decoded_and_its_uv_set_taken ... ok
+test intake::gltf_tests::an_asset_goes_up_in_pieces_and_answers_with_what_it_holds ... ok
+test intake::gltf_tests::a_chrome_host_draws_its_asset_in_its_own_material_and_a_liquid_one_keeps_the_files ... ok
+test engine::tests::lines_scrolled_off_top_count_through_a_full_history ... ok
+test intake::gltf_tests::asset_and_play_errors_name_themselves ... ok
+test intake::gltf_tests::an_asset_from_a_path_follows_the_file_medium_rules ... ok
+test intake::gltf_tests::a_skin_is_read_with_its_joints_weights_and_inverse_bind_matrices ... ok
+test intake::gltf_tests::clips_sample_step_linear_cubic_spline_and_slerp ... ok
+test intake::gltf_tests::chunk_and_header_lengths_that_lie_are_refused ... ok
+test intake::gltf_tests::faces_show_uploaded_pictures_and_a_missing_one_is_refused_by_name ... ok
+test intake::gltf_tests::foreign_buffers_versions_and_required_extensions_are_refused ... ok
+test intake::gltf_tests::materials_map_metallic_roughness_and_emissive_onto_the_lit_path ... ok
+test intake::gltf_tests::every_truncation_of_a_glb_is_refused_and_none_panics ... ok
+test intake::gltf_tests::play_drives_a_clip_on_the_fake_clock_and_sleeps_when_still ... ok
+test intake::gltf_tests::assets_are_capped_in_count_and_removed_by_id ... ok
+test intake::gltf_tests::playback_loops_runs_out_and_keeps_its_place_through_changes ... ok
+test intake::gltf_tests::the_mixamo_characters_load_bend_at_rest_and_play ... ignored, reads the Mixamo characters from the folder GLASS_MIXAMO names; skips any that is not there
+test intake::gltf_tests::other_uv_sets_and_extensions_used_but_not_required_are_taken ... ok
+test intake::gltf_tests::strips_and_fans_become_triangle_lists_and_points_are_skipped ... ok
+test intake::gltf_tests::huge_accessor_counts_are_refused_before_anything_is_read ... ok
+test intake::gltf_tests::the_tree_places_nodes_by_hand_computed_matrices ... ok
+test intake::osc1337::tests::a_gif_shows_its_first_frame ... ok
+test intake::gltf_tests::skins_are_capped_and_their_errors_name_themselves ... ok
+test intake::conformance::a_file_transmission_on_a_fifo_does_not_block ... ok
+test engine::tests::text_runs_end_where_a_byte_at_a_time_scan_ends ... ok
+test intake::gltf_tests::indices_and_references_out_of_range_are_refused ... ok
+test intake::gltf_tests::the_samplers_model_loads_with_step_linear_and_cubic_spline_keys ... ok
+test engine::tests::utf8_decoding_covers_all_scalars_and_boundary_rejections ... ok
+test intake::osc1337::tests::a_tga_through_osc_1337_with_name_x_tga_keeps_its_pixels ... ok
+test intake::osc1337::tests::a_jpeg_shows ... ok
+test intake::osc1337::tests::a_multipart_transfer_is_dropped_by_the_budget ... ok
+test intake::glass_scene::tests::node_vertex_and_index_caps_reject_before_use ... ok
+test intake::osc1337::tests::a_tga_through_osc_1337_without_a_name_keeps_its_pixels ... ok
+test intake::conformance::pass_through_bodies_are_not_held ... ok
+test intake::osc1337::tests::a_multipart_png_lands_as_the_same_picture_as_file ... ok
+test intake::gltf_tests::cyclic_doubly_parented_and_deep_trees_are_refused ... ok
+test intake::osc1337::tests::a_new_multipart_file_drops_the_abandoned_one ... ok
+test intake::osc1337::tests::downloads_are_ignored ... ok
+test intake::osc1337::tests::an_inline_png_shows_at_the_cursor ... ok
+test intake::osc1337::tests::off_aspect_uses_each_side_alone ... ok
+test intake::osc1337::tests::undecodable_bytes_are_dropped ... ok
+test intake::osc1337::tests::the_data_is_base64_without_any_prefix ... ok
+test intake::osc1337::tests::pixel_and_percent_sizes_become_cells ... ok
+test intake::placeholders::tests::a_missing_column_mark_is_the_cell_to_the_left_plus_one ... ok
+test intake::osc1337::tests::aspect_ratio_is_preserved_by_default ... ok
+test intake::placeholders::tests::an_unknown_image_draws_no_part ... ok
+test intake::position_tests::a_band_scroll_crops_through_the_source_rectangle ... ok
+test intake::osc1337::tests::wrapped_base64_is_taken ... ok
+test intake::position_tests::a_text_anchored_layer_moves_with_a_scroll_region ... ok
+test intake::position_tests::a_tall_picture_is_cut_at_the_bottom_margin ... ok
+test intake::osc1337::tests::each_side_becomes_its_own_box ... ok
+test intake::position_tests::alt_scroll_does_not_apply_text_below_a_picture_as_a_cover ... ok
+test intake::position_tests::a_wholly_covered_picture_goes ... ok
+test intake::position_tests::a_reflow_keeps_a_picture_on_the_same_text ... ok
+test intake::position_tests::blank_witness_deleted_line_matrix ... ignored, research diagnostic: deleted own-line witnesses never borrow neighbours
+test intake::position_tests::blank_witness_indistinguishable_histories ... ignored, research diagnostic: blank-slot identity is absent after collapse
+test intake::position_tests::blank_witness_marker_matrix ... ignored, research diagnostic: trailing blank slots need a content witness
+test intake::position_tests::alt_scroll_in_the_same_chunk_does_not_leave_covers_on_the_old_row ... ok
+test intake::position_tests::an_erase_rectangle_covers_only_its_cells ... ok
+test intake::position_tests::covers_emit_exact_rectangles ... ok
+test intake::position_tests::height_snapshot_marker_picture_matrix ... ignored, desired invariant diagnostic: shipping height resize is known to fail
+test intake::position_tests::el_ed0_ed1_and_ech_cover_in_cell_pictures ... ok
+test intake::position_tests::ich_and_dch_shift_partly_over_an_in_cell_picture ... ok
+test intake::position_tests::mixed_snapshot_marker_picture_matrix ... ignored, desired invariant diagnostic: shipping mixed resize is known to fail
+test intake::position_tests::origin_map_blank_slot_diagnostic ... ignored, research diagnostic: blank logical slot must not die with trimmed padding
+test intake::position_tests::origin_map_unicode_marker_matrix ... ignored, research diagnostic: wide glyph anchors through real resize
+test intake::osc1337::tests::the_cursor_moves_below_the_picture ... ok
+test intake::position_tests::persistent_witness_intervening_scroll_characterization ... ignored, research diagnostic: intervening scroll invalidates prototype state
+test intake::position_tests::persistent_witness_roundtrips ... ignored, research diagnostic: persistent witness roundtrips
+test intake::position_tests::marked_rows_follow_the_grid_through_region_scrolls ... ok
+test intake::position_tests::sampler_replay_full_osc_picture_is_uncovered_at_other_reads ... ok
+test intake::position_tests::sampler_replay_full_osc_picture_is_uncovered_at_reader_reads ... ok
+test intake::position_tests::truncated_tail_reflow_drops_unrelated_anchor_defect_is_reproducible ... ok
+test intake::position_tests::text_over_part_of_an_in_cell_picture_hides_only_those_cells ... ok
+test intake::position_tests::height_growth_picture_coordinate_defect_is_reproducible ... FAILED
+test intake::tests::a12_retransmitting_an_id_takes_its_showings ... ok
+test intake::tests::a13_huge_dimensions_are_refused_not_stored ... ok
+test engine::tests::width_cache_agrees_with_the_crate_everywhere ... ok
+test intake::tests::a15_a_file_failure_answers_one_identical_error ... ok
+test intake::position_tests::sampler_replay_osc_only_picture_is_uncovered ... ok
+test intake::position_tests::reflow_on_both_screens_wider_narrower_and_back ... ok
+test intake::tests::a2_continuation_chunks_carry_only_m_and_q ... ok
+test intake::position_tests::mixed_resize_round_trip_picture_defect_is_reproducible ... FAILED
+test intake::tests::a5_replies_only_when_an_id_or_number_was_given ... ok
+test intake::tests::a10_the_cursor_lands_after_the_picture ... ok
+test intake::tests::a1_payloads_are_base64_decoded ... ok
+test intake::sixel::tests::bands_crossing_the_growth_edges_lose_no_rows ... ok
+test intake::tests::a11_one_side_follows_the_shape_through_the_cell ... ok
+test intake::tests::a3_a_query_loads_and_answers_but_stores_nothing ... ok
+test intake::gltf_tests::json_that_would_grow_past_its_size_is_refused_unparsed ... ok
+test intake::tests::a_partial_osc_that_will_not_be_1337_passes_through_as_it_grows ... ok
+test intake::tests::a_passthrough_aborts_on_can_and_sub ... ok
+test intake::tests::a7_the_delete_table_targets_what_the_keys_name ... ok
+test intake::tests::a8_image_numbers_mint_and_map ... ok
+test intake::tests::a_doubled_escape_across_a_read_boundary_is_one_escape ... ok
+test intake::tests::a_nested_passthrough_is_not_unwrapped ... ok
+test intake::tests::a_passthrough_past_the_cap_is_dropped ... ok
+test intake::tests::a_clear_screen_takes_its_showings_but_not_the_scrollback ... ok
+test intake::tests::a9_placement_ids_are_per_image ... ok
+test intake::sixel::tests::the_imagemagick_fixture_decodes_exactly ... ok
+test intake::tests::a6_x_y_w_h_name_the_source_rectangle ... ok
+test affinity::tests::domains_are_read_from_sysfs ... ok
+test intake::tests::an_apc_graphics_sequence_is_lifted_and_the_text_around_keeps_order ... ok
+test intake::tests::a_tga_through_f100_keeps_its_pixels ... ok
+test intake::tests::alternate_screen_showings_go_when_the_program_leaves_it ... ok
+test intake::tests::an_apc_of_another_dialect_passes_through ... ok
+test intake::tests::an_unfinished_sequence_waits_for_the_rest_of_it ... ok
+test intake::tests::a_query_probe_with_size_and_offset_reads_only_that_span ... ok
+test intake::tests::bel_also_ends_apc_and_osc_sequences ... ok
+test intake::tests::s1_a_read_ending_on_escape_keeps_the_text_and_the_escape ... ok
+test intake::tests::chunked_transmissions_wait_for_their_last_chunk ... ok
+test intake::tests::s2_a_read_ending_inside_an_escape_does_not_repeat_bytes ... ok
+test intake::tests::delete_targets_what_the_dialect_names ... ok
+test intake::tests::icats_last_chunk_without_m_completes_the_transmission ... ok
+test intake::tests::multipart_osc_1337_is_lifted ... ok
+test intake::tests::s3_a_pass_through_dcs_ends_once_and_is_not_repeated ... ok
+test intake::tests::s4_short_escapes_end_and_do_not_hide_media ... ok
+test intake::tests::every_split_of_every_corpus_stream_matches_the_one_shot_result ... ok
+test intake::tests::pictures_stay_attached_to_their_text_as_it_scrolls ... ok
+test intake::tests::osc_1337_of_another_kind_passes_through ... ok
+test intake::tests::s6_an_aborted_body_is_dropped_and_the_next_sequence_stands ... ok
+test engine::tests::scroll_authority_height_only_resize_preserves_absolute_lines ... ok
+test intake::tests::showing_again_with_the_same_placement_id_moves_it ... ok
+test intake::tests::an_unpadded_base64_payload_is_taken_in ... ok
+test intake::tests::showings_go_when_their_text_scrolls_past_the_scrollback ... ok
+test intake::tests::s5_an_overlong_lifted_body_is_dropped_and_text_resumes ... ok
+test intake::tests::sixel_is_lifted_but_decrqss_and_xtgettcap_pass_through ... ok
+test intake::tests::shared_memory_transmissions_are_taken_in ... ok
+test intake::tests::the_budget_spends_the_oldest_pictures_first ... ok
+test intake::tests::the_canvas_records_what_adapters_ask_of_it ... ok
+test intake::tests::tmux_passthrough_lifts_apc_sixel_and_osc_1337 ... ok
+test intake::tests::w2_the_engine_merges_operations_on_the_store ... ok
+test intake::tween_tests::a_target_that_goes_takes_its_tweens_with_it ... ok
+test intake::tween_tests::a_layer_tween_moves_it_every_frame_while_the_program_is_silent ... ok
+test intake::tween_tests::a_text_anchored_layer_moves_down_its_rows_and_still_rides_the_text ... ok
+test intake::tween_tests::a_tween_that_replaces_another_starts_where_the_value_stands ... ok
+test intake::tween_tests::a_visibility_tween_wakes_only_at_its_end ... ok
+test intake::tween_tests::chains_start_where_the_last_ended_however_far_the_clock_jumped ... ok
+test intake::tests::sequences_split_across_reads_come_out_whole ... ok
+test intake::tests::osc_1337_files_are_lifted_and_other_osc_passes_through ... ok
+test intake::tests::s7_an_escape_after_an_introducer_does_not_repeat_text ... ok
+test intake::tween_tests::easing_names_that_are_not_easings_are_refused ... ok
+test intake::tween_tests::a_spring_sets_its_own_time ... ok
+test intake::tween_tests::easings_hit_their_known_values ... ok
+test intake::tween_tests::every_easing_starts_at_zero_and_ends_at_one ... ok
+test intake::tests::s8_a_bel_breaking_the_osc_prefix_ends_the_osc ... ok
+test intake::tween_tests::scene_nodes_and_cameras_tween_through_the_wire ... ok
+test intake::tween_tests::cubic_bezier_matches_reference_values ... ok
+test intake::tween_tests::slerp_takes_the_short_way_at_an_even_speed ... ok
+test intake::tween_tests::setting_a_target_outright_stops_its_tweens ... ok
+test keys::tests::a_key_sent_as_text_has_no_release ... ok
+test intake::tween_tests::tween_errors_name_themselves ... ok
+test keys::tests::associated_text_carries_what_the_key_types ... ok
+test keys::tests::enter_tab_and_backspace_keep_their_bytes_until_asked ... ok
+test keys::tests::f13_and_above_have_no_legacy_bytes ... ok
+test keys::tests::f1_to_f4_are_ss3_without_modifiers_whatever_the_cursor_mode ... ok
+test keys::tests::keys_type_what_an_xterm_types ... ok
+test keys::tests::modifier_keys_report_only_under_all_keys ... ok
+test keys::tests::modifiers_carry_every_bit_the_dialect_defines ... ok
+test keys::tests::mouse_reports_follow_the_requested_encoding ... ok
+test keys::tests::null_types_nothing_but_nul ... ok
+test keys::tests::pastes_are_bracketed_and_defanged ... ok
+test keys::tests::the_functional_letters_are_the_dialects_own ... ok
+test intake::conformance::fuzzed_no_lift_streams_pass_byte_exact ... ok
+test keys::tests::the_key_code_is_the_unshifted_codepoint ... ok
+test keys::tests::the_locks_pads_and_high_function_keys_are_codes ... ok
+test keys::tests::the_tilde_keys_use_the_dialects_numbers ... ok
+test read_ahead::tests::copied_handoff_returns_credit_after_its_last_byte_only ... ok
+test read_ahead::tests::queued_handoffs_preserve_all_bytes_and_return_each_credit_once ... ok
+test intake::tests::plain_text_passes_through_untouched ... ok
+test session::gate_tests::reads_are_cut_at_each_frame_start_but_the_first_byte ... ok
+test session::pump_tests::a_narrow_character_of_several_bytes_covers_one_cell ... ok
+test session::pump_tests::a_file_transmission_ignores_chunking ... ok
+test read_ahead::tests::readable_bytes_are_drained_before_a_hangup_ends_the_reader ... ok
+test session::pump_tests::a_multipart_png_through_pump_matches_file ... ok
+test session::pump_tests::a_picture_hides_with_the_cursor_hidden ... ok
+test session::pump_tests::a_picture_after_scrolled_text_in_one_synchronized_update_lands_on_its_row ... ok
+test session::pump_tests::a_picture_anchors_to_the_stream_and_moves_with_the_text ... ok
+test session::pump_tests::a_clear_and_a_picture_in_one_synchronized_update_keep_the_picture ... ok
+test session::pump_tests::a_session_never_resized_places_a_sixel_in_real_cells ... ok
+test session::pump_tests::a_picture_in_history_stays_on_its_text_after_ctrl_l ... ok
+test session::pump_tests::a_sixel_redrawn_over_its_old_self_in_one_synchronized_update_is_shown_once ... ok
+test session::pump_tests::a_synchronized_update_holds_the_frame_and_the_picture_lands ... ok
+test intake::tween_tests::springs_follow_their_closed_form_and_settle ... ok
+test session::pump_tests::a_wide_character_covers_both_its_cells ... ok
+test session::pump_tests::a_picture_that_leaves_a_region_is_cropped ... ok
+test gather::tests::gathering_gives_every_byte_in_order_then_the_end ... ok
+test session::pump_tests::ctrl_l_after_saved_lines_were_cleared_counts_what_it_pushes ... ok
+test session::pump_tests::clear_removes_every_picture_and_ctrl_l_keeps_history_aligned ... ok
+test session::pump_tests::ctrl_l_counts_a_blank_row_with_a_background_as_written ... ok
+test session::pump_tests::an_abandoned_multipart_is_dropped_by_a_new_one_and_by_the_budget ... ok
+test intake::tween_tests::delay_repeat_and_yoyo_run_to_the_millisecond_on_a_fake_clock ... ok
+test intake::tests::the_live_icat_chunked_stream_shows_its_picture ... ok
+test session::pump_tests::pictures_inside_tmux_passthrough_show ... ok
+test session::pump_tests::a_scroll_region_moves_its_pictures_with_the_text ... ok
+test session::pump_tests::reply_order_follows_the_stream ... ok
+test session::pump_tests::ris_removes_all_pictures ... ok
+test intake::tests::random_bytes_guessing_rejects_stay_none_within_a_second ... ok
+test session::pump_tests::in_cell_pictures_die_when_covered_and_apc_survives ... ok
+test read_ahead::tests::reading_ahead_drains_final_partial_handoff_on_hangup ... ok
+test read_ahead::tests::descriptorless_reader_drains_multiple_credits_before_eof ... ok
+test session::pump_tests::text_keeps_its_clipboard_title_and_bell ... ok
+test session::pump_tests::scrolls_and_a_clear_in_one_feed_are_all_counted ... ok
+test session::pump_tests::scrolls_and_a_screen_switch_in_one_feed_are_all_counted ... ok
+test session::pump_tests::the_alternate_screen_drops_its_pictures_and_restarts_its_count ... ok
+test session::pump_tests::xtsmgraphics_reads_are_answered ... ok
+test session::tests::foreign_variables_are_scrubbed ... ok
+test session::pump_tests::mpv_shared_memory_frames_replace_without_growing ... ok
+test session::tests::modes_and_titles_are_tracked ... ok
+test session::tests::the_key_view_survives_its_trip_through_one_word ... ok
+test speed::c0_inline_parts ... ignored
+test session::pump_tests::tiff_webp_and_bmp_decode_through_both_dialects ... ok
+test session::tests::startup_queries_are_answered_byte_for_byte ... ok
+test session::tests::the_key_view_tracks_the_programs_modes_and_the_view ... ok
+test intake::tween_tests::tweens_are_capped ... ok
+test read_ahead::tests::descriptorless_reader_retries_interrupts_and_drains_before_error ... ok
+test session::tests::the_key_view_knows_what_input_the_program_hears ... ok
+test speed::corpus_loader_checks_manifest_and_lengths ... ok
+test intake::gltf_tests::fuzzed_glbs_never_panic ... ok
+test speed::debug_run_whole ... ignored
+test read_ahead::tests::reading_ahead_gives_every_byte_in_order_then_the_end ... ok
+test speed::dump_generated_corpus ... ignored
+test speed::paint_speed ... ignored
+test speed::plain_runs_match_the_parser_over_seeds ... ignored
+test speed::shrink_c0_inline_divergence ... ignored
+test speed::shrink_escapes_divergence ... ignored
+test speed::shrink_run_whole_divergence ... ignored
+test speed::shrink_sweep_divergence ... ignored
+test speed::pass_records_preserve_integer_pairs ... ok
+test speed::speed ... ignored
+test speed::trace_c0_inline_case ... ignored
+test tests::a_changed_hover_redraws ... ok
+test intake::conformance::fuzzed_mixed_text_and_media_segments_match_the_one_shot_result ... ok
+test tests::keys_typed_from_the_input_thread_match_the_app_threads ... ok
+test session::pump_tests::the_count_stays_exact_past_a_full_history ... ok
+test session::tests::a_waiter_gets_the_engine_within_the_handoff ... ok
+test tests::only_outside_uris_open ... ok
+test tests::window_shortcuts_act_on_press_and_repeat_only ... ok
+test session::pump_tests::icats_chunked_stream_is_shown_at_any_read_size ... ok
+test view::tests::curly_and_coloured_underlines_reach_the_cells ... ok
+test view::tests::selection_reads_back_as_lines ... ok
+test view::tests::cells_carry_colour_and_selection ... ok
+test session::pump_tests::ctrl_l_past_a_full_history_counts_what_it_pushes ... ok
+test view::tests::double_click_takes_the_word ... ok
+test view::tests::cjk_and_emoji_copy_once ... ok
+test view::tests::selection_stops_at_the_last_column ... ok
+test view::tests::wrapped_rows_join_up ... ok
+test view::tests::wrapped_rows_keep_their_trailing_spaces ... ok
+test session::pump_tests::output_is_the_same_however_the_stream_is_split ... ok
+test intake::glass_conformance::a_group_replaces_whole_and_ten_thousand_layers_settle_fast ... ok
+test speed::splitter_bulk_matches_byte_steps ... ok
+test engine::tests::utf8_decoding_all_scalars_with_padded_offsets ... ok
+test engine::tests::scroll_authority_literal_boundaries ... ok
+test session::gate_tests::frame_escapes_are_found_as_stepping_finds_them ... ok
+test engine::tests::classified_text_masks_match_scalar_at_every_vector_boundary ... ok
+test intake::gltf_tests::caps_on_vertices_primitives_and_keys_hold ... ok
+test intake::conformance::fuzzed_streams_without_the_known_classes_pass_byte_exact ... ok
+test session::tests::a_started_session_answers_before_the_window ... ok
+test session::gate_tests::a_frame_waits_for_the_draw_it_is_owed_and_no_longer ... ok
+test engine::tests::a_synchronized_update_ends_at_its_deadline ... ok
+test speed::a_feed_of_many_pieces_matches_one_at_a_time ... ok
+test gather::tests::the_reading_runs_no_further_ahead_than_its_bound ... ok
+test speed::ascii_crlf_records_match_parser ... ok
+test speed::plain_runs_match_the_parser ... ok
+test intake::conformance::placements_are_capped_and_describe_stays_quick ... ok
+test intake::conformance::relative_placements_against_the_cap_stay_quick_and_leave_with_their_parent ... ok
+test speed::escapes_match_the_parser ... ok
+test intake::conformance::a_30k_sixel_body_stays_within_the_budget ... ok
+test speed::parser_ground_chunk_boundaries ... ok
+test intake::conformance::a_large_sixel_pan_does_not_spin ... ok
+test speed::crlf_records_preserve_history_and_suffixes ... ok
+test speed::unicode_row_edges_preserve_pending_wrap ... ok
+test speed::simple_lane_ground_handoff_boundaries ... ok
+test speed::c1_row_runs_preserve_parser_state ... ok
+
+failures:
+
+---- engine::tests::inactive_primary_height_shrink_coordinate_defect_is_reproducible stdout ----
+
+thread 'engine::tests::inactive_primary_height_shrink_coordinate_defect_is_reproducible' (367506) panicked at crates/term/src/engine.rs:4361:9:
+assertion `left == right` failed
+  left: 23
+ right: 21
+stack backtrace:
+   0: __rustc::rust_begin_unwind
+   1: core::panicking::panic_fmt
+   2: core::panicking::assert_failed_inner
+   3: core::panicking::assert_failed::<usize, usize>
+   4: <glass::engine::tests::inactive_primary_height_shrink_coordinate_defect_is_reproducible::{closure#0} as core::ops::function::FnOnce<()>>::call_once
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+
+---- intake::position_tests::height_growth_picture_coordinate_defect_is_reproducible stdout ----
+growth-picture before_row=0 marker_row=2 picture_row=2 reflow=true
+
+thread 'intake::position_tests::height_growth_picture_coordinate_defect_is_reproducible' (367715) panicked at crates/term/src/intake/position_tests.rs:600:5:
+assertion failed: reflow.is_none()
+stack backtrace:
+   0: __rustc::rust_begin_unwind
+   1: core::panicking::panic_fmt
+   2: core::panicking::panic
+   3: <glass::intake::position_tests::height_growth_picture_coordinate_defect_is_reproducible::{closure#0} as core::ops::function::FnOnce<()>>::call_once
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+
+---- intake::position_tests::mixed_resize_round_trip_picture_defect_is_reproducible stdout ----
+round-trip resize=8x5 reflow=Reflow { content: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129], exact: Some([Some((-9, 0)), Some((-9, 1)), Some((-9, 2)), Some((-9, 3)), Some((-9, 4)), None, None, None, None, None, Some((-8, 0)), Some((-8, 1)), Some((-8, 2)), Some((-8, 3)), Some((-8, 4)), None, None, None, None, None, Some((-7, 0)), Some((-7, 1)), Some((-7, 2)), Some((-7, 3)), Some((-7, 4)), None, None, None, None, None, Some((-6, 0)), Some((-6, 1)), Some((-6, 2)), Some((-6, 3)), Some((-6, 4)), None, None, None, None, None, Some((-5, 0)), Some((-5, 1)), Some((-5, 2)), Some((-5, 3)), Some((-5, 4)), None, None, None, None, None, Some((-4, 0)), Some((-4, 1)), Some((-4, 2)), Some((-4, 3)), Some((-4, 4)), None, None, None, None, None, Some((-3, 0)), Some((-3, 1)), Some((-3, 2)), Some((-3, 3)), Some((-3, 4)), None, None, None, None, None, Some((-2, 0)), Some((-2, 1)), Some((-2, 2)), Some((-2, 3)), Some((-2, 4)), None, None, None, None, None, Some((-1, 0)), Some((-1, 1)), Some((-1, 2)), Some((-1, 3)), Some((-1, 4)), None, None, None, None, None, Some((0, 0)), Some((0, 1)), Some((0, 2)), Some((0, 3)), Some((0, 4)), Some((1, 0)), Some((1, 1)), Some((1, 2)), Some((1, 3)), Some((1, 4)), Some((2, 0)), Some((2, 1)), Some((2, 2)), Some((2, 3)), Some((2, 4)), Some((3, 0)), Some((3, 1)), Some((3, 2)), Some((3, 3)), Some((3, 4)), Some((4, 0)), Some((4, 1)), Some((4, 2)), Some((4, 3)), Some((4, 4)), Some((5, 0)), Some((5, 1)), Some((5, 2)), Some((5, 3)), Some((5, 4)), Some((6, 0)), Some((6, 1)), Some((6, 2)), Some((6, 3)), Some((6, 4)), Some((7, 0)), Some((7, 1)), Some((7, 2)), Some((7, 3)), Some((7, 4))]), old_cols: 10, new_cols: 5, old_scrolled: 9, new_scrolled: 9, old_history: 9, new_history: 9, old_rows: [RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 10 }, RowSnap { wrap: false, len: 10 }, RowSnap { wrap: false, len: 10 }, RowSnap { wrap: false, len: 10 }], new_rows: [RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: true, len: 5 }, RowSnap { wrap: false, len: 5 }, RowSnap { wrap: true, len: 5 }, RowSnap { wrap: false, len: 5 }, RowSnap { wrap: true, len: 5 }, RowSnap { wrap: false, len: 5 }, RowSnap { wrap: true, len: 5 }, RowSnap { wrap: false, len: 5 }], height: None }
+round-trip resize=8x5 base=9 history=9 pictures=[(0.0, 3.0)]
+round-trip row=-9 text="x    "
+round-trip row=-8 text="x    "
+round-trip row=-7 text="x    "
+round-trip row=-6 text="x    "
+round-trip row=-5 text="x    "
+round-trip row=-4 text="x    "
+round-trip row=-3 text="x    "
+round-trip row=-2 text="x    "
+round-trip row=-1 text="x    "
+round-trip row=0 text="abcMe"
+round-trip row=1 text="fghij"
+round-trip row=2 text="abcde"
+round-trip row=3 text="fghij"
+round-trip row=4 text="abcde"
+round-trip row=5 text="fghij"
+round-trip row=6 text="abcde"
+round-trip row=7 text="fghij"
+round-trip resize=4x10 reflow=Reflow { content: [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84], exact: Some([Some((-9, 0)), Some((-9, 1)), Some((-9, 2)), Some((-9, 3)), Some((-9, 4)), Some((-8, 0)), Some((-8, 1)), Some((-8, 2)), Some((-8, 3)), Some((-8, 4)), Some((-7, 0)), Some((-7, 1)), Some((-7, 2)), Some((-7, 3)), Some((-7, 4)), Some((-6, 0)), Some((-6, 1)), Some((-6, 2)), Some((-6, 3)), Some((-6, 4)), Some((-5, 0)), Some((-5, 1)), Some((-5, 2)), Some((-5, 3)), Some((-5, 4)), Some((-4, 0)), Some((-4, 1)), Some((-4, 2)), Some((-4, 3)), Some((-4, 4)), Some((-3, 0)), Some((-3, 1)), Some((-3, 2)), Some((-3, 3)), Some((-3, 4)), Some((-2, 0)), Some((-2, 1)), Some((-2, 2)), Some((-2, 3)), Some((-2, 4)), Some((-1, 0)), Some((-1, 1)), Some((-1, 2)), Some((-1, 3)), Some((-1, 4)), Some((0, 0)), Some((0, 1)), Some((0, 2)), Some((0, 3)), Some((0, 4)), Some((0, 5)), Some((0, 6)), Some((0, 7)), Some((0, 8)), Some((0, 9)), Some((1, 0)), Some((1, 1)), Some((1, 2)), Some((1, 3)), Some((1, 4)), Some((1, 5)), Some((1, 6)), Some((1, 7)), Some((1, 8)), Some((1, 9)), Some((2, 0)), Some((2, 1)), Some((2, 2)), Some((2, 3)), Some((2, 4)), Some((2, 5)), Some((2, 6)), Some((2, 7)), Some((2, 8)), Some((2, 9)), Some((3, 0)), Some((3, 1)), Some((3, 2)), Some((3, 3)), Some((3, 4)), None, None, None, None, None]), old_cols: 5, new_cols: 10, old_scrolled: 9, new_scrolled: 9, old_history: 9, new_history: 9, old_rows: [RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: true, len: 5 }, RowSnap { wrap: false, len: 5 }, RowSnap { wrap: true, len: 5 }, RowSnap { wrap: false, len: 5 }, RowSnap { wrap: true, len: 5 }, RowSnap { wrap: false, len: 5 }, RowSnap { wrap: true, len: 5 }, RowSnap { wrap: false, len: 5 }], new_rows: [RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 10 }, RowSnap { wrap: false, len: 10 }, RowSnap { wrap: false, len: 10 }, RowSnap { wrap: false, len: 5 }], height: None }
+round-trip resize=4x10 base=9 history=9 pictures=[(0.0, 3.0)]
+round-trip row=-9 text="x         "
+round-trip row=-8 text="x         "
+round-trip row=-7 text="x         "
+round-trip row=-6 text="x         "
+round-trip row=-5 text="x         "
+round-trip row=-4 text="x         "
+round-trip row=-3 text="x         "
+round-trip row=-2 text="x         "
+round-trip row=-1 text="x         "
+round-trip row=0 text="abcMefghij"
+round-trip row=1 text="abcdefghij"
+round-trip row=2 text="abcdefghij"
+round-trip row=3 text="abcde     "
+
+thread 'intake::position_tests::mixed_resize_round_trip_picture_defect_is_reproducible' (367718) panicked at crates/term/src/intake/position_tests.rs:767:5:
+assertion `left == right` failed: known defect: the marker survives but its picture is gone
+  left: 1
+ right: 0
+stack backtrace:
+   0: __rustc::rust_begin_unwind
+   1: core::panicking::panic_fmt
+   2: core::panicking::assert_failed_inner
+   3: core::panicking::assert_failed::<usize, usize>
+   4: <glass::intake::position_tests::mixed_resize_round_trip_picture_defect_is_reproducible::{closure#0} as core::ops::function::FnOnce<()>>::call_once
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+
+
+failures:
+    engine::tests::inactive_primary_height_shrink_coordinate_defect_is_reproducible
+    intake::position_tests::height_growth_picture_coordinate_defect_is_reproducible
+    intake::position_tests::mixed_resize_round_trip_picture_defect_is_reproducible
+
+test result: FAILED. 389 passed; 3 failed; 21 ignored; 0 measured; 0 filtered out; finished in 1.92s
+
