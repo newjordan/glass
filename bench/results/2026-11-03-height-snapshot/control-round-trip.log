@@ -1,0 +1,57 @@
+
+running 1 test
+round-trip resize=8x5 reflow=Reflow { old_cols: 10, new_cols: 5, old_scrolled: 9, new_scrolled: 9, old_history: 9, new_history: 9, old_rows: [RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 10 }, RowSnap { wrap: false, len: 10 }, RowSnap { wrap: false, len: 10 }, RowSnap { wrap: false, len: 10 }], new_rows: [RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: true, len: 5 }, RowSnap { wrap: false, len: 5 }, RowSnap { wrap: true, len: 5 }, RowSnap { wrap: false, len: 5 }, RowSnap { wrap: true, len: 5 }, RowSnap { wrap: false, len: 5 }, RowSnap { wrap: true, len: 5 }, RowSnap { wrap: false, len: 5 }] }
+round-trip resize=8x5 base=9 history=9 pictures=[(0.0, 3.0)]
+round-trip row=-9 text="x    "
+round-trip row=-8 text="x    "
+round-trip row=-7 text="x    "
+round-trip row=-6 text="x    "
+round-trip row=-5 text="x    "
+round-trip row=-4 text="x    "
+round-trip row=-3 text="x    "
+round-trip row=-2 text="x    "
+round-trip row=-1 text="x    "
+round-trip row=0 text="abcMe"
+round-trip row=1 text="fghij"
+round-trip row=2 text="abcde"
+round-trip row=3 text="fghij"
+round-trip row=4 text="abcde"
+round-trip row=5 text="fghij"
+round-trip row=6 text="abcde"
+round-trip row=7 text="fghij"
+round-trip resize=4x10 reflow=Reflow { old_cols: 5, new_cols: 10, old_scrolled: 9, new_scrolled: 9, old_history: 9, new_history: 9, old_rows: [RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: true, len: 5 }, RowSnap { wrap: false, len: 5 }, RowSnap { wrap: true, len: 5 }, RowSnap { wrap: false, len: 5 }, RowSnap { wrap: true, len: 5 }, RowSnap { wrap: false, len: 5 }, RowSnap { wrap: true, len: 5 }, RowSnap { wrap: false, len: 5 }], new_rows: [RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 1 }, RowSnap { wrap: false, len: 10 }, RowSnap { wrap: false, len: 10 }, RowSnap { wrap: false, len: 10 }, RowSnap { wrap: false, len: 5 }] }
+round-trip resize=4x10 base=9 history=9 pictures=[]
+round-trip row=-9 text="x         "
+round-trip row=-8 text="x         "
+round-trip row=-7 text="x         "
+round-trip row=-6 text="x         "
+round-trip row=-5 text="x         "
+round-trip row=-4 text="x         "
+round-trip row=-3 text="x         "
+round-trip row=-2 text="x         "
+round-trip row=-1 text="x         "
+round-trip row=0 text="abcMefghij"
+round-trip row=1 text="abcdefghij"
+round-trip row=2 text="abcdefghij"
+round-trip row=3 text="abcde     "
+
+thread 'intake::position_tests::mixed_resize_round_trip_picture_diagnostic' (20992) panicked at crates/term/src/intake/position_tests.rs:759:5:
+assertion `left == right` failed: the actual text marker still exists
+  left: 0
+ right: 1
+stack backtrace:
+   0: __rustc::rust_begin_unwind
+   1: core::panicking::panic_fmt
+   2: core::panicking::assert_failed_inner
+   3: core::panicking::assert_failed::<usize, usize>
+   4: <glass::intake::position_tests::mixed_resize_round_trip_picture_diagnostic::{closure#0} as core::ops::function::FnOnce<()>>::call_once
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+test intake::position_tests::mixed_resize_round_trip_picture_diagnostic ... FAILED
+
+failures:
+
+failures:
+    intake::position_tests::mixed_resize_round_trip_picture_diagnostic
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 404 filtered out; finished in 0.00s
+

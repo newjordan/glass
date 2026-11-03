@@ -1,0 +1,85 @@
+[
+  {
+    "label": "history-0",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "0"
+    },
+    "exit": 101,
+    "log": "candidate-v2-history-0.log",
+    "sha256": "12742378949362de9836423ef8afee9d426d702038ddce4de87cbdb4a940d6f5"
+  },
+  {
+    "label": "history-1",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "1"
+    },
+    "exit": 101,
+    "log": "candidate-v2-history-1.log",
+    "sha256": "998480733b61f8d668e12756cc73d0487115152f42fb73beaa9a25221be080f8"
+  },
+  {
+    "label": "history-2",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "2"
+    },
+    "exit": 101,
+    "log": "candidate-v2-history-2.log",
+    "sha256": "165851e46274ae6c16c3e0e7f8242a69fba6a19e53489de8dcdbc8be4116adf5"
+  },
+  {
+    "label": "history-8",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "8"
+    },
+    "exit": 101,
+    "log": "candidate-v2-history-8.log",
+    "sha256": "ffc0a71cc69b58849ad521fb4dccd88b7bc61b491e50dfc7228eb8cca2ab4fc2"
+  },
+  {
+    "label": "history-32",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "32"
+    },
+    "exit": 0,
+    "log": "candidate-v2-history-32.log",
+    "sha256": "f6434cd41fe3c748b6baa4fc0e5c0e728f9c85bc3b2b2d0c1ae1578e82125d95"
+  },
+  {
+    "label": "terminal",
+    "args": [
+      "--skip",
+      "height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 101,
+    "log": "candidate-v2-terminal.log",
+    "sha256": "6b3d01b1f528e3395eb0b9b3a46fd521c2dbdd63ad21ec1e80690528ffc7ec98"
+  }
+]

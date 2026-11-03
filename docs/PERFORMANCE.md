@@ -937,3 +937,32 @@ retains this second diagnostic; `pre-final-*` snapshots preserve the frozen
 intermediate version. The final checker changes only the complete adapter and
 index lines, and the final index binds all three evidence generations. This is
 replay-tool repair, not runtime/timing repair or an excluded measurement.
+
+
+### Height geometry and unrelated-tail anchor loss (2026-11-03, iteration 37)
+
+**No runtime promotion.** A source-bound candidate using exact primary-grid
+height geometry passes 56,160 real-picture/text-marker observations across
+history capacities 0/1/2/8/32/10000 (control: 19,752 picture mismatches), but still
+fails 32/3,456 mixed width/height observations (control: 942). Default-history
+success alone had concealed short-history failures; old selection folding also
+counted snapshot-accounted movement twice. All candidate revisions are retained.
+
+New shipping defect: a 4x10 -> 8x5 -> 4x10 round trip retains a text marker at
+(0,3) but deletes its picture. Truncating an unrelated final logical line from
+10 to 5 characters makes the global length matcher reject the surviving marker.
+An isolated one-field matcher sensitivity test and actual intake reproduction
+establish this separately from the previously known height-growth defect.
+Two new tests deliberately characterize broken behavior, not fixes; two ignored
+matrices retain desired invariants for repair work. Replace broken-behavior
+assertions when fixing the defect. Final shipping-runtime build: 392 tests pass,
+14 ignored; 12,800 differential streams pass. Four Python tests pass; 24 evidence
+corruptions rejected. No timing/competitor claim. Selected executable and 7,919
+other prior tracked files preserved. Full scope, failures and invalid receipts:
+`reports/research-1eecf9876bb302e9da10ff629e71e6d8-37.txt`.
+
+```sh
+python3 -B bench/results/2026-11-03-height-snapshot/verify.py
+python3 -B bench/results/2026-11-03-height-snapshot/test-verify.py
+python3 -B bench/replay-evidence-index.py bench/results/2026-11-03-height-snapshot/final-frozen-index.json
+```

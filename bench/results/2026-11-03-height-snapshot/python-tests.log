@@ -1,0 +1,11 @@
+test_expectation_not_copied_from_engine (__main__.Evidence.test_expectation_not_copied_from_engine) ... ok
+test_height_corruptions (__main__.Evidence.test_height_corruptions) ... ok
+test_mixed_corruptions (__main__.Evidence.test_mixed_corruptions) ... ok
+test_original_complete (__main__.Evidence.test_original_complete) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 1.403s
+
+OK
+height mutations rejected: 14
+mixed mutations rejected: 10

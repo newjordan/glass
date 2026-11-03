@@ -1,0 +1,100 @@
+[
+  {
+    "label": "height-0",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "0"
+    },
+    "exit": 101,
+    "log": "control-height-0.log",
+    "sha256": "2b20a4d8bd44a67c556134ff76dcd91632d3e627584b9f3e9426541f154a94c9"
+  },
+  {
+    "label": "height-1",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "1"
+    },
+    "exit": 101,
+    "log": "control-height-1.log",
+    "sha256": "8541ea31bdcb49b65096a5059a03f71f43eab51f967ff87433e9f30c14432092"
+  },
+  {
+    "label": "height-2",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "2"
+    },
+    "exit": 101,
+    "log": "control-height-2.log",
+    "sha256": "1396bb008c1aecaf6c6e93deb319edb8aa033fa6c5c2dfdc3df35b5a4f866cfc"
+  },
+  {
+    "label": "height-8",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "8"
+    },
+    "exit": 101,
+    "log": "control-height-8.log",
+    "sha256": "0e1a74852ac029e6e5bafd47b1b922f37ef55d78e0d277d27abde3ab6a7290f9"
+  },
+  {
+    "label": "height-32",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "32"
+    },
+    "exit": 101,
+    "log": "control-height-32.log",
+    "sha256": "ffc810f46d938f23b1f8003e9dd8b5252c772a3b0ba91fbe38d7789ec6dbcf82"
+  },
+  {
+    "label": "height-10000",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 101,
+    "log": "control-height-10000.log",
+    "sha256": "3d54b7054b7aea4ae18a37a376fedf89574481fd6678067ab43638e0a8d33e00"
+  },
+  {
+    "label": "mixed-10000",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 101,
+    "log": "control-mixed-10000.log",
+    "sha256": "a17441d5fa87cb9dea23f4d299776f651a6c38fbc158c24915f17ec4c4722205"
+  }
+]

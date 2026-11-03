@@ -1,0 +1,37 @@
+{
+  "arms": {
+    "candidate-v5": {
+      "height_cases": 56160,
+      "height_failures": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "mixed_cases": 3456,
+      "mixed_failures": 32
+    },
+    "control": {
+      "height_cases": 56160,
+      "height_failures": [
+        2544,
+        3622,
+        3554,
+        3348,
+        3342,
+        3342
+      ],
+      "mixed_cases": 3456,
+      "mixed_failures": 942
+    }
+  },
+  "final_sweep_streams": 12800,
+  "final_tests": 392,
+  "ignored_tests": 14,
+  "preserved_tracked_files": 7919,
+  "runtime_promoted": false,
+  "schema": "glass.height-snapshot-checkpoint/v1",
+  "selected_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c"
+}

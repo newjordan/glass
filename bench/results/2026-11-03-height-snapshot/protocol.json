@@ -1,0 +1,7 @@
+{
+  "schema": "glass.height-snapshot-protocol/v1",
+  "hypothesis": "Actual primary grid snapshots on every resize allow existing Reflow matcher to preserve picture/text anchors, including inactive primary and height growth.",
+  "semantic_gate": "Independent real-picture and text-marker matrix over history availability, cursor and marker rows, height targets, active/inactive primary and repeated resize, in both parser lanes; existing terminal tests; no promotion if any failure.",
+  "performance": "No performance claim until semantic gate passes. No shipping executable replacement.",
+  "preservation": "Keep originals, exact builds, every failure, and frozen historical evidence; restore rejected runtime changes."
+}

@@ -1,0 +1,199 @@
+diff --git i/crates/term/src/intake/position_tests.rs w/crates/term/src/intake/position_tests.rs
+index 9578124..db7520f 100644
+--- i/crates/term/src/intake/position_tests.rs
++++ w/crates/term/src/intake/position_tests.rs
+@@ -601,3 +601,194 @@ fn height_growth_picture_coordinate_defect_is_reproducible() {
+     assert_eq!(after.placements[0].row, 0.0);
+     assert_ne!(after.placements[0].row, 2.0, "remove this characterization when fixing the defect");
+ }
++
++/// Independent geometry oracle: the marker's row follows only known resize
++/// pushes/pulls, not a snapshot matcher or the engine's scroll counter.
++#[test]
++#[ignore = "desired invariant diagnostic: shipping height resize is known to fail"]
++fn height_snapshot_marker_picture_matrix() {
++    let capacity = std::env::var("GLASS_SCROLLBACK").unwrap_or_else(|_| "10000".into()).parse::<usize>().unwrap();
++    let mut cases = 0;
++    let mut failures = 0;
++    for rows in [4usize, 6] {
++        for target in [1usize, 2, 4, 6, 8] {
++            for cursor in 0..rows {
++                for marker in 0..rows {
++                    for records in [0usize, 1, 12] {
++                        for alt in [false, true] {
++                            for fast in [false, true] {
++                                let mut engine = engine(rows, 10);
++                                engine.set_fast(fast);
++                                let mut intake = Intake::new(8);
++                                intake.set_cell((10, 20));
++                                for _ in 0..records { feed(&mut engine, &mut intake, b"x\r\n"); }
++                                feed(&mut engine, &mut intake, format!("\x1b[{};1HM\x1b[{};1H", marker + 1, marker + 1).as_bytes());
++                                feed(&mut engine, &mut intake, &picture(991));
++                                feed(&mut engine, &mut intake, format!("\x1b[{};1H", cursor + 1).as_bytes());
++                                let mut h = records.saturating_sub(rows - 1).min(capacity);
++                                let mut old_rows = rows;
++                                let mut c = cursor;
++                                let mut expected = Some(marker as i32);
++                                for (step, next) in [target, rows, target].into_iter().enumerate() {
++                                    if alt { feed(&mut engine, &mut intake, b"\x1b[?1049h"); }
++                                    if next > old_rows {
++                                        let pull = h.min(next - old_rows);
++                                        expected = expected.map(|m| m + pull as i32);
++                                        c += pull;
++                                        h -= pull;
++                                    } else if next < old_rows {
++                                        let push = (c + 1).saturating_sub(next);
++                                        h = (h + push).min(capacity);
++                                        c = c.min(next - 1);
++                                        expected = expected.and_then(|m| {
++                                            let y = m - push as i32;
++                                            if y < -(h as i32) || y >= next as i32 { None } else { Some(y) }
++                                        });
++                                    }
++                                    old_rows = next;
++                                    engine.resize(next, 10);
++                                    // Exactly Session::resize's intake update ordering.
++                                    if let Some(reflow) = engine.take_reflow() {
++                                        intake.reflow(&reflow);
++                                        intake.set_scrolled_primary(engine.scrolled_off_top() as u64, engine.history_size(), next as u16);
++                                    }
++                                    if alt { feed(&mut engine, &mut intake, b"\x1b[?1049l"); }
++                                    let actual = (-(engine.history_size() as i32)..next as i32)
++                                        .find(|&r| engine.grid_line(r).starts_with('M'));
++                                    let view_top = engine.scrolled_off_top().saturating_sub(engine.history_size()) as u64;
++                                    let shown = intake.describe(View { top: view_top, rows: (engine.history_size() + next) as u16, alternate: false });
++                                    let pic_rows: Vec<i32> = shown.placements.iter().map(|p| p.row.round() as i32 + view_top as i32 - engine.scrolled_off_top() as i32).collect();
++                                    let wanted: Vec<i32> = expected.into_iter().collect();
++                                    let ok = actual == expected && pic_rows == wanted;
++                                    cases += 1;
++                                    if !ok { failures += 1; }
++                                    eprintln!("height-case rows={rows} target={target} cursor={cursor} marker={marker} records={records} alt={alt} fast={fast} step={step} capacity={capacity} expected={expected:?} actual={actual:?} pictures={pic_rows:?} ok={ok}");
++                                }
++                            }
++                        }
++                    }
++                }
++            }
++        }
++    }
++    eprintln!("height-summary cases={cases} failures={failures} capacity={capacity}");
++    assert_eq!(failures, 0, "independent text and real-picture resize oracle");
++}
++
++#[test]
++#[ignore = "desired invariant diagnostic: shipping mixed resize is known to fail"]
++fn mixed_snapshot_marker_picture_matrix() {
++    let mut cases = 0;
++    let mut failures = 0;
++    for rows in [4usize, 6] {
++        for target in [2usize, 4, 8] {
++            for width in [5usize, 10, 14] {
++                for cursor in [0usize, rows - 1] {
++                    for marker in [0usize, rows - 1] {
++                        for records in [0usize, 12] {
++                            for dense in [false, true] {
++                                for alt in [false, true] {
++                                    for fast in [false, true] {
++                                        let mut engine = engine(rows, 10);
++                                        engine.set_fast(fast);
++                                        let mut intake = Intake::new(8);
++                                        intake.set_cell((10, 20));
++                                        for _ in 0..records { feed(&mut engine, &mut intake, b"x\r\n"); }
++                                        if dense {
++                                            for r in 0..rows {
++                                                feed(&mut engine, &mut intake, format!("\x1b[{};1Habcdefghij", r + 1).as_bytes());
++                                            }
++                                        }
++                                        let column = if dense { 3 } else { 0 };
++                                        feed(&mut engine, &mut intake, format!("\x1b[{};{}HM\x1b[{};{}H",marker + 1,column + 1,marker + 1,column + 1).as_bytes());
++                                        feed(&mut engine, &mut intake, &picture(992));
++                                        feed(&mut engine, &mut intake, format!("\x1b[{};1H",cursor + 1).as_bytes());
++                                        for (step,(height,cols)) in [(target,width),(rows,10),(target,width)].into_iter().enumerate() {
++                                            if alt { feed(&mut engine, &mut intake, b"\x1b[?1049h"); }
++                                            engine.resize(height,cols);
++                                            if let Some(reflow) = engine.take_reflow() {
++                                                intake.reflow(&reflow);
++                                                intake.set_scrolled_primary(engine.scrolled_off_top() as u64,engine.history_size(),height as u16);
++                                            }
++                                            if alt { feed(&mut engine, &mut intake, b"\x1b[?1049l"); }
++                                            let text: Vec<(i32,i32)> = (-(engine.history_size() as i32)..height as i32).flat_map(|r| {
++                                                engine.grid_line(r).chars().enumerate().filter_map(move |(c,ch)| (ch == 'M').then_some((r,c as i32))).collect::<Vec<_>>()
++                                            }).collect();
++                                            let top = engine.scrolled_off_top().saturating_sub(engine.history_size()) as u64;
++                                            let shown = intake.describe(View {top,rows:(engine.history_size()+height) as u16,alternate:false});
++                                            let pics:Vec<(i32,i32)> = shown.placements.iter().map(|p| (p.row.round() as i32+top as i32-engine.scrolled_off_top() as i32,p.column.round() as i32)).collect();
++                                            let ok = text == pics;
++                                            cases += 1;
++                                            if !ok { failures += 1; }
++                                            eprintln!("mixed-case rows={rows} target={target} width={width} cursor={cursor} marker={marker} records={records} dense={dense} alt={alt} fast={fast} step={step} text={text:?} pictures={pics:?} ok={ok}");
++                                        }
++                                    }
++                                }
++                            }
++                        }
++                    }
++                }
++            }
++        }
++    }
++    eprintln!("mixed-summary cases={cases} failures={failures}");
++    assert_eq!(failures,0,"real-picture placement agrees with actual marker cells");
++}
++
++#[test]
++fn mixed_resize_round_trip_picture_defect_is_reproducible() {
++    let mut engine = engine(4, 10);
++    let mut intake = Intake::new(8);
++    intake.set_cell((10, 20));
++    for _ in 0..12 { feed(&mut engine, &mut intake, b"x\r\n"); }
++    for row in 0..4 { feed(&mut engine, &mut intake, format!("\x1b[{};1Habcdefghij", row + 1).as_bytes()); }
++    feed(&mut engine, &mut intake, b"\x1b[1;4HM\x1b[1;4H");
++    feed(&mut engine, &mut intake, &picture(993));
++    feed(&mut engine, &mut intake, b"\x1b[4;1H");
++    for (height, width) in [(8,5),(4,10)] {
++        engine.resize(height,width);
++        if let Some(reflow) = engine.take_reflow() {
++            eprintln!("round-trip resize={height}x{width} reflow={reflow:?}");
++            intake.reflow(&reflow);
++            intake.set_scrolled_primary(engine.scrolled_off_top() as u64,engine.history_size(),height as u16);
++        }
++        let shown = intake.describe(View {top:engine.top_line(),rows:height as u16,alternate:false});
++        eprintln!("round-trip resize={height}x{width} base={} history={} pictures={:?}",engine.scrolled_off_top(),engine.history_size(),shown.placements.iter().map(|p|(p.row,p.column)).collect::<Vec<_>>());
++        if width == 5 {
++            assert_eq!(shown.placements.len(), 1);
++            assert_eq!((shown.placements[0].row, shown.placements[0].column), (0.0, 3.0));
++        }
++        for row in -(engine.history_size() as i32)..height as i32 { eprintln!("round-trip row={row} text={:?}",engine.grid_line(row)); }
++    }
++    assert_eq!(engine.grid_line(0).chars().nth(3),Some('M'));
++    let shown = intake.describe(View {top:engine.top_line(),rows:4,alternate:false});
++    // Characterize broken behavior, not correctness. Replace this test when
++    // reflow preserves surviving anchors across a truncated unrelated tail.
++    assert_eq!(shown.placements.len(),0,"known defect: the marker survives but its picture is gone");
++}
++
++/// Isolate the exact matcher failure from parser/grid/intake behavior.
++/// This deliberately records broken behavior, and must change with its fix.
++#[test]
++fn truncated_tail_reflow_drops_unrelated_anchor_defect_is_reproducible() {
++    use crate::intake::motion::{GridSnap, RowSnap, reflow_of, scrolled_after, map_anchor};
++    let short = RowSnap { wrap: false, len: 1 };
++    let mut old_rows = vec![short; 9];
++    for _ in 0..4 {
++        old_rows.push(RowSnap { wrap: true, len: 5 });
++        old_rows.push(RowSnap { wrap: false, len: 5 });
++    }
++    let mut new_rows = vec![short; 9];
++    new_rows.extend([RowSnap { wrap: false, len: 10 }; 3]);
++    new_rows.push(RowSnap { wrap: false, len: 5 });
++    let old = GridSnap { cols: 5, screen: 8, history: 9, scrolled: 9, lines: old_rows };
++    let mut new = GridSnap { cols: 10, screen: 4, history: 9, scrolled: 9, lines: new_rows };
++    let broken = reflow_of(&old, &new);
++    assert_eq!(scrolled_after(&broken), 9);
++    assert_eq!(map_anchor(&broken, 9, 3.0), None, "known defect: first content marker is unchanged");
++    // A one-field sensitivity check: do not truncate the unrelated last line.
++    // The very same anchor then survives; loss is not caused by its own row.
++    new.lines.last_mut().unwrap().len = 10;
++    let complete = reflow_of(&old, &new);
++    assert_eq!(map_anchor(&complete, 9, 3.0), Some((9, 3.0)));
++}

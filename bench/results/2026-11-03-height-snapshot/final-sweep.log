@@ -1,0 +1,7 @@
+
+running 1 test
+swept 12800 streams over 64 seeds: no divergence
+test speed::plain_runs_match_the_parser_over_seeds ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 405 filtered out; finished in 10.97s
+

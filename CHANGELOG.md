@@ -358,3 +358,13 @@ These are one machine's numbers, not a general claim.
   licences of every crate built in; a one-line installer
   (`install.sh`); AUR packages `glass-term` (from source) and
   `glass-term-bin` (from the release tarball).
+
+
+## Research — 2026-11-03 (height-snapshot, iteration 37)
+- Reject incomplete resize-coordinate repair despite 56,160 passing height-only
+  picture/marker observations: 32 mixed-resize observations still fail.
+- Reproduce a new shipping defect: unrelated tail truncation on a mixed-resize
+  round trip deletes a picture whose text marker survives. Retain end-to-end and
+  one-field matcher characterizations plus ignored desired-invariant matrices.
+- Shipping runtime/executable unchanged; 392 tests and 12,800 differential streams
+  pass; four Python tests reject 24 evidence corruptions. No speed or Ghostty win.

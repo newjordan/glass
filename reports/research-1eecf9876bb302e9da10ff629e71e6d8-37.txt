@@ -1,0 +1,143 @@
+ITERATION 37 — EXACT HEIGHT GEOMETRY AND A NEW MIXED-RESIZE ANCHOR LOSS
+Status: reported local research, not independently audited acceptance.
+Date: 2026-11-03
+Starting commit: ef7b390
+Evidence: bench/results/2026-11-03-height-snapshot/
+
+DECISION
+Do not promote the runtime candidate. Exact height geometry repairs every tested
+height-only real-picture/marker case, but mixed width/height round trips still
+lose pictures whose text survives. This latter failure is independently reproduced
+in SHIPPING CONTROL, not established as a candidate regression. Runtime logic,
+selected shipping ELF, earlier evidence, and unrelated work remain unchanged.
+Only test code and documentation ship. No timing runs or Ghostty observations
+were made, and no championship/every-metric win is established.
+
+NEW FINDING: AN UNRELATED TRUNCATED TAIL DELETES A SURVIVING PICTURE
+Start at 4 rows x 10 columns with nine retained history rows. Write four full
+10-character visible rows. Put marker M and an actual Kitty picture at row 0,
+column 3; put cursor on row 3. Use Session's resize -> take_reflow -> intake.reflow
+-> set_scrolled_primary order for 8x5, then 4x10.
+At 8x5 the picture is still (0,3). At 4x10 text M remains (0,3), but there are ZERO
+placements. Shipping control's desired-invariant test FAILS (exit 101, one test),
+with exact grid, Reflow and placement traces in control-round-trip.log.
+
+The first resize splits each full line into 5+5. On return, the last logical
+line is truncated from ten characters to five; the first three logical lines
+survive at length ten. motion::align_content requires a complete length-sequence
+match. A mismatch at that unrelated tail makes the whole match fail, leaving no
+mapping for the intact first marker. This is not text-content matching: GridSnap
+stores occupied lengths/wrap flags, not character identities.
+
+A separate pure matcher characterization isolates the mechanism without parser,
+grid resize, or picture protocol: old content lengths [10,10,10,10] mapped to
+[10,10,10,5] produce map_anchor(9,3)=None. Changing ONLY that final 5 to 10
+preserves the exact same anchor as (9,3). The end-to-end characterization confirms
+the actual intake loss, while this one-field sensitivity isolates the matcher
+limitation. Both are deliberately named defect characterizations, not correctness
+tests. Replace/remove their broken-behavior assertions when the real fix lands.
+
+BOUNDED CANDIDATE PROGRESSION
+Protocol and original hashes retained before runtime edits. Hypothesis: snapshot
+the actual primary grid, active or inactive, before and after both dimensions of
+resize; reuse existing Reflow to preserve pictures. The actual primary accessor
+avoids predicting inactive-grid geometry from a stale cached snapshot.
+- v1 at history 10000: 9,360 height observations, 1,312 mismatches. Resize applied
+  snapshot-derived movement, then folded the old sentinel and counted it again.
+- v2 replants the sentinel instead of folding it after the mapping: all 9,360 at
+  capacity 10000 pass; capacity 32 passes too. At 0/1/2/8 it still fails
+  876/996/948/660 observations respectively. All 388 pre-existing tests pass;
+  the two prior known-defect characterizations fail because those defects change.
+- v3 adds explicit height-only row displacement/bounds, not inferred length
+  correspondence. Growth pulls min(history,new_height-old_height). Shrink pushes
+  max(primary_cursor+1-new_height,0). The mapping clips anchors to actual retained
+  history and screen, and updates their coordinate base with that signed motion.
+- v5 is the final fully source-bound experimental build (v4/v5 runtime identical).
+  It repairs all tested height-only geometry but fails the mixed contract. No
+  performance gate opens. It is REJECTED as a complete repair, not discarded as
+  if it showed no bounded semantic improvement. Sources remain retained.
+
+FINAL EXACT ARMS (same oracle source, optimized release test ELFs)
+History capacity       Control bad / 9,360       Candidate-v5 bad / 9,360
+0                              2,544                         0
+1                              3,622                         0
+2                              3,554                         0
+8                              3,348                         0
+32                             3,342                         0
+10000                          3,342                         0
+Total                         19,752 / 56,160                0 / 56,160
+
+Height matrix: starting rows 4/6; targets 1/2/4/6/8; every cursor/marker row;
+0/1/12 CRLF records; active/inactive primary; both parser lanes; three sequential
+resizes target -> original -> target. Each observation checks arithmetic text
+row and actual picture placement, including lost/truncated markers. GLASS_SCROLLBACK
+is process-cached, so each capacity used a separate process. Every text row in
+BOTH arms equals the independent arithmetic expectation. The control mismatches
+in this table are picture-position/lifetime discrepancies, not text-oracle errors.
+Repeated observations are not statistically independent trials or coverage proof.
+
+Mixed matrix, capacity 10000: 3,456 observations/arm; control fails 942, candidate
+fails 32. Start rows 4/6, targets 2/4/8, widths 5/10/14, top/bottom cursor and
+marker, 0/12 CRLF records, sparse/dense text, primary active/inactive, both lanes,
+three repeated resizes. It compares actual marker cells and actual placement
+coordinates; it is NOT an independent oracle for what width reflow ought to do
+to all text. The marker's presence/survival supplies the anchoring invariant.
+The candidate failures occur on dense-text width-5 growth round trips with
+history and bottom cursor, including both primary states and parser lanes.
+
+FINAL SHIPPING-RUNTIME VERIFICATION
+The final source restores engine.rs, motion.rs and alacritty term/mod.rs EXACTLY.
+position_tests.rs receives only four test additions: two ignored desired-invariant
+matrices (shipping known to fail), and two executed defect characterizations.
+Final release build: 392 passed, zero failed, 14 ignored, zero filtered. Both new
+characterizations execute and pass. 12,800 parser differential streams over 64
+seeds pass. These two lanes share coordinate machinery; their equivalence cannot
+prove geometry correctness. No characterization pass is called a runtime fix.
+
+EVIDENCE VALIDATION
+verify.py requires all 9,360 height and 3,456 mixed identities once per respective
+run, independent height expectations, actual text arithmetic equality, truthful
+match flags, exact observed failure counts, exact invocation/environment/exit,
+source-bound final arms, non-fresh affected-package Cargo receipts and nonzero
+final suite/sweep. Numeric observation logs are hash-bound to recorded run rows;
+semantic checks do not replace byte integrity. Four Python tests pass; 14 height
+and 10 mixed evidence corruptions rejected. These finite negative tests are not
+proof against malicious evidence or universal checker correctness.
+
+All earlier evidence is immutable. Prior iteration-36 exact checkpoint passes
+with ONLY the new test source mapped temporarily to its retained original in a
+try/finally restoration. Frozen historical replay uses an explicit source mapping
+for that path; no old verifier or manifest was edited. Shipping ELF retains SHA:
+d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c
+7,919 other previously tracked files remain unchanged (three shared docs excluded
+from that preservation total because append-only updates describe this result).
+Temporary ELFs are checked when present; archived sources and receipts do not
+constitute compiler attestation or recreate an expired executable by themselves.
+
+INVALID/FAILED ATTEMPTS RETAINED, NOT PASSES
+- First two edits to the build script assumed the wrong spelling/container of
+  INPUTS. They raised AssertionError / ValueError, while the shell continued to
+  build. v3/v4 receipts omit explicit motion.rs binding and are NOT used as final
+  source-bound evidence. v5 corrects tuple insertion and freshly rebuilds all
+  affected packages; its receipt names motion.rs and all other changed inputs.
+- v1 and v2 semantic failures and the shipping round-trip failure remain raw.
+- One bounded independent reviewer timed out with no completed answer. There is
+  no independent reviewer endorsement. Its unfinished tool reads are not results.
+- The candidate's final failing mixed run is not counted as a passing semantic
+  gate just because the runner process recorded all outcomes and exited zero.
+
+REPLAY
+python3 -B bench/results/2026-11-03-height-snapshot/verify.py
+python3 -B bench/results/2026-11-03-height-snapshot/test-verify.py
+python3 -B bench/replay-evidence-index.py bench/results/2026-11-03-height-snapshot/final-frozen-index.json
+
+NEXT REQUIRED WORK / BLOCKERS
+Replace all-or-nothing inferred logical-length matching with an exact surviving
+row/offset map emitted by resize machinery, including truncated unrelated tails,
+repeated-length content, wide/combining cells, blank anchors and pictures partly
+outside retained bounds. Preserve the proven height geometry and avoid counting
+sentinel motion twice. Short-history output counts remain a separate unfixed
+runtime defect: this resize experiment does not fix the output counter.
+Only after a complete semantic gate may the fixed paired engine timing screen
+resume; real PTY throughput, input latency, rendering/pacing and current Ghostty
+comparison gates still remain. There is no bound championship acceptance command.

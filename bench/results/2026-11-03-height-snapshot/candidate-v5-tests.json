@@ -1,0 +1,100 @@
+[
+  {
+    "label": "height-0",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "0"
+    },
+    "exit": 0,
+    "log": "candidate-v5-height-0.log",
+    "sha256": "86463fb695089967562c96f71bc46f9a3ca9546fef6598c200a61fc38942df94"
+  },
+  {
+    "label": "height-1",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "1"
+    },
+    "exit": 0,
+    "log": "candidate-v5-height-1.log",
+    "sha256": "e834d0e7afa79de85aba7b192ac3f69500a1aa8987686edbf2cf9799a4cf1a6f"
+  },
+  {
+    "label": "height-2",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "2"
+    },
+    "exit": 0,
+    "log": "candidate-v5-height-2.log",
+    "sha256": "5344850317e9c60fdc376952ac3d7c52508474c83ad55f353ce1f1d0d88e2469"
+  },
+  {
+    "label": "height-8",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "8"
+    },
+    "exit": 0,
+    "log": "candidate-v5-height-8.log",
+    "sha256": "7f13b7ff0c390d7a4b4438f8ec47f8a7c4b47d37be2c6f5efd9e385ffe7428ca"
+  },
+  {
+    "label": "height-32",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "32"
+    },
+    "exit": 0,
+    "log": "candidate-v5-height-32.log",
+    "sha256": "1a8ad6bdb33930fd689cce5ff6c787a15df74a282ceaeabb9e3b53efc8abdd70"
+  },
+  {
+    "label": "height-10000",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::height_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 0,
+    "log": "candidate-v5-height-10000.log",
+    "sha256": "438330a8cf591d4796e612dc1c2d9ededcdcbb5fbbad6fdf59d0a0d192e9cbb6"
+  },
+  {
+    "label": "mixed-10000",
+    "args": [
+      "--exact",
+      "--nocapture",
+      "intake::position_tests::mixed_snapshot_marker_picture_matrix"
+    ],
+    "settings": {
+      "GLASS_SCROLLBACK": "10000"
+    },
+    "exit": 101,
+    "log": "candidate-v5-mixed-10000.log",
+    "sha256": "5c20c1e2adcb5400f5067a5d928ee60873f205a84fbf9985412d5bb1ff7f0d92"
+  }
+]

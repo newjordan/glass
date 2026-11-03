@@ -1,0 +1,39 @@
+{
+  "control": {
+    "primary": {
+      "cases": 4704,
+      "mismatches": 3136
+    },
+    "inactive": {
+      "cases": 1392,
+      "mismatches": 1218
+    }
+  },
+  "candidate": {
+    "primary": {
+      "cases": 4704,
+      "mismatches": 0
+    },
+    "inactive": {
+      "cases": 1392,
+      "mismatches": 0
+    }
+  },
+  "schema": "glass.movement-authority-checkpoint/v1",
+  "status": "reported",
+  "runtime_promotion": false,
+  "performance_sessions": 0,
+  "championship_established": false,
+  "final_terminal_tests": 390,
+  "streams_per_arm": 12800,
+  "python_tests": 4,
+  "rejected_evidence_corruptions": 56,
+  "selected_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "unchanged_prior_evidence_files": 7245,
+  "unchanged_other_rust_sources": 118,
+  "unfixed_defects": [
+    "short-history counting",
+    "inactive-primary shrink coordinates",
+    "height-growth picture coordinates"
+  ]
+}
