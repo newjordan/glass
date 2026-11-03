@@ -1,0 +1,7 @@
+{
+  "bench/results/2026-11-03-scroll-witness/commit.stdout": "05704ec019676d97a5a3eec6dc557ec23033dc3ec70381a10c0c0cdec6bfeac5",
+  "bench/results/2026-11-03-scroll-witness/checkpoint-post-commit.json": "8eb6f6cb7daa03487d085a76a0773197f5d4e03e87c85d931b986ed32eaf827e",
+  "bench/results/2026-11-03-scroll-witness/checkpoint-post-commit.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "bench/results/2026-11-03-scroll-witness/post-commit-frozen-replay.json": "2f87ea6dce09abc641bb2f8438fb1b5f87e155381cf2c60b8218d1e2d29ed271",
+  "bench/results/2026-11-03-scroll-witness/python-tests-post-commit.log": "08ca5ff7e5613cdce52c12a98b8140cb335deeb7e86463fabc6020dbd697acfe"
+}
