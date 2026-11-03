@@ -272,8 +272,11 @@ python3 -I linux/transport-control.py summarize results/new-transport
 
 Run from `bench/`, without concurrent benchmarks/builds. Each run requires a
 fresh output directory and retains treatment order, actual masks, workload and
-input hashes, byte counts and every trial. Disabled scheduler runqueue accounting
-is reported as unavailable, not zero wait. Preserve both the sink and script used
+input hashes, byte counts and every trial. The historical summarizer conservatively
+reports runqueue accounting as unavailable when `sched_schedstats=0`; that sysctl
+alone is not a capability test for `CONFIG_SCHED_INFO` run-delay counters. See the
+new own-thread calibration below. No historical counter is silently reinterpreted.
+Preserve both the sink and script used
 for durable replay. The default terminal gate remains unchanged; do not pin the
 producer or comparator to manufacture an apparent win. See the
 [972-trial transport-control report](results/2026-11-02-transport-control/README.md).
@@ -514,3 +517,24 @@ balanced pass profiles and raw hashes replay, and five disposable-copy
 corruptions are rejected without rewriting evidence. Full replay requires the
 recorded binary/harness hashes; explicit artifact integrity has a separate
 frozen verifier. The spare-capacity follow-up has its own uninstrumented gate.
+
+
+### Sparse own-reader scheduler accounting (Linux diagnostic)
+
+The `sched-shape` observer targets only the exact requested Glass executable's
+self-named `pty-read` thread. Every 128 completed reads it brackets its own
+schedstat snapshot with wall and thread-CPU clocks. It records no payload bytes.
+This separates measured runnable-wait accounting from residual off-CPU time;
+it does not identify kernel functions or pure blocking. Calibrate on each
+kernel: `sched_schedstats=0` alone is not a capability test for sched_info.
+
+Build/run/replay commands and the full 36-session balanced results are in the
+[scheduler diagnostic report](results/2026-11-03-scheduler-shape/README.md).
+`linux/analyze-sched-shape.py` is read-only and fails closed on altered hashes,
+ABI/length/drop/continuity errors, changed payloads, times, reader identities or
+rates. Historical observer-source snapshots are explicit and hash checked; no
+binary or raw-artifact snapshot substitution is allowed. The original observer
+source/DSO and separately hardened safe-smoke capture remain distinct.
+Run `python3 -B -m unittest discover -s bench -p 'test_*.py' -v` from repo root.
+No fast-sample selection, performance neutrality, promotion or championship is
+implied by this diagnostic.

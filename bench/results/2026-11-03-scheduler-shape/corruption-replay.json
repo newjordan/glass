@@ -1,0 +1,48 @@
+{
+  "schema": "glass.scheduler-corruption/v1",
+  "source": "bench/results/2026-11-03-scheduler-shape/pilot",
+  "cases": [
+    {
+      "case": "hash",
+      "rejected": true,
+      "reason": "changed raw artifact: sched-1.trace",
+      "unchanged_files": 12
+    },
+    {
+      "case": "short-trace",
+      "rejected": true,
+      "reason": "trace length",
+      "unchanged_files": 12
+    },
+    {
+      "case": "runqueue-regression",
+      "rejected": true,
+      "reason": "noncontiguous windows",
+      "unchanged_files": 12
+    },
+    {
+      "case": "noncontiguous",
+      "rejected": true,
+      "reason": "noncontiguous windows",
+      "unchanged_files": 12
+    },
+    {
+      "case": "rate",
+      "rejected": true,
+      "reason": "rate mismatch",
+      "unchanged_files": 12
+    },
+    {
+      "case": "recycled-tid",
+      "rejected": true,
+      "reason": "reader identity changed",
+      "unchanged_files": 12
+    },
+    {
+      "case": "order",
+      "rejected": true,
+      "reason": "arm order",
+      "unchanged_files": 12
+    }
+  ]
+}

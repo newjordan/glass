@@ -1,0 +1,46 @@
+test_clock_mode_has_no_sched_fields (test_analyze_sched_shape.SchedulerReplayTests.test_clock_mode_has_no_sched_fields) ... ok
+test_counter_regression_and_invalid_time (test_analyze_sched_shape.SchedulerReplayTests.test_counter_regression_and_invalid_time) ... ok
+test_duplicate_json_rejected_without_change (test_analyze_sched_shape.SchedulerReplayTests.test_duplicate_json_rejected_without_change) ... ok
+test_header_length_drop_and_tail_rejected (test_analyze_sched_shape.SchedulerReplayTests.test_header_length_drop_and_tail_rejected) ... ok
+test_negative_residual_not_repaired (test_analyze_sched_shape.SchedulerReplayTests.test_negative_residual_not_repaired) ... ok
+test_recycled_reader_rejected (test_analyze_sched_shape.SchedulerReplayTests.test_recycled_reader_rejected) ... ok
+test_scheduler_interval_and_trace (test_analyze_sched_shape.SchedulerReplayTests.test_scheduler_interval_and_trace) ... ok
+test_whole_windows_only (test_analyze_sched_shape.SchedulerReplayTests.test_whole_windows_only) ... ok
+test_window_contiguity (test_analyze_sched_shape.SchedulerReplayTests.test_window_contiguity) ... ok
+test_duplicate_json_key (test_replay_engine_pairs.ReplayTests.test_duplicate_json_key) ... ok
+test_reject_bad_reports (test_replay_engine_pairs.ReplayTests.test_reject_bad_reports) ... ok
+test_reject_changed_workload_shape (test_replay_engine_pairs.ReplayTests.test_reject_changed_workload_shape) ... ok
+test_requested_pairs_and_binary_checks_fail_closed (test_replay_engine_pairs.ReplayTests.test_requested_pairs_and_binary_checks_fail_closed) ... ok
+test_valid_and_tie (test_replay_engine_pairs.ReplayTests.test_valid_and_tie) ... ok
+test_duplicate_json_and_unknown_schema (test_replay_evidence_index.HistoricalReplayTests.test_duplicate_json_and_unknown_schema) ... ok
+test_explicit_snapshot_and_unchanged_live (test_replay_evidence_index.HistoricalReplayTests.test_explicit_snapshot_and_unchanged_live) ... ok
+test_mutations_of_manifest_and_index (test_replay_evidence_index.HistoricalReplayTests.test_mutations_of_manifest_and_index) ... ok
+test_no_fallback_to_live_or_other_snapshot (test_replay_evidence_index.HistoricalReplayTests.test_no_fallback_to_live_or_other_snapshot) ... ok
+test_relative_manifest_source_root (test_replay_evidence_index.HistoricalReplayTests.test_relative_manifest_source_root) ... ok
+test_symlink_file_and_parent_are_rejected (test_replay_evidence_index.HistoricalReplayTests.test_symlink_file_and_parent_are_rejected) ... ok
+test_duplicate_keys_rejected (test_replay_terminal_pairs.ReplayTests.test_duplicate_keys_rejected) ... ok
+test_reject_changed_hash_and_unexpected_raw_set (test_replay_terminal_pairs.ReplayTests.test_reject_changed_hash_and_unexpected_raw_set) ... ok
+test_reject_incomplete_order_schema (test_replay_terminal_pairs.ReplayTests.test_reject_incomplete_order_schema) ... ok
+test_reject_invalid_numeric_samples (test_replay_terminal_pairs.ReplayTests.test_reject_invalid_numeric_samples) ... ok
+test_reject_rehashed_byte_count (test_replay_terminal_pairs.ReplayTests.test_reject_rehashed_byte_count) ... ok
+test_reject_rehashed_geometry_workloads_counts (test_replay_terminal_pairs.ReplayTests.test_reject_rehashed_geometry_workloads_counts) ... ok
+test_reject_rehashed_rate_and_fps_inconsistency (test_replay_terminal_pairs.ReplayTests.test_reject_rehashed_rate_and_fps_inconsistency) ... ok
+test_reject_runner_harness_and_binary_provenance (test_replay_terminal_pairs.ReplayTests.test_reject_runner_harness_and_binary_provenance) ... ok
+test_reject_summary_repair_and_boolean_counts (test_replay_terminal_pairs.ReplayTests.test_reject_summary_repair_and_boolean_counts) ... ok
+test_rounded_time_not_exact_time (test_replay_terminal_pairs.ReplayTests.test_rounded_time_not_exact_time) ... ok
+test_valid_ties_are_read_only (test_replay_terminal_pairs.ReplayTests.test_valid_ties_are_read_only) ... ok
+test_changed_executable (test_summarize_pty_rtt.ReplayTests.test_changed_executable) ... ok
+test_changed_reply (test_summarize_pty_rtt.ReplayTests.test_changed_reply) ... ok
+test_changed_saved_summary (test_summarize_pty_rtt.ReplayTests.test_changed_saved_summary) ... ok
+test_coherent_raw_tampering_after_replay (test_summarize_pty_rtt.ReplayTests.test_coherent_raw_tampering_after_replay) ... ok
+test_duplicate_json_key (test_summarize_pty_rtt.ReplayTests.test_duplicate_json_key) ... ok
+test_exact_replay (test_summarize_pty_rtt.ReplayTests.test_exact_replay) ... ok
+test_invalid_samples (test_summarize_pty_rtt.ReplayTests.test_invalid_samples) ... ok
+test_missing_or_additional_session (test_summarize_pty_rtt.ReplayTests.test_missing_or_additional_session) ... ok
+test_raw_summary_mismatch (test_summarize_pty_rtt.ReplayTests.test_raw_summary_mismatch) ... ok
+test_reordered_launches (test_summarize_pty_rtt.ReplayTests.test_reordered_launches) ... ok
+
+----------------------------------------------------------------------
+Ran 41 tests in 0.160s
+
+OK

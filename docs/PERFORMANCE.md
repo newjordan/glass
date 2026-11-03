@@ -289,7 +289,8 @@ pairs, while TUI lost 17/18. Severe variation also affected unchanged controls;
 this is not a causal diagnosis. See the [reports and raw provenance](../bench/README.md#session-overhead-ablations-2026-11-02).
 Runtime source and exact selected executable were restored; seven final
 reader/frame-gate tests pass. The matched-input stage evidence below narrows the next investigation; full
-scheduler/PMU traces remain unavailable. No favorable subset replaces the gate.
+full scheduler-event/PMU traces remain unavailable (the later own-thread scheduler
+accounting diagnostic is not an event trace). No favorable subset replaces the gate.
 
 ## Matched-input profiles: separate bottlenecks, no promotion
 
@@ -571,3 +572,30 @@ tests pass, starting runtime statements/constants are restored, and the exact
 selected executable is byte-compared. Corrected comments and diagnostic tools
 remain. Five disposable-copy corruptions are rejected read-only. See
 `bench/results/2026-11-03-read-shape/README.md` for raw evidence and limits.
+
+
+### Own-reader runnable-wait accounting (2026-11-03)
+
+A new own-thread calibration demonstrates that `sched_schedstats=0` alone did
+not disable `/proc/<tid>/schedstat` run-delay accounting on this kernel.
+Thirty-six balanced busy/sleep/own-child-contention trials distinguish sleep
+residual from runnable waiting. The historical conservative-null reports are
+preserved, not silently reinterpreted. This is not a full scheduler-event trace.
+
+A separate 36-session plain/clock/scheduler capture of the unchanged selected
+executable measures whole-reader windows. In the scheduler arm, median runnable
+wait fractions are 34.91% ASCII and 32.64% scroll-region, with median time
+coverage 96.61%/95.92% and conservative snapshot uncertainty 0.65%/0.79%.
+Component-wise medians are not additive. Runqueue share of off-CPU time has
+median 44.00%/59.70%; treating all reader off-CPU time as blocking is not supported
+in this capture. Residual includes unclassified off-CPU/accounting time and
+cannot attribute PTY kernel copy/locking or channel waits uniquely.
+
+Observer/control throughput ratios are noisy: scheduler/plain ASCII 1.00652,
+scroll-region 1.02143, TUI 0.92408; no uncorrected sign p<.05, not equivalence or
+neutrality. These are instrumented diagnostics, not a competitor gate or runtime
+promotion. Full evidence, explicit source snapshots, read-only replay, separate
+3-session pilot and 3-session hardened-observer smoke, and limits are in
+[`scheduler-shape/README.md`](../bench/results/2026-11-03-scheduler-shape/README.md).
+No new all-metric Ghostty victory is established. A predeclared bounded own-CPU
+contention control is the next causal measurement, not another buffer tweak.

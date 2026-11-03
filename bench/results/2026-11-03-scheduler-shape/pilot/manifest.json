@@ -1,0 +1,44 @@
+{
+  "schema": "glass.sched-shape-run/v1",
+  "complete": true,
+  "binary": "/work/frosty40/glass-repo/tree/target/release/glass",
+  "observer": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-scheduler-shape/sched-shape.so",
+  "rounds": 1,
+  "sha256": {
+    "/work/frosty40/glass-repo/tree/target/release/glass": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+    "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-scheduler-shape/sched-shape.so": "cde2e11662ea269b992641bba53ac4aad6ab7cd36054dc0904fd38e5efea6fb3",
+    "/work/frosty40/glass-repo/tree/bench/linux/sched-shape.c": "7c968d6545e5ed79607939c799c35963700d045ad3e72cadfea191e9a153b2ee",
+    "/work/frosty40/glass-repo/tree/bench/linux/sched-snapshot.h": "a5d44d55bd7a2e68256d17a275912124c62995cbfb3d902217f8c397880872a2",
+    "/work/frosty40/glass-repo/tree/bench/linux/run-sched-shape.sh": "a47800ad3d0ad728741f6e7270cf7758bb596d1d22e9f3ab94bd971e6380d4b3",
+    "/work/frosty40/glass-repo/tree/bench/linux/pipeline-profile.py": "b37fbca23b8360c15b298d93aa840e5ba510dc5e793ffe53bd1954f91dcc8bf2",
+    "/work/frosty40/glass-repo/tree/bench/lib.sh": "a057c54c4b9aa587101d1ee9a3a729f1b73fed1e55f5af56bc4b939e04a62f25",
+    "/work/frosty40/glass-repo/tree/bench/tput.py": "477b0131f1041bda8dd74a64bf8d164d526685bb7fc0c13500b17f897c06542a"
+  },
+  "orders": [
+    [
+      "plain",
+      "clock",
+      "sched"
+    ]
+  ],
+  "planned_orders": [
+    [
+      "plain",
+      "clock",
+      "sched"
+    ]
+  ],
+  "raw_sha256": {
+    "clock-1.trace": "7c4d4134f4f33df8983d817c1d8c5127da53bbce4e370f31702e6f634ffd65e9",
+    "sched-1.trace": "9d1926de88433f38207339d77b4e094d8cd29e4680801951a3e69293ced2a51b",
+    "tput-clock-1.json": "4b3a3c51ce6483f037f8dd3074b69d61fb79d2c54eaf5b5e671c40bfc8b551b7",
+    "tput-clock-1.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-clock-1.profile.json": "315c7ea42a7447a4baddd63a268117428bf892c2a5d0dd201a438f59b8be1f8a",
+    "tput-plain-1.json": "d632d73b250f86ba0cfd1065a8f0c431e8844ea879233d37698ae6e51ab3be83",
+    "tput-plain-1.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-plain-1.profile.json": "a6e96c541af4c6928a76b11dd4d29f7116744f8533528adc7b2da6c728895556",
+    "tput-sched-1.json": "5f35140eaa3c7325ebda9ebd122d44bdac7c9c1de2a069567e217b515ac0435d",
+    "tput-sched-1.producer.py": "5b51ac8cc272d7a6d5a417f7a59b85b12c3686c10f91587227075c75f71675af",
+    "tput-sched-1.profile.json": "2d6aa7387198ab1427354ba851738198573a0538a9da395534cfcf09fea0b9c6"
+  }
+}

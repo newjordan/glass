@@ -13,6 +13,16 @@ A program runs in a pseudo-terminal, and what it writes comes in through
 No dialect is the reference one; each is an adapter onto one shared
 description of what to show.
 
+### Own-reader scheduler accounting (diagnostic only)
+
+- Validate own-thread runnable-wait accounting on this kernel even with
+  `sched_schedstats=0`: 36 balanced busy/sleep/own-child-contention trials.
+- Capture 36 balanced plain/clock/scheduler terminal sessions plus separate
+  pilot and hardened-observer smoke captures. Preserve whole-window coverage,
+  observer effects and snapshot uncertainty; residual is not pure blocking.
+- Add fail-closed read-only trace replay and nine checker regressions; 41 Python
+  tests pass. No runtime source change, release rebuild or candidate promotion.
+
 ### Reader call-shape research (not promoted)
 
 - Diagnose the unchanged Linux reader with 36 balanced plain/count/timed
