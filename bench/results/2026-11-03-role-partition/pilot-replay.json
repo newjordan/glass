@@ -1,0 +1,309 @@
+{
+  "schema": "glass.role-partition-analysis/v2",
+  "sessions": 5,
+  "rounds": 1,
+  "manifest_sha256": "6bdf6192f636fda8ae19e7b63ccf1babaab3694dcf24c569f2fc35baf65f85dd",
+  "payload_bytes": {
+    "ascii": 25165955,
+    "unicode": 16777256,
+    "truecolor": 25166263,
+    "cursor_motion": 16777661,
+    "scroll_region": 16777365,
+    "tui_frames": 20901616
+  },
+  "comparisons": {
+    "split_vs_auto": {
+      "ascii": {
+        "ratios": [
+          0.9853323767830698
+        ],
+        "median_ratio": 0.9853323767830698,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "prospective_lower_bound": {
+          "order_1based": 0,
+          "value": 0.0,
+          "tail_probability": 0.0,
+          "threshold": 1.05,
+          "clears": false
+        },
+        "holm_p_six_workloads": 1.0
+      },
+      "unicode": {
+        "ratios": [
+          0.9905427151920406
+        ],
+        "median_ratio": 0.9905427151920406,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "prospective_lower_bound": {
+          "order_1based": 0,
+          "value": 0.0,
+          "tail_probability": 0.0,
+          "threshold": 0.99,
+          "clears": false
+        },
+        "holm_p_six_workloads": 1.0
+      },
+      "truecolor": {
+        "ratios": [
+          0.8316986073859879
+        ],
+        "median_ratio": 0.8316986073859879,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "prospective_lower_bound": {
+          "order_1based": 0,
+          "value": 0.0,
+          "tail_probability": 0.0,
+          "threshold": 0.98,
+          "clears": false
+        },
+        "holm_p_six_workloads": 1.0
+      },
+      "cursor_motion": {
+        "ratios": [
+          0.8270823708144788
+        ],
+        "median_ratio": 0.8270823708144788,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "prospective_lower_bound": {
+          "order_1based": 0,
+          "value": 0.0,
+          "tail_probability": 0.0,
+          "threshold": 0.98,
+          "clears": false
+        },
+        "holm_p_six_workloads": 1.0
+      },
+      "scroll_region": {
+        "ratios": [
+          0.995804430022918
+        ],
+        "median_ratio": 0.995804430022918,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "prospective_lower_bound": {
+          "order_1based": 0,
+          "value": 0.0,
+          "tail_probability": 0.0,
+          "threshold": 0.98,
+          "clears": false
+        },
+        "holm_p_six_workloads": 1.0
+      },
+      "tui_frames": {
+        "ratios": [
+          0.9788161630651022
+        ],
+        "median_ratio": 0.9788161630651022,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "prospective_lower_bound": {
+          "order_1based": 0,
+          "value": 0.0,
+          "tail_probability": 0.0,
+          "threshold": 0.98,
+          "clears": false
+        },
+        "holm_p_six_workloads": 1.0
+      }
+    },
+    "split_vs_shared": {
+      "ascii": {
+        "ratios": [
+          1.0062637943993062
+        ],
+        "median_ratio": 1.0062637943993062,
+        "wins": 1,
+        "losses": 0,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_p_six_workloads": 1.0
+      },
+      "unicode": {
+        "ratios": [
+          0.987694694125
+        ],
+        "median_ratio": 0.987694694125,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_p_six_workloads": 1.0
+      },
+      "truecolor": {
+        "ratios": [
+          0.8433214931436036
+        ],
+        "median_ratio": 0.8433214931436036,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_p_six_workloads": 1.0
+      },
+      "cursor_motion": {
+        "ratios": [
+          0.8359682543122268
+        ],
+        "median_ratio": 0.8359682543122268,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_p_six_workloads": 1.0
+      },
+      "scroll_region": {
+        "ratios": [
+          1.0130465190568492
+        ],
+        "median_ratio": 1.0130465190568492,
+        "wins": 1,
+        "losses": 0,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_p_six_workloads": 1.0
+      },
+      "tui_frames": {
+        "ratios": [
+          0.9918335678165412
+        ],
+        "median_ratio": 0.9918335678165412,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_p_six_workloads": 1.0
+      }
+    },
+    "shared_vs_auto": {
+      "ascii": {
+        "ratios": [
+          0.9791988763456093
+        ],
+        "median_ratio": 0.9791988763456093,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_p_six_workloads": 1.0
+      },
+      "unicode": {
+        "ratios": [
+          1.0028835034590964
+        ],
+        "median_ratio": 1.0028835034590964,
+        "wins": 1,
+        "losses": 0,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_p_six_workloads": 1.0
+      },
+      "truecolor": {
+        "ratios": [
+          0.9862177285268875
+        ],
+        "median_ratio": 0.9862177285268875,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_p_six_workloads": 1.0
+      },
+      "cursor_motion": {
+        "ratios": [
+          0.9893705491184487
+        ],
+        "median_ratio": 0.9893705491184487,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_p_six_workloads": 1.0
+      },
+      "scroll_region": {
+        "ratios": [
+          0.9829799632005215
+        ],
+        "median_ratio": 0.9829799632005215,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_p_six_workloads": 1.0
+      },
+      "tui_frames": {
+        "ratios": [
+          0.9868754142087609
+        ],
+        "median_ratio": 0.9868754142087609,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_p_six_workloads": 1.0
+      }
+    }
+  },
+  "medians_mb_s": {
+    "auto": {
+      "ascii": 1053.1,
+      "unicode": 264.8,
+      "truecolor": 279.4,
+      "cursor_motion": 239.9,
+      "scroll_region": 1100.4,
+      "tui_frames": 274.3
+    },
+    "ab": {
+      "ascii": 1051.9,
+      "unicode": 260.8,
+      "truecolor": 199.7,
+      "cursor_motion": 172.9,
+      "scroll_region": 1111.9,
+      "tui_frames": 270.9
+    },
+    "ba": {
+      "ascii": 1023.6,
+      "unicode": 263.8,
+      "truecolor": 270.4,
+      "cursor_motion": 227.7,
+      "scroll_region": 1079.9,
+      "tui_frames": 266.1
+    },
+    "aa": {
+      "ascii": 1122.4,
+      "unicode": 270.0,
+      "truecolor": 274.9,
+      "cursor_motion": 237.4,
+      "scroll_region": 1089.6,
+      "tui_frames": 270.5
+    },
+    "bb": {
+      "ascii": 947.4,
+      "unicode": 261.2,
+      "truecolor": 276.2,
+      "cursor_motion": 237.3,
+      "scroll_region": 1073.8,
+      "tui_frames": 270.9
+    }
+  },
+  "limits": "Shared host, no CPU isolation, no per-pass sampler, no proven residency or continuous affinity. Admission reads loadavg/CPU PSI BEFORE each whole block; records all waits, no within-block exclusion or normalization. A passing admission does not prove low per-core load during every pass. Producer unpinned, reciprocal arms not independent replicates. Boundary snapshots can alter warm state. Same selected executable and unchanged tput.py fastest of three DA1 passes 154x39. No new Ghostty metric in this experiment.",
+  "non_target_transitions": [],
+  "transition_session_count": 0,
+  "prospective_gate_clears": false,
+  "admission_wait_count": 0
+}

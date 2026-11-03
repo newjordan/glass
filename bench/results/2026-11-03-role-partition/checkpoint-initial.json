@@ -1,0 +1,17 @@
+{
+  "schema": "glass.role-partition-checkpoint/v1",
+  "policy_sessions": 155,
+  "competitor_sessions": 60,
+  "corruption_rejections": 15,
+  "reported_transition_positive_controls": 1,
+  "cleanup_cases": 4,
+  "python_tests": 49,
+  "rust_sources_unchanged": 120,
+  "prior_artifacts_unchanged": 660,
+  "binary_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "binary_byte_comparison": true,
+  "role_policy_promoted": false,
+  "all_six_competitor_throughput_leads": false,
+  "canonical_evidence_unchanged": true,
+  "note": "Executable local integrity/checker checkpoint, not timing accuracy, default-runtime change or championship acceptance."
+}

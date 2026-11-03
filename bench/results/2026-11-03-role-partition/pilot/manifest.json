@@ -1,0 +1,67 @@
+{
+  "schema": "glass.role-partition-run/v1",
+  "complete": true,
+  "binary": "/work/frosty40/glass-repo/tree/target/release/glass",
+  "protocol": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-role-partition/protocol.json",
+  "rounds": 1,
+  "arms": [
+    "auto",
+    "ab",
+    "ba",
+    "aa",
+    "bb"
+  ],
+  "orders": [
+    [
+      "ba",
+      "bb",
+      "auto",
+      "aa",
+      "ab"
+    ]
+  ],
+  "admissions": [
+    {
+      "accepted": true,
+      "attempts": [
+        {
+          "monotonic_ns": 150651228232617,
+          "loadavg": "1.91 15.50 26.27 4/3444 2538465",
+          "cpu_pressure": "some avg10=0.00 avg60=0.08 avg300=4.33 total=3296424614\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0"
+        }
+      ]
+    }
+  ],
+  "planned_orders": [
+    [
+      "ba",
+      "bb",
+      "auto",
+      "aa",
+      "ab"
+    ]
+  ],
+  "sha256": {
+    "/work/frosty40/glass-repo/tree/target/release/glass": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+    "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-role-partition/protocol.json": "43a58fc10c5113f283beffc3d72e27d2e4de339da856daee3a85dc291c8f99ca",
+    "/work/frosty40/glass-repo/tree/bench/linux/role-partition.py": "b202d067b2cc938850245f9c4ee57010269b7f54e3fd7700f0cd221e531ab55f",
+    "/work/frosty40/glass-repo/tree/bench/linux/run-role-partition.sh": "340c11127bacfa69e63c3e78138d165b34dcd80d50c23dc149b8921657f0de95",
+    "/work/frosty40/glass-repo/tree/bench/lib.sh": "a057c54c4b9aa587101d1ee9a3a729f1b73fed1e55f5af56bc4b939e04a62f25",
+    "/work/frosty40/glass-repo/tree/bench/tput.py": "477b0131f1041bda8dd74a64bf8d164d526685bb7fc0c13500b17f897c06542a",
+    "/work/frosty40/glass-repo/tree/bench/linux/analyze-role-partition.py": "62a94ebf1a880fdb6ef889ff9f583f222f37041bedd9fc3020dd5b73c648c8ff",
+    "/work/frosty40/glass-repo/tree/bench/linux/hot-placement.py": "59885ca775ca5103cb96c3a5f615f31ba9a8919938bd375d929c7b4d1e0c6a7e",
+    "/work/frosty40/glass-repo/tree/bench/replay-terminal-pairs.py": "c79fc90e7eacd04de45b2b2c6ee35853fa159b26ce21c6bea4182da741ef0ee7"
+  },
+  "raw_sha256": {
+    "tput-aa-1.json": "2b8e28d2b2806df3106e4589ba51279236892ed74d5953ba4196b420127b3808",
+    "tput-aa-1.placement.json": "e2cc8509b92260a9080b64081a74a92767a8a01536cd1e63ac07eb8f5fc1134a",
+    "tput-ab-1.json": "0b9da43729b4d525b0d0e49e38591dfd76552b97dc16fb2193ffa8a90dc2a51f",
+    "tput-ab-1.placement.json": "c975558cb7382846f651a3d1a0d6e07b4b016fa008734adf7b4d6212b8ef8b57",
+    "tput-auto-1.json": "b2f619c4b4beb97385ca13cbc8eb1136f58d2db9e7c3d727a71ea7ffcc9f0cbc",
+    "tput-auto-1.placement.json": "e7ed812a5dabe1aa6a5c6563587daca7921b2edc0c2b6d5c1419dd493af58e02",
+    "tput-ba-1.json": "0a930698aa44316f7d42ff6a3902420c3690197535fb03ad939b0531ade069f8",
+    "tput-ba-1.placement.json": "b11771d8b0ea6d214839a05f4468545fc38561981f27e64b7a240fc2f11be371",
+    "tput-bb-1.json": "1fef70a8137f05535f3a69d3ef7b3bf8f423cfc1599dc903dfab186da9027719",
+    "tput-bb-1.placement.json": "8072ab1928cfdd1b8eb3479369f817e68213054a992e73bb5b096ffb99b8fc47"
+  }
+}

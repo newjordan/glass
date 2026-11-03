@@ -1,0 +1,19 @@
+{
+  "schema": "glass.historical-evidence-replay/v1",
+  "manifests": [
+    {
+      "path": "bench/results/2026-11-03-hot-placement/evidence-sha256.json",
+      "manifest_sha256": "a29e3c1832559acdd57dc2e993f8c09790b20a35cee5631278de2cb45dd29d53",
+      "files": 789,
+      "live_paths": 789,
+      "historical_paths": 0,
+      "bytes": 9382230
+    }
+  ],
+  "manifest_count": 1,
+  "file_references": 789,
+  "historical_references": 0,
+  "unique_source_versions": 789,
+  "note": "Explicit historical byte-integrity replay only; not timing, safety or championship acceptance.",
+  "index_sha256": "8919360d005d490ae6614317618e6791b5a679946d0d91e0b801bbbd0b8a153a"
+}

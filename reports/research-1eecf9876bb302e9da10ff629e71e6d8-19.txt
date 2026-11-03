@@ -1,0 +1,186 @@
+ITERATION 19 — Whole-core role-mask policy and exact-build competitor refresh
+Reported local research. No runtime promotion and no championship acceptance.
+1. Identity and question
+------------------------
+Selected binary SHA256: d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c
+All 120 Rust sources unchanged. No rebuilding or stale-control binary substitution.
+The starting-state file pins 660 prior artifacts and the exact selected executable.
+The initial strict iteration-18 rejection is reproduced, not hidden: non-target
+thread mask changed. Its separately declared v2 captures still replay exactly.
+New hypothesis: disjoint whole-physical-core masks inside one large L3 may
+retain the apparent fixed-pin ASCII benefit without fixed singleton affinity.
+This is not another test of SMT singleton versus distinct singleton pins,
+observer instrumentation, artificial reader contention, producer placement,
+row indirection, or Unicode decoder shortcuts.
+2. Prospective experiment
+--------------------------
+F = 0-7,16-23. Whole SMT pairs are kept together.
+A = 0-3,16-19. B = 4-7,20-23.
+Arms (reader,parser): auto=(F,F), ab=(A,B), ba=(B,A), aa=(A,A), bb=(B,B).
+The matched-width aa/bb controls distinguish narrowing scheduler choice from
+role separation. Reciprocal arms are combined within a block, not replicated
+independent observations. No workload-dependent CPU choice. Only two owned
+terminal TIDs change masks; the producer and unrelated jobs are untouched.
+No governors, host pinning, host job termination or cache dropping. The owned
+headless terminal output is created/removed with the normal safe harness.
+One separate plumbing block (5 sessions) is excluded from inference. Then
+30 fixed outer blocks, 5 sessions each (150 sessions), with seed 190031 and
+random relabeled/row/column Latin squares; each arm at every position once per
+five blocks. Seed and full orders were frozen before the pilot. Confirmatory
+session data were not used to tune thresholds, sample size or design. No extra
+rounds, no accepted-block exclusion, no rescue replication after a failed gate.
+Before each block, admit load1 <=12 and CPU PSI avg10 <=5, waiting at most
+180 seconds. All attempts are recorded. Actual 30 admissions: load1 2.71–4.81,
+PSI avg10 0.00–0.19, zero waits. (Recorded observations, not continuous host
+residency or isolation.) Standard unchanged tput.py: six fixed-order workloads,
+154x39 geometry, DA1 completion, fastest of three passes.
+Primary per-block ratio = sqrt(ab_MBps * ba_MBps) / auto_MBps.
+Require median lower bound >1.05 for ASCII, >.99 Unicode and >.98 for the
+other four. One-sided exact order-statistic median bounds at alpha=.05/6;
+for n=30 k=9, binomial lower tail=.008062400855. All six must clear; only
+then require a separately frozen replication. These are prospective relative
+policy thresholds, not global claims that every end-user metric regresses
+by at most a given amount.
+3. Frozen primary result — REJECT PROMOTION
+-------------------------------------------
+workload        median ratio    wins/30   lower bound   threshold  clears
+ascii               1.053058       18/30      0.924927        1.05  False
+unicode             0.995265       11/30      0.984296        0.99  False
+truecolor           0.999420       14/30      0.992300        0.98  True
+cursor_motion       1.000208       15/30      0.992550        0.98  True
+scroll_region       1.000795       15/30      0.925447        0.98  False
+tui_frames          0.994314       11/30      0.984252        0.98  True
+
+ASCII's +5.31% point estimate is not an established >5% benefit; its lower
+bound is -7.51% versus parity. Unicode's point estimate is -0.47%, but the
+lower bound is -1.57%: this fails the specified 1% guard. It does NOT prove a
+Unicode regression or demonstrate equivalence. Scroll also fails its guard.
+Truecolor, cursor, TUI clear their declared bounds under the assumptions,
+but three passes cannot rescue three failures in an all-six gate.
+Secondary split/shared-half median ratios (descriptive, cannot rescue primary):
+ ascii           0.998076, 15/30 wins, within-family six-workload Holm p=1.000000
+ unicode         0.997022, 12/30 wins, within-family six-workload Holm p=1.000000
+ truecolor       0.996589, 13/30 wins, within-family six-workload Holm p=1.000000
+ cursor_motion   1.002557, 17/30 wins, within-family six-workload Holm p=1.000000
+ scroll_region   0.989593, 13/30 wins, within-family six-workload Holm p=1.000000
+ tui_frames      0.998138, 13/30 wins, within-family six-workload Holm p=1.000000
+Shared-half/auto ASCII is 1.089212, 21/30 wins, Holm p=.256644.
+The observed split/shared ASCII ratio .998076 and 15/30 wins do not establish
+role-separation benefit. Nonsignificance is not equivalence or zero effect.
+These controls show why it is wrong to interpret split/auto alone as a pure
+SMT-avoidance mechanism. Neither physical residency nor causal mechanism is
+established by mask snapshots.
+4. Unicode/result interpretation and limits
+-------------------------------------------
+The six lower bounds are simultaneous with at least 95.16% coverage ONLY
+conditional on the stated iid block-ratio assumptions; dependence across
+workloads is allowed by Bonferroni, but temporal dependence/nonstationarity
+across blocks can invalidate individual order-statistic coverage. Random
+position balance and low-load admissions do not prove iid. The advisor
+confirmed the conditional construction, not raw evidence or world-title
+acceptance. Independent recompute-primary.py verifies all medians and ninth
+order values directly from raw MB/s without calling the new analyzer.
+Unicode here means this exact deterministic stream, same executable, masks,
+geometric reciprocal-arm estimator and fastest-of-three PTY throughput. Not
+all Unicode, mean throughput, per-frame rendering, input latency or arbitrary
+platforms. Snapshot reads and affinity intervention affect scheduling/warmth;
+producer remains unrestricted; total host load does not bound per-core load;
+fixed workload order, GPU activity, turbo/power and OS scheduling remain
+confounds. Runtime CPU/memory/latency superiority is not tested by this policy
+series. Do not reuse singleton-pin evidence as if it established this policy.
+5. Competitor refresh
+----------------------
+Separate protocol and 30 rounds / 60 sessions, unchanged selected binary,
+no role masks/wrapper, alternating two terminal launch orders, no pooling.
+
+Glass/Ghostty ratios (>1 means more Glass throughput):
+workload       median ratio   wins/30      Holm p       lead clears   CPU ratio*
+ascii              0.947116       10/30      0.197474        False     0.612500
+unicode            0.929112        3/30    2.5291e-05        False     0.692308
+truecolor          1.181802       30/30   1.11759e-08         True     0.545455
+cursor_motion      1.098725       30/30   1.11759e-08         True     0.562500
+scroll_region      0.989285       13/30      0.584665        False     0.633333
+tui_frames         1.062165       29/30   2.30968e-07         True     0.618056
+
+*CPU ratios are median per-round Glass/Ghostty terminal CPU seconds, each
+associated with the fastest wall-time pass. They are rounded /proc totals,
+descriptive only, not CPU-efficiency confidence bounds or end-to-end energy.
+Three within-series corrected positive leads (truecolor/cursor/TUI), not six.
+Unicode is slower in 27/30 rounds with six-workload Holm p=.0000252910.
+This is concrete evidence for a remaining deterministic-stream throughput
+deficit in this unchanged selected build on this shared host. Unlike the
+policy guard failure, it is more than merely an unresolved positive lead.
+It is not evidence of a new Unicode code regression: executable bytes did not
+change. No interpretation as all-Unicode or multi-platform performance.
+Observed gains needed merely to reach the paired-median parity point:
+ ascii: 5.5836% own throughput.
+ unicode: 7.6296% own throughput.
+ scroll_region: 1.0831% own throughput.
+These are inverse observed point estimates, not a confidence bound, power
+calculation or superiority target. ASCII/scroll corrected tests are not
+superiority or equivalence evidence. Same selected binary old/new series
+show varying signs and magnitudes; do not average away unfavorable series.
+No new startup, busy input, RSS, key-to-screen, presentation, sustained GPU
+rendering, energy, platform or competitor-version-generalization evidence.
+A good throughput median or CPU total does not fill those missing metrics.
+
+6. Correctness, provenance and failure closure
+----------------------------------------------
+10 of 150 confirmatory sessions report non-target mask transitions
+(38 boundary records, including repeated records across snapshots).
+These autonomous changes are reported under the explicit policy, not silently
+reclassified or evidence that the wrapper moved non-target threads. Hot-thread
+identity/masks and restoration remain strict.
+Both policy datasets replay identically. 15 disposable-copy corruptions
+are rejected without modifying canonical evidence: hash, incomplete marker,
+hot mask/identity, restoration, producer mask, topology, rate, duplicate key,
+source set, planned order, actual order, overlapping sessions, load admission
+criterion and admission timestamp. A deliberate non-target transition is
+reported, not rejected, as the protocol explicitly requires. Adversarial
+re-hashing tests challenge semantic checks, not cryptographic authenticity.
+Eight new deterministic tests cover whole SMT pairs/topology, randomized
+position balance, exact bound/rank/coverage, ties, strict margins/pilot guard
+and Holm monotonicity. All 49 Python tests pass. Runtime was not modified, so
+no new runtime test or throughput claim is implied by Python checker success.
+TERM/HUP/INT and injected second-pin failure restore both owned masks. The
+cleanup script initially lacked an exported directory variable; corrected
+invocation produced the four actual passing lifecycle records. Two attempted
+competitor CLI invocations were rejected by argparse (exit 2) before output
+creation/session launch: wrong --out/separate tokens, then wrong term delimiter.
+The parser was read, comma-separated syntax corrected, and no measurements
+were overwritten. The new derived competitor helper initially used the wrong raw-file layout;
+its FileNotFoundError was corrected against the runner raw index, without
+changing any measurements. setup-errors.json records these faults, not
+invented data or invalidated captures.
+7. Canonical checkpoint and next action
+---------------------------------------
+Run from the repository root:
+ python3 -B bench/results/2026-11-03-role-partition/verify.py
+ python3 -B bench/results/2026-11-03-role-partition/recompute-primary.py
+ python3 -B -m unittest discover -s bench -p 'test_*.py' -v
+ python3 -B bench/replay-evidence-index.py \
+   bench/results/2026-11-03-role-partition/frozen-index.json
+
+The full local verifier passes: 155 policy sessions (150 confirmatory + 5
+pilot), 60 competitor sessions, 15 corruption rejections, 1 intentionally
+reported non-target-transition positive control, 4 cleanup cases, 49 Python
+tests, 120 unchanged Rust sources, 660 unchanged prior artifacts, exact byte
+comparison with /tmp/glass-i17-selected. No result/raw report is rewritten.
+This is executable integrity/correctness evidence, not bound championship
+acceptance. The frozen manifest/index will additionally pin all new artifacts
+and new source bytes. Logs/replays written outside that frozen set do not
+change the canonical evidence. Do not redirect repeated checks into frozen
+files. Source snapshots support future explicit byte-integrity mapping, not
+a live-source fallback or retroactive measured-runtime substitution.
+
+NEXT: Stop broad affinity-policy promotion on this evidence. Any further
+runtime candidate must first address the exact selected-build deterministic
+Unicode throughput path while preserving ASCII and scroll-region controls.
+The 7.63%-to-observed-Unicode-parity point is a current diagnostic, not a
+promise that one shortcut fixes it. Predeclare a candidate/fresh-control/
+Ghostty exact-build gate, six-workload multiplicity and regression thresholds,
+and separate replication. Never import old faster-candidate Unicode scores
+into the selected binary's scoreboard, or equate lower CPU totals with winning
+throughput. The broader every-metric objective still needs startup/memory/
+input/presentation evidence; no acceptance command is bound. Do not declare
+world champion or the campaign solved.

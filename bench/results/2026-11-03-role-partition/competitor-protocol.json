@@ -1,0 +1,23 @@
+{
+  "schema": "glass.champion-refresh-protocol/v1",
+  "rounds": 30,
+  "terms": [
+    "glass",
+    "ghostty"
+  ],
+  "sha256": {
+    "/work/frosty40/glass-repo/tree/target/release/glass": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+    "/usr/bin/ghostty": "ef28bf3a0f6ead69014da86ab0c9a2ef30fcf3bf297a6a27c4c18dfc80a56a62",
+    "/work/frosty40/glass-repo/tree/bench/compare-tput.py": "ccad00ee160e36304d27f838700162c3d4eb4ac9837fa95d60fded1f6d943540",
+    "/work/frosty40/glass-repo/tree/bench/run-tput.sh": "ea9e5385155a77b3feb755a3e661310f2602c32e680110bbea9db8245b4028b2",
+    "/work/frosty40/glass-repo/tree/bench/lib.sh": "a057c54c4b9aa587101d1ee9a3a729f1b73fed1e55f5af56bc4b939e04a62f25",
+    "/work/frosty40/glass-repo/tree/bench/tput.py": "477b0131f1041bda8dd74a64bf8d164d526685bb7fc0c13500b17f897c06542a",
+    "/work/frosty40/glass-repo/tree/bench/replay-terminal-pairs.py": "c79fc90e7eacd04de45b2b2c6ee35853fa159b26ce21c6bea4182da741ef0ee7"
+  },
+  "purpose": "Fresh scoreboard diagnostic for UNCHANGED selected executable, separate from failed role policy experiment. No role wrapper, no candidate or runtime promotion; no pooling with old series.",
+  "primary": "Each of six throughput workloads must have paired median Glass/Ghostty >1 and two-sided exact sign p <.05 after Holm correction across six, with more wins than losses. Outer rounds only; alternate two launch orders, DA1 154x39, fastest of three. This criterion only licenses conditional throughput evidence, NOT every metric or championship. Fixed 30 rounds; no rescue extension.",
+  "secondary": "Descriptive per-workload median Glass/Ghostty terminal CPU seconds ratios where both positive. No startup/latency/GPU/energy claim, no broad CPU superiority testing. CPU value corresponds to fastest-time sample, not independent replicate.",
+  "limitations": "Same fixed workload order; best-of-three not median; shared host, no isolation, no time-block dependence guarantee; exact sign tests conditional on independent round signs. All rounds retained. This is a new series, do not select or pool favorable previous binary/series. New dataset does not overwrite prior evidence.",
+  "command": "GLASS=$PWD/target/release/glass GHOSTTY=/usr/bin/ghostty python3 -B bench/compare-tput.py --terms glass,ghostty --rounds 30 bench/results/2026-11-03-role-partition/shipping-vs-ghostty",
+  "prelaunch_error": "Two CLI invocations rejected before creating output or launching sessions: first --out and separate --terms tokens (exit 2), second space-separated --terms instead of required comma-separated value (exit 2). Corrected after reading parser. Same frozen 30-round design."
+}

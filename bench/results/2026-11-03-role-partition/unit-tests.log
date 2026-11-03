@@ -1,0 +1,13 @@
+test_exact_median_bound (test_role_partition.RolePartitionTests.test_exact_median_bound) ... ok
+test_holm_monotonic (test_role_partition.RolePartitionTests.test_holm_monotonic) ... ok
+test_margin_strict_and_pilot_not_promotable (test_role_partition.RolePartitionTests.test_margin_strict_and_pilot_not_promotable) ... ok
+test_median_coverage_exact_small_samples (test_role_partition.RolePartitionTests.test_median_coverage_exact_small_samples) ... ok
+test_order_position_balance (test_role_partition.RolePartitionTests.test_order_position_balance) ... ok
+test_reject_bad_topology (test_role_partition.RolePartitionTests.test_reject_bad_topology) ... ok
+test_sign_ties (test_role_partition.RolePartitionTests.test_sign_ties) ... ok
+test_whole_core_split (test_role_partition.RolePartitionTests.test_whole_core_split) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.001s
+
+OK

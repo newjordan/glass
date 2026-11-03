@@ -1,0 +1,30 @@
+{
+  "schema": "glass.role-partition-setup-errors/v1",
+  "cases": [
+    {
+      "stage": "cleanup-smoke-launch",
+      "reason": "D was a shell local, not exported into bash -c",
+      "result": "No smoke report was produced; subsequent cat exit 1. Corrected exported invocation produced four validated real-parent cleanup cases.",
+      "invalidated_timing": false
+    },
+    {
+      "stage": "competitor-cli-1",
+      "exit_status": 2,
+      "reason": "Used unsupported --out and separate --terms tokens",
+      "sessions_launched": 0
+    },
+    {
+      "stage": "competitor-cli-2",
+      "exit_status": 2,
+      "reason": "Used space-delimited --terms instead of parser-required comma delimiter",
+      "sessions_launched": 0
+    },
+    {
+      "stage": "competitor-derived-summary",
+      "reason": "New helper assumed raw path terminal-{term}-{round}.json, actual runner stores terminal/tput-{term}-{round}.json",
+      "result": "FileNotFoundError, corrected helper only after reading recorded raw index; no measurements changed. Empty failed summary replaced before evidence freeze.",
+      "invalidated_timing": false
+    }
+  ],
+  "note": "Reported setup failures retained, not benchmark captures, corruption trials or accepted sessions. Corrected invocations do not overwrite measured data."
+}
