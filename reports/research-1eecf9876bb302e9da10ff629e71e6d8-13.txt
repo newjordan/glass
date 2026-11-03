@@ -1,0 +1,280 @@
+Immutable mark ownership and Unicode widths: verified local research, no runtime promotion
+======================================================================================
+
+Scope and outcome
+
+Starting checkpoint: 86e1a564a014eeaf984b327d1f2fd0e32662ff3f.
+The operator's objective is a lead on every metric, not an engine-only gain.
+This pass finds a materially new, reproducible Unicode optimization: a fixed
+pool of immutable single-mark records avoids per-cell Arc reference-count
+operations without enlarging Cell. In isolation it gains 28.46% Unicode over
+a fresh control, 22.24% over Ghostty in an independent real-PTY replication.
+A separate generated width-table candidate replicates a 12.19% truecolor gain.
+Their explicitly combined exact executable gains Unicode 22.29%, truecolor
+12.98%, cursor motion 1.47% and TUI 3.91% versus control in 30-round replication.
+Four Ghostty throughput leads survive six-workload Holm correction in that
+series. ASCII and scroll-region do NOT establish a lead. The first combined
+series is noisier, including unresolved Unicode and an adverse ASCII median.
+
+This is not world-champion evidence. No noninferiority tolerance was declared;
+non-significant regressions are not equivalence. The recorded requirement is
+unmet, so NO runtime/API promotion was made. Every one of 120 starting Rust
+source paths matches its original hash; runtime crate diffs are empty; the
+candidate build.rs is removed; the exact previously selected executable is
+restored and byte-compared. The retained changes are research evidence, docs
+and a stronger quiet-RTT runner/checker, not a hidden unsafe implementation.
+
+Detailed source, raw measurements, build receipts, executed tests and failed
+commands are in four explicit directories:
+  bench/results/2026-11-03-region-index/
+  bench/results/2026-11-03-immutable-width/
+  bench/results/2026-11-03-static-marks/
+  bench/results/2026-11-03-marks-width/
+
+No earlier iteration report or settlement manifest is replaced. Unrelated
+pre-existing untracked producer/reader/scanner work is not claimed or reverted.
+
+Machine, method and limitations
+
+Linux x86_64, Ryzen 9 9950X3D, RTX 3090; Hyprland headless outputs.
+All real-terminal throughput sessions use the unchanged tput.py six workloads,
+154 x 39 cells, fastest of three DA1-completion passes. Each round runs the
+candidate, a fresh control and Ghostty serially; the canonical runner cycles
+all six launch permutations. Experiment knobs are cleared by the runner.
+Different series remain separate; neither candidate components nor engine
+pairs are pooled with combined PTY measurements. DA1 measures parsing
+completion, NOT screen presentation latency.
+
+Engine screens use scale 2, five internal rounds, alternating exact control/
+candidate test executables. They are diagnostic, not terminal acceptance.
+Ratios below are medians of paired throughput ratios, not ratios of means.
+Quoted sign p-values are two-sided and raw unless explicitly marked Holm.
+Holm adjustment is within six workloads for one candidate/series/comparator;
+it does NOT control all comparisons across this research campaign.
+
+Substantial unrelated CPU work was visible on this shared host, especially
+during combined measurements. No slow sessions were removed. ASCII paired
+ratios in combined replication range roughly .30 to 3.56: scheduler/host noise
+is important. Code/data layout may affect workloads unrelated to widths or
+marks; the gain is not a hardware-counter proof of a specific mechanism.
+The same exact executables were reused for independent replication.
+No new cross-platform, memory/VRAM, energy, or key-to-screen advantage is claimed.
+
+1. Region indexing: rejected tradeoff
+
+rotate_region_up maps visible lines via existing one-subtraction compute_index
+rather than signed remainder. Whole-row semantics and suffix fallback remain.
+Initial compilation caught an obsolete closure in the suffix fallback; the
+fixed exact source was tested and measured. Diagnostic retained.
+
+                         11-pair engine         17-pair replication
+  ASCII                  .9839  (2/9 W/L)       .9732  (3/14)
+  Unicode               1.0135  (8/3)          1.0097  (10/7)
+  truecolor             1.0086  (9/2)          1.0034  (9/8)
+  cursor                1.0097  (9/2)          1.0117  (16/1)
+  region                1.0298  (7/4)          1.0217  (14/3)
+  TUI                   1.0056  (8/3)          1.0062  (12/4, 1 tie)
+
+Replication raw p: ASCII/region .0127258; cursor .000274658. The ASCII cost
+rejects this modest tradeoff before a PTY gate. Candidate library tests:
+137 passed. Parser parity: 1 passed. Both engine datasets replay with named
+binary hashes checked. An archive check also showed a different region-local
+origin idea had already been rejected; it was not rebuilt as a new discovery.
+
+2. Generated immutable Unicode widths: separately promising, not selected
+
+build.rs enumerates every codepoint using unicode-width from the lockfile,
+emitting 0x110000 bytes. Widths 0..3 are literal; 255 is None/invalid scalar.
+width_of uses include_bytes, a safe char index, and no runtime cache writes.
+This replaces the AtomicI8 lazy cache, not Unicode policy. The build-time
+dependency resolves to the already present lockfile package. Exhaustive width
+comparison and parser parity each passed. The table adds about 1.1 MiB of
+read-only data; it is not a claim of reduced executable size.
+
+                       18-round vs control     30-round replication
+  ASCII                1.0710  (9/18 wins)      .9676  (14/30)
+  Unicode              1.0167  (13/18)         1.0211  (20/30)
+  truecolor            1.1205  (18/18)         1.1219  (23/30)
+  cursor               1.0227  (18/18)         1.0251  (21/30)
+  region               1.0271  (12/18)          .9431  (13/30)
+  TUI                  1.0276  (16/18)         1.0318  (19/30)
+
+Truecolor replication p=.00522288, cursor .0427739, Unicode .0987371.
+The truecolor gain reproduces; the unexplained workload spread does not prove
+a narrow width-cache mechanism. Against Ghostty replication medians are:
+ASCII .9073, Unicode .9669, truecolor 1.3374, cursor 1.1317, region .9750,
+TUI 1.0727. Not a six-metric result. Quiet RTT 12 alternating pairs x 500
+samples: pooled medians candidate/control .047600/.046688 ms, p90
+.145503/.145303, p99 .542059/.648649. Correlated session samples and variation
+do not establish a latency gain. The original RTT runner snapshot is retained;
+its older raw schema and saved summary were not silently rewritten.
+
+3. Static single-mark ownership: new reproducible Unicode result
+
+A fixed OnceLock<[CellExtra;112]> holds U+0300..U+036F immutable mark-only
+records. CellExtraRef is a private-field NonNull wrapper; low address mask 1
+tags static content. A compile-time alignment check reserves it. map_addr
+preserves provenance; tags are cleared before dereference. Untagged pointers
+own exactly one Arc strong reference. Their Clone/Drop increment/decrement
+that count. Pooled handles need no refcount operations. Option remains one
+word and the existing 24-byte Cell cap is preserved.
+
+Mutation copies static content into owned Arc first. Owned mutation reclaims
+its count with from_raw, applies Arc::make_mut, and restores raw ownership
+through a write-back guard before producing the mutable reference. Weak
+reference dissociation is covered. Serde and equality are content-based;
+deserialization yields owned content. Other marks retain the bounded Arc
+single-mark cache. Styles, hyperlinks and nine-mark caps remain unchanged.
+
+This is unsafe ownership code and changes the public Cell.extra field type
+from Option<Arc<CellExtra>> to Option<CellExtraRef>. It is not Arc-API
+compatible; From<Arc<CellExtra>> transfers ownership. That compatibility
+cost is explicit and remains archived, not shipped. No Unicode normalization
+or input-sized pool was introduced.
+
+  11 engine pairs: Unicode 1.1736 (11/11 wins), ASCII .9713 (1/11 wins),
+  region .9304 (2/11). The engine tradeoff warranted a real-terminal gate
+  because the Unicode effect was large; it did not justify promotion.
+
+                       18-round vs control     24-round replication
+  ASCII                1.0319 (12/18 wins)     1.0034 (12/24)
+  Unicode              1.2879 (18/18)          1.2846 (22/24)
+  truecolor             .9849 (0/18)            .9874 (7/24, 1 tie)
+  cursor                .9989 (8/18)            .9998 (12/24)
+  region               1.0029 (9/18)            .9838 (10/24)
+  TUI                  1.0028 (10/18, 1 tie)    .9949 (8/24, 1 tie)
+
+Unicode vs Ghostty: 1.2415 (18/18), replication 1.2224 (23/24).
+All pre-existing truecolor/cursor/TUI Ghostty leads survive both series.
+ASCII and region remain unresolved. A small adverse truecolor median versus
+control motivates the separately measured combination, not selective pooling.
+
+Ordinary cell 9 and strict-provenance Miri cell 9 passed, including all 112
+pool entries, boundary fallbacks, COW, owned counts, Weak dissociation,
+cross-thread ownership and creator teardown. Library 140 and reference 45
+passed. Parser parity passed; seeded differential passed 12,800 streams.
+Probe 5 incorrectly chosen as a negative control was documented inert;
+probe 100 deliberately skips text and failed immediately in cells, confirming
+sweep sensitivity. A mistyped grep ('diverged' vs printed 'diverges') stopped
+one launch script before measurement; actual failing test and correction are
+retained. No result is attributed to those aborted scripts.
+
+Quiet response guard, 12,000 replies: candidate/control pooled median
+.0699115/.0750465 ms, p90 .361389/.364646, p99 1.686962/1.611731. Session
+variation prevents a latency-improvement claim. A failed attempt called the
+nonexistent run-latency.sh; the actual existing run-pty-rtt.sh was then used.
+No data came from the missing command.
+
+4. Exact combined build: four leads, requirement still unmet
+
+The combined source is separately formatted, gains explicit CellExtra Send+
+Sync bounds, updates the width test's stale comment and receives fresh tests
+and its own release build. Isolated results cannot certify this executable.
+Its identity is 6111147b21a4bc6d112cfb359bd8e3535b4c7bdd03e0803b550534e8e45c3369.
+
+Candidate/control ratio (wins/rounds):
+                         18 rounds               30-round replication
+  ASCII                   .8520 (6/18)          1.0112 (17/30)
+  Unicode                1.1591 (11/18)          1.2229 (26/30)
+  truecolor              1.1424 (15/18)          1.1298 (26/30)
+  cursor                 1.0352 (11/18)          1.0147 (25/30)
+  region                 1.0394 (11/18)           .9969 (13/30)
+  TUI                    1.0488 (12/18)          1.0391 (27/30)
+
+Candidate/Ghostty ratio:
+                         18 rounds               30-round replication
+  ASCII                  1.1291 (10/18)           .9655 (10/30)
+  Unicode                1.1121 (13/18)          1.1609 (24/30)
+  truecolor              1.4076 (15/18)          1.3266 (29/30)
+  cursor                 1.1515 (14/18)          1.1269 (26/30)
+  region                 1.1564 (10/18)          1.0013 (15/30)
+  TUI                    1.1094 (14/18)          1.0827 (26/30)
+
+Replication six-workload Holm p versus Ghostty:
+  ASCII .1974743; Unicode .0042927; truecolor .0000003465;
+  cursor/TUI .0002974 each; region 1.
+Versus control, Unicode/truecolor .0002974 each, cursor .0003111,
+TUI .00005058; ASCII/region 1. Individual-family correction is not a
+campaign-wide guarantee. The 18-round first series supports truecolor but
+not Unicode and retains broad host-load spread. It is not discarded.
+
+The fixed endpoint and decision rule were written before viewing replication:
+one 30-round repeat, then RTT/startup, no additional throughput series to hunt
+for significance. All-metric objective, no predeclared noninferiority tolerance.
+The candidate remains UNPROMOTED, not proven universally worse.
+
+Exact combined correctness:
+  Library serde: 140 passed; reference fixtures: 45 passed.
+  Strict-provenance Miri cell tests: 9 passed.
+  Exhaustive scalar width parity: 1 passed.
+  Parser parity: 1 passed.
+  Seeded differential: 12,800 streams over 64 seeds, no divergence.
+No new full glass-term or workspace-wide pass count is claimed. Strict
+provenance applies to the executed compiler/model/tests, not a universal
+safety proof. Advisory ownership reviews found no concrete defect conditional
+on the stated invariants; a separate reviewer spawn timed out and is not
+counted as a completed audit. No panic injection was executed.
+
+Combined quiet RTT: 12 AB/BA session pairs x 500 samples = 12,000 responses.
+Candidate/control pooled median .029375/.0295555 ms, p90 .044164/.045296,
+p99 .081003/.088917. Median of run medians .02713325/.0285615 ms; median
+paired run-median delta -.00004975 ms. These are descriptive, correlated,
+quiet DA1 response times, NOT key-to-screen latency or a superiority proof.
+Eight startup launches per binary, fixed candidate/control order:
+  Child execution median: 25.5 / 27.0 ms.
+  Mapped-window median: 20.5 / 21.0 ms.
+All sixteen launches yielded both timings. This existing coarse harness
+is neither alternating nor cold-cache and deletes its temporary event log;
+startup.log retains per-launch numbers, not a raw event trace. No startup
+advantage is statistically established.
+
+Retained coding and measurement improvements
+
+run-pty-rtt.sh now uses standalone summarize-pty-rtt.py. It records binary/
+harness identity and observed AB/BA order, refuses reused directories, checks
+all raw sessions, recomputes median/p90/p99/min/max from finite positive
+samples, rejects duplicate keys and mismatched reply shape, and requires exact
+saved-summary equality on replay. Ten synthetic checker tests pass, covering
+missing sessions, order, binary changes, malformed values/replies,
+summary mismatch and coherent raw tampering. Fixtures are not measurements.
+Earlier RTT datasets remain unchanged under their original schema.
+
+Final verification and restoration
+
+Final restored-source cell tests: 6 passed, 0 failed.
+Final new RTT-checker tests: 10 passed.
+Scoped runtime/docs/checker whitespace checks are clean. Full staged diff --check
+flags preserved raw-log EOF blanks, formatting diagnostics and patch-context
+blank lines; these original hashed bytes are retained, not relabeled clean.
+Four engine datasets replay with exact binaries: 11+17 region pairs,
+11 width pairs, 11 static-mark pairs.
+All six terminal series replay with exact executable/harness hashes and raw
+measurement hashes: width 18+30, static 18+24, combined 18+30 rounds =
+414 sessions. Both new-schema quiet RTT datasets replay (24,000 responses).
+Older width RTT has 12,000 responses, preserved separately. Integrity replay
+checks shape, order, hashes and arithmetic, NOT timing accuracy or independence.
+
+Restoration.json checks all 120 starting Rust source paths. Runtime crate
+diffs are empty; Cargo.toml is restored; new build.rs is removed. Selected
+release byte-equals saved /tmp/glass-i13-selected, SHA-256:
+  d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c
+Fresh control (not the historical selected release):
+  c14daae87141541f747095ec77644e9189e009251716408e2630abd7a294a1ed
+All earlier reports and unrelated pre-existing work remain unchanged.
+
+The explicit evidence-sha256.json inventory and verify-evidence.py cover this
+pass's four result directories, raw measurements, sources and receipts.
+The verifier fails closed and reads only explicit paths; no fallback discovery.
+Executable-dependent timing replays require the named temporary executables
+while present; immutable raw/source hashes remain inspectable afterward.
+
+Next necessary action
+
+Do not repeat global boxing/alignment, region-local indexing or parser-only
+Unicode shortcuts as undiscovered solutions. The fixed immutable extra-record
+representation now has real Unicode evidence, plus explicit API/ownership
+costs. A future selection decision must either declare an acceptable partial-
+improvement/noninferiority policy before new measurements, or demonstrate
+ASCII/region and other required metrics on controlled host conditions. The
+current all-metric goal is unresolved; no championship or loop acceptance is
+claimed. In-flight work is finished; this pass is checkpointed as research.

@@ -1,0 +1,4 @@
+glass a_child_ms 27 24 25 24 24 26 26 26 median=25.5
+glass b_mapped_ms 23 19 22 19 19 21 21 20 median=20.5
+glass-alt a_child_ms 28 31 28 21 24 26 27 27 median=27.0
+glass-alt b_mapped_ms 21 26 22 18 19 22 21 21 median=21.0

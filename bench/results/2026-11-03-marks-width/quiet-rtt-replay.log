@@ -1,0 +1,106 @@
+{
+  "provenance": {
+    "schema": "glass.paired-pty-rtt/v1",
+    "rounds": 12,
+    "samples_per_run": 500,
+    "protocol": "alternating AB/BA quiet DA1",
+    "binaries": {
+      "glass": {
+        "path": "/tmp/glass-i13-marks-width-bin",
+        "sha256": "6111147b21a4bc6d112cfb359bd8e3535b4c7bdd03e0803b550534e8e45c3369"
+      },
+      "glass-alt": {
+        "path": "/tmp/glass-i13-control-bin",
+        "sha256": "c14daae87141541f747095ec77644e9189e009251716408e2630abd7a294a1ed"
+      }
+    },
+    "harness_sha256": {
+      "/work/frosty40/glass-repo/tree/bench/lib.sh": "a057c54c4b9aa587101d1ee9a3a729f1b73fed1e55f5af56bc4b939e04a62f25",
+      "/work/frosty40/glass-repo/tree/bench/pty-rtt.py": "836d8302901ec766fb24cf4ba113b2f58751a197e994d04c71143ec461b46b0f",
+      "/work/frosty40/glass-repo/tree/bench/run-pty-rtt.sh": "4713c4a3fc5c199951f52a0624217bffd8eb0ca53722ede2f8865f8c1c2c3b35",
+      "/work/frosty40/glass-repo/tree/bench/summarize-pty-rtt.py": "2a4f988b425517e1c2e5916837590a7820857e56248ebd45ff81d189a510f9a0"
+    }
+  },
+  "raw_sha256": {
+    "rtt-glass-1.json": "9be2d99af7ce7247c85f5a900eedb9b991d4ee45b81563aaf688366b459ba8a8",
+    "rtt-glass-2.json": "65f1a8bc8231b2f60db0d2071a99b6a89ab582f4294e4016945109e2d41fa00d",
+    "rtt-glass-3.json": "5588f5df1252d385a33259a54ad9e03e27f9397be3c1ed3a51585f50a034d51b",
+    "rtt-glass-4.json": "812852ee4f2b550e8c9a7f01f07e09e47cf039b7ecd43d67424274bb4aba8636",
+    "rtt-glass-5.json": "d7f77133a4f06718b6aadfda0a37ec7d6006d30c99d8316d61061d5b59747542",
+    "rtt-glass-6.json": "ecb27d05e0ba6b6c4d8ebd07fd4657e8f9e09330582087acce76c984c548b9ac",
+    "rtt-glass-7.json": "caf44d3717963ad2593fcd77d06fc0312471bba5bb39289de44702f3aaed0ce0",
+    "rtt-glass-8.json": "cb4e0bc7c1dffe74dfa4d49c90645b60ed97c428bb2a81d9728f4134267d80ec",
+    "rtt-glass-9.json": "3afe3203cbd0bbadfc11c5fe2129cd16b19cab119d6f86ef10082d142b17fc9d",
+    "rtt-glass-10.json": "9572c650bb67d5b33974e9ef713f539736a209b9e82e92dbb4431842b735b283",
+    "rtt-glass-11.json": "7e8f3584d1db89b7286e9070882ce82f14a8e21a702126d9b9286d0648b2b35f",
+    "rtt-glass-12.json": "60e166307e8105bc53a92914734a2db83759245e7e98b3829346b5739fcb3f8c",
+    "rtt-glass-alt-1.json": "622ab6045e715ec045f032833dd360066bd610cc5c0e0a8286f2c8c3f31da483",
+    "rtt-glass-alt-2.json": "9b635cbf6c2c340a9a7b3e942befe55e868cf7d394ecd9262669954fa0d94c37",
+    "rtt-glass-alt-3.json": "f6e1755370149cb3dc68c59c9060080b37e9e4b2de605223410f69f54d55d450",
+    "rtt-glass-alt-4.json": "f051ce3290527218e496a173af7397cfe4f7e7f7f8a5d5178e345c51b41a11fe",
+    "rtt-glass-alt-5.json": "e3948218576815b3f915c2ccf224850625f7233ffda88aab0b261b9bcc5a0a4a",
+    "rtt-glass-alt-6.json": "86289e8efb7ec5d0bc1fe3a4264b9b54b2192005528137dd989b8e9452f79524",
+    "rtt-glass-alt-7.json": "c7be24ceb872e6e2d574ea6aa44baff48e42a0f0c0376084d72b2333b1e596d3",
+    "rtt-glass-alt-8.json": "d67a3317c49503515c10b0a2498d10a63b371acb59ddc899badbf78d5de1e2c5",
+    "rtt-glass-alt-9.json": "57326b7067e83b41ff4519877f26c4578dfa23f9369fc91a97b64e1eb73787d2",
+    "rtt-glass-alt-10.json": "111540e84272331a2df5bea90d06f9a72768f5fc1f19bd2f20444a9cdf949773",
+    "rtt-glass-alt-11.json": "fda1770a74b755793982c1d0477256ffaaedcf03a8f7ce824884663b4185f2c7",
+    "rtt-glass-alt-12.json": "f02b7b125d2abb4bc1cef0d672501c1644bf7099ead7b577a5d6fee4d58d42a8"
+  },
+  "order_sha256": "8f2be5643ca8d51e2dd20fc03c1862a4c52708daac69623a74b10b8f11232f3e",
+  "note": "Samples correlated within sessions. Not key-to-screen latency.",
+  "glass": {
+    "run_medians_ms": [
+      0.024446,
+      0.029720999999999997,
+      0.039615,
+      0.0263095,
+      0.027957,
+      0.039494,
+      0.038963,
+      0.0230385,
+      0.024802,
+      0.0257035,
+      0.026229000000000002,
+      0.029095
+    ],
+    "median_of_run_medians_ms": 0.027133249999999998,
+    "pooled_median_ms": 0.029375,
+    "pooled_p90_ms": 0.044164,
+    "pooled_p99_ms": 0.081003
+  },
+  "glass-alt": {
+    "run_medians_ms": [
+      0.028088000000000002,
+      0.03154,
+      0.039399,
+      0.0321655,
+      0.025508,
+      0.037000000000000005,
+      0.036483,
+      0.0249515,
+      0.024636,
+      0.025969,
+      0.0287795,
+      0.0283435
+    ],
+    "median_of_run_medians_ms": 0.0285615,
+    "pooled_median_ms": 0.0295555,
+    "pooled_p90_ms": 0.045296,
+    "pooled_p99_ms": 0.088917
+  },
+  "paired_run_median_deltas_ms": [
+    -0.003642000000000003,
+    -0.0018190000000000012,
+    0.00021599999999999397,
+    -0.005856,
+    0.002449,
+    0.0024939999999999962,
+    0.002479999999999996,
+    -0.0019130000000000015,
+    0.00016599999999999948,
+    -0.0002654999999999984,
+    -0.002550499999999997,
+    0.0007514999999999987
+  ]
+}

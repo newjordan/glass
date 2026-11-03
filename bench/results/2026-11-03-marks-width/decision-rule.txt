@@ -1,0 +1,29 @@
+Decision recorded before viewing the 30-round replication result
+
+The isolated static-mark and immutable-width series motivate this combined
+candidate; they are not independent replications of it and are not pooled.
+The first combined 18-round series is retained, including its adverse ASCII
+median and unresolved Unicode signs. Visible unrelated host load is a caveat,
+not permission to delete slow sessions or call nonsignificance equivalence.
+
+The planned endpoint is exactly one 30-round replication of the same executable,
+then serial quiet RTT and startup guards. No third combined throughput series
+will be added to hunt for significance in this iteration.
+
+The objective is a lead on every metric. No noninferiority loss margin was
+predeclared. Therefore an unresolved/regressed required workload cannot be
+accepted as 'no regression'. A binary whose required gains remain unresolved
+will not replace the protected selected executable. Neither an all-positive
+median table nor a successful process exit is a championship acceptance gate.
+
+Per-metric sign tests are unadjusted in the canonical runner; report that fact.
+If individually advertising metric wins, also state a declared family-wise
+adjustment (six workloads for one candidate/comparator series). Raw samples,
+launch permutations, fastest-three DA1 protocol, exact executable and source
+snapshots remain unchanged. Correctness and latency evidence do not increase
+the throughput replication count. Quiet DA1 is not key-to-screen latency.
+
+If the promotion requirement remains unmet, restore the original runtime
+source and exact selected executable; keep all patches, tests and measurements
+as reported research. This is a decision not to promote, not proof the candidate
+is universally worse. No world-champion claim is warranted by partial leads.

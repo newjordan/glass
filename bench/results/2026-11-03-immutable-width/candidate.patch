@@ -1,0 +1,53 @@
+diff --git i/crates/term/Cargo.toml w/crates/term/Cargo.toml
+index 8455ef2..75d86a2 100644
+--- i/crates/term/Cargo.toml
++++ w/crates/term/Cargo.toml
+@@ -58,3 +58,6 @@ mimalloc = { version = "0.1", default-features = false, features = ["no_thp"] }
+ [dev-dependencies]
+ # In-test PNG encoding, so adapter tests feed real picture bytes.
+ png = "0.18.1"
++
++[build-dependencies]
++unicode-width = "0.2.2"
+diff --git i/crates/term/src/engine.rs w/crates/term/src/engine.rs
+index 4987a85..85759fb 100644
+--- i/crates/term/src/engine.rs
++++ w/crates/term/src/engine.rs
+@@ -3629,31 +3629,14 @@ fn utf8_at(bytes: &[u8], at: usize) -> Option<(char, usize)> {
+     Some((char::from_u32(value)?, len))
+ }
+ 
+-/// `unicode_width`'s answer for `c`, through a flat cache over the
+-/// whole codespace filled from the crate on first ask: the crate's
+-/// multi-level lookup is several dependent loads for the planes a
+-/// mixed-width flood actually writes (CJK, emoji, symbols — the 4 KiB
+-/// table over U+0000..U+0FFF tried earlier never held them), where
+-/// this is one. The cache is write-once per codepoint and every writer
+-/// stores the same value, so relaxed atomics are enough; -1 is
+-/// unasked, -2 is the crate's `None` (widths themselves run 0..=3).
++/// The pinned `unicode_width` answer for every Unicode scalar, generated at
++/// build time from that dependency. A valid `char` always indexes the table;
++/// 255 represents `None`. No runtime initialization, cache misses or writes.
+ #[inline]
+ fn width_of(c: char) -> Option<usize> {
+-    use std::sync::atomic::{AtomicI8, Ordering};
+-    static CACHE: std::sync::OnceLock<Box<[AtomicI8]>> = std::sync::OnceLock::new();
+-    let cache = CACHE
+-        .get_or_init(|| (0..0x110000).map(|_| AtomicI8::new(-1)).collect::<Vec<_>>().into_boxed_slice());
+-    let slot = &cache[c as usize];
+-    let v = slot.load(Ordering::Relaxed);
+-    if v >= 0 {
+-        return Some(v as usize);
+-    }
+-    if v == -2 {
+-        return None;
+-    }
+-    let w = unicode_width::UnicodeWidthChar::width(c);
+-    slot.store(w.map_or(-2, |w| w as i8), Ordering::Relaxed);
+-    w
++    static WIDTHS: &[u8; 0x110000] = include_bytes!(concat!(env!("OUT_DIR"), "/unicode-widths.bin"));
++    let width = WIDTHS[c as usize];
++    (width != u8::MAX).then_some(width as usize)
+ }
+ 
+ fn held_back(bytes: &[u8]) -> Option<Vec<u8>> {

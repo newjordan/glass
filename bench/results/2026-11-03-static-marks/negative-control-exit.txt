@@ -1,0 +1,3 @@
+Incorrect probe 100: test result FAILED (0 passed, 1 failed), seed 1 round 0 diverges in cells.
+Probe 5 is documented inert and was not a valid negative control.
+The first probe-100 script stopped at a mistyped grep (diverged vs diverges); no subsequent commands ran.

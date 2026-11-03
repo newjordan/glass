@@ -1,0 +1,22 @@
+{
+  "schema": "glass.paired-pty-rtt/v1",
+  "rounds": 12,
+  "samples_per_run": 500,
+  "protocol": "alternating AB/BA quiet DA1",
+  "binaries": {
+    "glass": {
+      "path": "/tmp/glass-i13-marks-width-bin",
+      "sha256": "6111147b21a4bc6d112cfb359bd8e3535b4c7bdd03e0803b550534e8e45c3369"
+    },
+    "glass-alt": {
+      "path": "/tmp/glass-i13-control-bin",
+      "sha256": "c14daae87141541f747095ec77644e9189e009251716408e2630abd7a294a1ed"
+    }
+  },
+  "harness_sha256": {
+    "/work/frosty40/glass-repo/tree/bench/lib.sh": "a057c54c4b9aa587101d1ee9a3a729f1b73fed1e55f5af56bc4b939e04a62f25",
+    "/work/frosty40/glass-repo/tree/bench/pty-rtt.py": "836d8302901ec766fb24cf4ba113b2f58751a197e994d04c71143ec461b46b0f",
+    "/work/frosty40/glass-repo/tree/bench/run-pty-rtt.sh": "4713c4a3fc5c199951f52a0624217bffd8eb0ca53722ede2f8865f8c1c2c3b35",
+    "/work/frosty40/glass-repo/tree/bench/summarize-pty-rtt.py": "2a4f988b425517e1c2e5916837590a7820857e56248ebd45ff81d189a510f9a0"
+  }
+}

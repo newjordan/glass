@@ -13,6 +13,17 @@ A program runs in a pseudo-terminal, and what it writes comes in through
 No dialect is the reference one; each is an adapter onto one shared
 description of what to show.
 
+### Immutable extras and width research (not promoted)
+
+- Prototype bounded immutable combining-mark records and generated Unicode
+  widths; retain exact-source tests, strict-provenance Miri and two independent
+  real-PTY gates for the combination. Its replication leads Ghostty on Unicode,
+  truecolor, cursor motion and TUI throughput, but ASCII/region remain unresolved.
+  No all-metric title or runtime/API promotion: starting sources and exact selected
+  executable restored. See `bench/results/2026-11-03-marks-width/README.md`.
+- Strengthen paired quiet-PTY response-time provenance and replay with a standalone
+  fail-closed checker and ten synthetic tests. These are not key-to-screen results.
+
 ### Reader correctness and measured research
 
 - Linux: drain readable final PTY bytes before honoring a simultaneous

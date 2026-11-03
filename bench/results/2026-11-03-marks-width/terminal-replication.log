@@ -1,0 +1,44 @@
+round 1/30: glass glass-alt ghostty
+round 2/30: glass ghostty glass-alt
+round 3/30: glass-alt glass ghostty
+round 4/30: glass-alt ghostty glass
+round 5/30: ghostty glass glass-alt
+round 6/30: ghostty glass-alt glass
+round 7/30: glass glass-alt ghostty
+round 8/30: glass ghostty glass-alt
+round 9/30: glass-alt glass ghostty
+round 10/30: glass-alt ghostty glass
+round 11/30: ghostty glass glass-alt
+round 12/30: ghostty glass-alt glass
+round 13/30: glass glass-alt ghostty
+round 14/30: glass ghostty glass-alt
+round 15/30: glass-alt glass ghostty
+round 16/30: glass-alt ghostty glass
+round 17/30: ghostty glass glass-alt
+round 18/30: ghostty glass-alt glass
+round 19/30: glass glass-alt ghostty
+round 20/30: glass ghostty glass-alt
+round 21/30: glass-alt glass ghostty
+round 22/30: glass-alt ghostty glass
+round 23/30: ghostty glass glass-alt
+round 24/30: ghostty glass-alt glass
+round 25/30: glass glass-alt ghostty
+round 26/30: glass ghostty glass-alt
+round 27/30: glass-alt glass ghostty
+round 28/30: glass-alt ghostty glass
+round 29/30: ghostty glass glass-alt
+round 30/30: ghostty glass-alt glass
+glass / glass-alt:
+  ascii          1.0112 17/30 wins p=0.584665
+  unicode        1.2229 26/30 wins p=5.94761e-05
+  truecolor      1.1298 26/30 wins p=5.94761e-05
+  cursor_motion  1.0147 25/30 wins p=0.000103716
+  scroll_region  0.9969 13/30 wins p=0.584665
+  tui_frames     1.0391 27/30 wins p=8.43033e-06
+glass / ghostty:
+  ascii          0.9655 10/30 wins p=0.0987371
+  unicode        1.1609 24/30 wins p=0.00143091
+  truecolor      1.3266 29/30 wins p=5.7742e-08
+  cursor_motion  1.1269 26/30 wins p=5.94761e-05
+  scroll_region  1.0013 15/30 wins p=1
+  tui_frames     1.0827 26/30 wins p=5.94761e-05

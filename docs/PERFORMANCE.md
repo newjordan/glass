@@ -487,3 +487,34 @@ checks passed 137 library, 45 reference and 376 terminal tests (11 ignored),
 plus five replay-validator tests. All three new engine reports and all 54
 terminal sessions replay. Runtime source and the exact selected executable
 remain unchanged; see the report's restoration hashes and scoped test receipts.
+
+
+### Immutable extras and widths: four measured leads, no all-metric promotion
+
+A [bounded immutable-mark pool](../bench/results/2026-11-03-static-marks/README.md)
+removed Arc reference-count traffic for 112 common combining marks without
+increasing the 24-byte cell cap. Its isolated 24-round PTY replication gained
+28.46% Unicode versus a fresh control, and 22.24% versus Ghostty. A separate
+[build-time width table](../bench/results/2026-11-03-immutable-width/README.md)
+replicated a 12.19% truecolor gain. Neither is independently selected.
+
+The [combined exact-build candidate](../bench/results/2026-11-03-marks-width/README.md)
+received separate correctness checks and two independent PTY series, not pooled
+with the isolated results. Its 30-round replication gained 22.29% Unicode and
+12.98% truecolor versus control. Versus Ghostty, medians were Unicode +16.09%,
+truecolor +32.66%, cursor +12.69% and TUI +8.27%; those four clear six-workload
+Holm correction within that series/comparator. **ASCII and scroll-region do
+not establish a lead.** The first combined series was substantially noisier,
+including unresolved Unicode and an adverse ASCII median; it is preserved.
+Shared-host load and code/data layout prevent a narrow causal claim.
+
+No noninferiority tolerance was predeclared, and nonsignificance is not
+nonregression. The recorded all-metric requirement remains unmet, so the
+candidate is **unpromoted**: all 120 original Rust paths and the exact selected
+release executable are restored. The public extra-field type change and unsafe
+ownership code remain archived research, not a silently shipped API change.
+Final-candidate checks passed 140 library, 45 reference, 9 strict-provenance
+Miri cell tests, exhaustive scalar widths, parser parity and 12,800 differential
+streams. Quiet RTT (12,000 replies) and eight startup launches per binary are
+descriptive guards, not key-to-screen latency or proof of superiority. The
+retained RTT runner now has standalone fail-closed replay and ten checker tests.

@@ -1,0 +1,12 @@
+{
+  "schema": "glass.runtime-restoration/v1",
+  "starting_head": "86e1a564a014eeaf984b327d1f2fd0e32662ff3f",
+  "original_source_paths_checked": 120,
+  "changed_original_sources": [],
+  "all_runtime_crate_diffs_empty": true,
+  "new_build_script_removed": true,
+  "selected_release_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "saved_selected_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "candidate_release_sha256": "6111147b21a4bc6d112cfb359bd8e3535b4c7bdd03e0803b550534e8e45c3369",
+  "note": "Candidate unpromoted; archived source/build/test evidence is separate from restored runtime."
+}

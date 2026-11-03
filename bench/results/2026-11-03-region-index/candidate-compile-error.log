@@ -1,0 +1,15 @@
+   Compiling glass-alacritty-terminal v0.26.0 (/work/frosty40/glass-repo/tree/crates/alacritty-terminal)
+error[E0425]: cannot find value `at` in this scope
+   --> crates/alacritty-terminal/src/grid/storage.rs:232:52
+    |
+232 |             let idx: Vec<usize> = (start..end).map(at).collect();
+    |                                                    ^^
+    |
+help: a local variable with a similar name exists
+    |
+232 -             let idx: Vec<usize> = (start..end).map(at).collect();
+232 +             let idx: Vec<usize> = (start..end).map(a).collect();
+    |
+
+For more information about this error, try `rustc --explain E0425`.
+error: could not compile `glass-alacritty-terminal` (lib test) due to 1 previous error

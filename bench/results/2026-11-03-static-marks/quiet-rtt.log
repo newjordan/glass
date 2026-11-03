@@ -1,0 +1,118 @@
+quiet RTT round 1/12: glass glass-alt
+quiet RTT round 2/12: glass-alt glass
+quiet RTT round 3/12: glass glass-alt
+quiet RTT round 4/12: glass-alt glass
+quiet RTT round 5/12: glass glass-alt
+quiet RTT round 6/12: glass-alt glass
+quiet RTT round 7/12: glass glass-alt
+quiet RTT round 8/12: glass-alt glass
+quiet RTT round 9/12: glass glass-alt
+quiet RTT round 10/12: glass-alt glass
+quiet RTT round 11/12: glass glass-alt
+quiet RTT round 12/12: glass-alt glass
+{
+  "provenance": {
+    "schema": "glass.paired-pty-rtt/v1",
+    "rounds": 12,
+    "samples_per_run": 500,
+    "protocol": "alternating AB/BA quiet DA1",
+    "binaries": {
+      "glass": {
+        "path": "/tmp/glass-i13-static-marks-bin",
+        "sha256": "e32d30cf6e9a85fc43c024338c8bbadb119046edcb1849cc92bdcd82b0624cc1"
+      },
+      "glass-alt": {
+        "path": "/tmp/glass-i13-control-bin",
+        "sha256": "c14daae87141541f747095ec77644e9189e009251716408e2630abd7a294a1ed"
+      }
+    },
+    "harness_sha256": {
+      "/work/frosty40/glass-repo/tree/bench/lib.sh": "a057c54c4b9aa587101d1ee9a3a729f1b73fed1e55f5af56bc4b939e04a62f25",
+      "/work/frosty40/glass-repo/tree/bench/pty-rtt.py": "836d8302901ec766fb24cf4ba113b2f58751a197e994d04c71143ec461b46b0f",
+      "/work/frosty40/glass-repo/tree/bench/run-pty-rtt.sh": "4713c4a3fc5c199951f52a0624217bffd8eb0ca53722ede2f8865f8c1c2c3b35",
+      "/work/frosty40/glass-repo/tree/bench/summarize-pty-rtt.py": "2a4f988b425517e1c2e5916837590a7820857e56248ebd45ff81d189a510f9a0"
+    }
+  },
+  "raw_sha256": {
+    "rtt-glass-1.json": "c4da40a71b9a2205c193957b59188cbc0f783c207af61ffee9d828bc9056c8b8",
+    "rtt-glass-2.json": "f28e7bf80e8b7581437766a430962e18c1296f4a436cc258f931e07623a6db0a",
+    "rtt-glass-3.json": "9f5a54a50f691fc57d0c4646d1869d200ccc184542bd9bea05c594d939f1d7fb",
+    "rtt-glass-4.json": "40d53b6383f59f1c120f16ef12adcd323dae51582f5ece696db1a004c8aa463f",
+    "rtt-glass-5.json": "6d169602835572d40ac5b213ce1711c5721c9ce7270cda23a476d57bc971244d",
+    "rtt-glass-6.json": "3d470ae592b9ecfc649b97912d6cf75d0704f06eccf8e7ab5d7907d18d9ec902",
+    "rtt-glass-7.json": "5fc1563f768501bfb4f9330542ecbaaba0b895f2d2dc1de30cfa280681146420",
+    "rtt-glass-8.json": "9f6ed9ebf3a1fe22daff9f31421a7d8f5e8ce5b3c6f3737d519395f9c0302135",
+    "rtt-glass-9.json": "607688f0da6bb3edf78297fb4e3b7cc49f3c4cfff8df398dec40c59f68b7e2f9",
+    "rtt-glass-10.json": "f80d1c3934f4c7871ca9808f4800780a3f3343478ae5af938511a1851b6c8f48",
+    "rtt-glass-11.json": "63ee37c71eaa2a53ce62e0f2f2f9f4fa7032a341850b8e2a899e615b468492f2",
+    "rtt-glass-12.json": "d9b02b6ebd723c49b7efd327cb803f8b4911f52842308d130ce5aa8343bbe634",
+    "rtt-glass-alt-1.json": "888fc0e33ee133568e02a862272b2cb0c6058ccdf2c46e9653b0afd9dd33a108",
+    "rtt-glass-alt-2.json": "2e93c7574640c1d41a0c704f4742c8080e9badfc45f03c555fa41c675969ec60",
+    "rtt-glass-alt-3.json": "429322f835a4054efdca65ad77fccd3090e8fabb7ad2a8e0678270113527c132",
+    "rtt-glass-alt-4.json": "cabddc46269bf50579f1f85ecdcd5a22e3c550e11c4c25178e23d6bb82f7505d",
+    "rtt-glass-alt-5.json": "9eb85970a88e90ab914b926d9627beb261484597b9caf2587a481d0d56faeca1",
+    "rtt-glass-alt-6.json": "7f713a65b71b32f8050ab5eaa22b764129ab12095785c17b20337381b7157296",
+    "rtt-glass-alt-7.json": "022550302251b5031b6a5771f93503a92a6886372c6da84ad8ebd17f08b5835a",
+    "rtt-glass-alt-8.json": "ace017bd4420c4e031a0c4c0059e3877cb82e9189f408199b3f96bc0f3feb6fa",
+    "rtt-glass-alt-9.json": "e7742aa1872e91be80c1d100993c0eff062bd1227d08eb15946e92dc0240612c",
+    "rtt-glass-alt-10.json": "e643c98e8e222b99365827870f96d235882d6f545fcbbd1d5d7a4cb9e98a4cc1",
+    "rtt-glass-alt-11.json": "77c047b7119830f2bf82363c8373618969e9d2a537f4524004775c8b992a9138",
+    "rtt-glass-alt-12.json": "f64903ec1389938be30ad87a2bb706a03cdd8efbf6c248ba7f5179c375590455"
+  },
+  "order_sha256": "8f2be5643ca8d51e2dd20fc03c1862a4c52708daac69623a74b10b8f11232f3e",
+  "note": "Samples correlated within sessions. Not key-to-screen latency.",
+  "glass": {
+    "run_medians_ms": [
+      0.040722,
+      0.032972,
+      0.08889749999999999,
+      0.059872499999999995,
+      0.09744749999999999,
+      0.033162,
+      0.0888775,
+      0.09297949999999999,
+      0.036118,
+      0.08246,
+      0.0764285,
+      0.035637
+    ],
+    "median_of_run_medians_ms": 0.0681505,
+    "pooled_median_ms": 0.0699115,
+    "pooled_p90_ms": 0.361389,
+    "pooled_p99_ms": 1.686962
+  },
+  "glass-alt": {
+    "run_medians_ms": [
+      0.08865100000000001,
+      0.087094,
+      0.0343495,
+      0.07183,
+      0.033909,
+      0.0834915,
+      0.09373100000000001,
+      0.056726,
+      0.0836625,
+      0.0347655,
+      0.032836000000000004,
+      0.0935155
+    ],
+    "median_of_run_medians_ms": 0.07766075,
+    "pooled_median_ms": 0.0750465,
+    "pooled_p90_ms": 0.364646,
+    "pooled_p99_ms": 1.611731
+  },
+  "paired_run_median_deltas_ms": [
+    -0.047929000000000006,
+    -0.054122,
+    0.05454799999999999,
+    -0.01195750000000001,
+    0.0635385,
+    -0.0503295,
+    -0.004853500000000011,
+    0.036253499999999994,
+    -0.0475445,
+    0.04769450000000001,
+    0.04359249999999999,
+    -0.0578785
+  ]
+}

@@ -420,3 +420,42 @@ The terminal replay verifies all 54 raw hashes and exact summary equality,
 and verifies the recorded executable/harness hashes while they are present.
 It deliberately does not relabel the observed cyclic orders as the standard
 runner's permutation schedule. See the experiment's execution-error notes.
+
+
+### Immutable-mark / width campaign (UTC 2026-11-03)
+
+- [Region indexing](results/2026-11-03-region-index/README.md): rejected engine
+  tradeoff; replicated +2.17% region but -2.68% ASCII. No PTY gate claimed.
+- [Immutable widths](results/2026-11-03-immutable-width/README.md): replicated
+  +12.19% truecolor through the PTY; not a six-workload win.
+- [Static mark records](results/2026-11-03-static-marks/README.md): replicated
+  +28.46% Unicode over fresh control, +22.24% over Ghostty; small truecolor
+  tradeoff and unresolved ASCII/region. Not selected alone.
+- [Combined source](results/2026-11-03-marks-width/README.md): 18 then 30 full-
+  permutation rounds, with separate exact-source correctness and response guards.
+  Replication establishes four Ghostty throughput leads, not six. No runtime
+  promotion; exact starting sources and selected release executable restored.
+
+The canonical terminal runner stores raw unadjusted sign p-values. A separate
+Holm report defines six-workload families per candidate/series/comparator;
+series and candidates are not pooled and this is not campaign-wide correction.
+No timing samples were removed for visible unrelated shared-host CPU load.
+
+`run-pty-rtt.sh` now records actual AB/BA launch order and binary/harness hashes,
+then calls the standalone `summarize-pty-rtt.py`. The checker rejects incomplete
+sessions, changed raw summaries, altered provenance and replay mismatch. Earlier
+RTT datasets remain unchanged under their original schema. These are quiet DA1
+response times, **not key-to-screen latency**. Ten synthetic checker tests are
+retained separately from measured responses.
+
+```
+python3 -I bench/test_summarize_pty_rtt.py
+python3 -I bench/summarize-pty-rtt.py \
+  bench/results/2026-11-03-marks-width/quiet-rtt
+python3 -I bench/results/2026-11-03-marks-width/verify-evidence.py
+```
+
+The explicit evidence manifest covers this iteration's four result directories,
+raw files, source snapshots and receipts; its verifier does not discover fallback
+sources. Individual timing replays additionally require their recorded temporary
+executables and unchanged harness. Integrity replay is not a timing-accuracy proof.

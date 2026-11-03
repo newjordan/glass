@@ -1,0 +1,28 @@
+Ownership review record (advisory reasoning, not independent verification)
+
+Two bounded self-model direct consultations examined the stated raw-owner
+transition and its invariants. The first recommended dropping the temporary
+mutable-reference-derived pointer across Arc::into_raw. The implemented
+version discards Arc::make_mut's result, restores the raw owner with a guard,
+and derives the returned mutable reference from the post-COW restored slot.
+The second found no concrete defect conditional on the stated invariants:
+private raw field; one Arc count per untagged owner; immutable static pool;
+alignment/mask correct; provenance-preserving map_addr; exclusive mutation;
+Arc::make_mut for shared owners and Weak dissociation; Send+Sync bounds.
+Value equality compares contents, not tagged identity. These consultations
+were based on supplied exact transition descriptions, not a tool-based audit.
+
+A separate read-only reviewer spawn timed out before returning findings.
+It is NOT counted as a completed independent review or a passing check.
+
+Executed evidence is in the candidate Miri, library/ref and differential logs.
+Miri strict provenance supports only the tested compiler/model/executions;
+it is not a general memory-safety proof. No panic injection was performed.
+The guard is an ownership argument for unwind safety; CellExtra's concrete
+fields have no deliberately panicking Clone/Drop in these tests.
+
+Decision consultation (advisory): standalone results cannot substitute for
+combined replication, nonsignificance is not equivalence, and an unresolved
+required gate means retain the protected binary rather than extend testing
+until significance appears. The recorded decision-rule.txt fixes the planned
+endpoint and preserves both independent combined series, including host load.

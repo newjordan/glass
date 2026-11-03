@@ -1,0 +1,368 @@
+bench/results/2026-11-03-immutable-width/candidate.patch:19: trailing whitespace.
++ 
+bench/results/2026-11-03-immutable-width/candidate.patch:52: trailing whitespace.
++ 
+bench/results/2026-11-03-immutable-width/exhaustive-width-test.log:6: new blank line at EOF.
+bench/results/2026-11-03-immutable-width/parser-test.log:6: new blank line at EOF.
+bench/results/2026-11-03-marks-width/candidate.patch:10: trailing whitespace.
++ 
+bench/results/2026-11-03-marks-width/candidate.patch:16: trailing whitespace.
++ 
+bench/results/2026-11-03-marks-width/candidate.patch:20: trailing whitespace.
++ 
+bench/results/2026-11-03-marks-width/candidate.patch:183: trailing whitespace.
++ 
+bench/results/2026-11-03-marks-width/candidate.patch:200: trailing whitespace.
++ 
+bench/results/2026-11-03-marks-width/candidate.patch:219: trailing whitespace.
++ 
+bench/results/2026-11-03-marks-width/candidate.patch:228: trailing whitespace.
++ 
+bench/results/2026-11-03-marks-width/candidate.patch:230: trailing whitespace.
++ 
+bench/results/2026-11-03-marks-width/candidate.patch:239: trailing whitespace.
++ 
+bench/results/2026-11-03-marks-width/candidate.patch:244: trailing whitespace.
++ 
+bench/results/2026-11-03-marks-width/candidate.patch:327: trailing whitespace.
++ 
+bench/results/2026-11-03-marks-width/candidate.patch:341: trailing whitespace.
++ 
+bench/results/2026-11-03-marks-width/candidate.patch:372: trailing whitespace.
++ 
+bench/results/2026-11-03-marks-width/candidate.patch:405: trailing whitespace.
++ 
+bench/results/2026-11-03-marks-width/candidate.patch:408: trailing whitespace.
++ 
+bench/results/2026-11-03-marks-width/exhaustive-width-test.log:6: new blank line at EOF.
+bench/results/2026-11-03-marks-width/library-and-ref-tests.log:199: new blank line at EOF.
+bench/results/2026-11-03-marks-width/miri-cell-tests.log:17: new blank line at EOF.
+bench/results/2026-11-03-marks-width/parser-test.log:6: new blank line at EOF.
+bench/results/2026-11-03-marks-width/restored-cell-tests.log:14: new blank line at EOF.
+bench/results/2026-11-03-marks-width/seed-sweep.log:7: new blank line at EOF.
+bench/results/2026-11-03-region-index/candidate-differential.log:6: new blank line at EOF.
+bench/results/2026-11-03-region-index/candidate-library-tests.log:145: new blank line at EOF.
+bench/results/2026-11-03-region-index/control-print-utf8.asm:24: trailing whitespace.
++  25ffa2:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:26: trailing whitespace.
++  25ffaa:	00 00 00 00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:31: trailing whitespace.
++  25ffc5:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:34: trailing whitespace.
++  25ffd2:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:37: trailing whitespace.
++  25ffdc:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:39: trailing whitespace.
++  25ffe4:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:42: trailing whitespace.
++  25fff1:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:45: trailing whitespace.
++  25ffff:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:88: trailing whitespace.
++  2600b1:	20 00 00 00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:95: trailing whitespace.
++  2600d9:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:97: trailing whitespace.
++  2600e1:	00 00 00 00 00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:123: trailing whitespace.
++  260150:	20 00 00 00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:130: trailing whitespace.
++  260178:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:132: trailing whitespace.
++  260180:	00 00 00 00 00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:135: trailing whitespace.
++  260190:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:137: trailing whitespace.
++  260198:	ff ff 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:160: trailing whitespace.
++  2601ff:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:177: trailing whitespace.
++  260248:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:180: trailing whitespace.
++  260254:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:184: trailing whitespace.
++  260263:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:189: trailing whitespace.
++  260276:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:214: trailing whitespace.
++  2602d0:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:221: trailing whitespace.
++  2602e9:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:228: trailing whitespace.
++  260301:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:230: trailing whitespace.
++  260309:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:233: trailing whitespace.
++  260316:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:246: trailing whitespace.
++  26034a:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:276: trailing whitespace.
++  2603bd:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:278: trailing whitespace.
++  2603c5:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:284: trailing whitespace.
++  2603de:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:300: trailing whitespace.
++  26041b:	00 00 00 00 00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:310: trailing whitespace.
++  260451:	00 00 00 00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:333: trailing whitespace.
++  2604a8:	0f 1f 84 00 00 00 00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:334: trailing whitespace.
++  2604af:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:449: trailing whitespace.
++  26064f:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:482: trailing whitespace.
++  2606d9:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:486: trailing whitespace.
++  2606e9:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:488: trailing whitespace.
++  2606f1:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:491: trailing whitespace.
++  2606fe:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:493: trailing whitespace.
++  260706:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:495: trailing whitespace.
++  26070e:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:538: trailing whitespace.
++  2607c7:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:541: trailing whitespace.
++  2607d5:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:554: trailing whitespace.
++  26080c:	00 00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:561: trailing whitespace.
++  260824:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:564: trailing whitespace.
++  26082f:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:568: trailing whitespace.
++  26083f:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:572: trailing whitespace.
++  260852:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:574: trailing whitespace.
++  26085a:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:578: trailing whitespace.
++  26086a:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:587: trailing whitespace.
++  26088a:	84 00 00 00 00 00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:590: trailing whitespace.
++  26089b:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:599: trailing whitespace.
++  2608c6:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:608: trailing whitespace.
++  2608f0:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:624: trailing whitespace.
++  260930:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:630: trailing whitespace.
++  26094a:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:633: trailing whitespace.
++  260955:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:635: trailing whitespace.
++  26095d:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:640: trailing whitespace.
++  260970:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:642: trailing whitespace.
++  260978:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:645: trailing whitespace.
++  260983:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:653: trailing whitespace.
++  2609a8:	0f 1f 84 00 00 00 00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:654: trailing whitespace.
++  2609af:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:668: trailing whitespace.
++  2609d9:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:676: trailing whitespace.
++  2609f5:	01 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:678: trailing whitespace.
++  2609fd:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:686: trailing whitespace.
++  260a13:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:699: trailing whitespace.
++  260a42:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:712: trailing whitespace.
++  260a75:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:714: trailing whitespace.
++  260a7d:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:717: trailing whitespace.
++  260a88:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:723: trailing whitespace.
++  260a9e:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:729: trailing whitespace.
++  260ab7:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:741: trailing whitespace.
++  260ae2:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:771: trailing whitespace.
++  260b5a:	84 00 00 00 00 00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:871: trailing whitespace.
++  260cdb:	00 00 00 00 00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:873: trailing whitespace.
++  260ce7:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:918: trailing whitespace.
++  260d93:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:987: trailing whitespace.
++  260eac:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1007: trailing whitespace.
++  260efa:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1025: trailing whitespace.
++  260f47:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1083: trailing whitespace.
++  261038:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1085: trailing whitespace.
++  261040:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1090: trailing whitespace.
++  261053:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1092: trailing whitespace.
++  26105b:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1098: trailing whitespace.
++  261076:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1100: trailing whitespace.
++  26107e:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1102: trailing whitespace.
++  261086:	00 00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1126: trailing whitespace.
++  2610dd:	00 00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1128: trailing whitespace.
++  2610e6:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1130: trailing whitespace.
++  2610ee:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1137: trailing whitespace.
++  26110c:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1145: trailing whitespace.
++  26112b:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1153: trailing whitespace.
++  261149:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1175: trailing whitespace.
++  26119c:	ff 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1272: trailing whitespace.
++  261321:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1280: trailing whitespace.
++  261341:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1302: trailing whitespace.
++  26139f:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1304: trailing whitespace.
++  2613a7:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1309: trailing whitespace.
++  2613ba:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1311: trailing whitespace.
++  2613c2:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1318: trailing whitespace.
++  2613df:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1344: trailing whitespace.
++  26143b:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1351: trailing whitespace.
++  261457:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1361: trailing whitespace.
++  26147f:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1371: trailing whitespace.
++  2614a6:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1375: trailing whitespace.
++  2614b7:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1385: trailing whitespace.
++  2614de:	ff 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1398: trailing whitespace.
++  261512:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1418: trailing whitespace.
++  261564:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1426: trailing whitespace.
++  261583:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1431: trailing whitespace.
++  26159a:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1445: trailing whitespace.
++  2615d5:	00 04 00 00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1450: trailing whitespace.
++  2615ea:	00 00 00 00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1480: trailing whitespace.
++  26165b:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1515: trailing whitespace.
++  2616e6:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1561: trailing whitespace.
++  26179c:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1566: trailing whitespace.
++  2617ad:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1581: trailing whitespace.
++  2617e4:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1597: trailing whitespace.
++  261811:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1613: trailing whitespace.
++  261852:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1682: trailing whitespace.
++  26196b:	00 00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1697: trailing whitespace.
++  2619b4:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1702: trailing whitespace.
++  2619c7:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1725: trailing whitespace.
++  261a1f:	00 00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1738: trailing whitespace.
++  261a5b:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1744: trailing whitespace.
++  261a73:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1764: trailing whitespace.
++  261abc:	00 00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1786: trailing whitespace.
++  261b13:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1789: trailing whitespace.
++  261b1d:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1826: trailing whitespace.
++  261bb4:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1885: trailing whitespace.
++  261cad:	00 00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1900: trailing whitespace.
++  261cf6:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1905: trailing whitespace.
++  261d09:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1927: trailing whitespace.
++  261d5c:	00 00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1939: trailing whitespace.
++  261d93:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1945: trailing whitespace.
++  261dab:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1965: trailing whitespace.
++  261df4:	00 00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1977: trailing whitespace.
++  261e22:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1988: trailing whitespace.
++  261e4e:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:1991: trailing whitespace.
++  261e58:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:2009: trailing whitespace.
++  261ea7:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:2026: trailing whitespace.
++  261eea:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:2045: trailing whitespace.
++  261f46:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:2062: trailing whitespace.
++  261fa0:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:2066: trailing whitespace.
++  261fb0:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:2106: trailing whitespace.
++  262075:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:2113: trailing whitespace.
++  26208d:	00 
+bench/results/2026-11-03-region-index/control-print-utf8.asm:2121: new blank line at EOF.
+bench/results/2026-11-03-static-marks/candidate.patch:7: trailing whitespace.
++ 
+bench/results/2026-11-03-static-marks/candidate.patch:13: trailing whitespace.
++ 
+bench/results/2026-11-03-static-marks/candidate.patch:17: trailing whitespace.
++ 
+bench/results/2026-11-03-static-marks/candidate.patch:178: trailing whitespace.
++ 
+bench/results/2026-11-03-static-marks/candidate.patch:193: trailing whitespace.
++ 
+bench/results/2026-11-03-static-marks/candidate.patch:212: trailing whitespace.
++ 
+bench/results/2026-11-03-static-marks/candidate.patch:221: trailing whitespace.
++ 
+bench/results/2026-11-03-static-marks/candidate.patch:225: trailing whitespace.
++ 
+bench/results/2026-11-03-static-marks/candidate.patch:305: trailing whitespace.
++ 
+bench/results/2026-11-03-static-marks/candidate.patch:316: trailing whitespace.
++ 
+bench/results/2026-11-03-static-marks/cell-tests.log:17: new blank line at EOF.
+bench/results/2026-11-03-static-marks/library-and-ref-tests.log:199: new blank line at EOF.
+bench/results/2026-11-03-static-marks/miri-cell-tests.log:54: new blank line at EOF.
+bench/results/2026-11-03-static-marks/parser-test.log:6: new blank line at EOF.
+bench/results/2026-11-03-static-marks/seed-sweep-negative-control-100.log:19: new blank line at EOF.
+bench/results/2026-11-03-static-marks/seed-sweep-negative-control.log:7: new blank line at EOF.
+bench/results/2026-11-03-static-marks/seed-sweep.log:7: new blank line at EOF.

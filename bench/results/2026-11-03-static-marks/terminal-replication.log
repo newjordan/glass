@@ -1,0 +1,38 @@
+round 1/24: glass glass-alt ghostty
+round 2/24: glass ghostty glass-alt
+round 3/24: glass-alt glass ghostty
+round 4/24: glass-alt ghostty glass
+round 5/24: ghostty glass glass-alt
+round 6/24: ghostty glass-alt glass
+round 7/24: glass glass-alt ghostty
+round 8/24: glass ghostty glass-alt
+round 9/24: glass-alt glass ghostty
+round 10/24: glass-alt ghostty glass
+round 11/24: ghostty glass glass-alt
+round 12/24: ghostty glass-alt glass
+round 13/24: glass glass-alt ghostty
+round 14/24: glass ghostty glass-alt
+round 15/24: glass-alt glass ghostty
+round 16/24: glass-alt ghostty glass
+round 17/24: ghostty glass glass-alt
+round 18/24: ghostty glass-alt glass
+round 19/24: glass glass-alt ghostty
+round 20/24: glass ghostty glass-alt
+round 21/24: glass-alt glass ghostty
+round 22/24: glass-alt ghostty glass
+round 23/24: ghostty glass glass-alt
+round 24/24: ghostty glass-alt glass
+glass / glass-alt:
+  ascii          1.0034 12/24 wins p=1
+  unicode        1.2846 22/24 wins p=3.5882e-05
+  truecolor      0.9874 7/24 wins p=0.0931396
+  cursor_motion  0.9998 12/24 wins p=1
+  scroll_region  0.9838 10/24 wins p=0.541256
+  tui_frames     0.9949 8/24 wins p=0.21004
+glass / ghostty:
+  ascii          0.9956 11/24 wins p=0.83882
+  unicode        1.2224 23/24 wins p=2.98023e-06
+  truecolor      1.1529 24/24 wins p=1.19209e-07
+  cursor_motion  1.1088 22/24 wins p=3.5882e-05
+  scroll_region  1.0194 16/24 wins p=0.15159
+  tui_frames     1.0493 21/24 wins p=0.000277162

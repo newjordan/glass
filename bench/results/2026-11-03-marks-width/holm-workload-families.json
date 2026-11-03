@@ -1,0 +1,390 @@
+{
+  "schema": "glass.exploratory-holm/v1",
+  "scope": "Six workloads per candidate/series/comparator; not campaign-wide control; no pooling of series.",
+  "families": {
+    "immutable-width/gate/glass-alt": {
+      "ascii": {
+        "raw_two_sided_sign_p": 1.0,
+        "holm_six_workload_p": 1,
+        "direction": "above"
+      },
+      "unicode": {
+        "raw_two_sided_sign_p": 0.09625244140625,
+        "holm_six_workload_p": 0.28875732421875,
+        "direction": "above"
+      },
+      "truecolor": {
+        "raw_two_sided_sign_p": 7.62939453125e-06,
+        "holm_six_workload_p": 4.57763671875e-05,
+        "direction": "above"
+      },
+      "cursor_motion": {
+        "raw_two_sided_sign_p": 7.62939453125e-06,
+        "holm_six_workload_p": 4.57763671875e-05,
+        "direction": "above"
+      },
+      "scroll_region": {
+        "raw_two_sided_sign_p": 0.237884521484375,
+        "holm_six_workload_p": 0.47576904296875,
+        "direction": "above"
+      },
+      "tui_frames": {
+        "raw_two_sided_sign_p": 0.001312255859375,
+        "holm_six_workload_p": 0.0052490234375,
+        "direction": "above"
+      }
+    },
+    "immutable-width/gate/ghostty": {
+      "ascii": {
+        "raw_two_sided_sign_p": 0.8145294189453125,
+        "holm_six_workload_p": 1,
+        "direction": "above"
+      },
+      "unicode": {
+        "raw_two_sided_sign_p": 0.8145294189453125,
+        "holm_six_workload_p": 1,
+        "direction": "above"
+      },
+      "truecolor": {
+        "raw_two_sided_sign_p": 7.62939453125e-06,
+        "holm_six_workload_p": 4.57763671875e-05,
+        "direction": "above"
+      },
+      "cursor_motion": {
+        "raw_two_sided_sign_p": 7.62939453125e-06,
+        "holm_six_workload_p": 4.57763671875e-05,
+        "direction": "above"
+      },
+      "scroll_region": {
+        "raw_two_sided_sign_p": 1.0,
+        "holm_six_workload_p": 1,
+        "direction": "above"
+      },
+      "tui_frames": {
+        "raw_two_sided_sign_p": 0.00014495849609375,
+        "holm_six_workload_p": 0.000579833984375,
+        "direction": "above"
+      }
+    },
+    "immutable-width/replication-gate/glass-alt": {
+      "ascii": {
+        "raw_two_sided_sign_p": 0.855535551905632,
+        "holm_six_workload_p": 1,
+        "direction": "below"
+      },
+      "unicode": {
+        "raw_two_sided_sign_p": 0.09873714670538902,
+        "holm_six_workload_p": 0.3949485868215561,
+        "direction": "above"
+      },
+      "truecolor": {
+        "raw_two_sided_sign_p": 0.005222879350185394,
+        "holm_six_workload_p": 0.031337276101112366,
+        "direction": "above"
+      },
+      "cursor_motion": {
+        "raw_two_sided_sign_p": 0.04277394525706768,
+        "holm_six_workload_p": 0.2138697262853384,
+        "direction": "above"
+      },
+      "scroll_region": {
+        "raw_two_sided_sign_p": 0.584664711728692,
+        "holm_six_workload_p": 1,
+        "direction": "below"
+      },
+      "tui_frames": {
+        "raw_two_sided_sign_p": 0.20048842206597328,
+        "holm_six_workload_p": 0.6014652661979198,
+        "direction": "above"
+      }
+    },
+    "immutable-width/replication-gate/ghostty": {
+      "ascii": {
+        "raw_two_sided_sign_p": 0.584664711728692,
+        "holm_six_workload_p": 1,
+        "direction": "below"
+      },
+      "unicode": {
+        "raw_two_sided_sign_p": 0.09873714670538902,
+        "holm_six_workload_p": 0.29621144011616707,
+        "direction": "below"
+      },
+      "truecolor": {
+        "raw_two_sided_sign_p": 8.430331945419312e-06,
+        "holm_six_workload_p": 5.058199167251587e-05,
+        "direction": "above"
+      },
+      "cursor_motion": {
+        "raw_two_sided_sign_p": 0.001430906355381012,
+        "holm_six_workload_p": 0.00715453177690506,
+        "direction": "above"
+      },
+      "scroll_region": {
+        "raw_two_sided_sign_p": 0.584664711728692,
+        "holm_six_workload_p": 1,
+        "direction": "below"
+      },
+      "tui_frames": {
+        "raw_two_sided_sign_p": 0.005222879350185394,
+        "holm_six_workload_p": 0.020891517400741577,
+        "direction": "above"
+      }
+    },
+    "static-marks/gate/glass-alt": {
+      "ascii": {
+        "raw_two_sided_sign_p": 0.237884521484375,
+        "holm_six_workload_p": 0.9515380859375,
+        "direction": "above"
+      },
+      "unicode": {
+        "raw_two_sided_sign_p": 7.62939453125e-06,
+        "holm_six_workload_p": 4.57763671875e-05,
+        "direction": "above"
+      },
+      "truecolor": {
+        "raw_two_sided_sign_p": 7.62939453125e-06,
+        "holm_six_workload_p": 4.57763671875e-05,
+        "direction": "below"
+      },
+      "cursor_motion": {
+        "raw_two_sided_sign_p": 0.8145294189453125,
+        "holm_six_workload_p": 1,
+        "direction": "below"
+      },
+      "scroll_region": {
+        "raw_two_sided_sign_p": 1.0,
+        "holm_six_workload_p": 1,
+        "direction": "above"
+      },
+      "tui_frames": {
+        "raw_two_sided_sign_p": 0.629058837890625,
+        "holm_six_workload_p": 1,
+        "direction": "above"
+      }
+    },
+    "static-marks/gate/ghostty": {
+      "ascii": {
+        "raw_two_sided_sign_p": 0.237884521484375,
+        "holm_six_workload_p": 0.47576904296875,
+        "direction": "below"
+      },
+      "unicode": {
+        "raw_two_sided_sign_p": 7.62939453125e-06,
+        "holm_six_workload_p": 4.57763671875e-05,
+        "direction": "above"
+      },
+      "truecolor": {
+        "raw_two_sided_sign_p": 7.62939453125e-06,
+        "holm_six_workload_p": 4.57763671875e-05,
+        "direction": "above"
+      },
+      "cursor_motion": {
+        "raw_two_sided_sign_p": 7.62939453125e-06,
+        "holm_six_workload_p": 4.57763671875e-05,
+        "direction": "above"
+      },
+      "scroll_region": {
+        "raw_two_sided_sign_p": 0.480682373046875,
+        "holm_six_workload_p": 0.480682373046875,
+        "direction": "below"
+      },
+      "tui_frames": {
+        "raw_two_sided_sign_p": 7.62939453125e-06,
+        "holm_six_workload_p": 4.57763671875e-05,
+        "direction": "above"
+      }
+    },
+    "static-marks/replication-gate/glass-alt": {
+      "ascii": {
+        "raw_two_sided_sign_p": 1.0,
+        "holm_six_workload_p": 1,
+        "direction": "above"
+      },
+      "unicode": {
+        "raw_two_sided_sign_p": 3.5881996154785156e-05,
+        "holm_six_workload_p": 0.00021529197692871094,
+        "direction": "above"
+      },
+      "truecolor": {
+        "raw_two_sided_sign_p": 0.0931396484375,
+        "holm_six_workload_p": 0.4656982421875,
+        "direction": "below"
+      },
+      "cursor_motion": {
+        "raw_two_sided_sign_p": 1.0,
+        "holm_six_workload_p": 1,
+        "direction": "below"
+      },
+      "scroll_region": {
+        "raw_two_sided_sign_p": 0.5412561893463135,
+        "holm_six_workload_p": 1,
+        "direction": "below"
+      },
+      "tui_frames": {
+        "raw_two_sided_sign_p": 0.21003961563110352,
+        "holm_six_workload_p": 0.8401584625244141,
+        "direction": "below"
+      }
+    },
+    "static-marks/replication-gate/ghostty": {
+      "ascii": {
+        "raw_two_sided_sign_p": 0.8388197422027588,
+        "holm_six_workload_p": 0.8388197422027588,
+        "direction": "below"
+      },
+      "unicode": {
+        "raw_two_sided_sign_p": 2.9802322387695312e-06,
+        "holm_six_workload_p": 1.4901161193847656e-05,
+        "direction": "above"
+      },
+      "truecolor": {
+        "raw_two_sided_sign_p": 1.1920928955078125e-07,
+        "holm_six_workload_p": 7.152557373046875e-07,
+        "direction": "above"
+      },
+      "cursor_motion": {
+        "raw_two_sided_sign_p": 3.5881996154785156e-05,
+        "holm_six_workload_p": 0.00014352798461914062,
+        "direction": "above"
+      },
+      "scroll_region": {
+        "raw_two_sided_sign_p": 0.15158963203430176,
+        "holm_six_workload_p": 0.3031792640686035,
+        "direction": "above"
+      },
+      "tui_frames": {
+        "raw_two_sided_sign_p": 0.0002771615982055664,
+        "holm_six_workload_p": 0.0008314847946166992,
+        "direction": "above"
+      }
+    },
+    "marks-width/gate/glass-alt": {
+      "ascii": {
+        "raw_two_sided_sign_p": 0.237884521484375,
+        "holm_six_workload_p": 1,
+        "direction": "below"
+      },
+      "unicode": {
+        "raw_two_sided_sign_p": 0.480682373046875,
+        "holm_six_workload_p": 1,
+        "direction": "above"
+      },
+      "truecolor": {
+        "raw_two_sided_sign_p": 0.007537841796875,
+        "holm_six_workload_p": 0.04522705078125,
+        "direction": "above"
+      },
+      "cursor_motion": {
+        "raw_two_sided_sign_p": 0.480682373046875,
+        "holm_six_workload_p": 1,
+        "direction": "above"
+      },
+      "scroll_region": {
+        "raw_two_sided_sign_p": 0.480682373046875,
+        "holm_six_workload_p": 1,
+        "direction": "above"
+      },
+      "tui_frames": {
+        "raw_two_sided_sign_p": 0.237884521484375,
+        "holm_six_workload_p": 1,
+        "direction": "above"
+      }
+    },
+    "marks-width/gate/ghostty": {
+      "ascii": {
+        "raw_two_sided_sign_p": 0.8145294189453125,
+        "holm_six_workload_p": 1,
+        "direction": "above"
+      },
+      "unicode": {
+        "raw_two_sided_sign_p": 0.09625244140625,
+        "holm_six_workload_p": 0.28875732421875,
+        "direction": "above"
+      },
+      "truecolor": {
+        "raw_two_sided_sign_p": 0.007537841796875,
+        "holm_six_workload_p": 0.04522705078125,
+        "direction": "above"
+      },
+      "cursor_motion": {
+        "raw_two_sided_sign_p": 0.0308837890625,
+        "holm_six_workload_p": 0.1544189453125,
+        "direction": "above"
+      },
+      "scroll_region": {
+        "raw_two_sided_sign_p": 0.8145294189453125,
+        "holm_six_workload_p": 1,
+        "direction": "above"
+      },
+      "tui_frames": {
+        "raw_two_sided_sign_p": 0.0308837890625,
+        "holm_six_workload_p": 0.1544189453125,
+        "direction": "above"
+      }
+    },
+    "marks-width/replication-gate/glass-alt": {
+      "ascii": {
+        "raw_two_sided_sign_p": 0.584664711728692,
+        "holm_six_workload_p": 1,
+        "direction": "above"
+      },
+      "unicode": {
+        "raw_two_sided_sign_p": 5.947612226009369e-05,
+        "holm_six_workload_p": 0.00029738061130046844,
+        "direction": "above"
+      },
+      "truecolor": {
+        "raw_two_sided_sign_p": 5.947612226009369e-05,
+        "holm_six_workload_p": 0.00029738061130046844,
+        "direction": "above"
+      },
+      "cursor_motion": {
+        "raw_two_sided_sign_p": 0.00010371580719947815,
+        "holm_six_workload_p": 0.00031114742159843445,
+        "direction": "above"
+      },
+      "scroll_region": {
+        "raw_two_sided_sign_p": 0.584664711728692,
+        "holm_six_workload_p": 1,
+        "direction": "below"
+      },
+      "tui_frames": {
+        "raw_two_sided_sign_p": 8.430331945419312e-06,
+        "holm_six_workload_p": 5.058199167251587e-05,
+        "direction": "above"
+      }
+    },
+    "marks-width/replication-gate/ghostty": {
+      "ascii": {
+        "raw_two_sided_sign_p": 0.09873714670538902,
+        "holm_six_workload_p": 0.19747429341077805,
+        "direction": "below"
+      },
+      "unicode": {
+        "raw_two_sided_sign_p": 0.001430906355381012,
+        "holm_six_workload_p": 0.004292719066143036,
+        "direction": "above"
+      },
+      "truecolor": {
+        "raw_two_sided_sign_p": 5.774199962615967e-08,
+        "holm_six_workload_p": 3.46451997756958e-07,
+        "direction": "above"
+      },
+      "cursor_motion": {
+        "raw_two_sided_sign_p": 5.947612226009369e-05,
+        "holm_six_workload_p": 0.00029738061130046844,
+        "direction": "above"
+      },
+      "scroll_region": {
+        "raw_two_sided_sign_p": 1.0,
+        "holm_six_workload_p": 1,
+        "direction": "above"
+      },
+      "tui_frames": {
+        "raw_two_sided_sign_p": 5.947612226009369e-05,
+        "holm_six_workload_p": 0.00029738061130046844,
+        "direction": "above"
+      }
+    }
+  }
+}

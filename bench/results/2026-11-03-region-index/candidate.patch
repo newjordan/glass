@@ -1,0 +1,14 @@
+diff --git i/crates/alacritty-terminal/src/grid/storage.rs w/crates/alacritty-terminal/src/grid/storage.rs
+index 7e13ebd..bee77ce 100644
+--- i/crates/alacritty-terminal/src/grid/storage.rs
++++ w/crates/alacritty-terminal/src/grid/storage.rs
+@@ -205,8 +205,7 @@ impl<T> Storage<T> {
+         // by exactly `positions` slots: one `rotate_right` of the run.
+         // Rows move whole, so the lazy-recycle `occ`/`blank` state stays
+         // with its text, exactly as the swap chain left it.
+-        let visible = self.visible_lines as i32;
+-        let at = |l: i32| (self.zero as i32 + visible - 1 - l).rem_euclid(len as i32) as usize;
++        let at = |l: i32| self.compute_index(Line(l));
+         let a = at(end - 1);
+         let b = at(start);
+         if a == b {
