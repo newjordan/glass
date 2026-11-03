@@ -1,0 +1,54 @@
+Glass campaign iteration 47 — fused combining-mark revisit
+
+Research commit: bdd15f9
+Status: reported; candidate rejected. Not championship acceptance.
+
+New findings
+1. Short literal Unicode oracles can pass without crossing RUN_MIN=24. The
+   initial redraw strings were only 8–11 bytes; those results do not establish
+   fused-path coverage. The long oracle repeats each string four times.
+2. Long-run tests reproduced a stale extra_free=true hint on rows containing
+   combining marks in the raw-slice prototype. Ordinary semantic grid snapshots
+   do not include this optimization metadata. The corrected archived arm tracks
+   extra installation and invalidates the row hint after its raw borrow ends.
+3. Corrected safe prototype still loses the fixed performance screen. Across
+   exactly 12 alternating pairs (24 sessions), candidate/control median CPU
+   ratios: ASCII .993733, Unicode .976300, truecolor 1.006671, cursor 1.009387,
+   scroll .993383, TUI 1.000641. Unicode: 1 win / 11 losses, six-workload Holm
+   sign p=.038086 (adverse direction). Fails >=1.02 Unicode target and >=.98
+   point guard. No rescue timing, PTY escalation or runtime promotion.
+
+Verification
+- Both measured arms: 3,816 literal parser/Term cases pass.
+- Both measured arms: 86,784 long redraw cases / 520,704 semantic comparisons
+  pass, plus explicit row-extra invariant checks; both lanes/screens, narrow
+  and wide bases, repeated redraw, row ends, scrolling, styles and every cut.
+- Both measured arms: 397 terminal tests pass; 14 ignored.
+- Candidate library: 139 tests, 45 reference fixtures, one doctest pass.
+- Five evidence-checker tests pass; reject 27 deliberate record/timing
+  corruptions plus duplicate JSON keys. Fresh Cargo receipts, full source
+  censuses, retained ELF archives and raw timing output are bound explicitly.
+- Prior historical replay: 2,294 references / 2,196 source versions.
+- Final historical replay: 2,428 references / 2,325 source versions.
+- Post-commit checkpoint and frozen replay equal saved final receipts exactly.
+- Original production sources and selected release executable are restored.
+
+Limitations and retained failures
+The first new oracle incorrectly included a Watch-owned scroll counter absent
+from direct Term input; corrected to compare all cells, cursor/template/mode,
+and history. Unsupported --read and occupied no-clobber output paths stopped
+runner attempts before timing. First row-hint patch missed its insertion site;
+its failed oracle and source snapshot remain. No failed correctness sample is
+presented as passed. Best-of-five internal timings are one session, not five
+independent trials; balanced ordering does not establish sign independence.
+
+Evidence: bench/results/2026-11-03-fused-mark-revisit/README.md
+Read-only checker: python3 -B bench/results/2026-11-03-fused-mark-revisit/verify.py
+Historical replay: python3 -B bench/replay-evidence-index.py
+  bench/results/2026-11-03-fused-mark-revisit/final-frozen-index.json
+
+Competitive frontier remains open. This iteration has no new Ghostty result,
+no all-metric lead, no fresh selected executable, and no acceptance command.
+Do not retry the same mechanism with more pairs after its failed fixed screen.
+A championship claim still requires a fresh exact-build, same-configuration
+all-metric comparison including throughput/CPU, startup, latency, and memory.
