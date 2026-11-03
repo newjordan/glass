@@ -1,0 +1,66 @@
+{
+  "schema": "glass.width-handle-checkpoint/v1",
+  "engine_pairs": 11,
+  "engine_runs": 22,
+  "engine_screen_cleared": false,
+  "runtime_promotion": false,
+  "unicode_cpu_ratio": 1.0092798812175203,
+  "unchanged_rust_sources": 119,
+  "regression_only_rust_sources": 1,
+  "unchanged_prior_artifacts": 5869,
+  "selected_binary_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "terminal_tests": 381,
+  "ignored_terminal_tests": 11,
+  "python_tests": 49,
+  "reported_sweep_streams": 12800,
+  "report_corruptions_rejected": 9,
+  "cold_diagnostic_processes": 6,
+  "cold_diagnostic": "instrumented state, not RSS/latency",
+  "binary_replays": [
+    {
+      "binary": "glass-i21-restored-test",
+      "exit": 0
+    },
+    {
+      "binary": "glass-i21-mutant-test",
+      "exit": 101
+    }
+  ],
+  "prior_frozen": {
+    "schema": "glass.historical-evidence-replay/v1",
+    "manifests": [
+      {
+        "path": "bench/results/2026-11-03-exclusive-column/evidence-sha256.json",
+        "manifest_sha256": "0f3ae1cb19dab326e412255db8508131eabae6c6223f5a94109ea3ac4c2a7690",
+        "files": 49,
+        "live_paths": 45,
+        "historical_paths": 4,
+        "bytes": 2626568
+      }
+    ],
+    "manifest_count": 1,
+    "file_references": 49,
+    "historical_references": 4,
+    "unique_source_versions": 49,
+    "note": "Explicit historical byte-integrity replay only; not timing, safety or championship acceptance."
+  },
+  "frozen": {
+    "schema": "glass.historical-evidence-replay/v1",
+    "manifests": [
+      {
+        "path": "bench/results/2026-11-03-width-handle/evidence-sha256.json",
+        "manifest_sha256": "12d5f294bdd1e93c357383b24748bb2ff7fe34bd5fb3a80505c8dda1e1e6373e",
+        "files": 76,
+        "live_paths": 76,
+        "historical_paths": 0,
+        "bytes": 18681412
+      }
+    ],
+    "manifest_count": 1,
+    "file_references": 76,
+    "historical_references": 0,
+    "unique_source_versions": 76,
+    "note": "Explicit historical byte-integrity replay only; not timing, safety or championship acceptance."
+  },
+  "note": "Correctness and evidence replay only. No Ghostty timing or world-title acceptance."
+}

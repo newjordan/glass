@@ -1,0 +1,59 @@
+{
+  "schema": "glass.static-width-engine-decision/v1",
+  "pairs": 11,
+  "protocol_sha256": "e33e581ff773cc7762b6e6578f21cc4a9d46e5ad484e508bf17e342555cb95a7",
+  "report_sha256": "b0f67ff5be4743b571ec3ec9bfb91b1e9a44764a4cb9edd14cc014210bd82783",
+  "metrics": {
+    "ascii": {
+      "median_cpu_ratio": 1.0033086904823452,
+      "wins": 7,
+      "losses": 4,
+      "sign_p_two_sided": 0.548828125,
+      "holm_p": 1.0
+    },
+    "cursor_motion": {
+      "median_cpu_ratio": 0.9965517241379311,
+      "wins": 3,
+      "losses": 8,
+      "sign_p_two_sided": 0.2265625,
+      "holm_p": 0.90625
+    },
+    "scroll_region": {
+      "median_cpu_ratio": 0.9976296146863022,
+      "wins": 2,
+      "losses": 9,
+      "sign_p_two_sided": 0.0654296875,
+      "holm_p": 0.3271484375
+    },
+    "truecolor": {
+      "median_cpu_ratio": 0.9880952380952381,
+      "wins": 1,
+      "losses": 10,
+      "sign_p_two_sided": 0.01171875,
+      "holm_p": 0.0703125
+    },
+    "tui_frames": {
+      "median_cpu_ratio": 0.9925130208333333,
+      "wins": 4,
+      "losses": 7,
+      "sign_p_two_sided": 0.548828125,
+      "holm_p": 1.0
+    },
+    "unicode": {
+      "median_cpu_ratio": 1.0019493177387915,
+      "wins": 6,
+      "losses": 5,
+      "sign_p_two_sided": 1.0,
+      "holm_p": 1.0
+    }
+  },
+  "criteria": {
+    "unicode_median_at_least_1_02": false,
+    "unicode_positive_direction": true,
+    "unicode_six_workload_holm_below_0_05": false,
+    "all_six_point_ratios_at_least_0_98": true
+  },
+  "engine_screen_cleared": false,
+  "runtime_promotion": false,
+  "note": "Diagnostic CPU-throughput screen, not terminal timing or every-metric acceptance. Alternation does not establish iid round signs; no pooling or rescue series."
+}

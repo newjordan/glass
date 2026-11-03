@@ -1,0 +1,124 @@
+# Static zero-initialized Unicode width cache: rejected
+
+Iteration 22 tests a distinct cache **representation** rather than a row loop,
+width policy, decoder shortcut, generated table, or scheduling policy. A const-zero
+`[AtomicU8; 0x110000]` in BSS replaces the heap-backed `OnceLock<Box<[AtomicI8]>>`.
+Zero is unasked, width+1 is a cached width, and 255 is `None`. Relaxed racing fills
+remain deterministic. This does not ship: **all 120 Rust sources and the selected
+terminal executable are restored/unchanged**.
+
+## Prospective warm screen
+
+`protocol.json` was saved before the common diagnostic tests, candidate source,
+builds or measurements (SHA-256
+`e33e581ff773cc7762b6e6578f21cc4a9d46e5ad484e508bf17e342555cb95a7`).
+Identical locked release-test build commands; both arms contain the same ignored
+cold test and concurrent-fill test. Eleven fresh AB/BA pairs, scale 2, five internal
+rounds, all six workloads. Existing fastest internal CPU passes are diagnostics,
+not independent terminal samples. No own build during measurements, no extra
+pairs, alternate variant, pooling or terminal follow-on after failure.
+
+| Workload | Candidate/control paired median CPU rate | Wins/11 | Six-workload Holm p |
+|---|---:|---:|---:|
+| ASCII | 1.003309 | 7 | 1.0 |
+| Unicode | 1.001949 | 6 | 1.0 |
+| Truecolor | .988095 | 1 | .070313 |
+| Cursor motion | .996552 | 3 | .906250 |
+| Scroll region | .997630 | 2 | .327148 |
+| TUI frames | .992513 | 4 | 1.0 |
+
+Unicode fails the >=1.02 and corrected p<.05 criteria. Every point ratio is >=.98,
+which does not establish equivalence or confidence-bounded noninferiority. The
+candidate is rejected, even though the cold diagnostic below is promising.
+Code layout, added test functions and shared-host variation can affect results;
+ASCII bypasses the changed non-ASCII lookup. No causal ASCII/truecolor claim.
+
+## New finding: isolated first lookup costs much less, not a warm-throughput win
+
+Fifteen fresh-process AB/BA pairs, one U+754C lookup per exact ignored test. No
+warmup, discarded outlier, repeated capture, or instrumentation inside the cache.
+Both builds time the same lookup and assert width 2 and crate agreement. Thread
+CPU and wall timers, process `getrusage` minor-fault and max-RSS high-water deltas
+surround only the lookup. The CPU interval includes wall-clock helper overhead;
+wall and CPU intervals are not identical. This is **not whole-terminal startup**.
+
+| Per-process diagnostic | Control median | Candidate median | Candidate lower/15 |
+|---|---:|---:|---:|
+| Thread CPU ns | 116,047 | 1,994 | 15 |
+| Wall ns | 116,580 | 1,723 | 15 |
+| Process minor-fault delta | 4 | 3 | 15 |
+| Process max-RSS high-water delta, KiB | 0 | 0 | 0 (15 ties) |
+
+Median of paired candidate/control CPU ratios is .023721 (do not confuse with
+the ratio of marginal medians). CPU ranges: control 32,992–190,888 ns, candidate
+1,613–5,371 ns. All data, including the first control's 275 minor faults and a
+later control's 276, remain. Control minor faults range 4–276; candidate is always
+3. Allocation reuse, test-harness activity and clock overhead remain confounders;
+these faults do not count the entire cache's resident pages. Zero max-RSS deltas
+do **not establish retained-RSS reduction**. No individual lookup latency claim about
+Ghostty or real startup. Warm and cold results were both frozen in one protocol;
+neither reverses the other.
+
+`size` on exact test executables reports BSS 32,168 -> 1,147,624 bytes, a net
++1,115,456 bytes (not identical to the 1,114,112-byte cache payload, because other
+layout/link differences remain). This is object-section size, not RSS, startup,
+on-disk file growth or energy. More static virtual address space is a tradeoff.
+
+## Correctness and evidence tooling
+
+- Exact candidate: exhaustive scalar-width parity and concurrent fills pass;
+  all 382 ordinary terminal tests pass, 12 intentionally ignored.
+- Correct pre-existing parser parity and seeded-sweep entry points pass;
+  12,800 streams over 64 seeds match, on both candidate and restored binaries.
+- Restored exact-source test binary: 381 tests pass, 11 ignored. Its source matches
+  the current unchanged runtime and test source; identity is pinned, not rebuilt.
+- All 57 Python tests pass (49 existing plus eight new capture/replay tests).
+- 23 in-memory corruptions of real reports reject, with canonical evidence
+  unchanged (nine engine, fourteen cold).
+- New generic cold capture/replay keeps raw stdout/stderr, PID, non-overlapping
+  launch spans, binary hashes, exact-test receipts, strict one-marker parsing,
+  requested pair counts, finite/integer values and unchanged-byte checks.
+  Runner rejects existing output; failure/timeout retain incomplete receipts,
+  and timeout children are killed/reaped. These checks cannot prove clocks,
+  authorship, independence, or absence of forged logs.
+
+Two initial correctness selectors were wrong and ran **zero tests**. Their original
+and explicitly named invalid-selector logs remain; they count as no correctness
+coverage. Corrected selectors run after the measurement series, not concurrently.
+Initial Python tests had helper/fixture/timeout interface mistakes; the failure
+log remains, fixes are covered by the final entry-point run. A write-time Python
+syntax error was fixed before that script ran. The first checkpoint also
+used a wrong corruption-report key and failed; the corrected read-only checkpoint
+requires canonical_reports_unchanged and passes. An attempted verifier write
+contained placeholder text, caught by syntax validation before execution. Optional reviewer timed out with
+no returned verdict: no independent model review claim.
+
+`capture-runner-v1.py` reconstructs the exact capture-time version by reversing
+explicit post-capture hardening edits; it is **not an independently timestamped
+pre-capture snapshot**. The actual capture command and raw report remain. The
+final runner initializes explicit false completion flags on failure, supports a
+validated timeout, kills/reaps on Python interruption, and fails a changed-binary
+check. It did not rerun the cold benchmark to replace the original evidence.
+
+## Replay and preserved state
+
+```sh
+python3 -B bench/results/2026-11-03-static-width-cache/verify.py
+python3 -B bench/replay-evidence-index.py \
+  bench/results/2026-11-03-static-width-cache/frozen-index.json
+python3 -B bench/replay-cold-width-pairs.py \
+  bench/results/2026-11-03-static-width-cache/cold-pairs.json \
+  --pairs 15 --verify-binaries
+```
+
+The checkpoint binds 120 unchanged Rust files, 5,938 prior tracked artifacts,
+the selected `target/release/glass` hash, compiler-artifact executable identities,
+protocol, raw replays, decisions, corruption results and test receipts. It reruns
+only exact width/parity checks, not performance or a build. Missing temporary
+binaries fail closed. Frozen byte replay is separately usable without binaries.
+Historical document snapshots preserve prior evidence without modifying it.
+
+No new Ghostty timing; no title claim. The existing selected-build Unicode ratio
+.929112 remains the latest relevant direct comparison. A future cold-resource
+candidate needs its own acceptance policy and real startup/RSS measurements;
+repeating this rejected warm-throughput series is not the next action.

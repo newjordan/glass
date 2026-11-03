@@ -1,0 +1,148 @@
+{
+  "schema": "glass.static-width-corruption/v1",
+  "cases": [
+    {
+      "kind": "engine",
+      "case": "truncated_pairs",
+      "rejected": true,
+      "reason": "unexpected pair count"
+    },
+    {
+      "kind": "engine",
+      "case": "summary_ratio",
+      "rejected": true,
+      "reason": "summary mismatch or incomplete report"
+    },
+    {
+      "kind": "engine",
+      "case": "parsed_without_raw",
+      "rejected": true,
+      "reason": "raw/parsed mismatch: 0/candidate"
+    },
+    {
+      "kind": "engine",
+      "case": "duplicate_row",
+      "rejected": true,
+      "reason": "missing/duplicate rows: 0/candidate"
+    },
+    {
+      "kind": "engine",
+      "case": "wrong_order",
+      "rejected": true,
+      "reason": "wrong order: pair 0"
+    },
+    {
+      "kind": "engine",
+      "case": "changed_binary_hash",
+      "rejected": true,
+      "reason": "changed binary: candidate"
+    },
+    {
+      "kind": "engine",
+      "case": "nonzero_exit",
+      "rejected": true,
+      "reason": "nonzero exit: 0/candidate"
+    },
+    {
+      "kind": "engine",
+      "case": "workload_shape",
+      "rejected": true,
+      "reason": "raw/parsed mismatch: 0/candidate"
+    },
+    {
+      "kind": "engine",
+      "case": "duplicate_json_key",
+      "rejected": true,
+      "reason": "duplicate JSON key: pairs"
+    },
+    {
+      "kind": "cold",
+      "case": "truncated_pairs",
+      "rejected": true,
+      "reason": "wrong pair count"
+    },
+    {
+      "kind": "cold",
+      "case": "incomplete",
+      "rejected": true,
+      "reason": "incomplete/changed binaries"
+    },
+    {
+      "kind": "cold",
+      "case": "changed_binaries_flag",
+      "rejected": true,
+      "reason": "incomplete/changed binaries"
+    },
+    {
+      "kind": "cold",
+      "case": "wrong_test",
+      "rejected": true,
+      "reason": "wrong schema/test"
+    },
+    {
+      "kind": "cold",
+      "case": "wrong_order",
+      "rejected": true,
+      "reason": "wrong order: 0"
+    },
+    {
+      "kind": "cold",
+      "case": "nonzero_exit",
+      "rejected": true,
+      "reason": "failed exit: 0/candidate"
+    },
+    {
+      "kind": "cold",
+      "case": "zero_tests",
+      "rejected": true,
+      "reason": "not exactly one successful test: 0/candidate"
+    },
+    {
+      "kind": "cold",
+      "case": "duplicate_test_receipt",
+      "rejected": true,
+      "reason": "not exactly one successful test: 0/candidate"
+    },
+    {
+      "kind": "cold",
+      "case": "duplicate_marker",
+      "rejected": true,
+      "reason": "missing/duplicate cold marker: 0/candidate"
+    },
+    {
+      "kind": "cold",
+      "case": "duplicate_pid",
+      "rejected": true,
+      "reason": "duplicate/invalid pid"
+    },
+    {
+      "kind": "cold",
+      "case": "overlapping_processes",
+      "rejected": true,
+      "reason": "overlapping/invalid timing"
+    },
+    {
+      "kind": "cold",
+      "case": "diagnostic_span_exceeds_process",
+      "rejected": true,
+      "reason": "diagnostic span exceeds process span"
+    },
+    {
+      "kind": "cold",
+      "case": "changed_binary_hash",
+      "rejected": true,
+      "reason": "changed binary: candidate"
+    },
+    {
+      "kind": "cold",
+      "case": "duplicate_json_key",
+      "rejected": true,
+      "reason": "duplicate JSON key: pairs"
+    }
+  ],
+  "sha256": {
+    "engine": "b0f67ff5be4743b571ec3ec9bfb91b1e9a44764a4cb9edd14cc014210bd82783",
+    "cold": "24224b9bc8d8c49371bf2d6199757ace21cb6ecc7a4488954fd85e54c616c6ec"
+  },
+  "canonical_reports_unchanged": true
+}

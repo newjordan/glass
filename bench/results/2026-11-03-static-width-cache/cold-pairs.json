@@ -1,0 +1,348 @@
+{
+  "schema": "glass.cold-width-pairs/v1",
+  "test": "engine::tests::width_cache_cold_first_lookup",
+  "binaries": {
+    "base": {
+      "path": "/tmp/glass-i22-control-test",
+      "sha256": "bf5296a4406677ab68e5ee6ce2242a1349537318766386a50a0c5d5b08a9e259"
+    },
+    "candidate": {
+      "path": "/tmp/glass-i22-candidate-test",
+      "sha256": "8dae0e43820c05e595740b14948459eb4eaf26fa5fb54ce927dcb794ad8f5743"
+    }
+  },
+  "pairs": [
+    {
+      "order": [
+        "base",
+        "candidate"
+      ],
+      "base": {
+        "pid": 2780423,
+        "begin_ns": 155292209394674,
+        "end_ns": 155292210869447,
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest engine::tests::width_cache_cold_first_lookup ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s\n\n",
+        "stderr": "COLD_WIDTH_V1 {\"codepoint\":30028,\"width\":2,\"cpu_ns\":190888,\"wall_ns\":190428,\"minor_faults\":275,\"maxrss_delta_kib\":0}\n"
+      },
+      "candidate": {
+        "pid": 2780425,
+        "begin_ns": 155292217274919,
+        "end_ns": 155292218252607,
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest engine::tests::width_cache_cold_first_lookup ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s\n\n",
+        "stderr": "COLD_WIDTH_V1 {\"codepoint\":30028,\"width\":2,\"cpu_ns\":4528,\"wall_ns\":4148,\"minor_faults\":3,\"maxrss_delta_kib\":0}\n"
+      }
+    },
+    {
+      "order": [
+        "candidate",
+        "base"
+      ],
+      "candidate": {
+        "pid": 2780427,
+        "begin_ns": 155292224386689,
+        "end_ns": 155292225107675,
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest engine::tests::width_cache_cold_first_lookup ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s\n\n",
+        "stderr": "COLD_WIDTH_V1 {\"codepoint\":30028,\"width\":2,\"cpu_ns\":1673,\"wall_ns\":1483,\"minor_faults\":3,\"maxrss_delta_kib\":0}\n"
+      },
+      "base": {
+        "pid": 2780429,
+        "begin_ns": 155292231506224,
+        "end_ns": 155292232584781,
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest engine::tests::width_cache_cold_first_lookup ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s\n\n",
+        "stderr": "COLD_WIDTH_V1 {\"codepoint\":30028,\"width\":2,\"cpu_ns\":176871,\"wall_ns\":176271,\"minor_faults\":275,\"maxrss_delta_kib\":0}\n"
+      }
+    },
+    {
+      "order": [
+        "base",
+        "candidate"
+      ],
+      "base": {
+        "pid": 2780431,
+        "begin_ns": 155292236405554,
+        "end_ns": 155292237503148,
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest engine::tests::width_cache_cold_first_lookup ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s\n\n",
+        "stderr": "COLD_WIDTH_V1 {\"codepoint\":30028,\"width\":2,\"cpu_ns\":181972,\"wall_ns\":181431,\"minor_faults\":275,\"maxrss_delta_kib\":0}\n"
+      },
+      "candidate": {
+        "pid": 2780433,
+        "begin_ns": 155292243522053,
+        "end_ns": 155292244324963,
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest engine::tests::width_cache_cold_first_lookup ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s\n\n",
+        "stderr": "COLD_WIDTH_V1 {\"codepoint\":30028,\"width\":2,\"cpu_ns\":2895,\"wall_ns\":2574,\"minor_faults\":3,\"maxrss_delta_kib\":0}\n"
+      }
+    },
+    {
+      "order": [
+        "candidate",
+        "base"
+      ],
+      "candidate": {
+        "pid": 2780435,
+        "begin_ns": 155292250623955,
+        "end_ns": 155292251512405,
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest engine::tests::width_cache_cold_first_lookup ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s\n\n",
+        "stderr": "COLD_WIDTH_V1 {\"codepoint\":30028,\"width\":2,\"cpu_ns\":5371,\"wall_ns\":5049,\"minor_faults\":3,\"maxrss_delta_kib\":0}\n"
+      },
+      "base": {
+        "pid": 2780437,
+        "begin_ns": 155292260110008,
+        "end_ns": 155292261294195,
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest engine::tests::width_cache_cold_first_lookup ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s\n\n",
+        "stderr": "COLD_WIDTH_V1 {\"codepoint\":30028,\"width\":2,\"cpu_ns\":116047,\"wall_ns\":118984,\"minor_faults\":4,\"maxrss_delta_kib\":0}\n"
+      }
+    },
+    {
+      "order": [
+        "base",
+        "candidate"
+      ],
+      "base": {
+        "pid": 2780439,
+        "begin_ns": 155292269609126,
+        "end_ns": 155292270753578,
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest engine::tests::width_cache_cold_first_lookup ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s\n\n",
+        "stderr": "COLD_WIDTH_V1 {\"codepoint\":30028,\"width\":2,\"cpu_ns\":68850,\"wall_ns\":68329,\"minor_faults\":4,\"maxrss_delta_kib\":0}\n"
+      },
+      "candidate": {
+        "pid": 2780441,
+        "begin_ns": 155292276883302,
+        "end_ns": 155292277807179,
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest engine::tests::width_cache_cold_first_lookup ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s\n\n",
+        "stderr": "COLD_WIDTH_V1 {\"codepoint\":30028,\"width\":2,\"cpu_ns\":2595,\"wall_ns\":2405,\"minor_faults\":3,\"maxrss_delta_kib\":0}\n"
+      }
+    },
+    {
+      "order": [
+        "candidate",
+        "base"
+      ],
+      "candidate": {
+        "pid": 2780443,
+        "begin_ns": 155292284192904,
+        "end_ns": 155292284898590,
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest engine::tests::width_cache_cold_first_lookup ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s\n\n",
+        "stderr": "COLD_WIDTH_V1 {\"codepoint\":30028,\"width\":2,\"cpu_ns\":2014,\"wall_ns\":1824,\"minor_faults\":3,\"maxrss_delta_kib\":0}\n"
+      },
+      "base": {
+        "pid": 2780445,
+        "begin_ns": 155292291442152,
+        "end_ns": 155292292358645,
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest engine::tests::width_cache_cold_first_lookup ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s\n\n",
+        "stderr": "COLD_WIDTH_V1 {\"codepoint\":30028,\"width\":2,\"cpu_ns\":60834,\"wall_ns\":60404,\"minor_faults\":4,\"maxrss_delta_kib\":0}\n"
+      }
+    },
+    {
+      "order": [
+        "base",
+        "candidate"
+      ],
+      "base": {
+        "pid": 2780447,
+        "begin_ns": 155292300923126,
+        "end_ns": 155292301818279,
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest engine::tests::width_cache_cold_first_lookup ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s\n\n",
+        "stderr": "COLD_WIDTH_V1 {\"codepoint\":30028,\"width\":2,\"cpu_ns\":32992,\"wall_ns\":32541,\"minor_faults\":4,\"maxrss_delta_kib\":0}\n"
+      },
+      "candidate": {
+        "pid": 2780449,
+        "begin_ns": 155292308182524,
+        "end_ns": 155292308892498,
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest engine::tests::width_cache_cold_first_lookup ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s\n\n",
+        "stderr": "COLD_WIDTH_V1 {\"codepoint\":30028,\"width\":2,\"cpu_ns\":1723,\"wall_ns\":1533,\"minor_faults\":3,\"maxrss_delta_kib\":0}\n"
+      }
+    },
+    {
+      "order": [
+        "candidate",
+        "base"
+      ],
+      "candidate": {
+        "pid": 2780451,
+        "begin_ns": 155292315451048,
+        "end_ns": 155292316153629,
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest engine::tests::width_cache_cold_first_lookup ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s\n\n",
+        "stderr": "COLD_WIDTH_V1 {\"codepoint\":30028,\"width\":2,\"cpu_ns\":1933,\"wall_ns\":1663,\"minor_faults\":3,\"maxrss_delta_kib\":0}\n"
+      },
+      "base": {
+        "pid": 2780453,
+        "begin_ns": 155292322719333,
+        "end_ns": 155292323495051,
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest engine::tests::width_cache_cold_first_lookup ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s\n\n",
+        "stderr": "COLD_WIDTH_V1 {\"codepoint\":30028,\"width\":2,\"cpu_ns\":36419,\"wall_ns\":36128,\"minor_faults\":4,\"maxrss_delta_kib\":0}\n"
+      }
+    },
+    {
+      "order": [
+        "base",
+        "candidate"
+      ],
+      "base": {
+        "pid": 2780455,
+        "begin_ns": 155292329971086,
+        "end_ns": 155292331411664,
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest engine::tests::width_cache_cold_first_lookup ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s\n\n",
+        "stderr": "COLD_WIDTH_V1 {\"codepoint\":30028,\"width\":2,\"cpu_ns\":37941,\"wall_ns\":38423,\"minor_faults\":4,\"maxrss_delta_kib\":0}\n"
+      },
+      "candidate": {
+        "pid": 2780459,
+        "begin_ns": 155292339496704,
+        "end_ns": 155292340546057,
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest engine::tests::width_cache_cold_first_lookup ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s\n\n",
+        "stderr": "COLD_WIDTH_V1 {\"codepoint\":30028,\"width\":2,\"cpu_ns\":1933,\"wall_ns\":1723,\"minor_faults\":3,\"maxrss_delta_kib\":0}\n"
+      }
+    },
+    {
+      "order": [
+        "candidate",
+        "base"
+      ],
+      "candidate": {
+        "pid": 2780461,
+        "begin_ns": 155292348964864,
+        "end_ns": 155292349789845,
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest engine::tests::width_cache_cold_first_lookup ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s\n\n",
+        "stderr": "COLD_WIDTH_V1 {\"codepoint\":30028,\"width\":2,\"cpu_ns\":2275,\"wall_ns\":2084,\"minor_faults\":3,\"maxrss_delta_kib\":0}\n"
+      },
+      "base": {
+        "pid": 2780463,
+        "begin_ns": 155292358447471,
+        "end_ns": 155292359181050,
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest engine::tests::width_cache_cold_first_lookup ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s\n\n",
+        "stderr": "COLD_WIDTH_V1 {\"codepoint\":30028,\"width\":2,\"cpu_ns\":43390,\"wall_ns\":42690,\"minor_faults\":4,\"maxrss_delta_kib\":0}\n"
+      }
+    },
+    {
+      "order": [
+        "base",
+        "candidate"
+      ],
+      "base": {
+        "pid": 2780465,
+        "begin_ns": 155292367936189,
+        "end_ns": 155292369135664,
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest engine::tests::width_cache_cold_first_lookup ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s\n\n",
+        "stderr": "COLD_WIDTH_V1 {\"codepoint\":30028,\"width\":2,\"cpu_ns\":142628,\"wall_ns\":141917,\"minor_faults\":4,\"maxrss_delta_kib\":0}\n"
+      },
+      "candidate": {
+        "pid": 2780467,
+        "begin_ns": 155292375184166,
+        "end_ns": 155292375969532,
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest engine::tests::width_cache_cold_first_lookup ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s\n\n",
+        "stderr": "COLD_WIDTH_V1 {\"codepoint\":30028,\"width\":2,\"cpu_ns\":1784,\"wall_ns\":1583,\"minor_faults\":3,\"maxrss_delta_kib\":0}\n"
+      }
+    },
+    {
+      "order": [
+        "candidate",
+        "base"
+      ],
+      "candidate": {
+        "pid": 2780469,
+        "begin_ns": 155292384654980,
+        "end_ns": 155292385562837,
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest engine::tests::width_cache_cold_first_lookup ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s\n\n",
+        "stderr": "COLD_WIDTH_V1 {\"codepoint\":30028,\"width\":2,\"cpu_ns\":1994,\"wall_ns\":1664,\"minor_faults\":3,\"maxrss_delta_kib\":0}\n"
+      },
+      "base": {
+        "pid": 2780471,
+        "begin_ns": 155292394131616,
+        "end_ns": 155292395025437,
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest engine::tests::width_cache_cold_first_lookup ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s\n\n",
+        "stderr": "COLD_WIDTH_V1 {\"codepoint\":30028,\"width\":2,\"cpu_ns\":189495,\"wall_ns\":190778,\"minor_faults\":276,\"maxrss_delta_kib\":0}\n"
+      }
+    },
+    {
+      "order": [
+        "base",
+        "candidate"
+      ],
+      "base": {
+        "pid": 2780473,
+        "begin_ns": 155292403610046,
+        "end_ns": 155292404653648,
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest engine::tests::width_cache_cold_first_lookup ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s\n\n",
+        "stderr": "COLD_WIDTH_V1 {\"codepoint\":30028,\"width\":2,\"cpu_ns\":116879,\"wall_ns\":116580,\"minor_faults\":276,\"maxrss_delta_kib\":0}\n"
+      },
+      "candidate": {
+        "pid": 2780475,
+        "begin_ns": 155292413072545,
+        "end_ns": 155292413915850,
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest engine::tests::width_cache_cold_first_lookup ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s\n\n",
+        "stderr": "COLD_WIDTH_V1 {\"codepoint\":30028,\"width\":2,\"cpu_ns\":1613,\"wall_ns\":1403,\"minor_faults\":3,\"maxrss_delta_kib\":0}\n"
+      }
+    },
+    {
+      "order": [
+        "candidate",
+        "base"
+      ],
+      "candidate": {
+        "pid": 2780477,
+        "begin_ns": 155292422536747,
+        "end_ns": 155292423369062,
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest engine::tests::width_cache_cold_first_lookup ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s\n\n",
+        "stderr": "COLD_WIDTH_V1 {\"codepoint\":30028,\"width\":2,\"cpu_ns\":1933,\"wall_ns\":1543,\"minor_faults\":3,\"maxrss_delta_kib\":0}\n"
+      },
+      "base": {
+        "pid": 2780479,
+        "begin_ns": 155292431998876,
+        "end_ns": 155292432927151,
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest engine::tests::width_cache_cold_first_lookup ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s\n\n",
+        "stderr": "COLD_WIDTH_V1 {\"codepoint\":30028,\"width\":2,\"cpu_ns\":149951,\"wall_ns\":149631,\"minor_faults\":276,\"maxrss_delta_kib\":0}\n"
+      }
+    },
+    {
+      "order": [
+        "base",
+        "candidate"
+      ],
+      "base": {
+        "pid": 2780481,
+        "begin_ns": 155292439261470,
+        "end_ns": 155292440152725,
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest engine::tests::width_cache_cold_first_lookup ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s\n\n",
+        "stderr": "COLD_WIDTH_V1 {\"codepoint\":30028,\"width\":2,\"cpu_ns\":107532,\"wall_ns\":109506,\"minor_faults\":276,\"maxrss_delta_kib\":0}\n"
+      },
+      "candidate": {
+        "pid": 2780483,
+        "begin_ns": 155292448775836,
+        "end_ns": 155292449845617,
+        "exit": 0,
+        "stdout": "\nrunning 1 test\ntest engine::tests::width_cache_cold_first_lookup ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 393 filtered out; finished in 0.00s\n\n",
+        "stderr": "COLD_WIDTH_V1 {\"codepoint\":30028,\"width\":2,\"cpu_ns\":2185,\"wall_ns\":1853,\"minor_faults\":3,\"maxrss_delta_kib\":0}\n"
+      }
+    }
+  ],
+  "complete": true,
+  "unchanged_binaries": true
+}

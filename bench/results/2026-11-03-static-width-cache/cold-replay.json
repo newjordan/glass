@@ -1,0 +1,42 @@
+{
+  "schema": "glass.cold-width-replay/v1",
+  "pairs": 15,
+  "processes": 30,
+  "metrics": {
+    "cpu_ns": {
+      "base_median": 116047,
+      "candidate_median": 1994,
+      "paired_median_delta": -110676,
+      "candidate_lower": 15,
+      "candidate_higher": 0,
+      "ties": 0,
+      "paired_median_candidate_over_base": 0.023720715812413563
+    },
+    "wall_ns": {
+      "base_median": 116580,
+      "candidate_median": 1723,
+      "paired_median_delta": -113935,
+      "candidate_lower": 15,
+      "candidate_higher": 0,
+      "ties": 0,
+      "paired_median_candidate_over_base": 0.021782510975276746
+    },
+    "minor_faults": {
+      "base_median": 4,
+      "candidate_median": 3,
+      "paired_median_delta": -1,
+      "candidate_lower": 15,
+      "candidate_higher": 0,
+      "ties": 0
+    },
+    "maxrss_delta_kib": {
+      "base_median": 0,
+      "candidate_median": 0,
+      "paired_median_delta": 0,
+      "candidate_lower": 0,
+      "candidate_higher": 0,
+      "ties": 15
+    }
+  },
+  "note": "Descriptive fixed-series diagnostic, no terminal/startup or retained-RSS claim. Clock overhead and shared-host variation remain; maxrss is high-water only."
+}

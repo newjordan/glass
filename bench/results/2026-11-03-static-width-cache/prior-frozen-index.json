@@ -1,0 +1,15 @@
+{
+  "schema": "glass.historical-evidence-index/v1",
+  "manifests": [
+    {
+      "path": "bench/results/2026-11-03-width-handle/evidence-sha256.json",
+      "sha256": "12d5f294bdd1e93c357383b24748bb2ff7fe34bd5fb3a80505c8dda1e1e6373e",
+      "source_root": ".",
+      "snapshots": {
+        "CHANGELOG.md": "bench/results/2026-11-03-static-width-cache/prior-CHANGELOG.md",
+        "bench/README.md": "bench/results/2026-11-03-static-width-cache/prior-README.md",
+        "docs/PERFORMANCE.md": "bench/results/2026-11-03-static-width-cache/prior-PERFORMANCE.md"
+      }
+    }
+  ]
+}

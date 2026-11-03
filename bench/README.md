@@ -672,3 +672,33 @@ python3 -B bench/replay-evidence-index.py \
 Read-only checkpoint needs hashed retained `/tmp` test executables; byte replay
 does not. Missing evidence fails closed. This is evidence closure, not acceptance
 of the every-metric objective. [Full iteration report](../reports/research-1eecf9876bb302e9da10ff629e71e6d8-21.txt).
+
+### Static zero-initialized width cache: cold gain, warm rejection (iteration 22)
+
+The [frozen cache-representation experiment](results/2026-11-03-static-width-cache/README.md)
+replaces the heap-backed OnceLock widths with const-zero BSS AtomicU8 storage,
+without changing Unicode width policy or the row loop. Eleven fresh AB/BA pairs:
+Unicode CPU ratio **1.001949**, **6/11** wins, six-workload Holm **p=1.0**.
+The >=1.02/corrected-sign gate failed: **no runtime change or terminal follow-on**.
+
+A separately counted cold diagnostic in the same prospective protocol ran 30
+fresh processes (15 pairs), one first U+754C lookup each. Median thread CPU:
+control **116,047 ns**, candidate **1,994 ns**; candidate lower in all 15 pairs.
+This times only the lookup including timer overhead, **not terminal startup**.
+Minor-fault deltas were 4 vs 3 median, but control ranged 4–276; max-RSS high-water
+deltas were zero in every process, **not evidence of lower retained RSS**. Test
+executable BSS grew by 1,115,456 bytes net; that is section size, not resident use.
+All samples remain; cold improvement does not override the failed warm gate.
+
+The new read-only cold replay rejects incomplete/overlapping launches, zero-test
+receipts, duplicate markers/keys, changed binaries and invalid metrics. The exact
+candidate passes 382 terminal tests; restored runtime passes 381; both match
+12,800 differential streams. 57 Python tests and 23 real-report corruption cases
+pass. All 120 Rust sources, 5,938 prior tracked artifacts and selected terminal
+executable are unchanged. No new Ghostty timing or every-metric superiority.
+
+```sh
+python3 -B bench/results/2026-11-03-static-width-cache/verify.py
+python3 -B bench/replay-evidence-index.py \
+  bench/results/2026-11-03-static-width-cache/frozen-index.json
+```

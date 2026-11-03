@@ -1,0 +1,21 @@
+{
+  "schema": "glass.static-width-protocol/v1",
+  "hypothesis": "Replace heap-backed OnceLock AtomicI8 widths with const-zero AtomicU8 BSS storage. Zero means unasked, width+1 means Some(width), 255 means None. Same width policy and relaxed loads/stores, no eager table or changed row loop. char index is safe. No unsafe code.",
+  "engine": {
+    "pairs": 11,
+    "scale": 2,
+    "rounds": 5,
+    "order": "alternating AB/BA",
+    "screen": "Unicode median CPU throughput >=1.02, positive sign direction, six-workload Holm p<.05, and all six CPU paired point medians >=.98. No engine-only promotion."
+  },
+  "cold": {
+    "pairs": 15,
+    "order": "alternating AB/BA",
+    "method": "Fresh process per exact ignored cold test, one first lookup of U+754C. Thread CPU ns, wall ns, process minor-fault and maxrss deltas around only this lookup; width must agree with unicode_width. Tests common to both arms, no allocation instrument. Analyze per-pair cold CPU ns and minor faults descriptively; no broad memory or startup claim.",
+    "stop": "Exactly 30 cold processes. No discarded samples or hot series rescues. maxrss high-water deltas are not current RSS."
+  },
+  "follow_on": "Only if engine clears, freeze new full terminal protocol with fresh control/candidate/Ghostty 30 six-permutation rounds and separately specified acceptance/replication. No new terminal timings after failed engine gate.",
+  "correctness": "Candidate exhaustive width test plus parser differential suite on exact executable; restored runtime test only if restored. Cold diagnostic is ignored and deterministic first-value check, not a performance pass criterion.",
+  "stop": "One candidate, fixed count. Reject on failed warm gate even if cold latency improves; restore runtime bytes, no variants, repeats, pooling, cherry-picking ASCII/truecolor. Keep cold evidence.",
+  "limits": "Shared host. No own builds during measurements, no host job termination, governors, cache dropping, producer pinning. Layout and shared-host variation remain. Fastest-of-five CPU test diagnostic is not DA1 end-to-end throughput. Static BSS adds virtual mapping; fault/RSS deltas do not show total retained memory."
+}

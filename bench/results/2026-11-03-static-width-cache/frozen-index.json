@@ -1,0 +1,11 @@
+{
+  "schema": "glass.historical-evidence-index/v1",
+  "manifests": [
+    {
+      "path": "bench/results/2026-11-03-static-width-cache/evidence-sha256.json",
+      "sha256": "0da7aaa8951762a484c91552e0976af0a4fa566c96e43945ee367c23aa3e8b6f",
+      "source_root": ".",
+      "snapshots": {}
+    }
+  ]
+}

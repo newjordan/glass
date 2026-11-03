@@ -1,0 +1,40 @@
+--- a/crates/term/src/engine.rs
++++ b/crates/term/src/engine.rs
+@@ -3639,21 +3639,22 @@
+ /// unasked, -2 is the crate's `None` (widths themselves run 0..=3).
+ #[inline]
+ fn width_of(c: char) -> Option<usize> {
+-    use std::sync::atomic::{AtomicI8, Ordering};
+-    static CACHE: std::sync::OnceLock<Box<[AtomicI8]>> = std::sync::OnceLock::new();
+-    let cache = CACHE
+-        .get_or_init(|| (0..0x110000).map(|_| AtomicI8::new(-1)).collect::<Vec<_>>().into_boxed_slice());
+-    let slot = &cache[c as usize];
+-    let v = slot.load(Ordering::Relaxed);
+-    if v >= 0 {
+-        return Some(v as usize);
+-    }
+-    if v == -2 {
+-        return None;
+-    }
+-    let w = unicode_width::UnicodeWidthChar::width(c);
+-    slot.store(w.map_or(-2, |w| w as i8), Ordering::Relaxed);
+-    w
++    use std::sync::atomic::{AtomicU8, Ordering};
++    // Const-zero storage lives in BSS. Only queried codepoints are filled;
++    // there is no heap allocation or whole-codespace first-use initialization.
++    // 0 = unasked, 1..=4 = width + 1, 255 = None. All racing fills agree.
++    static CACHE: [AtomicU8; 0x110000] = [const { AtomicU8::new(0) }; 0x110000];
++    let slot = &CACHE[c as usize];
++    let value = slot.load(Ordering::Relaxed);
++    match value {
++        0 => {
++            let width = unicode_width::UnicodeWidthChar::width(c);
++            slot.store(width.map_or(255, |width| width as u8 + 1), Ordering::Relaxed);
++            width
++        }
++        255 => None,
++        value => Some((value - 1) as usize),
++    }
+ }
+ 
+ fn held_back(bytes: &[u8]) -> Option<Vec<u8>> {

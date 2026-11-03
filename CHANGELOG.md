@@ -172,6 +172,19 @@ description of what to show.
 
 ### Open intake
 
+### Static width storage research — runtime rejected
+- Measured zero-initialized BSS widths against the selected heap-backed cache:
+  Unicode CPU 1.001949x over 11 fresh pairs (6 wins, Holm p=1.0), failing the
+  frozen warm gate. No runtime promotion or new Ghostty timing.
+- Preserved a distinct 30-process first-lookup diagnostic: median thread CPU
+  116,047 -> 1,994 ns, candidate lower in all 15 pairs. Not startup or retained
+  RSS; max-RSS deltas were all zero, and static BSS grows. Full raw data retained.
+- Added strict cold-capture replay and eight Python tests; 23 real-report
+  corruptions reject without modifying evidence. Candidate/restored terminal
+  tests and 12,800-stream sweeps pass. All 120 Rust files, 5,938 prior artifacts
+  and selected terminal bytes unchanged. [Evidence](bench/results/2026-11-03-static-width-cache/README.md).
+
+
 ### Measured research and parser regression coverage
 
 - Test CRLF records across chunking, modes, wide/combining predecessors, REP,

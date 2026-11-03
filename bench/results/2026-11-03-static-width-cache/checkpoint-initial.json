@@ -1,0 +1,89 @@
+{
+  "schema": "glass.static-width-checkpoint/v1",
+  "engine_pairs": 11,
+  "cold_processes": 30,
+  "engine_screen_cleared": false,
+  "runtime_promotion": false,
+  "unicode_cpu_ratio": 1.0019493177387915,
+  "unchanged_rust_sources": 120,
+  "unchanged_prior_artifacts": 5938,
+  "selected_binary_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "candidate_terminal_tests": 382,
+  "restored_terminal_tests": 381,
+  "python_tests": 57,
+  "differential_streams_per_arm": 12800,
+  "corruptions_rejected": 23,
+  "cold_cpu_medians_ns": {
+    "base_median": 116047,
+    "candidate_median": 1994,
+    "paired_median_delta": -110676,
+    "candidate_lower": 15,
+    "candidate_higher": 0,
+    "ties": 0,
+    "paired_median_candidate_over_base": 0.023720715812413563
+  },
+  "live_checks": [
+    {
+      "command": [
+        "/tmp/glass-i22-control-test",
+        "--exact",
+        "engine::tests::width_cache_agrees_with_the_crate_everywhere",
+        "--nocapture"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/tmp/glass-i22-control-test",
+        "--exact",
+        "engine::tests::width_cache_concurrent_fills_preserve_policy",
+        "--nocapture"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/tmp/glass-i22-candidate-test",
+        "--exact",
+        "engine::tests::width_cache_agrees_with_the_crate_everywhere",
+        "--nocapture"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/tmp/glass-i22-candidate-test",
+        "--exact",
+        "engine::tests::width_cache_concurrent_fills_preserve_policy",
+        "--nocapture"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "/tmp/glass-i21-restored-test",
+        "--exact",
+        "speed::c1_row_runs_preserve_parser_state",
+        "--nocapture"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "bench",
+        "-p",
+        "test*.py"
+      ],
+      "exit": 0
+    }
+  ],
+  "previous_frozen_files": 76,
+  "frozen_files": null,
+  "note": "Integrity/correctness replay only; not new timing, source rebuild or championship acceptance."
+}
