@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-campaign-audit-30/audit.py", line 145, in <module>
+    print(json.dumps(run(), indent=2, sort_keys=True))
+                     ~~~^^
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-campaign-audit-30/audit.py", line 122, in run
+    engines = {name: engine(name) for name in ('exclusive-column', 'width-handle', 'static-width-cache', 'parser-authority', 'authority-handoff', 'csi-outlining', 'decoded-handoff', 'scalar-domain', 'multibyte-outline')}
+                     ~~~~~~^^^^^^
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-campaign-audit-30/audit.py", line 97, in engine
+    analysis = analyzer.analyze(raw)
+TypeError: analyze() takes 0 positional arguments but 1 was given

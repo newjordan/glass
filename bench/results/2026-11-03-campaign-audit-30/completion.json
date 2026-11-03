@@ -1,0 +1,15 @@
+{
+  "schema": "glass.audit30-completion/v1",
+  "status": "reported",
+  "checkpoint": "checkpoint-final.json",
+  "checkpoint_sha256": "ffb1ae1c1745469a35cdd23f542a761b8def7a2d9b6676b8a43cf0647b38ca49",
+  "checkpoint_exit": 0,
+  "championship_established": false,
+  "runtime_promotion": false,
+  "notes": [
+    "No benchmark/build/deploy/submit or Rust runtime source edit.",
+    "6 pre-existing index-replay tests passed.",
+    "Preceding i29 canonical checkpoint/final frozen replay passed before audit.",
+    "No all-metric acceptance command is bound."
+  ]
+}

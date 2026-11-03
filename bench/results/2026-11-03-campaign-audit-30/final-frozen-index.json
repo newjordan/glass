@@ -1,0 +1,17 @@
+{
+  "schema": "glass.historical-evidence-index/v1",
+  "manifests": [
+    {
+      "path": "bench/results/2026-11-03-campaign-audit-30/evidence-sha256.json",
+      "sha256": "a5878f933057cf1bf69354237f01f93e18b312ff32bcece965dc8b72629e9ebc",
+      "source_root": ".",
+      "snapshots": {}
+    },
+    {
+      "path": "bench/results/2026-11-03-campaign-audit-30/receipt-evidence-sha256.json",
+      "sha256": "20af68bb256fc642db6b15e4016df4d31ee79e931de8aa94146a9ff517c3e753",
+      "source_root": ".",
+      "snapshots": {}
+    }
+  ]
+}

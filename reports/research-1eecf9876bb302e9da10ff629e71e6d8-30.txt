@@ -1,0 +1,353 @@
+# Iteration 30 — mandatory campaign evidence review
+
+UTC 2026-11-03. Starting HEAD 8448571. Status: reported local research.
+No runtime promotion, championship, acceptance, benchmark capture, build,
+submission or deployment. The operator's every-metric objective remains OPEN.
+
+## 1. What this review actually does
+
+The mandatory 15-iteration review is performed before any further costly
+experiment. Its explicit claim ledger covers iterations 15–29; the earlier
+iteration-15 audit remains the historical inventory for iterations 1–14.
+Historical files are not repaired, reworded, selectively pooled or deleted.
+
+Primary new implementation and evidence:
+  bench/results/2026-11-03-campaign-audit-30/audit.py
+  bench/results/2026-11-03-campaign-audit-30/claims.json
+  bench/results/2026-11-03-campaign-audit-30/target-contract.json
+  bench/results/2026-11-03-campaign-audit-30/input-sha256.json
+  bench/results/2026-11-03-campaign-audit-30/audit-with-sensitivity.json
+
+The audit invokes the EXISTING read-only terminal, engine, scheduler, contention,
+hot-placement and role-partition analyzers, then independently computes the
+throughput ratios, within-series six-workload Holm corrections and reciprocals.
+It explicitly distinguishes current selected, historical selected and unpromoted
+combined executable series. It checks hashes rather than rebuilding binaries.
+Temporary binary availability remains a dependency, not an archival guarantee.
+
+The preceding iteration's verify.py exited 0 before this review, and its
+final-frozen-index.json replay exited 0 (58 file references). Copies of those
+outputs are prior-checkpoint.json and prior-frozen-replay.json in this directory.
+The checkpoint reports 53 references for its base evidence set; the separate
+final frozen index covers 58. Those numbers are different scopes, not conflicting
+counts. The old verifier is not represented as a fresh full Rust-suite run.
+
+A pre-existing verifier entry point also passed:
+  python3 -B -m unittest discover -s bench -p test_replay_evidence_index.py
+  6 tests, OK; existing-index-tests.log retains the output.
+
+The expanded audit directly replays:
+* 204 historical terminal sessions: current selected 60, combined replication
+  90 (three arms, 30 rounds), historical selected tail-policy gate 54 (three arms,
+  18 rounds). Only the stated comparator is scored; no cross-series pooling.
+* 230 historical engine sessions in 103 blocks across nine screens, INCLUDING
+  a four-arm, 12-block factorial. These are not 103 homogeneous independent pairs.
+* 458 diagnostic sessions: scheduler balanced 36; contention balanced 72;
+  reciprocal hot-placement confirmation 100 and replication 100; whole-core
+  role-partition confirmation 150. Pilot/smoke and rejected runs are not folded
+  into these counts or used to rescue inference.
+
+The explicit final input catalog binds 308 paths; underlying diagnostic capture
+manifests are additionally checked by the existing analyzers. The final frozen
+index/receipt is the authority for the final local package's file count. Hash
+consistency is not external authenticity or timing accuracy.
+
+## 2. Literal target delta: the CURRENT selected executable
+
+Selected terminal SHA256:
+ d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c
+Ghostty SHA256:
+ ef28bf3a0f6ead69014da86ab0c9a2ef30fcf3bf297a6a27c4c18dfc80a56a62
+
+Primary source:
+ bench/results/2026-11-03-role-partition/shipping-vs-ghostty/
+Protocol:
+ bench/results/2026-11-03-role-partition/competitor-protocol.json
+Independent retained summary:
+ bench/results/2026-11-03-role-partition/competitor-summary.json
+
+Thirty alternating rounds, 60 terminal sessions. Ratios below are medians of
+paired selected/Ghostty throughput ratios, NOT ratios of separate medians.
+Sign tests have six-workload Holm correction within THIS series only.
+
+| Workload | selected/Ghostty | W/L | Holm p | Corrected positive lead? | Own gain to observed parity |
+|---|---:|---:|---:|---|---:|
+| ASCII | 0.947116395 | 10/20 | .197474293 | No | +5.583644% |
+| Unicode | 0.929112259 | 3/27 | .0000252910 | No; negative direction | +7.629621% |
+| Truecolor | 1.181802248 | 30/0 | .0000000111759 | Yes, scoped | 0 |
+| Cursor motion | 1.098724997 | 30/0 | .0000000111759 | Yes, scoped | 0 |
+| Scroll region | 0.989284971 | 13/17 | .584664712 | No | +1.083108% |
+| TUI frames | 1.062165424 | 29/1 | .000000230968 | Yes, scoped | 0 |
+
+Own gain = 100*(1/paired_median - 1), clamped at zero for already-positive point
+ratios. It is the literal arithmetic delta to the OBSERVED parity point, not a
+confidence bound, a prediction of a new program or a superiority margin. For
+example Unicode is 7.088774% below Ghostty in this ratio convention but requires
+7.629621% more own throughput just to reach that observed parity point.
+
+The workload score is three of six corrected positive throughput leads. ASCII
+and scroll-region inconclusiveness is not proof of equivalence. Unicode's small
+p-value is evidence AGAINST a lead under this test, not a win. Serial shared-host
+rounds may not satisfy independent-sign assumptions; no campaign-wide adaptive
+search correction is claimed.
+
+## 3. Do not transfer wins from the unpromoted combined candidate
+
+Combined immutable-width/extras candidate SHA256:
+ 6111147b21a4bc6d112cfb359bd8e3535b4c7bdd03e0803b550534e8e45c3369
+Its separate fresh control SHA256:
+ c14daae87141541f747095ec77644e9189e009251716408e2630abd7a294a1ed
+Neither identity is the selected executable above.
+Primary source:
+ bench/results/2026-11-03-marks-width/replication-gate/terminal-summary.json
+Raw tput-*.json outputs and recorded executable hashes are replayed directly.
+
+| Workload | combined/Ghostty | W/L | Holm p |
+|---|---:|---:|---:|
+| ASCII | .965507247 | 10/20 | .197474293 |
+| Unicode | 1.160877587 | 24/6 | .004292719 |
+| Truecolor | 1.326580008 | 29/1 | .000000346452 |
+| Cursor motion | 1.126855052 | 26/4 | .000297381 |
+| Scroll region | 1.001272556 | 15/15 | 1 |
+| TUI frames | 1.082681943 | 26/4 | .000297381 |
+
+Four corrected leads, not six; ASCII needs +3.572501% own throughput to observed
+parity. Scroll's 15/15 split is not superiority. Startup, quiet RTT and resource
+observations on the combined candidate do not fill actual key-to-screen or
+all-metric superiority requirements. No promotion is inferred from this audit.
+
+## 4. New temporal reconciliation: identical binaries, nonidentical scores
+
+The historical selected comparison in iteration15 is:
+ bench/results/2026-11-03-read-shape/tail-policy/gate/terminal-summary.json
+It uses the SAME selected SHA (as glass-alt) and SAME Ghostty SHA. The audit also
+checks byte-identical hashes of bench/run-tput.sh, bench/lib.sh and bench/tput.py,
+and the same reported 154x39 geometry. The series differ in time, 18 versus 30
+rounds, arm population (three versus two), and run environment/conditions.
+Those differences are NOT experimentally isolated.
+
+| Workload | historical selected/Ghostty | latest selected/Ghostty | latest / historical ratio |
+|---|---:|---:|---:|
+| ASCII | 1.022268781 | .947116395 | .926484709 |
+| Unicode | .952259949 | .929112259 | .975691838 |
+| Truecolor | 1.382689587 | 1.181802248 | .854712626 |
+| Cursor motion | 1.127791038 | 1.098724997 | .974227459 |
+| Scroll region | 1.257371190 | .989284971 | .786788324 |
+| TUI frames | 1.096165025 | 1.062165424 | .968983137 |
+
+This is descriptive temporal variation, NOT an inferential software regression
+or a causal host-load estimate. It demonstrates that equal executables, harness
+hashes and geometry do not make their scores timeless. Do not pool these rounds
+or choose the better old score. The ~5.013342% Unicode parity delta in report15
+was valid for that series; treating it as the current gap is stale. Latest gap
+is 7.629621%, 2.616278 percentage points larger in the reciprocal convention.
+
+An engine consistency crosscheck is separate: iteration24 authority-handoff and
+iteration26 authority-inline reuse EXACT control and candidate binary hashes
+(288161ef... and cfa915a6...). Unicode contrasts are .996013048 and .999102334;
+ASCII 1.068748722 and 1.083784697. These are descriptive repeats with different
+series/blocking, not independent pooled validation. The truecolor regressions
+repeat: .927055306 and .926358834.
+
+## 5. New retrospective sensitivity: median pass rather than fastest pass
+
+The actual producer bench/tput.py, lines around 94–103, uses time.perf_counter(),
+selects min(runs), and computes official mb_s from that UNROUNDED fastest tuple.
+It stores all three secs values rounded to 3 decimal places. Consequently the
+retained secs cannot exactly reproduce official MB/s. That is a known producer
+precision limit, not automatically evidence corruption.
+
+After the mandatory score reconciliation, without a new capture, audit.py
+computes a RETROSPECTIVE alternative: one median-of-three-time throughput ratio
+per session, paired once per round. Internal passes are NOT added as samples.
+This does not replace the frozen primary estimand, create a new independent
+replication, or rescue any rejected policy/candidate.
+
+| Selected workload | session-median ratio | W/L/rounded ties | six-workload Holm p | quantization-only median interval |
+|---|---:|---:|---:|---|
+| ASCII | .922422422 | 9/21/0 | .085547891 | [.892121212, .953734815] |
+| Unicode | .945037221 | 6/23/1 | .006947100 | [.929832061, .960484023] |
+| Truecolor | 1.188888889 | 30/0/0 | .0000000111759 | [1.176795580, 1.201117318] |
+| Cursor motion | 1.098591549 | 28/2/0 | .00000347197 | [1.083916084, 1.113475177] |
+| Scroll region | 1 | 7/12/11 | .359283447 | [.935483871, 1.068965517] |
+| TUI frames | 1.070869420 | 30/0/0 | .0000000111759 | [1.057590332, 1.084321087] |
+
+For each observed median a,b, the time-quantization interval is
+ [(b-.0005)/(a+.0005), (b+.0005)/(a-.0005)]. The interval for the series median
+uses medians of those endpoints; monotonicity of median supplies this bound.
+It bounds only possible 1ms rounding, NOT sampling uncertainty, host effects or
+a confidence interval. All retained pass times are positive and above .0005.
+Boundary-inclusive intervals are conservative for round-to-even ties.
+
+There are 19/30 selected scroll-region rounds whose interval includes parity;
+11 are recorded rounded ties. Rounded equality is not exact timing equality.
+ASCII's and Unicode's entire median quantization intervals remain below one.
+The qualitative selected result is unchanged: three conditional positive leads,
+ASCII/Unicode not leads, scroll unresolved. Combined candidate sensitivity also
+retains four conditional leads, with scroll median 1 and ASCII .961481481.
+Its Unicode Holm p changes from .004293 in the primary estimand to .048374405
+in this retrospective estimand: estimator choice matters even without changing
+qualitative disposition. Rounded-pass sign p-values themselves remain
+conditional/descriptive, not quantization-robust superiority proofs.
+
+## 6. Reconciled active experiment ledger, iterations 16–29
+
+Exact protocols, raw inputs and scope limitations are enumerated explicitly in
+claims.json, and bound by input-sha256.json. The table is not a new experiment.
+
+| Iteration | Direction | Primary disposition / retained finding |
+|---|---|---|
+| 16 | Scheduler-state decomposition | Own-reader runnable delay measurable after calibration; schedstat residual remains unclassified, not proven sleep/block time. No optimization or neutral-observer claim. |
+| 17 | Controlled reader contention | Busy treatment and observer interaction measurable in 72-session balanced series. Observer ratio-of-ratios exploratory after capture. Not proof of the cause of Ghostty gap. |
+| 18 | Reciprocal hot-core placement | Secondary ASCII effects, but no uniformly replicated primary-family superiority. Initial 100 sessions rejected under frozen v1 remain rejected. V2 confirmation/replication separate; no policy ships. |
+| 19 | Whole-core role masks | Split/auto ASCII point ratio 1.053058, simultaneous one-sided lower bound .924927 fails >1.05 benefit gate. Unicode/scroll guards also fail; split/shared .998076 supplies no role-separation benefit. Independent shipping refresh is section2, not a role-policy win. |
+| 20 | Exclusive-column row lane | Unicode .979261 fails >=1.02 target and .98 point guard. Pending-wrap mutation-sensitive semantic regression retained. |
+| 21 | Row-scoped width handle | Unicode 1.009280 misses target. Separate cold C1 instrumentation exposes unnecessary cache initialization; semantic C1 test alone does not detect allocation. Runtime rejected. |
+| 22 | Static zero-initialized width cache | Cold first lookup thread CPU median 116047ns to 1994ns; warm Unicode 1.001949 misses target. Process max-RSS high-water delta is not retained-memory proof. Runtime rejected. |
+| 23 | Authoritative ground parser | ASCII/region improve, truecolor .922042 fails .98 guard. Exact source artifact provenance helper defect was fixed, not silently ignored. Runtime rejected. |
+| 24 | Simple-CSI ground handoff | ASCII 1.068749 and region 1.068974 improve; TRUECOLOR .927055 fails .98 guard; Unicode .996013 PASSES that point guard. Mutation-sensitive parser authority invalidation retained. Runtime rejected. |
+| 25 | IP/instruction attribution | Spill/leading-byte regions are measured leads, not dynamic stall causality. Requested 100us sample timer effectively ~1ms; full lifecycle/all-rounds samples not fastest-pass cost. No runtime candidate. |
+| 26 | Four-arm CSI outlining | Primary ASCII 1.074813, region 1.059254 clear; Unicode .975962 fails .98 guard. Truecolor 1.049426 passes. Runtime rejected. |
+| 27 | Decoded lookahead handoff | Separate instrumented Unicode run has 105136 fewer decode attempts (4.1341%); timing Unicode .918109, 1/12 wins. Same entry addresses yet larger hot routine. Runtime rejected. |
+| 28 | Decoded-scalar-domain validation | Unicode 1.005126, 6/12, p=1 misses >=1.02 target; TUI .985766 adverse, Holm .038086. Protocol substitutions and replay adapters disclosed additively. Runtime rejected. |
+| 29 | Multibyte outlining | print_utf8 shrinks 8524→7987 bytes, 1967→1820 instructions; helper adds 427 bytes/120 instructions. Unicode .915050, 2/12 wins, Holm .231445, fails target/point guard. Runtime rejected. |
+
+All nine runtime screens are replayed; none clears its frozen operational
+engine screen or promotion gate. A point guard is not statistical equivalence.
+The final multibyte loss is a strong point loss but NOT a six-workload corrected
+significance claim at p=.231445. Rejection does not require manufacturing such
+significance; the prospective target/guard was not met.
+
+## 7. Codegen contradictions resolved; no invented cause
+
+* i26 Unicode regresses although its relocation-masked print_utf8 body retains
+  the same 1967 instructions. Caller/callee/layout/data-path effects remain
+  hypotheses; identical masked instructions do not imply equal dynamic cost.
+* i27 holds print_utf8 and Engine::apply entry addresses constant but Unicode
+  still regresses. Entry-address movement is NOT necessary for regression.
+* i29 holds those entry addresses constant, shrinks print_utf8 by 6.30%, and
+  preserves Engine::apply's relocation-masked sequence, but Unicode still loses
+  ~8.495% point throughput. Caller size reduction alone is NOT sufficient.
+* i29's helper adds code outside the caller: caller-only size must not be called
+  whole-executable shrinkage. Total cache/stall causes remain unmeasured.
+* Fewer operations in separately instrumented code do not prove lower cost in
+  the uninstrumented timing ELF. The decode-counter observation is not rescinded;
+  its performance inference is rejected.
+* Same binary temporal variation does not prove earlier effects fictitious or
+  authorize post-hoc corrections. It makes controlled conditions and prospective
+  same-build repeatability a prerequisite, not an optional decoration.
+
+## 8. Correctness/evidence receipts, not additive performance progress
+
+The audit records exact historical census keys, avoiding a misleading universal
+"383 tests freshly rerun everywhere" narrative:
+* i20: 380 terminal tests, 11 ignored; 12800 differential streams reported.
+* i21: 381 terminal tests, 11 ignored; 12800 differential streams reported.
+* i22: candidate 382, restored control 381; 12800 streams per arm.
+* i23: 382 terminal tests per arm; 12800 streams per arm.
+* i24: 383 per correct arm; 12800 streams per correct arm. Intentionally wrong
+  mutation controls must fail; they are not extra correctness wins.
+* i26: 383 tests +12800 streams per NEW outlined arm/restored control; unchanged
+  inline arms were prior exact binaries, not newly full-tested for this series.
+* i27–29: each historical screen reports 383 tests +12800 streams per arm.
+* Historical corruption rejection counts vary by experiment: i19 15 (plus one
+  reported-not-rejected policy case), i20 9, i21 9, i22 23, i23 17, i24 22,
+  i26–29 23 each. Do not sum them as unique independent adversarial cases.
+* Seed replays and post-commit frozen replays improve deterministic evidence
+  reproducibility. They are not extra throughput rounds or championship points.
+
+No full Rust suite or differential stream campaign is freshly executed here.
+The prior canonical checkpoint checked retained logs and its own corruption
+replays; audit.py replays stored measurements, validates preservation, and
+retains original receipt scope. The 6 fresh Python index tests are stated
+separately. Correctness and provenance work is real engineering progress;
+it is not closing an absent performance gap by accounting convention.
+
+## 9. Provenance failures and corrections retained, not erased
+
+Historical disclosed failures remain primary artifacts:
+* v1 hot-placement capture rejected for a non-target transition. V2 revised
+  admissibility before new capture; old data not reclassified as a v1 success.
+* Exact-arm source/build provenance issue in authoritative parser work; corrected
+  helper and its tests distinguish emitted artifact from guessed latest file.
+* Frozen historical docs/source mismatches require EXPLICIT snapshot mapping.
+  No fallback to live bytes or rewriting old evidence to match new docs.
+* i25 empty checkpoint-initial.json is retained failure, NOT malformed success;
+  additive checkpoint-current.json is its actual corrected receipt.
+* i28 broad source token check matched a comment and frozen replay later failed;
+  additive adapters, protocol clarification and two retained failures prevent
+  retrospective alteration of original timing protocol/results.
+* Prior shell grep/malformed taskset/read-shape C build failures documented by
+  iteration15 remain failures, not redacted into an unbroken green campaign.
+
+This review also had failures, retained locally:
+* Six read-only exploration errors/seat timeouts are disclosed in
+  exploration-errors.txt. Two timed-out reviewer seats supply advisory partial
+  notes only, never verification evidence.
+* First audit call supplied raw to no-argument historical analyzers. It exited1;
+  audit-initial.stderr and empty audit-initial.json are retained. Corrected only
+  the NEW adapter; audit-second.json exited0. No original analyzer was changed.
+* A draft claim24 copied the wrong later-series tradeoff. Primary raw says
+  truecolor .927055 fails and Unicode .996013 passes. New claims.json corrected
+  before freezing; intermediate draft outputs are explicitly NOT final claims.
+* Inventory probes encountered retained empty historical JSON and assumed a
+  guessed absent manifest/refresh path. Canonical replay uses actual schemas,
+  source-snapshot declarations and emitted producer, not filename guesses.
+
+Intermediate audit.json/audit-expanded.json/audit-second.json are retained
+work-in-progress snapshots. Final analysis is audit-with-sensitivity.json,
+reproduced by the final audit.py and checked by verify.py; only the final
+checkpoint/frozen replay establishes this review's local package consistency.
+
+## 10. Missing metrics and next necessary action
+
+Literal target is not "one engine Unicode median >1.02" and not a favorable
+geomean. At minimum the operator's every-metric demand needs one selected exact
+artifact, explicit platform/workload coverage and superiority on every agreed
+metric without taking incompatible wins from different binaries/series.
+No bound acceptance command or agreed finite worldwide coverage exists.
+target-contract.json is a transparent unresolved requirements map, NOT a
+self-authorized definition of winning.
+
+Still unclosed: ASCII/Unicode/scroll terminal throughput; inferential CPU-cost
+superiority (retained term_cpu_s ratios are descriptive); startup through first
+visible output; idle/loaded RAM and VRAM; actual idle and flooded key-to-screen
+latency; rendered-frame delivery. DA1 quiet RTT and key-to-PTY stop at different
+stages than displayed echo. The Linux host/geometry is not macOS/other GPU or
+worldwide evidence. Differential terminal streams do not exhaust compatibility.
+Old startup/visible/latency figures are scoped historical observations, not
+fresh all-metric Ghostty gates for a newly promoted build.
+
+The next necessary research action, NOT executed or claimed successful here:
+1. Agree the bounded acceptance scope/metrics and keep current raw scoreboards
+   separate. Correct any new summary carrying the stale 5.01% selected gap.
+2. Freeze a bounded, same-build A/A protocol before another optimization:
+   equal-hash copies in identical two-arm populations, matched process/desktop
+   state, fixed geometry/read shape, balanced order and predeclared load/thermal
+   admission. Retain all captures and no optional stopping. This is distinct
+   from previous affinity/contender policies: test measurement repeatability,
+   not optimize placement. Record raw unrounded pass times prospectively in a
+   NEW schema if needed; never rewrite old 3dp outputs. The retrospective
+   sensitivity result cannot choose the next primary estimator after seeing it.
+3. Only after repeatability is quantified, pursue one mechanism-level change
+   and a prospective six-workload nonregression screen. Do not repeat decoded
+   lookahead/scalar/outlining rewrites merely because they reduce static counts.
+4. Escalate a genuinely surviving exact artifact to paired end-to-end Ghostty
+   and the missing metric suite; actual display-latency instrumentation and
+   applicability still need explicit implementation/validation. No championship
+   statement until those results exist and satisfy the agreed gates.
+
+## 11. Preservation
+
+The review starting-state.json protects the selected executable, all 120 tracked
+crate Rust sources, all 6664 previously tracked bench/results and report files,
+and four shared documentation files (README.md, CHANGELOG.md, bench/README.md,
+docs/PERFORMANCE.md). They remain unchanged. Existing untracked work was not
+adopted, cleaned or reverted. New work is additive in this audit directory and
+this report. The final verifier checks this preservation and frozen inputs.
+
+No runtime speedup was delivered in this review. Verifiable contributions are
+the reconciled exact-artifact scoreboard, literal target delta, direct replay of
+negative findings, stale-gap correction, controlled interpretation of temporal
+variation, and a rounded-pass sensitivity result with explicit quantization
+limits. The campaign is not complete.

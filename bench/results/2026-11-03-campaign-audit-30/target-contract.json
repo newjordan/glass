@@ -1,0 +1,53 @@
+{
+  "schema": "glass.unbound-target-contract/v1",
+  "objective": "Beat Ghostty on every metric; no championship established.",
+  "acceptance_bound": false,
+  "scope_agreed": false,
+  "literal_delta": "For the selected exact executable: clear all six prospective end-to-end throughput superiority gates, and establish lower-is-better superiority on CPU, startup, idle resource use, actual key-to-screen latency (idle and load), with correctness/feature compatibility and platform scope explicit. Current throughput-only three-of-six result is insufficient.",
+  "throughput": {
+    "direction": "higher is better",
+    "current_cleared": [
+      "truecolor",
+      "cursor_motion",
+      "tui_frames"
+    ],
+    "remaining": [
+      "ascii",
+      "unicode",
+      "scroll_region"
+    ],
+    "warning": "Observed parity reciprocals in audit output are not superiority confidence bounds or candidate requirements."
+  },
+  "unclosed_metric_families": [
+    {
+      "metric": "CPU cost",
+      "reason": "Latest retained per-workload CPU-second ratios are descriptive; no all-metric inferential CPU acceptance."
+    },
+    {
+      "metric": "Startup: program/window/first visible output",
+      "reason": "No fresh all-startup selected-vs-Ghostty promotion comparison in the latest series. Old kitty and macOS figures are scoped historical comparisons, not current Ghostty acceptance."
+    },
+    {
+      "metric": "Idle RAM/VRAM and loaded resource use",
+      "reason": "No fresh exact-build, paired superiority gate in the latest series. Isolated lookup minor faults and high-water RSS deltas do not fill this."
+    },
+    {
+      "metric": "Key-to-screen latency, idle and flooding",
+      "reason": "Key-to-PTY and DA1 quiet RTT terminate before displayed echo; neither proves this metric."
+    },
+    {
+      "metric": "Frame delivery/render latency",
+      "reason": "DA1 throughput acknowledges parsing; it does not certify first/steady displayed frame latency."
+    },
+    {
+      "metric": "Compatibility and supported platform scope",
+      "reason": "Terminal differential streams cover their chosen inputs, not complete escape/Unicode/GPU/Wayland/macOS coverage or the world."
+    }
+  ],
+  "sources": [
+    "docs/PERFORMANCE.md",
+    "bench/results/2026-11-03-role-partition/competitor-protocol.json",
+    "bench/results/2026-11-03-campaign-audit/audit.json"
+  ],
+  "status": "requirements unresolved, not a self-authorized acceptance definition"
+}

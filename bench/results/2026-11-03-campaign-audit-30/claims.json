@@ -1,0 +1,177 @@
+[
+  {
+    "iteration": 15,
+    "claim": "Previous audit distinguishes selected executable from unpromoted combined candidate.",
+    "disposition": "retained historical audit",
+    "primary_sources": [
+      "bench/results/2026-11-03-campaign-audit/audit.json",
+      "bench/results/2026-11-03-campaign-audit/historical-replay.json"
+    ],
+    "limitation": "Its latest selected-build series is superseded temporally by iteration19, not invalidated or pooled. Its 5.013% Unicode parity delta is not current."
+  },
+  {
+    "iteration": 16,
+    "claim": "Own-reader schedstat calibration distinguishes runnable delay from sleep; scheduler observer is not proven neutral.",
+    "disposition": "diagnostic, no runtime candidate",
+    "primary_sources": [
+      "bench/results/2026-11-03-scheduler-shape/balanced-analysis.json",
+      "bench/results/2026-11-03-scheduler-shape/README.md",
+      "bench/results/2026-11-03-scheduler-shape/calibration.jsonl"
+    ],
+    "limitation": "sched_schedstats=0 alone does not establish counter incapability; residual is unclassified, not pure blocking. README explanation is not an extra measurement."
+  },
+  {
+    "iteration": 17,
+    "claim": "Artificial own-reader contention changes runnable wait and interacts with observers.",
+    "disposition": "diagnostic, not optimization",
+    "primary_sources": [
+      "bench/results/2026-11-03-reader-contention/balanced-replay.json",
+      "bench/results/2026-11-03-reader-contention/exploratory-observer-contrasts.json",
+      "bench/results/2026-11-03-reader-contention/corruption-replay.json"
+    ],
+    "limitation": "72 confirmatory sessions plus separate pilot/smoke; ratio-of-ratios exploratory after capture. No Ghostty causal gap attribution."
+  },
+  {
+    "iteration": 18,
+    "claim": "Reciprocal hot-core placement has secondary ASCII leads but no uniformly replicated primary-family superiority.",
+    "disposition": "policy not promoted",
+    "primary_sources": [
+      "bench/results/2026-11-03-hot-placement/confirmatory-replay.json",
+      "bench/results/2026-11-03-hot-placement/replication-replay.json",
+      "bench/results/2026-11-03-hot-placement/initial-rejection.json"
+    ],
+    "limitation": "Initial 100 sessions rejected under v1 remain rejected. V2 frozen before new capture; non-target transitions are accepted AND reported, not corruptions rejected."
+  },
+  {
+    "iteration": 19,
+    "claim": "Whole-core role-mask primary gate fails; independent shipping refresh establishes only three corrected throughput leads.",
+    "disposition": "policy rejected, selected scoreboard updated",
+    "primary_sources": [
+      "bench/results/2026-11-03-role-partition/confirmatory-replay.json",
+      "bench/results/2026-11-03-role-partition/competitor-summary.json",
+      "bench/results/2026-11-03-role-partition/competitor-protocol.json"
+    ],
+    "limitation": "A positive point ratio is not a confidence-bound pass. CPU seconds ratios descriptive, no global CPU superiority test."
+  },
+  {
+    "iteration": 20,
+    "claim": "Unicode .979261 misses >=1.02 target and .98 point guard; retain pending-wrap mutation-sensitive regression.",
+    "disposition": "runtime rejected, not terminal/Ghostty evidence",
+    "primary_sources": [
+      "bench/results/2026-11-03-exclusive-column/protocol.json",
+      "bench/results/2026-11-03-exclusive-column/engine-decision.json",
+      "bench/results/2026-11-03-exclusive-column/engine-pairs.json"
+    ],
+    "limitation": "Replayed independently from raw in audit.py; within-series operational engine screen, not noninferiority proof or campaign-wide correction. Test counts are historical receipts, not rerun full suites."
+  },
+  {
+    "iteration": 21,
+    "claim": "Unicode 1.009280 misses target; separate cold C1 diagnostic initializes candidate cache unnecessarily; C1 semantic test does not detect allocation.",
+    "disposition": "runtime rejected, not terminal/Ghostty evidence",
+    "primary_sources": [
+      "bench/results/2026-11-03-width-handle/protocol.json",
+      "bench/results/2026-11-03-width-handle/engine-decision.json",
+      "bench/results/2026-11-03-width-handle/engine-pairs.json",
+      "bench/results/2026-11-03-width-handle/cold-result.json",
+      "bench/results/2026-11-03-width-handle/mutation-result.json"
+    ],
+    "limitation": "Replayed independently from raw in audit.py; within-series operational engine screen, not noninferiority proof or campaign-wide correction. Test counts are historical receipts, not rerun full suites."
+  },
+  {
+    "iteration": 22,
+    "claim": "Cold first lookup improves but warm Unicode 1.001949 misses target; cold process diagnostic not full startup/RSS/throughput superiority.",
+    "disposition": "runtime rejected, not terminal/Ghostty evidence",
+    "primary_sources": [
+      "bench/results/2026-11-03-static-width-cache/protocol.json",
+      "bench/results/2026-11-03-static-width-cache/engine-decision.json",
+      "bench/results/2026-11-03-static-width-cache/engine-pairs.json",
+      "bench/results/2026-11-03-static-width-cache/cold-replay.json",
+      "bench/results/2026-11-03-static-width-cache/cold-pairs.json"
+    ],
+    "limitation": "Replayed independently from raw in audit.py; within-series operational engine screen, not noninferiority proof or campaign-wide correction. Test counts are historical receipts, not rerun full suites."
+  },
+  {
+    "iteration": 23,
+    "claim": "ASCII/region improve but truecolor .922042 violates guard. Build provenance failure fixed, not hidden.",
+    "disposition": "runtime rejected, not terminal/Ghostty evidence",
+    "primary_sources": [
+      "bench/results/2026-11-03-parser-authority/protocol.json",
+      "bench/results/2026-11-03-parser-authority/engine-decision.json",
+      "bench/results/2026-11-03-parser-authority/engine-pairs.json"
+    ],
+    "limitation": "Replayed independently from raw in audit.py; within-series operational engine screen, not noninferiority proof or campaign-wide correction. Test counts are historical receipts, not rerun full suites."
+  },
+  {
+    "iteration": 24,
+    "claim": "ASCII/region improve but truecolor .927055 violates .98 guard; Unicode .996013 passes point guard. Mutation-sensitive authority invalidation regression retained.",
+    "disposition": "runtime rejected, not terminal/Ghostty evidence",
+    "primary_sources": [
+      "bench/results/2026-11-03-authority-handoff/protocol.json",
+      "bench/results/2026-11-03-authority-handoff/engine-decision.json",
+      "bench/results/2026-11-03-authority-handoff/engine-pairs.json"
+    ],
+    "limitation": "Replayed independently from raw in audit.py; within-series operational engine screen, not noninferiority proof or campaign-wide correction. Test counts are historical receipts, not rerun full suites."
+  },
+  {
+    "iteration": 25,
+    "claim": "Exact-IP samples and disassembly suggest CSI spill cost and Unicode leading-byte hot region.",
+    "disposition": "diagnostic, not causal attribution",
+    "primary_sources": [
+      "bench/results/2026-11-03-instruction-attribution/main-analysis.json",
+      "bench/results/2026-11-03-instruction-attribution/crosscheck.json"
+    ],
+    "limitation": "Requested 100us timer delivers roughly 1ms; three plain pairs, setup/all-rounds/teardown samples are not fastest-pass dynamic stall cost."
+  },
+  {
+    "iteration": 26,
+    "claim": "Factorial primary ASCII/region clear, Unicode .975962 fails .98 guard. Identical masked print_utf8 code does not imply identical dynamic cost.",
+    "disposition": "runtime rejected, not terminal/Ghostty evidence",
+    "primary_sources": [
+      "bench/results/2026-11-03-csi-outlining/protocol.json",
+      "bench/results/2026-11-03-csi-outlining/analysis.json",
+      "bench/results/2026-11-03-csi-outlining/raw.json",
+      "bench/results/2026-11-03-csi-outlining/codegen.json",
+      "bench/results/2026-11-03-csi-outlining/counter-diagnostic.json"
+    ],
+    "limitation": "Replayed independently from raw in audit.py; within-series operational engine screen, not noninferiority proof or campaign-wide correction. Test counts are historical receipts, not rerun full suites."
+  },
+  {
+    "iteration": 27,
+    "claim": "Separate instrumented decoding count decreases 4.13%, timing Unicode .918109. Same entry addresses do not imply same complete layout.",
+    "disposition": "runtime rejected, not terminal/Ghostty evidence",
+    "primary_sources": [
+      "bench/results/2026-11-03-decoded-handoff/protocol.json",
+      "bench/results/2026-11-03-decoded-handoff/analysis.json",
+      "bench/results/2026-11-03-decoded-handoff/raw.json",
+      "bench/results/2026-11-03-decoded-handoff/decode-census-analysis.json",
+      "bench/results/2026-11-03-decoded-handoff/decode-census-raw.json",
+      "bench/results/2026-11-03-decoded-handoff/codegen.json"
+    ],
+    "limitation": "Replayed independently from raw in audit.py; within-series operational engine screen, not noninferiority proof or campaign-wide correction. Test counts are historical receipts, not rerun full suites."
+  },
+  {
+    "iteration": 28,
+    "claim": "Unicode 1.005126 misses target; TUI .985766 is adverse. Protocol substitutions and replay adapter corrections disclosed additively.",
+    "disposition": "runtime rejected, not terminal/Ghostty evidence",
+    "primary_sources": [
+      "bench/results/2026-11-03-scalar-domain/protocol.json",
+      "bench/results/2026-11-03-scalar-domain/analysis.json",
+      "bench/results/2026-11-03-scalar-domain/raw.json",
+      "bench/results/2026-11-03-scalar-domain/protocol-clarification.json",
+      "bench/results/2026-11-03-scalar-domain/codegen.json"
+    ],
+    "limitation": "Replayed independently from raw in audit.py; within-series operational engine screen, not noninferiority proof or campaign-wide correction. Test counts are historical receipts, not rerun full suites."
+  },
+  {
+    "iteration": 29,
+    "claim": "Caller shrinks 8524 to 7987 bytes, 1967 to 1820 instructions, Unicode .915050 misses target and .98 guard; helper adds 427 bytes.",
+    "disposition": "runtime rejected, not terminal/Ghostty evidence",
+    "primary_sources": [
+      "bench/results/2026-11-03-multibyte-outline/protocol.json",
+      "bench/results/2026-11-03-multibyte-outline/analysis.json",
+      "bench/results/2026-11-03-multibyte-outline/raw.json",
+      "bench/results/2026-11-03-multibyte-outline/codegen.json"
+    ],
+    "limitation": "Replayed independently from raw in audit.py; within-series operational engine screen, not noninferiority proof or campaign-wide correction. Test counts are historical receipts, not rerun full suites."
+  }
+]

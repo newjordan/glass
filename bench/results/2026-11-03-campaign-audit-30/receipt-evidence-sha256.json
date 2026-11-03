@@ -1,0 +1,8 @@
+{
+  "schema": "glass.research-evidence/v1",
+  "sha256": {
+    "bench/results/2026-11-03-campaign-audit-30/checkpoint-final.json": "ffb1ae1c1745469a35cdd23f542a761b8def7a2d9b6676b8a43cf0647b38ca49",
+    "bench/results/2026-11-03-campaign-audit-30/checkpoint-final.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bench/results/2026-11-03-campaign-audit-30/completion.json": "27a416ec3fbdb72cab5ee7a24b7daebab544de0faa688b71818c44b5631bed93"
+  }
+}

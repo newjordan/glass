@@ -1,0 +1,11 @@
+Read-only exploration failures retained as disclosures; no timing data collected:
+1. Broad JSON inventory assumed every historical .json file was populated; JSONDecodeError before finishing inventory. No historical file changed.
+2. Inventory treated integer decision["pairs"] as a list; TypeError. starting-state.json had already been created and is retained.
+3. Guessed refresh.py path absent; actual script is summarize-competitor.py.
+4. Ad hoc inventory had unmatched parenthesis; SyntaxError before execution.
+5. Guessed shipping-vs-ghostty/manifest.json absent; actual summary embeds raw_sha256. Corrected audit uses pre-existing terminal replay.
+6. Two read-only reviewer seats timed out; their partial notes were advisory, not verification receipts. No seat answer is treated as evidence.
+7. First audit adapter incorrectly supplied raw to three no-argument historical analyzers; audit-initial.stderr and empty audit-initial.json retained; second run exits 0.
+8. Review found draft claim24 incorrectly copied iteration26 tradeoff: exact raw says truecolor .927055 fails, Unicode .996013 passes. Corrected only new claims.json before final publication; old reports unchanged.
+9. Later census probe hit intentionally retained empty instruction-attribution/checkpoint-initial.json; use additive checkpoint-current.json, never repair the failed original.
+10. Expanded/canonical/sensitivity audit variants exit0; their intermediate outputs are retained, final expected result is audit-with-sensitivity.json.

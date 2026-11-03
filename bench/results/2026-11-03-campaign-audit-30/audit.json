@@ -1,0 +1,1335 @@
+{
+  "active_claim_ledger": [
+    {
+      "claim": "Previous audit distinguishes selected executable from unpromoted combined candidate.",
+      "disposition": "retained historical audit",
+      "iteration": 15,
+      "limitation": "Its latest selected-build series is superseded temporally by iteration19, not invalidated or pooled. Its 5.013% Unicode parity delta is not current.",
+      "primary_sources": [
+        "bench/results/2026-11-03-campaign-audit/audit.json",
+        "bench/results/2026-11-03-campaign-audit/historical-replay.json"
+      ]
+    },
+    {
+      "claim": "Own-reader schedstat calibration distinguishes runnable delay from sleep; scheduler observer is not proven neutral.",
+      "disposition": "diagnostic, no runtime candidate",
+      "iteration": 16,
+      "limitation": "sched_schedstats=0 alone does not establish counter incapability; residual is unclassified, not pure blocking. README explanation is not an extra measurement.",
+      "primary_sources": [
+        "bench/results/2026-11-03-scheduler-shape/balanced-analysis.json",
+        "bench/results/2026-11-03-scheduler-shape/README.md",
+        "bench/results/2026-11-03-scheduler-shape/calibration.jsonl"
+      ]
+    },
+    {
+      "claim": "Artificial own-reader contention changes runnable wait and interacts with observers.",
+      "disposition": "diagnostic, not optimization",
+      "iteration": 17,
+      "limitation": "72 confirmatory sessions plus separate pilot/smoke; ratio-of-ratios exploratory after capture. No Ghostty causal gap attribution.",
+      "primary_sources": [
+        "bench/results/2026-11-03-reader-contention/balanced-replay.json",
+        "bench/results/2026-11-03-reader-contention/exploratory-observer-contrasts.json",
+        "bench/results/2026-11-03-reader-contention/corruption-replay.json"
+      ]
+    },
+    {
+      "claim": "Reciprocal hot-core placement has secondary ASCII leads but no uniformly replicated primary-family superiority.",
+      "disposition": "policy not promoted",
+      "iteration": 18,
+      "limitation": "Initial 100 sessions rejected under v1 remain rejected. V2 frozen before new capture; non-target transitions are accepted AND reported, not corruptions rejected.",
+      "primary_sources": [
+        "bench/results/2026-11-03-hot-placement/confirmatory-replay.json",
+        "bench/results/2026-11-03-hot-placement/replication-replay.json",
+        "bench/results/2026-11-03-hot-placement/initial-rejection.json"
+      ]
+    },
+    {
+      "claim": "Whole-core role-mask primary gate fails; independent shipping refresh establishes only three corrected throughput leads.",
+      "disposition": "policy rejected, selected scoreboard updated",
+      "iteration": 19,
+      "limitation": "A positive point ratio is not a confidence-bound pass. CPU seconds ratios descriptive, no global CPU superiority test.",
+      "primary_sources": [
+        "bench/results/2026-11-03-role-partition/confirmatory-replay.json",
+        "bench/results/2026-11-03-role-partition/competitor-summary.json",
+        "bench/results/2026-11-03-role-partition/competitor-protocol.json"
+      ]
+    },
+    {
+      "claim": "Unicode .979261 misses >=1.02 target and .98 point guard; retain pending-wrap mutation-sensitive regression.",
+      "disposition": "runtime rejected, not terminal/Ghostty evidence",
+      "iteration": 20,
+      "limitation": "Replayed independently from raw in audit.py; within-series operational engine screen, not noninferiority proof or campaign-wide correction. Test counts are historical receipts, not rerun full suites.",
+      "primary_sources": [
+        "bench/results/2026-11-03-exclusive-column/protocol.json",
+        "bench/results/2026-11-03-exclusive-column/engine-decision.json",
+        "bench/results/2026-11-03-exclusive-column/engine-pairs.json"
+      ]
+    },
+    {
+      "claim": "Unicode 1.009280 misses target; separate cold C1 diagnostic initializes candidate cache unnecessarily; C1 semantic test does not detect allocation.",
+      "disposition": "runtime rejected, not terminal/Ghostty evidence",
+      "iteration": 21,
+      "limitation": "Replayed independently from raw in audit.py; within-series operational engine screen, not noninferiority proof or campaign-wide correction. Test counts are historical receipts, not rerun full suites.",
+      "primary_sources": [
+        "bench/results/2026-11-03-width-handle/protocol.json",
+        "bench/results/2026-11-03-width-handle/engine-decision.json",
+        "bench/results/2026-11-03-width-handle/engine-pairs.json",
+        "bench/results/2026-11-03-width-handle/cold-result.json",
+        "bench/results/2026-11-03-width-handle/mutation-result.json"
+      ]
+    },
+    {
+      "claim": "Cold first lookup improves but warm Unicode 1.001949 misses target; cold process diagnostic not full startup/RSS/throughput superiority.",
+      "disposition": "runtime rejected, not terminal/Ghostty evidence",
+      "iteration": 22,
+      "limitation": "Replayed independently from raw in audit.py; within-series operational engine screen, not noninferiority proof or campaign-wide correction. Test counts are historical receipts, not rerun full suites.",
+      "primary_sources": [
+        "bench/results/2026-11-03-static-width-cache/protocol.json",
+        "bench/results/2026-11-03-static-width-cache/engine-decision.json",
+        "bench/results/2026-11-03-static-width-cache/engine-pairs.json",
+        "bench/results/2026-11-03-static-width-cache/cold-replay.json",
+        "bench/results/2026-11-03-static-width-cache/cold-pairs.json"
+      ]
+    },
+    {
+      "claim": "ASCII/region improve but truecolor .922042 violates guard. Build provenance failure fixed, not hidden.",
+      "disposition": "runtime rejected, not terminal/Ghostty evidence",
+      "iteration": 23,
+      "limitation": "Replayed independently from raw in audit.py; within-series operational engine screen, not noninferiority proof or campaign-wide correction. Test counts are historical receipts, not rerun full suites.",
+      "primary_sources": [
+        "bench/results/2026-11-03-parser-authority/protocol.json",
+        "bench/results/2026-11-03-parser-authority/engine-decision.json",
+        "bench/results/2026-11-03-parser-authority/engine-pairs.json"
+      ]
+    },
+    {
+      "claim": "ASCII/region improve but truecolor .927055 violates .98 guard; Unicode .996013 passes point guard. Mutation-sensitive authority invalidation regression retained.",
+      "disposition": "runtime rejected, not terminal/Ghostty evidence",
+      "iteration": 24,
+      "limitation": "Replayed independently from raw in audit.py; within-series operational engine screen, not noninferiority proof or campaign-wide correction. Test counts are historical receipts, not rerun full suites.",
+      "primary_sources": [
+        "bench/results/2026-11-03-authority-handoff/protocol.json",
+        "bench/results/2026-11-03-authority-handoff/engine-decision.json",
+        "bench/results/2026-11-03-authority-handoff/engine-pairs.json"
+      ]
+    },
+    {
+      "claim": "Exact-IP samples and disassembly suggest CSI spill cost and Unicode leading-byte hot region.",
+      "disposition": "diagnostic, not causal attribution",
+      "iteration": 25,
+      "limitation": "Requested 100us timer delivers roughly 1ms; three plain pairs, setup/all-rounds/teardown samples are not fastest-pass dynamic stall cost.",
+      "primary_sources": [
+        "bench/results/2026-11-03-instruction-attribution/main-analysis.json",
+        "bench/results/2026-11-03-instruction-attribution/crosscheck.json"
+      ]
+    },
+    {
+      "claim": "Factorial primary ASCII/region clear, Unicode .975962 fails .98 guard. Identical masked print_utf8 code does not imply identical dynamic cost.",
+      "disposition": "runtime rejected, not terminal/Ghostty evidence",
+      "iteration": 26,
+      "limitation": "Replayed independently from raw in audit.py; within-series operational engine screen, not noninferiority proof or campaign-wide correction. Test counts are historical receipts, not rerun full suites.",
+      "primary_sources": [
+        "bench/results/2026-11-03-csi-outlining/protocol.json",
+        "bench/results/2026-11-03-csi-outlining/analysis.json",
+        "bench/results/2026-11-03-csi-outlining/raw.json",
+        "bench/results/2026-11-03-csi-outlining/codegen.json",
+        "bench/results/2026-11-03-csi-outlining/counter-diagnostic.json"
+      ]
+    },
+    {
+      "claim": "Separate instrumented decoding count decreases 4.13%, timing Unicode .918109. Same entry addresses do not imply same complete layout.",
+      "disposition": "runtime rejected, not terminal/Ghostty evidence",
+      "iteration": 27,
+      "limitation": "Replayed independently from raw in audit.py; within-series operational engine screen, not noninferiority proof or campaign-wide correction. Test counts are historical receipts, not rerun full suites.",
+      "primary_sources": [
+        "bench/results/2026-11-03-decoded-handoff/protocol.json",
+        "bench/results/2026-11-03-decoded-handoff/analysis.json",
+        "bench/results/2026-11-03-decoded-handoff/raw.json",
+        "bench/results/2026-11-03-decoded-handoff/decode-census-analysis.json",
+        "bench/results/2026-11-03-decoded-handoff/decode-census-raw.json",
+        "bench/results/2026-11-03-decoded-handoff/codegen.json"
+      ]
+    },
+    {
+      "claim": "Unicode 1.005126 misses target; TUI .985766 is adverse. Protocol substitutions and replay adapter corrections disclosed additively.",
+      "disposition": "runtime rejected, not terminal/Ghostty evidence",
+      "iteration": 28,
+      "limitation": "Replayed independently from raw in audit.py; within-series operational engine screen, not noninferiority proof or campaign-wide correction. Test counts are historical receipts, not rerun full suites.",
+      "primary_sources": [
+        "bench/results/2026-11-03-scalar-domain/protocol.json",
+        "bench/results/2026-11-03-scalar-domain/analysis.json",
+        "bench/results/2026-11-03-scalar-domain/raw.json",
+        "bench/results/2026-11-03-scalar-domain/protocol-clarification.json",
+        "bench/results/2026-11-03-scalar-domain/codegen.json"
+      ]
+    },
+    {
+      "claim": "Caller shrinks 8524 to 7987 bytes, 1967 to 1820 instructions, Unicode .915050 misses target and .98 guard; helper adds 427 bytes.",
+      "disposition": "runtime rejected, not terminal/Ghostty evidence",
+      "iteration": 29,
+      "limitation": "Replayed independently from raw in audit.py; within-series operational engine screen, not noninferiority proof or campaign-wide correction. Test counts are historical receipts, not rerun full suites.",
+      "primary_sources": [
+        "bench/results/2026-11-03-multibyte-outline/protocol.json",
+        "bench/results/2026-11-03-multibyte-outline/analysis.json",
+        "bench/results/2026-11-03-multibyte-outline/raw.json",
+        "bench/results/2026-11-03-multibyte-outline/codegen.json"
+      ]
+    }
+  ],
+  "championship_established": false,
+  "codegen": {
+    "decoded-handoff": {
+      "candidate": {
+        "apply": {
+          "address": "0x258340",
+          "bytes": 9774,
+          "instructions": 2048,
+          "normalized_sha256": "aac6e826cc21ca4fe60d1bed80d8a6ddd8dbaf78b9d4ee999f53bc2c76c09481"
+        },
+        "print_utf8": {
+          "address": "0x2623a0",
+          "bytes": 9699,
+          "instructions": 2252,
+          "normalized_sha256": "f1cb8530f0eea2b5b5a58dd31b890b72d1ac3179dfa12cfff0d20c91b28fa565"
+        }
+      },
+      "control": {
+        "apply": {
+          "address": "0x258340",
+          "bytes": 9774,
+          "instructions": 2048,
+          "normalized_sha256": "aac6e826cc21ca4fe60d1bed80d8a6ddd8dbaf78b9d4ee999f53bc2c76c09481"
+        },
+        "print_utf8": {
+          "address": "0x2623a0",
+          "bytes": 8524,
+          "instructions": 1967,
+          "normalized_sha256": "3b35beda1f1dcf8f29beb45d8e720a21b83ee2bcb5f3d34f78cec2298d376f43"
+        }
+      }
+    },
+    "multibyte-outline": {
+      "candidate": {
+        "apply": {
+          "address": "0x258340",
+          "bytes": 9774,
+          "instructions": 2048,
+          "normalized_sha256": "aac6e826cc21ca4fe60d1bed80d8a6ddd8dbaf78b9d4ee999f53bc2c76c09481"
+        },
+        "print_utf8": {
+          "address": "0x2623a0",
+          "bytes": 7987,
+          "instructions": 1820,
+          "normalized_sha256": "4ecab3ecfdca9aa4e2128098330c7207cb90a1c94149ac3706be013a7d71840c"
+        },
+        "utf8_multibyte_at": {
+          "address": "0x2a1520",
+          "bytes": 427,
+          "instructions": 120,
+          "normalized_sha256": "c4e09d396a8ad5e8fd9ec4e35cd1f2af467b41555b75bb2f2f9a362eeaf952bd"
+        }
+      },
+      "control": {
+        "apply": {
+          "address": "0x258340",
+          "bytes": 9774,
+          "instructions": 2048,
+          "normalized_sha256": "aac6e826cc21ca4fe60d1bed80d8a6ddd8dbaf78b9d4ee999f53bc2c76c09481"
+        },
+        "print_utf8": {
+          "address": "0x2623a0",
+          "bytes": 8524,
+          "instructions": 1967,
+          "normalized_sha256": "3b35beda1f1dcf8f29beb45d8e720a21b83ee2bcb5f3d34f78cec2298d376f43"
+        }
+      }
+    },
+    "scalar-domain": {
+      "candidate": {
+        "apply": {
+          "address": "0x258340",
+          "bytes": 9774,
+          "instructions": 2048,
+          "normalized_sha256": "aac6e826cc21ca4fe60d1bed80d8a6ddd8dbaf78b9d4ee999f53bc2c76c09481"
+        },
+        "print_utf8": {
+          "address": "0x2623a0",
+          "bytes": 8595,
+          "instructions": 1972,
+          "normalized_sha256": "e8f4820d1a552c1f7af4eb5af3f41407b054499055ff55dadc54485f3fd971c4"
+        }
+      },
+      "control": {
+        "apply": {
+          "address": "0x258340",
+          "bytes": 9774,
+          "instructions": 2048,
+          "normalized_sha256": "aac6e826cc21ca4fe60d1bed80d8a6ddd8dbaf78b9d4ee999f53bc2c76c09481"
+        },
+        "print_utf8": {
+          "address": "0x2623a0",
+          "bytes": 8524,
+          "instructions": 1967,
+          "normalized_sha256": "3b35beda1f1dcf8f29beb45d8e720a21b83ee2bcb5f3d34f78cec2298d376f43"
+        }
+      }
+    }
+  },
+  "engine_experiments": {
+    "authority-handoff": {
+      "analysis": "bench/results/2026-11-03-authority-handoff/engine-decision.json",
+      "binaries": {
+        "base": {
+          "path": "/tmp/glass-i24-control-test",
+          "sha256": "288161ef4ed3bd64429f996878f28aa820010815c298491eaa844fbbef85766c"
+        },
+        "candidate": {
+          "path": "/tmp/glass-i24-candidate-test",
+          "sha256": "cfa915a6247d228696fdf0438d7ea2aaa30e40024d80df81dfb3e65b5a955ccd"
+        }
+      },
+      "metrics": {
+        "ascii": {
+          "holm_p": 0.005859375,
+          "losses": 0,
+          "median_cpu_ratio": 1.068748722142711,
+          "sign_p_two_sided": 0.0009765625,
+          "wins": 11
+        },
+        "cursor_motion": {
+          "holm_p": 0.005859375,
+          "losses": 0,
+          "median_cpu_ratio": 1.0481242895036,
+          "sign_p_two_sided": 0.0009765625,
+          "wins": 11
+        },
+        "scroll_region": {
+          "holm_p": 0.005859375,
+          "losses": 0,
+          "median_cpu_ratio": 1.068974319701843,
+          "sign_p_two_sided": 0.0009765625,
+          "wins": 11
+        },
+        "truecolor": {
+          "holm_p": 0.005859375,
+          "losses": 11,
+          "median_cpu_ratio": 0.9270553064275038,
+          "sign_p_two_sided": 0.0009765625,
+          "wins": 0
+        },
+        "tui_frames": {
+          "holm_p": 0.005859375,
+          "losses": 0,
+          "median_cpu_ratio": 1.0591467356173239,
+          "sign_p_two_sided": 0.0009765625,
+          "wins": 11
+        },
+        "unicode": {
+          "holm_p": 1.0,
+          "losses": 6,
+          "median_cpu_ratio": 0.9960130482058718,
+          "sign_p_two_sided": 1.0,
+          "wins": 5
+        }
+      },
+      "pairs": 11,
+      "protocol": "bench/results/2026-11-03-authority-handoff/protocol.json",
+      "runtime_promotion": false,
+      "screen_cleared": false,
+      "sessions": 22,
+      "source": "bench/results/2026-11-03-authority-handoff/engine-pairs.json"
+    },
+    "csi-outlining": {
+      "analysis": "bench/results/2026-11-03-csi-outlining/analysis.json",
+      "binaries": {
+        "authority-inline": {
+          "path": "/tmp/glass-i26-authority-inline-test",
+          "sha256": "cfa915a6247d228696fdf0438d7ea2aaa30e40024d80df81dfb3e65b5a955ccd"
+        },
+        "authority-outlined": {
+          "path": "/tmp/glass-i26-authority-outlined-test",
+          "sha256": "f46646f5bb759ad5126012e96588eee2d573b63616dd262d047a2e596d14b852"
+        },
+        "control-inline": {
+          "path": "/tmp/glass-i26-control-inline-test",
+          "sha256": "288161ef4ed3bd64429f996878f28aa820010815c298491eaa844fbbef85766c"
+        },
+        "control-outlined": {
+          "path": "/tmp/glass-i26-control-outlined-test",
+          "sha256": "f0afc11400459ba1395abd96163ca9bac7b25ac2fd84d97146d2a14217a0139c"
+        }
+      },
+      "metrics": {
+        "ascii": {
+          "holm_p": 0.0029296875,
+          "losses": 0,
+          "median_cpu_ratio": 1.0748125773596051,
+          "sign_p_two_sided": 0.00048828125,
+          "wins": 12
+        },
+        "cursor_motion": {
+          "holm_p": 0.0029296875,
+          "losses": 0,
+          "median_cpu_ratio": 1.0604091547901908,
+          "sign_p_two_sided": 0.00048828125,
+          "wins": 12
+        },
+        "scroll_region": {
+          "holm_p": 0.0029296875,
+          "losses": 0,
+          "median_cpu_ratio": 1.059253633841146,
+          "sign_p_two_sided": 0.00048828125,
+          "wins": 12
+        },
+        "truecolor": {
+          "holm_p": 0.0029296875,
+          "losses": 0,
+          "median_cpu_ratio": 1.0494263219681592,
+          "sign_p_two_sided": 0.00048828125,
+          "wins": 12
+        },
+        "tui_frames": {
+          "holm_p": 0.0029296875,
+          "losses": 0,
+          "median_cpu_ratio": 1.0789430424490374,
+          "sign_p_two_sided": 0.00048828125,
+          "wins": 12
+        },
+        "unicode": {
+          "holm_p": 0.03857421875,
+          "losses": 10,
+          "median_cpu_ratio": 0.975961980879342,
+          "sign_p_two_sided": 0.03857421875,
+          "wins": 2
+        }
+      },
+      "pairs": 12,
+      "protocol": "bench/results/2026-11-03-csi-outlining/protocol.json",
+      "runtime_promotion": false,
+      "screen_cleared": false,
+      "sessions": 48,
+      "source": "bench/results/2026-11-03-csi-outlining/raw.json"
+    },
+    "decoded-handoff": {
+      "analysis": "bench/results/2026-11-03-decoded-handoff/analysis.json",
+      "binaries": {
+        "candidate": {
+          "path": "/tmp/glass-i27-candidate-test",
+          "sha256": "0d9ea51d87907fc172e6d3a8deee51d07f35c877ce614bc22e7a9135e3955163"
+        },
+        "control": {
+          "path": "/tmp/glass-i27-control-test",
+          "sha256": "288161ef4ed3bd64429f996878f28aa820010815c298491eaa844fbbef85766c"
+        }
+      },
+      "metrics": {
+        "ascii": {
+          "holm_p": 0.7744140625,
+          "losses": 5,
+          "median_cpu_ratio": 1.003895457993376,
+          "sign_p_two_sided": 0.7744140625,
+          "wins": 7
+        },
+        "cursor_motion": {
+          "holm_p": 0.0380859375,
+          "losses": 11,
+          "median_cpu_ratio": 0.9883149338166639,
+          "sign_p_two_sided": 0.00634765625,
+          "wins": 1
+        },
+        "scroll_region": {
+          "holm_p": 0.0380859375,
+          "losses": 1,
+          "median_cpu_ratio": 1.0107250394444312,
+          "sign_p_two_sided": 0.00634765625,
+          "wins": 11
+        },
+        "truecolor": {
+          "holm_p": 0.0380859375,
+          "losses": 11,
+          "median_cpu_ratio": 0.9883376427494075,
+          "sign_p_two_sided": 0.00634765625,
+          "wins": 1
+        },
+        "tui_frames": {
+          "holm_p": 0.2919921875,
+          "losses": 9,
+          "median_cpu_ratio": 0.9861643244506955,
+          "sign_p_two_sided": 0.14599609375,
+          "wins": 3
+        },
+        "unicode": {
+          "holm_p": 0.0380859375,
+          "losses": 11,
+          "median_cpu_ratio": 0.9181086099873994,
+          "sign_p_two_sided": 0.00634765625,
+          "wins": 1
+        }
+      },
+      "pairs": 12,
+      "protocol": "bench/results/2026-11-03-decoded-handoff/protocol.json",
+      "runtime_promotion": false,
+      "screen_cleared": false,
+      "sessions": 24,
+      "source": "bench/results/2026-11-03-decoded-handoff/raw.json"
+    },
+    "exclusive-column": {
+      "analysis": "bench/results/2026-11-03-exclusive-column/engine-decision.json",
+      "binaries": {
+        "base": {
+          "path": "/tmp/glass-i20-control-test",
+          "sha256": "c1982de93570ac183da14d5f151f05c2d4fbdd59108376e37b9f7e2fca59344a"
+        },
+        "candidate": {
+          "path": "/tmp/glass-i20-candidate-test",
+          "sha256": "3fdd6d7caec5678b86eaad5eeccbe3dbd6d2a7c54b318dae72c0638e6700171c"
+        }
+      },
+      "metrics": {
+        "ascii": {
+          "holm_p": 0.0703125,
+          "losses": 10,
+          "median_cpu_ratio": 0.9895685158843054,
+          "sign_p_two_sided": 0.01171875,
+          "wins": 1
+        },
+        "cursor_motion": {
+          "holm_p": 1.0,
+          "losses": 8,
+          "median_cpu_ratio": 0.994980694980695,
+          "sign_p_two_sided": 0.2265625,
+          "wins": 3
+        },
+        "scroll_region": {
+          "holm_p": 1.0,
+          "losses": 6,
+          "median_cpu_ratio": 0.9995337512303788,
+          "sign_p_two_sided": 1.0,
+          "wins": 5
+        },
+        "truecolor": {
+          "holm_p": 1.0,
+          "losses": 5,
+          "median_cpu_ratio": 1.0006253908692933,
+          "sign_p_two_sided": 1.0,
+          "wins": 6
+        },
+        "tui_frames": {
+          "holm_p": 1.0,
+          "losses": 7,
+          "median_cpu_ratio": 0.9993535875888817,
+          "sign_p_two_sided": 0.548828125,
+          "wins": 4
+        },
+        "unicode": {
+          "holm_p": 1.0,
+          "losses": 8,
+          "median_cpu_ratio": 0.979260935143288,
+          "sign_p_two_sided": 0.2265625,
+          "wins": 3
+        }
+      },
+      "pairs": 11,
+      "protocol": "bench/results/2026-11-03-exclusive-column/protocol.json",
+      "runtime_promotion": false,
+      "screen_cleared": false,
+      "sessions": 22,
+      "source": "bench/results/2026-11-03-exclusive-column/engine-pairs.json"
+    },
+    "multibyte-outline": {
+      "analysis": "bench/results/2026-11-03-multibyte-outline/analysis.json",
+      "binaries": {
+        "candidate": {
+          "path": "/tmp/glass-i29-candidate-test",
+          "sha256": "bfacfb2d152ef37113b6fc1b7d3d3d962e8058eef0f6d9fa30d9b3483c25eeb3"
+        },
+        "control": {
+          "path": "/tmp/glass-i29-control-test",
+          "sha256": "288161ef4ed3bd64429f996878f28aa820010815c298491eaa844fbbef85766c"
+        }
+      },
+      "metrics": {
+        "ascii": {
+          "holm_p": 1.0,
+          "losses": 5,
+          "median_cpu_ratio": 1.010890713391856,
+          "sign_p_two_sided": 0.7744140625,
+          "wins": 7
+        },
+        "cursor_motion": {
+          "holm_p": 1.0,
+          "losses": 7,
+          "median_cpu_ratio": 0.9899270542297616,
+          "sign_p_two_sided": 0.7744140625,
+          "wins": 5
+        },
+        "scroll_region": {
+          "holm_p": 1.0,
+          "losses": 4,
+          "median_cpu_ratio": 1.0048869194861378,
+          "sign_p_two_sided": 0.3876953125,
+          "wins": 8
+        },
+        "truecolor": {
+          "holm_p": 1.0,
+          "losses": 7,
+          "median_cpu_ratio": 0.9946558209736465,
+          "sign_p_two_sided": 0.7744140625,
+          "wins": 5
+        },
+        "tui_frames": {
+          "holm_p": 1.0,
+          "losses": 7,
+          "median_cpu_ratio": 0.9894513624833723,
+          "sign_p_two_sided": 0.7744140625,
+          "wins": 5
+        },
+        "unicode": {
+          "holm_p": 0.2314453125,
+          "losses": 10,
+          "median_cpu_ratio": 0.9150495291114258,
+          "sign_p_two_sided": 0.03857421875,
+          "wins": 2
+        }
+      },
+      "pairs": 12,
+      "protocol": "bench/results/2026-11-03-multibyte-outline/protocol.json",
+      "runtime_promotion": false,
+      "screen_cleared": false,
+      "sessions": 24,
+      "source": "bench/results/2026-11-03-multibyte-outline/raw.json"
+    },
+    "parser-authority": {
+      "analysis": "bench/results/2026-11-03-parser-authority/engine-decision.json",
+      "binaries": {
+        "base": {
+          "path": "/tmp/glass-i23-control-test",
+          "sha256": "91e0d00b56592b01dcfecacda8c6d99d2c352a97929ca0d9db4776eddf7d4c22"
+        },
+        "candidate": {
+          "path": "/tmp/glass-i23-candidate-test",
+          "sha256": "0f720fcaa7709173279ef889d011a3af027a68abfd1328410e35bea7407d538a"
+        }
+      },
+      "metrics": {
+        "ascii": {
+          "holm_p": 0.005859375,
+          "losses": 0,
+          "median_cpu_ratio": 1.0644953240890036,
+          "sign_p_two_sided": 0.0009765625,
+          "wins": 11
+        },
+        "cursor_motion": {
+          "holm_p": 0.005859375,
+          "losses": 0,
+          "median_cpu_ratio": 1.0397070161912105,
+          "sign_p_two_sided": 0.0009765625,
+          "wins": 11
+        },
+        "scroll_region": {
+          "holm_p": 0.005859375,
+          "losses": 0,
+          "median_cpu_ratio": 1.068099258122282,
+          "sign_p_two_sided": 0.0009765625,
+          "wins": 11
+        },
+        "truecolor": {
+          "holm_p": 0.005859375,
+          "losses": 11,
+          "median_cpu_ratio": 0.922042188933048,
+          "sign_p_two_sided": 0.0009765625,
+          "wins": 0
+        },
+        "tui_frames": {
+          "holm_p": 0.0234375,
+          "losses": 1,
+          "median_cpu_ratio": 1.0315037349788894,
+          "sign_p_two_sided": 0.01171875,
+          "wins": 10
+        },
+        "unicode": {
+          "holm_p": 0.2265625,
+          "losses": 3,
+          "median_cpu_ratio": 1.0116873630387144,
+          "sign_p_two_sided": 0.2265625,
+          "wins": 8
+        }
+      },
+      "pairs": 11,
+      "protocol": "bench/results/2026-11-03-parser-authority/protocol.json",
+      "runtime_promotion": false,
+      "screen_cleared": false,
+      "sessions": 22,
+      "source": "bench/results/2026-11-03-parser-authority/engine-pairs.json"
+    },
+    "scalar-domain": {
+      "analysis": "bench/results/2026-11-03-scalar-domain/analysis.json",
+      "binaries": {
+        "candidate": {
+          "path": "/tmp/glass-i28-candidate-test",
+          "sha256": "6c36d2970923134e54654f882c55d0dea96a92311f74de5fa1852651fcc6cbdb"
+        },
+        "control": {
+          "path": "/tmp/glass-i28-control-test",
+          "sha256": "288161ef4ed3bd64429f996878f28aa820010815c298491eaa844fbbef85766c"
+        }
+      },
+      "metrics": {
+        "ascii": {
+          "holm_p": 1.0,
+          "losses": 5,
+          "median_cpu_ratio": 1.0042500177564708,
+          "sign_p_two_sided": 0.7744140625,
+          "wins": 7
+        },
+        "cursor_motion": {
+          "holm_p": 0.19287109375,
+          "losses": 10,
+          "median_cpu_ratio": 0.9814287473176909,
+          "sign_p_two_sided": 0.03857421875,
+          "wins": 2
+        },
+        "scroll_region": {
+          "holm_p": 1.0,
+          "losses": 5,
+          "median_cpu_ratio": 1.0003839476154641,
+          "sign_p_two_sided": 0.7744140625,
+          "wins": 7
+        },
+        "truecolor": {
+          "holm_p": 0.19287109375,
+          "losses": 10,
+          "median_cpu_ratio": 0.9837404706121295,
+          "sign_p_two_sided": 0.03857421875,
+          "wins": 2
+        },
+        "tui_frames": {
+          "holm_p": 0.0380859375,
+          "losses": 11,
+          "median_cpu_ratio": 0.9857661157505182,
+          "sign_p_two_sided": 0.00634765625,
+          "wins": 1
+        },
+        "unicode": {
+          "holm_p": 1.0,
+          "losses": 6,
+          "median_cpu_ratio": 1.0051255196588686,
+          "sign_p_two_sided": 1.0,
+          "wins": 6
+        }
+      },
+      "pairs": 12,
+      "protocol": "bench/results/2026-11-03-scalar-domain/protocol.json",
+      "runtime_promotion": false,
+      "screen_cleared": false,
+      "sessions": 24,
+      "source": "bench/results/2026-11-03-scalar-domain/raw.json"
+    },
+    "static-width-cache": {
+      "analysis": "bench/results/2026-11-03-static-width-cache/engine-decision.json",
+      "binaries": {
+        "base": {
+          "path": "/tmp/glass-i22-control-test",
+          "sha256": "bf5296a4406677ab68e5ee6ce2242a1349537318766386a50a0c5d5b08a9e259"
+        },
+        "candidate": {
+          "path": "/tmp/glass-i22-candidate-test",
+          "sha256": "8dae0e43820c05e595740b14948459eb4eaf26fa5fb54ce927dcb794ad8f5743"
+        }
+      },
+      "metrics": {
+        "ascii": {
+          "holm_p": 1.0,
+          "losses": 4,
+          "median_cpu_ratio": 1.0033086904823452,
+          "sign_p_two_sided": 0.548828125,
+          "wins": 7
+        },
+        "cursor_motion": {
+          "holm_p": 0.90625,
+          "losses": 8,
+          "median_cpu_ratio": 0.9965517241379311,
+          "sign_p_two_sided": 0.2265625,
+          "wins": 3
+        },
+        "scroll_region": {
+          "holm_p": 0.3271484375,
+          "losses": 9,
+          "median_cpu_ratio": 0.9976296146863022,
+          "sign_p_two_sided": 0.0654296875,
+          "wins": 2
+        },
+        "truecolor": {
+          "holm_p": 0.0703125,
+          "losses": 10,
+          "median_cpu_ratio": 0.9880952380952381,
+          "sign_p_two_sided": 0.01171875,
+          "wins": 1
+        },
+        "tui_frames": {
+          "holm_p": 1.0,
+          "losses": 7,
+          "median_cpu_ratio": 0.9925130208333333,
+          "sign_p_two_sided": 0.548828125,
+          "wins": 4
+        },
+        "unicode": {
+          "holm_p": 1.0,
+          "losses": 5,
+          "median_cpu_ratio": 1.0019493177387915,
+          "sign_p_two_sided": 1.0,
+          "wins": 6
+        }
+      },
+      "pairs": 11,
+      "protocol": "bench/results/2026-11-03-static-width-cache/protocol.json",
+      "runtime_promotion": false,
+      "screen_cleared": false,
+      "sessions": 22,
+      "source": "bench/results/2026-11-03-static-width-cache/engine-pairs.json"
+    },
+    "width-handle": {
+      "analysis": "bench/results/2026-11-03-width-handle/engine-decision.json",
+      "binaries": {
+        "base": {
+          "path": "/tmp/glass-i21-control-test",
+          "sha256": "c1982de93570ac183da14d5f151f05c2d4fbdd59108376e37b9f7e2fca59344a"
+        },
+        "candidate": {
+          "path": "/tmp/glass-i21-candidate-test",
+          "sha256": "b13d739ae302d8d7883c349421adf972e0be1d745c9f9f648088cad2b364e9f1"
+        }
+      },
+      "metrics": {
+        "ascii": {
+          "holm_p": 0.005859375,
+          "losses": 0,
+          "median_cpu_ratio": 1.0185854143762108,
+          "sign_p_two_sided": 0.0009765625,
+          "wins": 11
+        },
+        "cursor_motion": {
+          "holm_p": 0.05859375,
+          "losses": 1,
+          "median_cpu_ratio": 1.0080800307810698,
+          "sign_p_two_sided": 0.01171875,
+          "wins": 10
+        },
+        "scroll_region": {
+          "holm_p": 0.26171875,
+          "losses": 3,
+          "median_cpu_ratio": 1.0029452089574975,
+          "sign_p_two_sided": 0.2265625,
+          "wins": 8
+        },
+        "truecolor": {
+          "holm_p": 0.26171875,
+          "losses": 2,
+          "median_cpu_ratio": 1.0099427538415187,
+          "sign_p_two_sided": 0.0654296875,
+          "wins": 9
+        },
+        "tui_frames": {
+          "holm_p": 0.26171875,
+          "losses": 2,
+          "median_cpu_ratio": 1.003922850604773,
+          "sign_p_two_sided": 0.0654296875,
+          "wins": 9
+        },
+        "unicode": {
+          "holm_p": 0.26171875,
+          "losses": 2,
+          "median_cpu_ratio": 1.0092798812175203,
+          "sign_p_two_sided": 0.0654296875,
+          "wins": 9
+        }
+      },
+      "pairs": 11,
+      "protocol": "bench/results/2026-11-03-width-handle/protocol.json",
+      "runtime_promotion": false,
+      "screen_cleared": false,
+      "sessions": 22,
+      "source": "bench/results/2026-11-03-width-handle/engine-pairs.json"
+    }
+  },
+  "exact_repeated_arm_contrasts": {
+    "ascii": {
+      "earlier_ratio": 1.068748722142711,
+      "later_over_earlier": 1.0140687649485614,
+      "later_ratio": 1.0837846967036122
+    },
+    "cursor_motion": {
+      "earlier_ratio": 1.0481242895036,
+      "later_over_earlier": 1.000697232389745,
+      "later_ratio": 1.0488550757067203
+    },
+    "scroll_region": {
+      "earlier_ratio": 1.068974319701843,
+      "later_over_earlier": 0.9956107965149396,
+      "later_ratio": 1.0642823738923677
+    },
+    "truecolor": {
+      "earlier_ratio": 0.9270553064275038,
+      "later_over_earlier": 0.9992487258302228,
+      "later_ratio": 0.9263588337218299
+    },
+    "tui_frames": {
+      "earlier_ratio": 1.0591467356173239,
+      "later_over_earlier": 0.9962262980504264,
+      "later_ratio": 1.0551498315162402
+    },
+    "unicode": {
+      "earlier_ratio": 0.9960130482058718,
+      "later_over_earlier": 1.003101651862363,
+      "later_ratio": 0.9991023339317774
+    }
+  },
+  "historical_receipt_scopes": {
+    "authority-handoff": {
+      "census": {
+        "corruptions_rejected": 22,
+        "differential_streams_per_correct_arm": 12800,
+        "python_tests": 65,
+        "terminal_tests_per_correct_arm": 383
+      },
+      "scope": "stored historical receipt, not newly executed full suite",
+      "source": "bench/results/2026-11-03-authority-handoff/checkpoint-initial.json"
+    },
+    "csi-outlining": {
+      "census": {
+        "corruption_cases_rejected": 23,
+        "differential_streams_per_new_arm_and_restored_control": 12800,
+        "existing_python_tests": 65,
+        "terminal_tests_per_new_arm_and_restored_control": 383
+      },
+      "scope": "stored historical receipt, not newly executed full suite",
+      "source": "bench/results/2026-11-03-csi-outlining/checkpoint-initial.json"
+    },
+    "decoded-handoff": {
+      "census": {
+        "corruption_cases_rejected": 23,
+        "differential_streams_per_arm": 12800,
+        "existing_python_tests_via_prior_checkpoint": 65,
+        "terminal_tests_per_arm": 383
+      },
+      "scope": "stored historical receipt, not newly executed full suite",
+      "source": "bench/results/2026-11-03-decoded-handoff/checkpoint-initial.json"
+    },
+    "exclusive-column": {
+      "census": {
+        "ignored_terminal_tests": 11,
+        "python_tests": 49,
+        "report_corruptions_rejected": 9,
+        "reported_parser_sweep_streams": 12800,
+        "terminal_tests": 380
+      },
+      "scope": "stored historical receipt, not newly executed full suite",
+      "source": "bench/results/2026-11-03-exclusive-column/checkpoint-initial.json"
+    },
+    "instruction-attribution": {
+      "census": {
+        "existing_engine_replay_tests": 5
+      },
+      "scope": "stored historical receipt, not newly executed full suite",
+      "source": "bench/results/2026-11-03-instruction-attribution/checkpoint-current.json"
+    },
+    "multibyte-outline": {
+      "census": {
+        "corruption_cases_rejected": 23,
+        "differential_streams_per_arm": 12800,
+        "terminal_tests_per_arm": 383
+      },
+      "scope": "stored historical receipt, not newly executed full suite",
+      "source": "bench/results/2026-11-03-multibyte-outline/checkpoint-final.json"
+    },
+    "parser-authority": {
+      "census": {
+        "corruptions_rejected": 17,
+        "differential_streams_per_arm": 12800,
+        "python_tests": 65,
+        "terminal_tests_per_arm": 382
+      },
+      "scope": "stored historical receipt, not newly executed full suite",
+      "source": "bench/results/2026-11-03-parser-authority/checkpoint-initial.json"
+    },
+    "role-partition": {
+      "census": {
+        "corruption_rejections": 15,
+        "python_tests": 49
+      },
+      "scope": "stored historical receipt, not newly executed full suite",
+      "source": "bench/results/2026-11-03-role-partition/checkpoint-initial.json"
+    },
+    "scalar-domain": {
+      "census": {
+        "corruption_cases_rejected": 23,
+        "differential_streams_per_arm": 12800,
+        "terminal_tests_per_arm": 383
+      },
+      "scope": "stored historical receipt, not newly executed full suite",
+      "source": "bench/results/2026-11-03-scalar-domain/checkpoint-final.json"
+    },
+    "static-width-cache": {
+      "census": {
+        "candidate_terminal_tests": 382,
+        "corruptions_rejected": 23,
+        "differential_streams_per_arm": 12800,
+        "python_tests": 57,
+        "restored_terminal_tests": 381
+      },
+      "scope": "stored historical receipt, not newly executed full suite",
+      "source": "bench/results/2026-11-03-static-width-cache/checkpoint-initial.json"
+    },
+    "width-handle": {
+      "census": {
+        "ignored_terminal_tests": 11,
+        "python_tests": 49,
+        "report_corruptions_rejected": 9,
+        "reported_sweep_streams": 12800,
+        "terminal_tests": 381
+      },
+      "scope": "stored historical receipt, not newly executed full suite",
+      "source": "bench/results/2026-11-03-width-handle/checkpoint-initial.json"
+    }
+  },
+  "historical_selected": {
+    "all_six": false,
+    "competitor": {
+      "path": "/usr/bin/ghostty",
+      "sha256": "ef28bf3a0f6ead69014da86ab0c9a2ef30fcf3bf297a6a27c4c18dfc80a56a62"
+    },
+    "corrected_positive_leads": 1,
+    "metrics": {
+      "ascii": {
+        "conditional_positive_lead": false,
+        "holm_p_six_workloads": 1.0,
+        "losses": 9,
+        "median_ratio": 1.0222687813432703,
+        "observed_deficit_percent": 0.0,
+        "own_gain_to_observed_parity_percent": 0.0,
+        "sign_p_two_sided": 1.0,
+        "ties": 0,
+        "wins": 9
+      },
+      "cursor_motion": {
+        "conditional_positive_lead": false,
+        "holm_p_six_workloads": 0.1544189453125,
+        "losses": 4,
+        "median_ratio": 1.1277910382808725,
+        "observed_deficit_percent": 0.0,
+        "own_gain_to_observed_parity_percent": 0.0,
+        "sign_p_two_sided": 0.0308837890625,
+        "ties": 0,
+        "wins": 14
+      },
+      "scroll_region": {
+        "conditional_positive_lead": false,
+        "holm_p_six_workloads": 0.385009765625,
+        "losses": 5,
+        "median_ratio": 1.2573711896403519,
+        "observed_deficit_percent": 0.0,
+        "own_gain_to_observed_parity_percent": 0.0,
+        "sign_p_two_sided": 0.09625244140625,
+        "ties": 0,
+        "wins": 13
+      },
+      "truecolor": {
+        "conditional_positive_lead": true,
+        "holm_p_six_workloads": 0.0008697509765625,
+        "losses": 1,
+        "median_ratio": 1.3826895874071399,
+        "observed_deficit_percent": 0.0,
+        "own_gain_to_observed_parity_percent": 0.0,
+        "sign_p_two_sided": 0.00014495849609375,
+        "ties": 0,
+        "wins": 17
+      },
+      "tui_frames": {
+        "conditional_positive_lead": false,
+        "holm_p_six_workloads": 0.385009765625,
+        "losses": 5,
+        "median_ratio": 1.0961650249481694,
+        "observed_deficit_percent": 0.0,
+        "own_gain_to_observed_parity_percent": 0.0,
+        "sign_p_two_sided": 0.09625244140625,
+        "ties": 0,
+        "wins": 13
+      },
+      "unicode": {
+        "conditional_positive_lead": false,
+        "holm_p_six_workloads": 0.96136474609375,
+        "losses": 11,
+        "median_ratio": 0.9522599486561666,
+        "observed_deficit_percent": 4.774005134383341,
+        "own_gain_to_observed_parity_percent": 5.013342355856132,
+        "sign_p_two_sided": 0.480682373046875,
+        "ties": 0,
+        "wins": 7
+      }
+    },
+    "rounds": 18,
+    "scored_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+    "sessions": 54,
+    "source": "bench/results/2026-11-03-read-shape/tail-policy/gate"
+  },
+  "limitations": [
+    "No new benchmark, build, submission or deployment.",
+    "Parity deltas are reciprocals of observed paired medians, not superiority bounds.",
+    "Within-series Holm families do not correct adaptive campaign-wide search.",
+    "Fastest internal passes are not independent trials; shared host and serial signs limit inference.",
+    "Hash consistency is not authenticity, timing accuracy, safety or championship acceptance.",
+    "Previous checkpoint passed; historical full test counts are retained receipts, not new full-suite executions.",
+    "Temporary binaries are required for exact replay; no rebuild or fallback is performed."
+  ],
+  "literal_target": {
+    "acceptance_bound": false,
+    "literal_delta": "For the selected exact executable: clear all six prospective end-to-end throughput superiority gates, and establish lower-is-better superiority on CPU, startup, idle resource use, actual key-to-screen latency (idle and load), with correctness/feature compatibility and platform scope explicit. Current throughput-only three-of-six result is insufficient.",
+    "objective": "Beat Ghostty on every metric; no championship established.",
+    "schema": "glass.unbound-target-contract/v1",
+    "scope_agreed": false,
+    "sources": [
+      "docs/PERFORMANCE.md",
+      "bench/results/2026-11-03-role-partition/competitor-protocol.json",
+      "bench/results/2026-11-03-campaign-audit/audit.json"
+    ],
+    "status": "requirements unresolved, not a self-authorized acceptance definition",
+    "throughput": {
+      "current_cleared": [
+        "truecolor",
+        "cursor_motion",
+        "tui_frames"
+      ],
+      "direction": "higher is better",
+      "remaining": [
+        "ascii",
+        "unicode",
+        "scroll_region"
+      ],
+      "warning": "Observed parity reciprocals in audit output are not superiority confidence bounds or candidate requirements."
+    },
+    "unclosed_metric_families": [
+      {
+        "metric": "CPU cost",
+        "reason": "Latest retained per-workload CPU-second ratios are descriptive; no all-metric inferential CPU acceptance."
+      },
+      {
+        "metric": "Startup: program/window/first visible output",
+        "reason": "No fresh all-startup selected-vs-Ghostty promotion comparison in the latest series. Old kitty and macOS figures are scoped historical comparisons, not current Ghostty acceptance."
+      },
+      {
+        "metric": "Idle RAM/VRAM and loaded resource use",
+        "reason": "No fresh exact-build, paired superiority gate in the latest series. Isolated lookup minor faults and high-water RSS deltas do not fill this."
+      },
+      {
+        "metric": "Key-to-screen latency, idle and flooding",
+        "reason": "Key-to-PTY and DA1 quiet RTT terminate before displayed echo; neither proves this metric."
+      },
+      {
+        "metric": "Frame delivery/render latency",
+        "reason": "DA1 throughput acknowledges parsing; it does not certify first/steady displayed frame latency."
+      },
+      {
+        "metric": "Compatibility and supported platform scope",
+        "reason": "Terminal differential streams cover their chosen inputs, not complete escape/Unicode/GPU/Wayland/macOS coverage or the world."
+      }
+    ]
+  },
+  "preserved_prior_files": 6664,
+  "preserved_rust_files": 120,
+  "preserved_shared_docs": 4,
+  "runtime_promotion": false,
+  "schema": "glass.campaign-audit30/v1",
+  "selected": {
+    "all_six": false,
+    "competitor": {
+      "path": "/usr/bin/ghostty",
+      "sha256": "ef28bf3a0f6ead69014da86ab0c9a2ef30fcf3bf297a6a27c4c18dfc80a56a62"
+    },
+    "corrected_positive_leads": 3,
+    "metrics": {
+      "ascii": {
+        "conditional_positive_lead": false,
+        "holm_p_six_workloads": 0.19747429341077805,
+        "losses": 20,
+        "median_ratio": 0.9471163946806691,
+        "observed_deficit_percent": 5.2883605319330895,
+        "own_gain_to_observed_parity_percent": 5.583643743930877,
+        "sign_p_two_sided": 0.09873714670538902,
+        "ties": 0,
+        "wins": 10
+      },
+      "cursor_motion": {
+        "conditional_positive_lead": true,
+        "holm_p_six_workloads": 1.1175870895385742e-08,
+        "losses": 0,
+        "median_ratio": 1.0987249970010438,
+        "observed_deficit_percent": 0.0,
+        "own_gain_to_observed_parity_percent": 0.0,
+        "sign_p_two_sided": 1.862645149230957e-09,
+        "ties": 0,
+        "wins": 30
+      },
+      "scroll_region": {
+        "conditional_positive_lead": false,
+        "holm_p_six_workloads": 0.584664711728692,
+        "losses": 17,
+        "median_ratio": 0.9892849714652877,
+        "observed_deficit_percent": 1.071502853471229,
+        "own_gain_to_observed_parity_percent": 1.0831083907846706,
+        "sign_p_two_sided": 0.584664711728692,
+        "ties": 0,
+        "wins": 13
+      },
+      "truecolor": {
+        "conditional_positive_lead": true,
+        "holm_p_six_workloads": 1.1175870895385742e-08,
+        "losses": 0,
+        "median_ratio": 1.1818022477228065,
+        "observed_deficit_percent": 0.0,
+        "own_gain_to_observed_parity_percent": 0.0,
+        "sign_p_two_sided": 1.862645149230957e-09,
+        "ties": 0,
+        "wins": 30
+      },
+      "tui_frames": {
+        "conditional_positive_lead": true,
+        "holm_p_six_workloads": 2.3096799850463867e-07,
+        "losses": 1,
+        "median_ratio": 1.0621654240229184,
+        "observed_deficit_percent": 0.0,
+        "own_gain_to_observed_parity_percent": 0.0,
+        "sign_p_two_sided": 5.774199962615967e-08,
+        "ties": 0,
+        "wins": 29
+      },
+      "unicode": {
+        "conditional_positive_lead": false,
+        "holm_p_six_workloads": 2.5290995836257935e-05,
+        "losses": 27,
+        "median_ratio": 0.9291122594106658,
+        "observed_deficit_percent": 7.0887740589334225,
+        "own_gain_to_observed_parity_percent": 7.629620626715039,
+        "sign_p_two_sided": 8.430331945419312e-06,
+        "ties": 0,
+        "wins": 3
+      }
+    },
+    "rounds": 30,
+    "scored_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+    "sessions": 60,
+    "source": "bench/results/2026-11-03-role-partition/shipping-vs-ghostty"
+  },
+  "selected_temporal_contrasts": {
+    "ascii": {
+      "earlier_ratio": 1.0222687813432703,
+      "latest_over_earlier": 0.9264847092720074,
+      "latest_ratio": 0.9471163946806691
+    },
+    "cursor_motion": {
+      "earlier_ratio": 1.1277910382808725,
+      "latest_over_earlier": 0.9742274585510672,
+      "latest_ratio": 1.0987249970010438
+    },
+    "scroll_region": {
+      "earlier_ratio": 1.2573711896403519,
+      "latest_over_earlier": 0.7867883244153658,
+      "latest_ratio": 0.9892849714652877
+    },
+    "truecolor": {
+      "earlier_ratio": 1.3826895874071399,
+      "latest_over_earlier": 0.8547126256580531,
+      "latest_ratio": 1.1818022477228065
+    },
+    "tui_frames": {
+      "earlier_ratio": 1.0961650249481694,
+      "latest_over_earlier": 0.9689831365246683,
+      "latest_ratio": 1.0621654240229184
+    },
+    "unicode": {
+      "earlier_ratio": 0.9522599486561666,
+      "latest_over_earlier": 0.9756918378451526,
+      "latest_ratio": 0.9291122594106658
+    }
+  },
+  "status": "reported",
+  "unpromoted_combined": {
+    "all_six": false,
+    "competitor": {
+      "path": "/usr/bin/ghostty",
+      "sha256": "ef28bf3a0f6ead69014da86ab0c9a2ef30fcf3bf297a6a27c4c18dfc80a56a62"
+    },
+    "corrected_positive_leads": 4,
+    "metrics": {
+      "ascii": {
+        "conditional_positive_lead": false,
+        "holm_p_six_workloads": 0.19747429341077805,
+        "losses": 20,
+        "median_ratio": 0.9655072470781729,
+        "observed_deficit_percent": 3.4492752921827075,
+        "own_gain_to_observed_parity_percent": 3.5725006752884925,
+        "sign_p_two_sided": 0.09873714670538902,
+        "ties": 0,
+        "wins": 10
+      },
+      "cursor_motion": {
+        "conditional_positive_lead": true,
+        "holm_p_six_workloads": 0.00029738061130046844,
+        "losses": 4,
+        "median_ratio": 1.1268550521563134,
+        "observed_deficit_percent": 0.0,
+        "own_gain_to_observed_parity_percent": 0.0,
+        "sign_p_two_sided": 5.947612226009369e-05,
+        "ties": 0,
+        "wins": 26
+      },
+      "scroll_region": {
+        "conditional_positive_lead": false,
+        "holm_p_six_workloads": 1.0,
+        "losses": 15,
+        "median_ratio": 1.0012725561704312,
+        "observed_deficit_percent": 0.0,
+        "own_gain_to_observed_parity_percent": 0.0,
+        "sign_p_two_sided": 1.0,
+        "ties": 0,
+        "wins": 15
+      },
+      "truecolor": {
+        "conditional_positive_lead": true,
+        "holm_p_six_workloads": 3.46451997756958e-07,
+        "losses": 1,
+        "median_ratio": 1.3265800081579768,
+        "observed_deficit_percent": 0.0,
+        "own_gain_to_observed_parity_percent": 0.0,
+        "sign_p_two_sided": 5.774199962615967e-08,
+        "ties": 0,
+        "wins": 29
+      },
+      "tui_frames": {
+        "conditional_positive_lead": true,
+        "holm_p_six_workloads": 0.00029738061130046844,
+        "losses": 4,
+        "median_ratio": 1.0826819445042428,
+        "observed_deficit_percent": 0.0,
+        "own_gain_to_observed_parity_percent": 0.0,
+        "sign_p_two_sided": 5.947612226009369e-05,
+        "ties": 0,
+        "wins": 26
+      },
+      "unicode": {
+        "conditional_positive_lead": true,
+        "holm_p_six_workloads": 0.004292719066143036,
+        "losses": 6,
+        "median_ratio": 1.1608775870511494,
+        "observed_deficit_percent": 0.0,
+        "own_gain_to_observed_parity_percent": 0.0,
+        "sign_p_two_sided": 0.001430906355381012,
+        "ties": 0,
+        "wins": 24
+      }
+    },
+    "rounds": 30,
+    "scored_sha256": "6111147b21a4bc6d112cfb359bd8e3535b4c7bdd03e0803b550534e8e45c3369",
+    "sessions": 90,
+    "source": "bench/results/2026-11-03-marks-width/replication-gate"
+  }
+}

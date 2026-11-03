@@ -1,0 +1,18 @@
+{
+  "championship_established": false,
+  "claim_groups": 15,
+  "combined_unpromoted_corrected_throughput_leads": 4,
+  "engine_screens_rejected": 9,
+  "frozen_file_references": 23,
+  "historical_engine_sessions": 230,
+  "note": "Exact stored-data replay and preservation, not fresh Rust tests, timing, statistical acceptance or worldwide leadership.",
+  "runtime_promotion": false,
+  "schema": "glass.audit30-checkpoint/v1",
+  "selected_corrected_throughput_leads": 3,
+  "selected_rounded_pass_sensitivity_leads": 3,
+  "selected_terminal_rounds": 30,
+  "status": "reported",
+  "unchanged_prior_result_report_files": 6664,
+  "unchanged_rust_sources": 120,
+  "unchanged_shared_docs": 4
+}
