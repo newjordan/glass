@@ -1,0 +1,46 @@
+--- a/crates/term/src/engine.rs
++++ b/crates/term/src/engine.rs
+@@ -1929,11 +1929,12 @@
+         // with both removed). `occ` is bumped once at the end for the
+         // span actually written; the guard reads physical cells, but
+         // it only runs below `guard_from`, where physical is
+-        // observable. A mark leaves the run instead of being put
+-        // inline — the caller's fallback hands it to `input`.
++        // observable. A mark can use only a base positively written by
++        // this invocation; an older base stays on `input`'s fallback.
+         let start_column = column;
+         let _ = row.lane_cells(column, 0);
+         let cells = row.lane_slice_from(column);
++        let mut local_base: Option<usize> = None;
+         let mut occ_to = column;
+         let wide = alacritty_terminal::term::cell::Cell {
+             flags: flags | CellFlags::WIDE_CHAR,
+@@ -1966,10 +1967,16 @@
+                     match width_of(last) {
+                         Some(width @ 1..=2) => width,
+                         Some(0) => {
+-                            // A mark joins the cell before it through
+-                            // the caller's `input` fallback; it needs
+-                            // the row, not this slice.
+-                            break;
++                            // The base is known to be physical and already
++                            // overwritten, including a wide base's first cell
++                            // and a final-column base with pending wrap. Never
++                            // infer it from stale cells left of this lane.
++                            let Some(base) = local_base else { break };
++                            cells[base].push_zerowidth(last);
++                            span_clean = false;
++                            held = Some((c, at));
++                            at += len;
++                            continue;
+                         }
+                         _ => break,
+                     }
+@@ -2003,6 +2010,7 @@
+                     span_clean = false;
+                     cells[at_col + 1] = spacer.clone();
+                 }
++                local_base = Some(at_col);
+                 occ_to = column + width;
+                 let end = column + width - 1;
+                 if end + 1 < columns {

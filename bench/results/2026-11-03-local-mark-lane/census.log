@@ -1,0 +1,7 @@
+
+running 1 test
+LOCAL_MARK_CENSUS bytes=33554476 read=4095 expected=507568 local=490113 fallback=17455
+test speed::local_mark_lane_census ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 395 filtered out; finished in 0.81s
+

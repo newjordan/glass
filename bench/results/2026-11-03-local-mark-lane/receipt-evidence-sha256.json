@@ -1,0 +1,11 @@
+{
+  "schema": "glass.research-evidence/v1",
+  "sha256": {
+    "bench/results/2026-11-03-local-mark-lane/checkpoint-final.json": "2cf3ecf3a808cce3679bd7ed284d33db851df871b30f781268a065feb3774626",
+    "bench/results/2026-11-03-local-mark-lane/checkpoint-final.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bench/results/2026-11-03-local-mark-lane/final-frozen-replay.json": "d42a94f1f5bd7733c5861d1f1753c0f15cea4b4058ef5fc3b82eae29eb916343",
+    "bench/results/2026-11-03-local-mark-lane/staged-whitespace.log": "feb9b9b55da045a36d7ea267f13b2a63ce1a73f299dac541a86b546ade14115d",
+    "bench/results/2026-11-03-local-mark-lane/completion.json": "27dff248d17889b2856cb52a2c4c8797684d433c6fae9caaa02c52251f31a296",
+    "bench/results/2026-11-03-local-mark-lane/final-frozen-index.json": "d2bf885e82f1da503e62f5aa4d12015c2aec92e0c5ee3d4b52053d2252ccc3ce"
+  }
+}

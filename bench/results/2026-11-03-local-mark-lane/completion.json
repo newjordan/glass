@@ -1,0 +1,20 @@
+{
+  "schema": "glass.local-mark-lane-completion/v1",
+  "status": "reported",
+  "runtime_promotion": false,
+  "championship_established": false,
+  "correctness": "384 terminal tests, 1728 targeted mark scenarios and 12800 differential streams per arm passed. Instrumented third executable accounted exactly for all 507568 marks.",
+  "result": "Unicode ratio 1.0257873, 7/12 wins, unadjusted p .7744141, Holm p 1.0: fixed engine screen rejected. No retry or terminal timing capture.",
+  "preserved_source_scope": {
+    "all_tracked_rs": 290,
+    "production_crates_rs": 120,
+    "retained_non_crates_rs": 170
+  },
+  "scope_clarification": "README/report 290 tracked .rs count includes retained experiment .rs snapshots. The earlier 120-source scope is exactly production files under crates/, not a different number of production files. Both scopes are preserved.",
+  "prior_evidence_files_unchanged": 6697,
+  "selected_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "whitespace": "git diff --cached --check diagnosed only original log EOF blanks in seven test logs. Raw hashed log bytes are intentionally not rewritten. Exit 141 of the combined display command came from git status | head under pipefail, not a failed runtime test or checkpoint.",
+  "checkpoint": "checkpoint-final.json equals checkpoint-initial.json; final-frozen-replay.json passes 136 references / 71 unique pinned files.",
+  "tool_failures": "Candidate ambiguous Option inferred type fixed before measured build; prior checkpoint intentionally fails on live experiment edits; instrument.py first prepared source without building, then separate build/run succeeded; malformed verifier placeholder caught by syntax check and replaced before checkpoint; all timing sessions retained.",
+  "remaining": "No all-metric acceptance bound. Need current paired PTY/Ghostty and visible latency/frame, resource, compatibility/platform gates for any championship claim."
+}

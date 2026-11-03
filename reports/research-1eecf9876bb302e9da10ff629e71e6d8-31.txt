@@ -1,0 +1,169 @@
+LOCAL RESEARCH RESULT — iteration 31
+Status: reported; not championship acceptance
+
+# Local-written-base mark lane — rejected at the fixed engine screen
+
+Iteration 31, 2026-11-03. Starting commit `d26c640`. No runtime promotion,
+new PTY/Ghostty capture, or championship claim. The selected executable and
+pre-experiment Rust sources have been restored/preserved exactly.
+
+## New question and implemented mechanism
+
+Rather than another width-cache, decoder or parser rewrite, this experiment
+changes zero-width handling in `Watch::put_row`. A mark previously ends the row
+lane and goes through the caller's `input` fallback. The candidate retains the
+index of a base only after a positive-width write by the **same invocation**.
+A subsequent mark attaches to that index using the unchanged
+`Cell::push_zerowidth`, invalidates the uniform span, updates held-scalar state,
+and continues decoding without advancing the cursor or the positive-cell drain
+count. Entry marks without a locally written base still fall back. A wide
+base's index is its first cell, not its spacer. A final-column base can receive
+marks while wrap is pending.
+
+This differs from an unrestricted inline-mark or saved-row continuation idea:
+it does not infer a base in a stale/lazy prefix and holds no cross-call index.
+Earlier generic inline-mark plumbing was discussed/deleted in historical
+reports; this is an explicit, retained implementation with that restricted
+ownership proof and measured opportunity accounting. Cell representation,
+mark cache/COW/cap policy, Unicode width policy, UTF-8 validation, parser, and
+reader/transport remain unchanged. `candidate.patch` and the four source files
+per arm bind the exact proposal. Both arms include the same new targeted test;
+the test is retained as a snapshot, not installed in the restored runtime tree.
+
+## Prospective method, correctness and fixed endpoint
+
+`protocol.json` was written before the builds and timing. No pilot, rescue
+variant, exclusion, optional stopping, second series or pooled earlier score
+was used. Each optimized release test executable was built by the existing
+`bench/build-engine-arm.py`, with fresh compiler receipts for vte,
+alacritty_terminal and glass. The only runtime-source difference between
+measured arms is the retained engine patch. The helper's first candidate
+check found an ambiguous `None`; specifying `Option<usize>` fixed compilation
+before measured executable construction.
+
+Each arm passed:
+
+* 384 terminal tests (11 ignored), including the new local-mark regression;
+* 1,728 targeted scenarios, independently logged: narrow/wide bases, entry
+  marks, pending wrap, disabled wrap, recycled rows, repeated marks exceeding
+  the cap, attributes/hyperlinks, REP, replies, and byte cuts at
+  1/2/3/23/24/25/4095/full-stream;
+* the existing ignored differential entry point over 64 seeds x 200 streams
+  = 12,800 streams, with no divergence.
+
+These are differential checks on their defined inputs, not a proof of complete
+terminal/Unicode compatibility or correctness of the shared oracle.
+
+The timing screen was exactly 12 balanced alternating AB/BA blocks, 24
+sequential sessions, all six predeclared workloads, scale 2, five internal
+rounds, 4095-byte reads. Internal rounds do not constitute independent paired
+trials. The unchanged timing harness reports best-of-five rates. Primary
+screen: Unicode paired median CPU ratio >=1.02, wins>losses, six-workload
+Holm-adjusted sign p<.05, and all six point medians >=.98. The point guards are
+not noninferiority evidence. Sequential shared-host signs are not established
+to be independent by balancing launch order.
+
+| workload | candidate/control CPU median | wins/losses | Holm p |
+|---|---:|---:|---:|
+| ASCII | 1.13810 | 7/5 | 1.00000 |
+| Unicode | 1.02579 | 7/5 | 1.00000 |
+| truecolor | 1.02140 | 7/5 | 1.00000 |
+| cursor motion | 0.98091 | 3/9 | 0.87598 |
+| scroll region | 1.01446 | 8/4 | 1.00000 |
+| TUI | 0.98765 | 3/9 | 0.87598 |
+
+Unicode's unadjusted two-sided sign p is .774414. No point guard failed,
+but the primary significance screen failed. **Reject; do not promote or run
+another capture to rescue the result.** The ASCII median is not evidence of a
+reliable 13.8% gain: its ratio range is .5833..2.5490, with only 7/12 wins.
+
+## Did the intended path actually run?
+
+After all timing ended, a separate third executable instrumented the candidate
+only. It is never used for rates. On one pass of the same Unicode generator
+(scale 2, 154x39, 4095-byte reads), a direct scalar scan found 507,568 zero-width
+scalars in 33,554,476 bytes. Counters recorded:
+
+* **490,113 local mark commits (96.56105%)**;
+* **17,455 zero-width fallback inputs (3.43895%)**;
+* exact equality `local + fallback == independently scanned expected`.
+
+The direct scan uses Glass's same width policy and warms its cache. This is an
+opportunity/accounting check, not independent Unicode policy validation or a
+cold-cache/cost experiment. The counted build changes layout and adds atomic
+operations. Do not infer its run time, cycle share, or causal attribution.
+Counts establish that the new path was exercised heavily; they rule out the
+simple explanation "the lane never ran" for this screen's failure.
+
+## Static tradeoff and descriptive uncertainty
+
+Exact ELF disassembly shows `print_utf8` grew from **8,524 bytes / 1,967
+instructions** to **9,905 bytes / 2,293 instructions**. Its entry moved from
+`0x2625a0` to `0x262620`; both have 32-byte alignment. `Engine::apply` retained
+9,774 bytes / 2,048 instructions with identical relocation-masked instructions,
+but its entry also moved by 128 bytes. These static facts do not isolate
+front-end effects, register pressure, branch behavior or general code layout as
+the cause. There is no dynamic instruction/cycle attribution.
+
+`dispersion.py` is explicitly post-hoc descriptive, not a revised acceptance
+rule. It reproduces all 12 ratios without exclusions. Unicode ranges from
+.90829 to 1.17186. Six-pair order-stratum medians are .99208 when control is
+launched first and 1.07381 when candidate is first. This difference does not
+prove order caused the dispersion: strata have only six observations and are
+confounded with block/time. An order-statistic median interval [.96740,
+1.08327] has 96.14258% nominal coverage only under independent continuous
+sampling; that assumption is unestablished on this shared host. The interval
+includes both a loss and an improvement; it cannot support equivalence,
+noninferiority or competitive superiority.
+
+## Evidence and retained failures
+
+* `raw.json`, binary registry, source snapshots, cargo JSONL/identity receipts,
+  test logs, disassembly, and census source/log are explicit pinned inputs.
+* `analysis.json` is reconstructed from all 24 sessions. `corruption.json`
+  replays 23 synthetic mutations of that retained report (fixtures are not
+  measurements). `codegen.py` rechecks exact executable symbols/instructions.
+* The read-only `verify.py` requires all three exact local executables to remain
+  available at their explicit `/tmp/glass-i31-*-test` paths. If those are gone it
+  must fail closed; it does not silently rebuild/fall back. The frozen manifest
+  replay separately checks retained byte integrity without needing executables.
+* The old audit was deliberately run while the source differed and correctly
+  rejected it. Its failed stdout/stderr are retained. After exact restoration,
+  the prior checkpoint and its 26-reference frozen replay passed.
+* The first instrument command only prepared source; no census existed until
+  the explicit separate build-and-run step. Empty instrument logs are not
+  counted as a passing test. A malformed verifier placeholder was rejected by
+  the syntax check and replaced before checkpoint execution. The retained
+  final verifier is real executable source; these tool failures are not hidden
+  or portrayed as runtime results.
+
+All **290 tracked `.rs` files**, **6,697 earlier tracked result/report files**,
+and the selected release executable match the pre-experiment SHA-256 snapshot.
+No shared documentation is changed. This count has broader scope than some
+earlier per-crate 120-source counts and must not be compared as if identical.
+No new all-metric acceptance gate is bound. Existing unproven performance,
+resource, display-latency and platform claims remain unresolved.
+
+## Next necessary decision, not a championship claim
+
+Close this precise locally-owned mark-lane candidate: high opportunity coverage
+did not clear its prespecified diagnostic, and the caller grew materially.
+Do not recycle its positive point median as established progress or pool it
+with a previous cache/decoder screen. A different design would need a distinct
+cost hypothesis and a new frozen protocol. For the standing all-metric goal,
+current controlled PTY/Ghostty, visible latency/frame, resource and supported
+platform gates remain necessary; this engine-only result satisfies none of
+those competitive requirements.
+
+## Local replay
+
+From the workspace root:
+
+```
+python3 -B bench/results/2026-11-03-local-mark-lane/verify.py
+python3 -B bench/replay-evidence-index.py bench/results/2026-11-03-local-mark-lane/final-frozen-index.json
+```
+
+The first checks exact local input/executable preservation and reproducible
+stored-data results. The second checks explicit retained bytes. Neither runs
+new timings nor establishes championship acceptance.

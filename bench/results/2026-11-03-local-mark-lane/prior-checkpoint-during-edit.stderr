@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-campaign-audit-30/verify.py", line 41, in <module>
+    print(json.dumps(check(), indent=2, sort_keys=True))
+                     ~~~~~^^
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-campaign-audit-30/verify.py", line 21, in check
+    actual = audit.run()
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-campaign-audit-30/audit.py", line 168, in run
+    need(sha(ROOT / path) == digest, 'preserved input changed: ' + path)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-campaign-audit-30/audit.py", line 23, in need
+    raise ValueError(message)
+ValueError: preserved input changed: crates/term/src/engine.rs

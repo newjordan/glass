@@ -1,0 +1,39 @@
+{
+  "schema": "glass.local-mark-lane-protocol/v1",
+  "created_utc": "2026-11-03T12:17:51.112358+00:00",
+  "hypothesis": "Accept a zero-width held scalar inside put_row only when its base was positively written by that same row invocation. Reuse an explicit local base index rather than re-enter input/row and re-derive attachment. Existing mark cache, decoder, width policy, cell layout, parser and reader unchanged. Old generic inline mark plumbing was deleted, and recent inline inspection had no implemented local-written-base proof.",
+  "semantic_scope": "No cross-invocation or preexisting-base fast path. Local narrow/wide base, pending wrap and multiple marks supported; the existing Cell::push_zerowidth owns allocation/COW/cap policy. Mark dirties the uniform prefix; no new cursor movement or drained count for marks.",
+  "arms": [
+    "control",
+    "candidate"
+  ],
+  "correctness": "Add local_written_marks_match_parser test to BOTH arms, run exact test first then release terminal suite and existing 64x200 stream differential once per arm. Smallest new test includes partial reads, lazy recycling, wide base/spacer, pending wrap, disabled wrap, REP, repeated >9 marks, nondefault attributes and same-chunk snapshots. No timer before correctness.",
+  "engine": {
+    "blocks": 12,
+    "scale": 2,
+    "rounds": 5,
+    "read": 4095,
+    "workloads": [
+      "ascii",
+      "unicode",
+      "truecolor",
+      "cursor_motion",
+      "scroll_region",
+      "tui_frames"
+    ],
+    "orders": [
+      [
+        "control",
+        "candidate"
+      ],
+      [
+        "candidate",
+        "control"
+      ]
+    ],
+    "primary": "Unicode median paired CPU-rate ratio >=1.02, wins>losses, six-workload Holm p<.05, and all six median CPU ratios >=.98. Point guards are not noninferiority proof.",
+    "stop": "Exactly 12 pairs, no pilots, exclusions, rescue variant, extra timing, pooling, optional stopping or threshold changes. Reject if screen fails; separate fresh PTY/Ghostty and all-metric gates before any promotion."
+  },
+  "mechanism": "Temporary separate counter build will count local mark commits vs total held-zero encounters; no counters in timing executables. Counts are opportunity, not CPU cost attribution.",
+  "limits": "Sequential shared-host engine diagnostic; no real-terminal or championship inference. Mark control flow and code layout change together."
+}

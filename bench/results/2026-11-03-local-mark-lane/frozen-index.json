@@ -1,0 +1,11 @@
+{
+  "schema": "glass.historical-evidence-index/v1",
+  "manifests": [
+    {
+      "path": "bench/results/2026-11-03-local-mark-lane/inputs-sha256.json",
+      "sha256": "0c4add562165b477c69f720c9e1dd73fb319815d7f3bcb1de710974b4a47f961",
+      "source_root": ".",
+      "snapshots": {}
+    }
+  ]
+}
