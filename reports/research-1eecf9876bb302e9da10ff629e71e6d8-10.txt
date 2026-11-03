@@ -1,0 +1,197 @@
+Glass iteration 10: matched-input stage profiles and CPU-leaf localization
+
+STATUS: reported research. No runtime promotion, official submission,
+all-metric Ghostty victory, world championship, or loop acceptance is claimed.
+The objective remains unmet. The retained contribution is a reproducible
+bottleneck diagnosis, profiling controls, and a rejected independent ablation.
+
+Starting commit 68f18dd66fd1bfc917e50689aa4dc3443cd28e0e.
+Ryzen 9 9950X3D / RTX 3090, Linux/Hyprland, shared unrelated load.
+No builds or other Glass benchmarks overlapped terminal profiles. No terminal
+or competitor affinity/settings changed. Exact selected executable throughout:
+  d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c
+
+1. New diagnostic and overhead controls
+
+The previous iteration requested matched-input CPU/wall stage evidence rather
+than another speculative session change. New opt-in tools implement that:
+  bench/linux/pipeline-profile.py
+  bench/linux/run-pipeline-profile.sh
+  bench/linux/analyze-pipeline.py
+  bench/linux/cpu-sample.c
+  bench/linux/run-cpu-sample.sh
+  bench/linux/symbolize-cpu-sample.py
+
+The unchanged bench/tput.py remains the default benchmark. Plain uses it
+verbatim. Instrumented sessions execute a retained derived producer with
+boundary task snapshots outside timing and wall/process-CPU timers around
+write_all(payload) and write_all(DA1). Generated payload bytes, geometry,
+three passes, fastest estimator and DA1 stop semantics stay unchanged.
+All pass identities, payload hashes, producer and named terminal task deltas,
+uncertainty windows, masks, last CPUs and sampled wait channels are retained.
+No output overwrite and no missing-pass-to-zero conversion.
+
+Twelve rounds across all six plain/boundary-only/sampled orders twice:
+36 sessions, 154x39, 432 instrumented passes, complete and validated.
+No favorable pass/session filtering. Unit of replication is round/session,
+not all correlated passes or samples. This is not a leaderboard gate.
+
+Median within-round instrumented/plain rates, wins out of 12:
+                     boundary-only          sampled
+ ASCII                1.0945  7             1.0883  8
+ Unicode              0.9915  5             1.0085 10
+ truecolor            1.0078  8             0.9985  5
+ cursor motion        0.9998  6             0.9949  3
+ scroll region        0.9562  4             0.9683  4
+ TUI frames           1.0067  9             1.0055  8
+
+Profiling can perturb pipeline pacing; no equivalence or optimization is
+claimed. Observer snapshot cost median .407 ms (max .967), actual sample
+spacing median 5.513 ms (max 55.158), versus 5 ms requested. Per-task snapshots
+are not atomic or scheduler events. sched_schedstats is disabled; zeros in
+schedstat run-delay cannot establish zero runnable delay.
+
+2. New distinction: parser CPU-bound versus reader/handoff-heavy regimes
+
+Boundary-only medians, per-thread CPU runtime / DA1 wall time:
+                      parser        reader       parser voluntary switches
+ ASCII                .5313         .8655        1216
+ Unicode              .9859         .2381          12
+ truecolor            .9879         .2723          13
+ cursor motion        .9890         .2451          10
+ scroll region        .5230         .8894         835.5
+ TUI frames           .9895         .2840          11
+
+Thread CPU is concurrent, not additive fractions of one budget. Off-CPU
+residual cannot distinguish runnable, blocked, frequency/cache or SMT causes.
+The producer payload write spans a median 99.7-99.9% of pass wall time across
+all workloads; this is backpressure and not 99% Python execution CPU.
+Sampled task states are consistent with these regimes but not causal traces.
+
+New concrete counterexample to a scheduler-wait-only explanation:
+The slowest boundary Unicode pass (tput-edges-6, pass 1) took 133.915 ms wall
+and 131.076 ms parser CPU, with two involuntary context switches. Fastest
+Unicode wall was 59.783 ms and median 63.036 ms. The reproduced excursion
+has substantially increased on-CPU parser cost, not merely a long off-CPU
+pause. It does NOT identify frequency, caches, SMT, data dependency or other
+causes. Earlier >10x ASCII excursions did not recur, so they remain undiagnosed.
+
+3. New exact-binary leaf CPU profiles
+
+perf was absent, perf_event_paranoid=2, tracing inaccessible. Instead a small
+own-process Linux/x86-64 LD_PRELOAD DSO arms a thread CPU-time signal timer on
+the named current thread. It stores only RIP, timestamp and optional call
+label in fixed lock-free storage, not application data or environment. It is
+not part of Glass release and introduces real overhead. The Python child is
+excluded by exact executable-path filtering. Output refuses overwrite.
+
+Six sessions: three parser plus three reader. All complete, 18 passes each.
+Symbolizer matches pass windows and ELF mapping offsets through LOAD segments,
+requires a containing symbol, retains unknown addresses. Exact ELF hashes bind
+symbolization; replays need those ELF files at their recorded paths.
+
+Unicode parser: 435/547 delivered matched samples (79.5%) in
+Watch::print_utf8. Across sessions: 144/181, 145/181, 146/185.
+ASCII print_run: 36/142 (25.4%); scroll region print_run: 23/85 (27.1%).
+No inclusive stack or source-line claim. Requested 100-us thread timer
+produced ~1-ms parser sample spacing; delivery is coarse and can alias.
+
+Most reader samples land at libc 0xa08f2 (__syscall_cancel_arch_end), shared
+by cancellation-aware syscalls. This cannot independently identify poll/read.
+We retained the exact disassembly rather than guessing a nearest export.
+
+4. Call-label follow-up, independently retained v2
+
+Three additional serial reader sessions add direct TLS labels around read and
+poll. Return values/errno are preserved; samples outside labelled calls stay
+outside. This is extra instrumentation, not measured no-overhead behavior.
+Delivered matched samples:
+                     read      poll    outside    total
+ ASCII                251       17       13        281
+ Unicode               88       12       10        110
+ truecolor            168        6       13        187
+ cursor motion        101        4        8        113
+ scroll region        146        3        4        153
+ TUI frames           146       12       10        168
+
+These data do not support assuming readiness polling dominates the sampled
+reader path. They do NOT estimate read/poll call counts, syscall latency,
+kernel CPU share or a direct-read speedup. CPU timer signals can be delivered
+at syscall return. Substantial timer coalescing: overruns 4160/3750/3622 for
+362/349/301 delivered samples; zero storage drops, median spacing ~2 ms.
+These sample counts are not independently randomized 100-us CPU observations.
+
+5. New independent codegen candidate, rejected
+
+Based on print_utf8 localization and after checking prior decoder-table,
+decode-memo, stride/width and glyph-staging failures, test one distinct change:
+put_row #[inline(always)] -> #[inline(never)], no body or behavior changes.
+Fresh same-compiler/profile locked control and candidate test builds.
+Existing smallest relevant test:
+  speed::plain_runs_match_the_parser --exact --nocapture
+  1 passed, 0 failed, 384 filtered.
+
+11 alternating AB/BA engine pairs, scale 2, five internal rounds:
+                         candidate/control CPU throughput    wins / 11
+ ASCII                   1.00995                              9
+ Unicode                 0.99123                              3
+ truecolor               0.99702                              4
+ cursor motion           0.99578                              4
+ scroll region           1.00239                              6
+ TUI frames              0.99048                              4
+
+Unicode has no benefit, so no terminal promotion gate. Small ASCII engine gain
+is not a terminal win. Sign tests exploratory/uncorrected. No universal loss
+or causal instruction-cache attribution claimed. Candidate restored exactly.
+
+6. Verification / provenance / failures retained
+
+All 33 tracked files under terminal src plus root Cargo.toml/Cargo.lock compare
+byte-for-byte with start commit. Exact selected release executable compared
+byte-for-byte with its saved copy, same SHA256 above. No fresh rebuilt release
+substituted. New retained code is diagnostic-only, plus documentation.
+
+All three summary replays passed:
+ - analyze-pipeline.py -> pipeline-summary.json
+ - preserved symbolize-cpu-sample.v1.py -> cpu-summary.json
+ - current symbolizer (thread/pass validation) -> cpu-v2-summary.json
+The C sampler compiled with gcc -shared -fPIC -O2 -std=c11 -Wall -Wextra
+-Werror -ldl -pthread -lrt. Real sessions exercise its named-thread lifecycle.
+No broad workspace/clippy/all-platform claim; the one affected runtime
+candidate was checked by the existing targeted project test and engine gate.
+
+First diagnostic launch failed on padded /proc sched keys. Stopped manually;
+incomplete artifacts retained in diagnostic/, excluded from complete batch.
+Fixed parser and added early closure detection before diagnostic-v2. A failed
+v2 editing script and tuple/schema errors in its analyzer were fixed before
+reporting. Restoration receipt initially named intake.rs rather than the
+module directory; fixed using git's tracked runtime source list. No failed
+command is reinterpreted as successful evidence.
+
+Explicit sources:
+ bench/results/2026-11-02-pipeline-profile/README.md
+   diagnostic/ (incomplete), diagnostic-v2/ (manifest/all raw profiles/results,
+   producer snapshots and samples), cpu/ (v1 traces/profiles/results), cpu-v2/
+   (v2 traces/profiles/results), three summaries, all run/analyze/symbolize/replay
+   logs, cpu-sample.v1.c, run-cpu-sample.v1.sh, symbolize-cpu-sample.v1.py,
+   DSOs, libc-syscall-stub.txt, unicode-leaf-disassembly.txt, restoration.json,
+   evidence-sha256.json.
+ bench/results/2026-11-02-row-outline/README.md
+   source snapshots, candidate.patch, control/candidate build JSON+logs,
+   differential.log, engine-pairs.json+log, restoration.json, evidence hashes.
+ Current diagnostic tools: six explicit bench/linux paths in section 1.
+ Docs: bench/README.md, docs/PERFORMANCE.md, CHANGELOG.md.
+
+7. Next necessary action / blocker
+
+There is no bound acceptance check or official championship result. Previously
+selected three Ghostty leads are not extended by this diagnostic. No current
+all-metric ranking is inferred from historical cross-run medians.
+
+Unicode target is localized print_utf8 work, not a channel tweak; row outlining
+is now closed. ASCII/region warrant matched PTY read-path experiments with
+read size/system-CPU/kernel traces and unchanged producer placement controls,
+not another assumption that poll overhead dominates. Obtain privileged PMU /
+scheduler tracing or controlled frequency/SMT observations to separate the
+remaining on-CPU variability before attributing a cause. Preserve default
+geometry, bytes, Unicode widths, history semantics and DA1 timing.

@@ -46,6 +46,17 @@ description of what to show.
   not transfer to the full paired terminal gate; retain the selected runtime
   and executable, not a speculative all-metric performance claim.
 
+### Matched-input performance diagnosis
+
+- Add opt-in Linux task/producer timing and own-process leaf-IP diagnostics,
+  with profiling-overhead controls, exact payload/pass provenance and replay.
+  Separate parser-bound Unicode/escape workloads from reader-heavy ASCII and
+  scroll region; record timer coalescing and limitations rather than turning
+  profiles into scoreboard claims.
+- Reject a one-attribute row-writer outlining candidate after the existing
+  parser-equivalence test and eleven engine pairs. Runtime and exact selected
+  executable unchanged; no all-metric performance win claimed.
+
 ### Open intake
 
 ### Measured research and parser regression coverage

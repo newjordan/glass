@@ -1,0 +1,23 @@
+{
+  "schema": "glass.research-evidence/v1",
+  "sha256": {
+    "bench/results/2026-11-02-row-outline/README.md": "a9c6607f182e95dcdf63268920e84b1eea8aca89907be26082ed2dbb6ffbe239",
+    "bench/results/2026-11-02-row-outline/candidate-build.jsonl": "85ca128233deadab8820e5890a6c316b76a0f1baecf51429bb89ae136793f1ca",
+    "bench/results/2026-11-02-row-outline/candidate-build.log": "d7bdd4d2ddd53690021c6b275437beb2624b4eaa53f4ca3a8dfe44218cb20339",
+    "bench/results/2026-11-02-row-outline/candidate.patch": "56ea4795398b850a957b06f69412ebe16329ea5d7863072e72399dbc6f71be27",
+    "bench/results/2026-11-02-row-outline/control-build.jsonl": "9377a7505dc592f6162dd81cf8134dcca0300940a4a292321a91a1a46e48c282",
+    "bench/results/2026-11-02-row-outline/control-build.log": "1ff8bbcb4151dc887e69b78a29bc241d5062cba4757aa5f4639926ae712a8181",
+    "bench/results/2026-11-02-row-outline/differential.log": "b91f67e9b0b609de22cab5565d210c76d7e8cecff7b5b3a060af734725e6e0bd",
+    "bench/results/2026-11-02-row-outline/engine-pairs.json": "4a01b944e12f99dfdae55d01e801410e3e940d638531143754ddcb4e0a7a3167",
+    "bench/results/2026-11-02-row-outline/engine-pairs.log": "ca0a6224e785b956cb8a826e0836a8c4f37f2e69410940c792c63041fd958812",
+    "bench/results/2026-11-02-row-outline/engine.candidate.rs": "89df6b77652bc24306439ed25724dd580c3c157e5d145ad77f939c7aeaf81240",
+    "bench/results/2026-11-02-row-outline/engine.control.rs": "a8ce762cc7c76ec1226942b363c3bd020d73189c3b9a917b4fb20d1496b9efce",
+    "bench/results/2026-11-02-row-outline/restoration.json": "1a75a55c91009d1975c7e1a5c33513f428b3964260790e0b35cf4b81bd273f64",
+    "bench/linux/pipeline-profile.py": "b37fbca23b8360c15b298d93aa840e5ba510dc5e793ffe53bd1954f91dcc8bf2",
+    "bench/linux/run-pipeline-profile.sh": "17843b2bd473e59292fe2a0018444e6599d1711dc262fafd05dbda06fd1fc305",
+    "bench/linux/analyze-pipeline.py": "25f910194cbbfc191f356240413a4099100d9a90f97542eafbf5e9a801364b31",
+    "bench/linux/cpu-sample.c": "d4527ef04af2cf4db88beb3f45657a53a95276e440d2cfcb4db7b8ab3bad74d5",
+    "bench/linux/run-cpu-sample.sh": "f85bdc36951f99c42d282b09a2309a7fad7519ffcf0f011c825f7051c52713cf",
+    "bench/linux/symbolize-cpu-sample.py": "7dfd5aeabe8beef121781d0f19ffe87343c565841526874d5c656c6f05cfab2c"
+  }
+}

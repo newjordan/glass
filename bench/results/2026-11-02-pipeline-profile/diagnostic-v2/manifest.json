@@ -1,0 +1,137 @@
+{
+  "schema": "glass.pipeline-profile-run/v1",
+  "complete": true,
+  "binary": "/tmp/glass-i9-selected",
+  "rounds": 12,
+  "sha256": {
+    "/tmp/glass-i9-selected": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+    "/work/frosty40/glass-repo/tree/bench/linux/pipeline-profile.py": "b37fbca23b8360c15b298d93aa840e5ba510dc5e793ffe53bd1954f91dcc8bf2",
+    "/work/frosty40/glass-repo/tree/bench/linux/run-pipeline-profile.sh": "17843b2bd473e59292fe2a0018444e6599d1711dc262fafd05dbda06fd1fc305",
+    "/work/frosty40/glass-repo/tree/bench/tput.py": "477b0131f1041bda8dd74a64bf8d164d526685bb7fc0c13500b17f897c06542a",
+    "/work/frosty40/glass-repo/tree/bench/lib.sh": "a057c54c4b9aa587101d1ee9a3a729f1b73fed1e55f5af56bc4b939e04a62f25"
+  },
+  "orders": [
+    [
+      "plain",
+      "edges",
+      "sampled"
+    ],
+    [
+      "plain",
+      "sampled",
+      "edges"
+    ],
+    [
+      "edges",
+      "plain",
+      "sampled"
+    ],
+    [
+      "edges",
+      "sampled",
+      "plain"
+    ],
+    [
+      "sampled",
+      "plain",
+      "edges"
+    ],
+    [
+      "sampled",
+      "edges",
+      "plain"
+    ],
+    [
+      "plain",
+      "edges",
+      "sampled"
+    ],
+    [
+      "plain",
+      "sampled",
+      "edges"
+    ],
+    [
+      "edges",
+      "plain",
+      "sampled"
+    ],
+    [
+      "edges",
+      "sampled",
+      "plain"
+    ],
+    [
+      "sampled",
+      "plain",
+      "edges"
+    ],
+    [
+      "sampled",
+      "edges",
+      "plain"
+    ]
+  ],
+  "planned_orders": [
+    [
+      "plain",
+      "edges",
+      "sampled"
+    ],
+    [
+      "plain",
+      "sampled",
+      "edges"
+    ],
+    [
+      "edges",
+      "plain",
+      "sampled"
+    ],
+    [
+      "edges",
+      "sampled",
+      "plain"
+    ],
+    [
+      "sampled",
+      "plain",
+      "edges"
+    ],
+    [
+      "sampled",
+      "edges",
+      "plain"
+    ],
+    [
+      "plain",
+      "edges",
+      "sampled"
+    ],
+    [
+      "plain",
+      "sampled",
+      "edges"
+    ],
+    [
+      "edges",
+      "plain",
+      "sampled"
+    ],
+    [
+      "edges",
+      "sampled",
+      "plain"
+    ],
+    [
+      "sampled",
+      "plain",
+      "edges"
+    ],
+    [
+      "sampled",
+      "edges",
+      "plain"
+    ]
+  ]
+}

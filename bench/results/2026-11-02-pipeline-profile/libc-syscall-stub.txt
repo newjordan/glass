@@ -1,0 +1,28 @@
+
+/usr/lib/libc.so.6:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000000a08c0 <__syscall_cancel_arch>:
+   a08c0:	endbr64
+
+00000000000a08c4 <__syscall_cancel_arch_start>:
+   a08c4:	mov    (%rdi),%eax
+   a08c6:	testb  $0x8,(%rdi)
+   a08c9:	jne    94890 <__syscall_do_cancel>
+   a08cf:	mov    %rdi,%r11
+   a08d2:	mov    %rsi,%rax
+   a08d5:	mov    %rdx,%rdi
+   a08d8:	mov    %rcx,%rsi
+   a08db:	mov    %r8,%rdx
+   a08de:	mov    %r9,%r10
+   a08e1:	mov    0x8(%rsp),%r8
+   a08e6:	mov    0x10(%rsp),%r9
+   a08eb:	mov    %r11,0x8(%rsp)
+   a08f0:	syscall
+
+00000000000a08f2 <__syscall_cancel_arch_end>:
+   a08f2:	ret
+   a08f3:	cs nopw 0x0(%rax,%rax,1)
+   a08fd:	nopl   (%rax)

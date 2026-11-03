@@ -330,3 +330,28 @@ an allocation hypothesis from favorable medians. Separate coalescing DA1 RTT
 was inconclusive. Exact selected executable restored, not the fresh-control
 artifact. Reports retain source snapshots, patches, binary identities and raw
 hashes; no all-metric or world-champion claim is supported.
+
+
+### Matched-input pipeline diagnosis (2026-11-02)
+
+Before more speculative hot-loop tuning, the exact selected executable was
+profiled in 12 balanced plain/boundary-only/sampled rounds (36 sessions), with
+all 432 instrumented passes retained. Unicode parser CPU/wall was .9859;
+ASCII .5313 and scroll region .5230, with much more reader CPU/handoff work.
+A slow Unicode pass spent 131.1 ms on parser CPU over 133.9 ms wall: a plain
+scheduler-wait explanation does not fit that reproduced excursion.
+
+Six leaf-IP profile sessions localized 435/547 Unicode parser samples to
+`print_utf8`. Three reader call-label sessions found most delivered ASCII and
+region samples inside `read`, not `poll`. The CPU timer was coarse (~1-2 ms
+observed despite 100 us requested), heavily coalesced, and these are not
+kernel stacks or precise CPU percentages. Profiling changes pacing; neither
+profiled arm belongs on the scoreboard. A distinct row-writer outlining
+candidate passed existing parser equivalence but failed its Unicode engine
+gate and was removed. No runtime or executable replacement.
+
+[Complete method, limitations, raw receipts and reproduction](results/2026-11-02-pipeline-profile/README.md).
+New opt-in tools: `linux/run-pipeline-profile.sh`, `pipeline-profile.py`,
+`analyze-pipeline.py`, `cpu-sample.c`, `run-cpu-sample.sh`, and
+`symbolize-cpu-sample.py`. All summaries have exact-hash replay. No PMU or
+full scheduler-event trace was available; no all-metric Ghostty win is claimed.

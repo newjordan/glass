@@ -1,0 +1,2 @@
+tput-plain-1.json {'ascii': 863.5, 'unicode': 280.7, 'truecolor': 275.5, 'cursor_motion': 242.5, 'scroll_region': 1099.6, 'tui_frames': 270.0}
+Terminated                 sleep 0.1

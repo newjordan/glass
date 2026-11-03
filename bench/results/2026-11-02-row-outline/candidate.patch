@@ -1,0 +1,13 @@
+diff --git i/crates/term/src/engine.rs w/crates/term/src/engine.rs
+index 275d5d3..5015951 100644
+--- i/crates/term/src/engine.rs
++++ w/crates/term/src/engine.rs
+@@ -1885,7 +1885,7 @@ impl Watch<'_> {
+     /// stops, taking nothing more, at the end of the well-formed text, at
+     /// a C1 control, or at a held character `put_plain` would refuse, and
+     /// returns where it stopped and what it holds.
+-    #[inline(always)]
++    #[inline(never)]
+     fn put_row(&mut self, text: &[u8], mut at: usize, mut held: Option<(char, usize)>, ascii: bool) -> (usize, Option<(char, usize)>) {
+         let columns = self.term.columns();
+         let grid = self.term.grid_mut();

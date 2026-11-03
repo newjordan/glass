@@ -288,8 +288,26 @@ other metrics. The tempting inline-piece ASCII +9.5% median won only 10/18
 pairs, while TUI lost 17/18. Severe variation also affected unchanged controls;
 this is not a causal diagnosis. See the [reports and raw provenance](../bench/README.md#session-overhead-ablations-2026-11-02).
 Runtime source and exact selected executable were restored; seven final
-reader/frame-gate tests pass. The necessary next evidence is matched-input
-stage and scheduling traces, not a favorable subset of these measurements.
+reader/frame-gate tests pass. The matched-input stage evidence below narrows the next investigation; full
+scheduler/PMU traces remain unavailable. No favorable subset replaces the gate.
+
+## Matched-input profiles: separate bottlenecks, no promotion
+
+The [36-session frozen-binary diagnostic](../bench/results/2026-11-02-pipeline-profile/README.md)
+retains all 432 instrumented passes and measures profiler overhead against plain
+sessions. Unicode, truecolor, cursor and TUI parsing spend ~98.6-99.0% of pass
+wall time on parser CPU; ASCII and region ~53.1% and 52.3%, with much more reader
+CPU and handoff activity. The reproduced slow Unicode pass was 133.9 ms wall /
+131.1 ms parser CPU, not simply an off-CPU scheduling stall.
+
+Leaf-IP sampling put 435/547 Unicode parser samples in `print_utf8`, consistently
+across three sessions. Reader call-label controls put most delivered ASCII and
+region samples inside `read`, not readiness polling. Timer delivery was coarse
+and heavily coalesced; this is not a kernel profile or exact syscall cost split.
+A one-attribute row-writer outlining experiment passed parser equivalence but
+failed to improve Unicode in eleven engine pairs and was rejected. Exact runtime
+source and selected executable remain unchanged. These are diagnostic findings,
+not new scores, causal frequency/cache attribution, or an all-metric victory.
 
 ## The film
 

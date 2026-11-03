@@ -1,0 +1,76 @@
+{
+  "schema": "glass.pipeline-profile-run/v1",
+  "complete": false,
+  "binary": "/tmp/glass-i9-selected",
+  "rounds": 12,
+  "sha256": {
+    "/tmp/glass-i9-selected": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+    "/work/frosty40/glass-repo/tree/bench/linux/pipeline-profile.py": "3157de82ac6254c68309d951d226434a480208d391fe74809d3cff650aeafdf0",
+    "/work/frosty40/glass-repo/tree/bench/linux/run-pipeline-profile.sh": "7cff620995a704b6469f69972e149132d1bfafadcd4ee545bc26221e9e478cd7",
+    "/work/frosty40/glass-repo/tree/bench/tput.py": "477b0131f1041bda8dd74a64bf8d164d526685bb7fc0c13500b17f897c06542a",
+    "/work/frosty40/glass-repo/tree/bench/lib.sh": "a057c54c4b9aa587101d1ee9a3a729f1b73fed1e55f5af56bc4b939e04a62f25"
+  },
+  "orders": [],
+  "planned_orders": [
+    [
+      "plain",
+      "edges",
+      "sampled"
+    ],
+    [
+      "plain",
+      "sampled",
+      "edges"
+    ],
+    [
+      "edges",
+      "plain",
+      "sampled"
+    ],
+    [
+      "edges",
+      "sampled",
+      "plain"
+    ],
+    [
+      "sampled",
+      "plain",
+      "edges"
+    ],
+    [
+      "sampled",
+      "edges",
+      "plain"
+    ],
+    [
+      "plain",
+      "edges",
+      "sampled"
+    ],
+    [
+      "plain",
+      "sampled",
+      "edges"
+    ],
+    [
+      "edges",
+      "plain",
+      "sampled"
+    ],
+    [
+      "edges",
+      "sampled",
+      "plain"
+    ],
+    [
+      "sampled",
+      "plain",
+      "edges"
+    ],
+    [
+      "sampled",
+      "edges",
+      "plain"
+    ]
+  ]
+}

@@ -1,0 +1,451 @@
+{
+  "schema": "glass.cpu-sample-symbols/v2",
+  "complete": true,
+  "raw_sha256": {
+    "pty-read-1.pcs": "1b8b773a9b5f59ebacccc855887239e9fc3dd7faf75ac1299a213962d26124a1",
+    "tput-pty-read-1.profile.json": "436b3df70dbec9d5461315e6ec2673eb5bdadc42464b6e3f36a0094edd9aa450",
+    "pty-read-2.pcs": "1becd16d1f49314e703f83be642ab05f69b423b0c2b09bf85c89d182eaa2dc5c",
+    "tput-pty-read-2.profile.json": "4ae82ebc12c10b09146d25927749d07c8f329848ff9d193437579ea0c1859c34",
+    "pty-read-3.pcs": "d252fdf153afd37afe3ef7e36ee0d4aef24add498a792b9f7d9f8d327ffeb183",
+    "tput-pty-read-3.profile.json": "7ee9e83ff0a5573cf3c5f24b73f6680a91ade526ce330bdab18396942201813b"
+  },
+  "mapped_elf_sha256": {
+    "/usr/lib/libc.so.6": "02c8c3d06180beee9c7d0392aa85736c7d19f274a81e7f8f0b3d9e28e0641524",
+    "/tmp/glass-i9-selected": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+    "/work/frosty40/glass-repo/tree/bench/results/2026-11-02-pipeline-profile/cpu-sample.v2.so": "89106ce8e336b35d6f9a069c1bc5486c3d4d437f2195fda384de0c5874989284"
+  },
+  "headers": {
+    "pty-read-1.pcs": {
+      "tid": "34468",
+      "period_us": "100",
+      "samples": "362",
+      "dropped": "0",
+      "armed": "1",
+      "overruns": "4160"
+    },
+    "pty-read-2.pcs": {
+      "tid": "34742",
+      "period_us": "100",
+      "samples": "349",
+      "dropped": "0",
+      "armed": "1",
+      "overruns": "3750"
+    },
+    "pty-read-3.pcs": {
+      "tid": "34846",
+      "period_us": "100",
+      "samples": "301",
+      "dropped": "0",
+      "armed": "1",
+      "overruns": "3622"
+    }
+  },
+  "observed_sample_spacing_ms": {
+    "pty-read-1.pcs": {
+      "min": 0.433715,
+      "median": 2.005079,
+      "max": 37.008182
+    },
+    "pty-read-2.pcs": {
+      "min": 0.966607,
+      "median": 1.993527,
+      "max": 39.001299
+    },
+    "pty-read-3.pcs": {
+      "min": 0.980303,
+      "median": 1.999218,
+      "max": 25.001234
+    }
+  },
+  "call_labels": {
+    "pty-read/ascii": {
+      "poll": 17,
+      "read": 251,
+      "outside": 13
+    },
+    "pty-read/cursor_motion": {
+      "read": 101,
+      "poll": 4,
+      "outside": 8
+    },
+    "pty-read/scroll_region": {
+      "read": 146,
+      "outside": 4,
+      "poll": 3
+    },
+    "pty-read/truecolor": {
+      "read": 168,
+      "outside": 13,
+      "poll": 6
+    },
+    "pty-read/tui_frames": {
+      "read": 146,
+      "poll": 12,
+      "outside": 10
+    },
+    "pty-read/unicode": {
+      "read": 88,
+      "poll": 12,
+      "outside": 10
+    }
+  },
+  "workloads": {
+    "pty-read/ascii": {
+      "samples": 281,
+      "symbols": [
+        {
+          "symbol": "libc.so.6![no containing symbol]",
+          "count": 267,
+          "fraction": 0.9501779359430605
+        },
+        {
+          "symbol": "libc.so.6!syscall@@GLIBC_2.2.5",
+          "count": 6,
+          "fraction": 0.021352313167259787
+        },
+        {
+          "symbol": "libc.so.6!ioctl@@GLIBC_2.2.5",
+          "count": 5,
+          "fraction": 0.017793594306049824
+        },
+        {
+          "symbol": "glass-i9-selected!std::sys::backtrace::__rust_begin_short_backtrace::<<glass::read_ahead::ReadAhead>::spawn::{closure#0}, ()>",
+          "count": 1,
+          "fraction": 0.0035587188612099642
+        },
+        {
+          "symbol": "glass-i9-selected!<std::sync::mpmc::waker::SyncWaker>::notify",
+          "count": 1,
+          "fraction": 0.0035587188612099642
+        },
+        {
+          "symbol": "libc.so.6!poll@@GLIBC_2.2.5",
+          "count": 1,
+          "fraction": 0.0035587188612099642
+        }
+      ]
+    },
+    "pty-read/cursor_motion": {
+      "samples": 113,
+      "symbols": [
+        {
+          "symbol": "libc.so.6![no containing symbol]",
+          "count": 105,
+          "fraction": 0.9292035398230089
+        },
+        {
+          "symbol": "libc.so.6!ioctl@@GLIBC_2.2.5",
+          "count": 3,
+          "fraction": 0.02654867256637168
+        },
+        {
+          "symbol": "glass-i9-selected!std::sys::backtrace::__rust_begin_short_backtrace::<<glass::read_ahead::ReadAhead>::spawn::{closure#0}, ()>",
+          "count": 3,
+          "fraction": 0.02654867256637168
+        },
+        {
+          "symbol": "libc.so.6!syscall@@GLIBC_2.2.5",
+          "count": 2,
+          "fraction": 0.017699115044247787
+        }
+      ]
+    },
+    "pty-read/scroll_region": {
+      "samples": 153,
+      "symbols": [
+        {
+          "symbol": "libc.so.6![no containing symbol]",
+          "count": 148,
+          "fraction": 0.9673202614379085
+        },
+        {
+          "symbol": "libc.so.6!syscall@@GLIBC_2.2.5",
+          "count": 3,
+          "fraction": 0.0196078431372549
+        },
+        {
+          "symbol": "libc.so.6!read@@GLIBC_2.2.5",
+          "count": 1,
+          "fraction": 0.006535947712418301
+        },
+        {
+          "symbol": "glass-i9-selected!<std::sync::mpmc::waker::SyncWaker>::notify",
+          "count": 1,
+          "fraction": 0.006535947712418301
+        }
+      ]
+    },
+    "pty-read/truecolor": {
+      "samples": 187,
+      "symbols": [
+        {
+          "symbol": "libc.so.6![no containing symbol]",
+          "count": 173,
+          "fraction": 0.9251336898395722
+        },
+        {
+          "symbol": "libc.so.6!ioctl@@GLIBC_2.2.5",
+          "count": 5,
+          "fraction": 0.026737967914438502
+        },
+        {
+          "symbol": "glass-i9-selected!std::sys::backtrace::__rust_begin_short_backtrace::<<glass::read_ahead::ReadAhead>::spawn::{closure#0}, ()>",
+          "count": 3,
+          "fraction": 0.016042780748663103
+        },
+        {
+          "symbol": "libc.so.6!syscall@@GLIBC_2.2.5",
+          "count": 2,
+          "fraction": 0.0106951871657754
+        },
+        {
+          "symbol": "glass-i9-selected!<std::sync::mpmc::list::Channel<alloc::vec::Vec<u8>>>::recv::{closure#1}",
+          "count": 2,
+          "fraction": 0.0106951871657754
+        },
+        {
+          "symbol": "cpu-sample.v2.so!read",
+          "count": 2,
+          "fraction": 0.0106951871657754
+        }
+      ]
+    },
+    "pty-read/tui_frames": {
+      "samples": 168,
+      "symbols": [
+        {
+          "symbol": "libc.so.6![no containing symbol]",
+          "count": 158,
+          "fraction": 0.9404761904761905
+        },
+        {
+          "symbol": "libc.so.6!syscall@@GLIBC_2.2.5",
+          "count": 6,
+          "fraction": 0.03571428571428571
+        },
+        {
+          "symbol": "libc.so.6!ioctl@@GLIBC_2.2.5",
+          "count": 4,
+          "fraction": 0.023809523809523808
+        }
+      ]
+    },
+    "pty-read/unicode": {
+      "samples": 110,
+      "symbols": [
+        {
+          "symbol": "libc.so.6![no containing symbol]",
+          "count": 99,
+          "fraction": 0.9
+        },
+        {
+          "symbol": "libc.so.6!syscall@@GLIBC_2.2.5",
+          "count": 7,
+          "fraction": 0.06363636363636363
+        },
+        {
+          "symbol": "libc.so.6!read@@GLIBC_2.2.5",
+          "count": 1,
+          "fraction": 0.00909090909090909
+        },
+        {
+          "symbol": "libc.so.6!ioctl@@GLIBC_2.2.5",
+          "count": 1,
+          "fraction": 0.00909090909090909
+        },
+        {
+          "symbol": "glass-i9-selected!std::sys::backtrace::__rust_begin_short_backtrace::<<glass::read_ahead::ReadAhead>::spawn::{closure#0}, ()>",
+          "count": 1,
+          "fraction": 0.00909090909090909
+        },
+        {
+          "symbol": "glass-i9-selected!<std::sync::mpmc::waker::SyncWaker>::register",
+          "count": 1,
+          "fraction": 0.00909090909090909
+        }
+      ]
+    }
+  },
+  "by_run": {
+    "pty-read-1.pcs": {
+      "ascii": {
+        "libc.so.6![no containing symbol]": 120,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 5,
+        "libc.so.6!ioctl@@GLIBC_2.2.5": 3
+      },
+      "unicode": {
+        "libc.so.6![no containing symbol]": 35,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 3
+      },
+      "truecolor": {
+        "libc.so.6![no containing symbol]": 60,
+        "glass-i9-selected!std::sys::backtrace::__rust_begin_short_backtrace::<<glass::read_ahead::ReadAhead>::spawn::{closure#0}, ()>": 2,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 1,
+        "libc.so.6!ioctl@@GLIBC_2.2.5": 1
+      },
+      "cursor_motion": {
+        "libc.so.6![no containing symbol]": 44,
+        "libc.so.6!ioctl@@GLIBC_2.2.5": 1
+      },
+      "scroll_region": {
+        "libc.so.6![no containing symbol]": 36,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 2
+      },
+      "tui_frames": {
+        "libc.so.6![no containing symbol]": 47,
+        "libc.so.6!ioctl@@GLIBC_2.2.5": 2
+      }
+    },
+    "pty-read-2.pcs": {
+      "ascii": {
+        "libc.so.6![no containing symbol]": 77,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 1,
+        "glass-i9-selected!std::sys::backtrace::__rust_begin_short_backtrace::<<glass::read_ahead::ReadAhead>::spawn::{closure#0}, ()>": 1,
+        "glass-i9-selected!<std::sync::mpmc::waker::SyncWaker>::notify": 1,
+        "libc.so.6!poll@@GLIBC_2.2.5": 1
+      },
+      "unicode": {
+        "libc.so.6![no containing symbol]": 37,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 2,
+        "libc.so.6!read@@GLIBC_2.2.5": 1,
+        "libc.so.6!ioctl@@GLIBC_2.2.5": 1,
+        "glass-i9-selected!std::sys::backtrace::__rust_begin_short_backtrace::<<glass::read_ahead::ReadAhead>::spawn::{closure#0}, ()>": 1,
+        "glass-i9-selected!<std::sync::mpmc::waker::SyncWaker>::register": 1
+      },
+      "truecolor": {
+        "libc.so.6![no containing symbol]": 63,
+        "libc.so.6!ioctl@@GLIBC_2.2.5": 2,
+        "glass-i9-selected!<std::sync::mpmc::list::Channel<alloc::vec::Vec<u8>>>::recv::{closure#1}": 1,
+        "cpu-sample.v2.so!read": 1
+      },
+      "cursor_motion": {
+        "libc.so.6![no containing symbol]": 26,
+        "glass-i9-selected!std::sys::backtrace::__rust_begin_short_backtrace::<<glass::read_ahead::ReadAhead>::spawn::{closure#0}, ()>": 3,
+        "libc.so.6!ioctl@@GLIBC_2.2.5": 2
+      },
+      "scroll_region": {
+        "libc.so.6![no containing symbol]": 60
+      },
+      "tui_frames": {
+        "libc.so.6![no containing symbol]": 63,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 3,
+        "libc.so.6!ioctl@@GLIBC_2.2.5": 1
+      }
+    },
+    "pty-read-3.pcs": {
+      "ascii": {
+        "libc.so.6![no containing symbol]": 70,
+        "libc.so.6!ioctl@@GLIBC_2.2.5": 2
+      },
+      "unicode": {
+        "libc.so.6![no containing symbol]": 27,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 2
+      },
+      "truecolor": {
+        "libc.so.6![no containing symbol]": 50,
+        "libc.so.6!ioctl@@GLIBC_2.2.5": 2,
+        "glass-i9-selected!<std::sync::mpmc::list::Channel<alloc::vec::Vec<u8>>>::recv::{closure#1}": 1,
+        "glass-i9-selected!std::sys::backtrace::__rust_begin_short_backtrace::<<glass::read_ahead::ReadAhead>::spawn::{closure#0}, ()>": 1,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 1,
+        "cpu-sample.v2.so!read": 1
+      },
+      "cursor_motion": {
+        "libc.so.6![no containing symbol]": 35,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 2
+      },
+      "scroll_region": {
+        "libc.so.6![no containing symbol]": 52,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 1,
+        "libc.so.6!read@@GLIBC_2.2.5": 1,
+        "glass-i9-selected!<std::sync::mpmc::waker::SyncWaker>::notify": 1
+      },
+      "tui_frames": {
+        "libc.so.6![no containing symbol]": 48,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 3,
+        "libc.so.6!ioctl@@GLIBC_2.2.5": 1
+      }
+    }
+  },
+  "symbol_offsets": {
+    "pty-read/ascii/glass-i9-selected!<std::sync::mpmc::waker::SyncWaker>::notify": {
+      "0x11a": 1
+    },
+    "pty-read/ascii/glass-i9-selected!std::sys::backtrace::__rust_begin_short_backtrace::<<glass::read_ahead::ReadAhead>::spawn::{closure#0}, ()>": {
+      "0x30d": 1
+    },
+    "pty-read/ascii/libc.so.6!ioctl@@GLIBC_2.2.5": {
+      "0x3d": 4,
+      "0x0": 1
+    },
+    "pty-read/ascii/libc.so.6!poll@@GLIBC_2.2.5": {
+      "0x55": 1
+    },
+    "pty-read/ascii/libc.so.6!syscall@@GLIBC_2.2.5": {
+      "0x1d": 6
+    },
+    "pty-read/cursor_motion/glass-i9-selected!std::sys::backtrace::__rust_begin_short_backtrace::<<glass::read_ahead::ReadAhead>::spawn::{closure#0}, ()>": {
+      "0xf04": 1,
+      "0xf65": 1,
+      "0x214": 1
+    },
+    "pty-read/cursor_motion/libc.so.6!ioctl@@GLIBC_2.2.5": {
+      "0x3d": 3
+    },
+    "pty-read/cursor_motion/libc.so.6!syscall@@GLIBC_2.2.5": {
+      "0x1d": 2
+    },
+    "pty-read/scroll_region/glass-i9-selected!<std::sync::mpmc::waker::SyncWaker>::notify": {
+      "0x11a": 1
+    },
+    "pty-read/scroll_region/libc.so.6!read@@GLIBC_2.2.5": {
+      "0x56": 1
+    },
+    "pty-read/scroll_region/libc.so.6!syscall@@GLIBC_2.2.5": {
+      "0x1d": 3
+    },
+    "pty-read/truecolor/cpu-sample.v2.so!read": {
+      "0x33": 1,
+      "0x7": 1
+    },
+    "pty-read/truecolor/glass-i9-selected!<std::sync::mpmc::list::Channel<alloc::vec::Vec<u8>>>::recv::{closure#1}": {
+      "0x287": 1,
+      "0x23a": 1
+    },
+    "pty-read/truecolor/glass-i9-selected!std::sys::backtrace::__rust_begin_short_backtrace::<<glass::read_ahead::ReadAhead>::spawn::{closure#0}, ()>": {
+      "0x2e5": 2,
+      "0x102c": 1
+    },
+    "pty-read/truecolor/libc.so.6!ioctl@@GLIBC_2.2.5": {
+      "0x3d": 5
+    },
+    "pty-read/truecolor/libc.so.6!syscall@@GLIBC_2.2.5": {
+      "0x1d": 2
+    },
+    "pty-read/tui_frames/libc.so.6!ioctl@@GLIBC_2.2.5": {
+      "0x3d": 4
+    },
+    "pty-read/tui_frames/libc.so.6!syscall@@GLIBC_2.2.5": {
+      "0x1d": 6
+    },
+    "pty-read/unicode/glass-i9-selected!<std::sync::mpmc::waker::SyncWaker>::register": {
+      "0xb3": 1
+    },
+    "pty-read/unicode/glass-i9-selected!std::sys::backtrace::__rust_begin_short_backtrace::<<glass::read_ahead::ReadAhead>::spawn::{closure#0}, ()>": {
+      "0x1b31": 1
+    },
+    "pty-read/unicode/libc.so.6!ioctl@@GLIBC_2.2.5": {
+      "0x3d": 1
+    },
+    "pty-read/unicode/libc.so.6!read@@GLIBC_2.2.5": {
+      "0x52": 1
+    },
+    "pty-read/unicode/libc.so.6!syscall@@GLIBC_2.2.5": {
+      "0x1d": 7
+    }
+  },
+  "limits": [
+    "LD_PRELOAD injection adds signals and can perturb timing; diagnostic only.",
+    "Leaf PCs, coarse thread-clock timer delivery; no call graph, system CPU stack, or causal cost estimate.",
+    "Matched payloads, three sessions per thread, correlated passes; no significance or championship claim."
+  ]
+}

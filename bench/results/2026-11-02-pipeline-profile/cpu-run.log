@@ -1,0 +1,6 @@
+tput-pty-parse-1.json cpu-sample-v1 tid=16435 period_us=100 samples=973 dropped=0 armed=1
+tput-pty-parse-2.json cpu-sample-v1 tid=16666 period_us=100 samples=956 dropped=0 armed=1
+tput-pty-parse-3.json cpu-sample-v1 tid=16765 period_us=100 samples=965 dropped=0 armed=1
+tput-pty-read-1.json cpu-sample-v1 tid=16972 period_us=100 samples=321 dropped=0 armed=1
+tput-pty-read-2.json cpu-sample-v1 tid=17124 period_us=100 samples=358 dropped=0 armed=1
+tput-pty-read-3.json cpu-sample-v1 tid=17227 period_us=100 samples=352 dropped=0 armed=1

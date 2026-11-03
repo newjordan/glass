@@ -1,0 +1,3 @@
+tput-pty-read-1.json cpu-sample-v2 tid=34468 period_us=100 samples=362 dropped=0 armed=1 overruns=4160
+tput-pty-read-2.json cpu-sample-v2 tid=34742 period_us=100 samples=349 dropped=0 armed=1 overruns=3750
+tput-pty-read-3.json cpu-sample-v2 tid=34846 period_us=100 samples=301 dropped=0 armed=1 overruns=3622

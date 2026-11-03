@@ -1,0 +1,2672 @@
+{
+  "schema": "glass.cpu-sample-symbols/v1",
+  "complete": true,
+  "raw_sha256": {
+    "pty-parse-1.pcs": "1ef41868bf29a7fa333d8cb9bf2119145e958a5bbfb62718b7e611b663ca9ecb",
+    "tput-pty-parse-1.profile.json": "f3fdcb43306c55bb389da4b0c8c35bb22bab4ef2391ffcd9570bb3d93f91c260",
+    "pty-parse-2.pcs": "dc947295534d823217634031cfdee8ad0788837e6a431575da0d89bb9f12c97e",
+    "tput-pty-parse-2.profile.json": "5556629848db0379e1c00e3ac54c047353f5300d6fedc0bc931d452461dd13b2",
+    "pty-parse-3.pcs": "fcedd7045ae01d4f2156e2ee8607f12a068a7a583aa567ffa578df6cd4b41939",
+    "tput-pty-parse-3.profile.json": "9f2589d85714cd349b524074025590942528169955037bc7b76c97a0e0456daf",
+    "pty-read-1.pcs": "827beb488d7bba0b3fe1b8f514d59f6be4e48784476c42488c50f8c9231d1a48",
+    "tput-pty-read-1.profile.json": "8d2f2fd970c5dff9f9c8e3da7922e8138ecc784ab5016c1a52dd0deec8061da0",
+    "pty-read-2.pcs": "e3f2925dde1a34910b0d0ebf5378a70b7588b8b05ad2b78d1ce1e7827489e6aa",
+    "tput-pty-read-2.profile.json": "e24a4649adfa8685500fc60f6a83593728ec1332a99851309debd9ab28423ac6",
+    "pty-read-3.pcs": "840df95fef148f5bc955377cbf3eecaa959686685125fef0336991e8aa40cbd8",
+    "tput-pty-read-3.profile.json": "7ec5fc05dee4f29be24eed7315ce4e811f5c74d379d05c4ed386ce129f669866"
+  },
+  "mapped_elf_sha256": {
+    "/tmp/glass-i9-selected": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+    "/usr/lib/libc.so.6": "02c8c3d06180beee9c7d0392aa85736c7d19f274a81e7f8f0b3d9e28e0641524"
+  },
+  "workloads": {
+    "pty-parse/ascii": {
+      "samples": 142,
+      "symbols": [
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Watch>::print_run",
+          "count": 36,
+          "fraction": 0.2535211267605634
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Engine>::apply",
+          "count": 27,
+          "fraction": 0.19014084507042253
+        },
+        {
+          "symbol": "glass-i9-selected!<memchr::arch::x86_64::avx2::packedpair::Finder>::find_impl",
+          "count": 13,
+          "fraction": 0.09154929577464789
+        },
+        {
+          "symbol": "glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener>>::scroll_up_relative",
+          "count": 11,
+          "fraction": 0.07746478873239436
+        },
+        {
+          "symbol": "glass-i9-selected!mi_page_free_list_extend",
+          "count": 8,
+          "fraction": 0.056338028169014086
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Watch>::note_scroll_up",
+          "count": 6,
+          "fraction": 0.04225352112676056
+        },
+        {
+          "symbol": "libc.so.6!syscall@@GLIBC_2.2.5",
+          "count": 6,
+          "fraction": 0.04225352112676056
+        },
+        {
+          "symbol": "glass-i9-selected!glass::engine::plain_c0",
+          "count": 3,
+          "fraction": 0.02112676056338028
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::session::Session>::start::{closure#10}",
+          "count": 3,
+          "fraction": 0.02112676056338028
+        },
+        {
+          "symbol": "glass-i9-selected!<alacritty_terminal::term::cell::Cell as alacritty_terminal::grid::GridCell>::style_eq",
+          "count": 3,
+          "fraction": 0.02112676056338028
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Mirror>::stretch",
+          "count": 3,
+          "fraction": 0.02112676056338028
+        },
+        {
+          "symbol": "glass-i9-selected!<alacritty_terminal::selection::Selection>::range_simple",
+          "count": 3,
+          "fraction": 0.02112676056338028
+        },
+        {
+          "symbol": "glass-i9-selected!<alacritty_terminal::grid::storage::Storage<alacritty_terminal::term::cell::Cell>>::initialize",
+          "count": 2,
+          "fraction": 0.014084507042253521
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::linefeed",
+          "count": 2,
+          "fraction": 0.014084507042253521
+        },
+        {
+          "symbol": "glass-i9-selected!<alacritty_terminal::grid::Grid<alacritty_terminal::term::cell::Cell>>::scroll_up::<vte::ansi::Color>",
+          "count": 2,
+          "fraction": 0.014084507042253521
+        },
+        {
+          "symbol": "glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener> as vte::ansi::Handler>::linefeed",
+          "count": 2,
+          "fraction": 0.014084507042253521
+        },
+        {
+          "symbol": "glass-i9-selected!memchr::arch::x86_64::memchr::memchr_raw::find_avx2",
+          "count": 2,
+          "fraction": 0.014084507042253521
+        },
+        {
+          "symbol": "glass-i9-selected!mi_theap_malloc_zero_aligned_at_generic",
+          "count": 1,
+          "fraction": 0.007042253521126761
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::intake::Splitter>::split",
+          "count": 1,
+          "fraction": 0.007042253521126761
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::input",
+          "count": 1,
+          "fraction": 0.007042253521126761
+        },
+        {
+          "symbol": "libc.so.6![no containing symbol]",
+          "count": 1,
+          "fraction": 0.007042253521126761
+        },
+        {
+          "symbol": "libc.so.6!clock_gettime@GLIBC_2.2.5",
+          "count": 1,
+          "fraction": 0.007042253521126761
+        },
+        {
+          "symbol": "glass-i9-selected!_mi_preloading",
+          "count": 1,
+          "fraction": 0.007042253521126761
+        },
+        {
+          "symbol": "glass-i9-selected!memchr::arch::x86_64::memchr::memrchr_raw::find_avx2",
+          "count": 1,
+          "fraction": 0.007042253521126761
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Engine>::process",
+          "count": 1,
+          "fraction": 0.007042253521126761
+        },
+        {
+          "symbol": "glass-i9-selected!glass::session::find_escape",
+          "count": 1,
+          "fraction": 0.007042253521126761
+        },
+        {
+          "symbol": "glass-i9-selected!<vte::Parser<1024>>::advance_until_terminated::<vte::ansi::Performer<glass::engine::Watch, vte::ansi::StdSyncHandler>>",
+          "count": 1,
+          "fraction": 0.007042253521126761
+        }
+      ]
+    },
+    "pty-parse/cursor_motion": {
+      "samples": 629,
+      "symbols": [
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Engine>::apply",
+          "count": 216,
+          "fraction": 0.34340222575516693
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::intake::Splitter>::split",
+          "count": 74,
+          "fraction": 0.11764705882352941
+        },
+        {
+          "symbol": "glass-i9-selected!memchr::arch::x86_64::memchr::memchr_raw::find_avx2",
+          "count": 70,
+          "fraction": 0.11128775834658187
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Engine>::process",
+          "count": 56,
+          "fraction": 0.0890302066772655
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Watch>::print_run",
+          "count": 55,
+          "fraction": 0.08744038155802862
+        },
+        {
+          "symbol": "libc.so.6![no containing symbol]",
+          "count": 47,
+          "fraction": 0.07472178060413355
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::session::Session>::start::{closure#10}",
+          "count": 44,
+          "fraction": 0.06995230524642289
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::terminal_attribute",
+          "count": 20,
+          "fraction": 0.03179650238473768
+        },
+        {
+          "symbol": "glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener> as vte::ansi::Handler>::goto",
+          "count": 15,
+          "fraction": 0.02384737678855326
+        },
+        {
+          "symbol": "glass-i9-selected!memchr::arch::x86_64::memchr::memrchr_raw::find_avx2",
+          "count": 12,
+          "fraction": 0.019077901430842606
+        },
+        {
+          "symbol": "glass-i9-selected!<memchr::arch::x86_64::avx2::packedpair::Finder>::find_impl",
+          "count": 5,
+          "fraction": 0.00794912559618442
+        },
+        {
+          "symbol": "libc.so.6!syscall@@GLIBC_2.2.5",
+          "count": 4,
+          "fraction": 0.006359300476947536
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Mirror>::stretch",
+          "count": 3,
+          "fraction": 0.0047694753577106515
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::input",
+          "count": 2,
+          "fraction": 0.003179650238473768
+        },
+        {
+          "symbol": "glass-i9-selected!mi_bitmap_setN",
+          "count": 1,
+          "fraction": 0.001589825119236884
+        },
+        {
+          "symbol": "glass-i9-selected!_mi_page_free",
+          "count": 1,
+          "fraction": 0.001589825119236884
+        },
+        {
+          "symbol": "glass-i9-selected!<std::sync::mpmc::waker::SyncWaker>::notify",
+          "count": 1,
+          "fraction": 0.001589825119236884
+        },
+        {
+          "symbol": "glass-i9-selected!_mi_page_malloc_zero",
+          "count": 1,
+          "fraction": 0.001589825119236884
+        },
+        {
+          "symbol": "[unmapped]",
+          "count": 1,
+          "fraction": 0.001589825119236884
+        },
+        {
+          "symbol": "glass-i9-selected!mi_free",
+          "count": 1,
+          "fraction": 0.001589825119236884
+        }
+      ]
+    },
+    "pty-parse/scroll_region": {
+      "samples": 85,
+      "symbols": [
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Watch>::print_run",
+          "count": 23,
+          "fraction": 0.27058823529411763
+        },
+        {
+          "symbol": "libc.so.6![no containing symbol]",
+          "count": 9,
+          "fraction": 0.10588235294117647
+        },
+        {
+          "symbol": "glass-i9-selected!<alacritty_terminal::grid::Grid<alacritty_terminal::term::cell::Cell>>::scroll_up::<vte::ansi::Color>",
+          "count": 8,
+          "fraction": 0.09411764705882353
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Engine>::apply",
+          "count": 8,
+          "fraction": 0.09411764705882353
+        },
+        {
+          "symbol": "libc.so.6!syscall@@GLIBC_2.2.5",
+          "count": 5,
+          "fraction": 0.058823529411764705
+        },
+        {
+          "symbol": "glass-i9-selected!<alacritty_terminal::term::cell::Cell as alacritty_terminal::grid::GridCell>::style_eq",
+          "count": 4,
+          "fraction": 0.047058823529411764
+        },
+        {
+          "symbol": "glass-i9-selected!<memchr::arch::x86_64::avx2::packedpair::Finder>::find_impl",
+          "count": 4,
+          "fraction": 0.047058823529411764
+        },
+        {
+          "symbol": "glass-i9-selected!glass::engine::plain_c0",
+          "count": 3,
+          "fraction": 0.03529411764705882
+        },
+        {
+          "symbol": "glass-i9-selected!memchr::arch::x86_64::memchr::memchr_raw::find_avx2",
+          "count": 3,
+          "fraction": 0.03529411764705882
+        },
+        {
+          "symbol": "glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener>>::scroll_up_relative",
+          "count": 2,
+          "fraction": 0.023529411764705882
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::session::Session>::start::{closure#10}",
+          "count": 2,
+          "fraction": 0.023529411764705882
+        },
+        {
+          "symbol": "glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener> as vte::ansi::Handler>::linefeed",
+          "count": 2,
+          "fraction": 0.023529411764705882
+        },
+        {
+          "symbol": "glass-i9-selected!glass::session::find_escape",
+          "count": 2,
+          "fraction": 0.023529411764705882
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Mirror>::stretch",
+          "count": 2,
+          "fraction": 0.023529411764705882
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Watch>::note_scroll_up",
+          "count": 1,
+          "fraction": 0.011764705882352941
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::linefeed",
+          "count": 1,
+          "fraction": 0.011764705882352941
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::input",
+          "count": 1,
+          "fraction": 0.011764705882352941
+        },
+        {
+          "symbol": "glass-i9-selected!<vte::Parser<1024>>::advance_ground::<vte::ansi::Performer<glass::engine::Watch, vte::ansi::StdSyncHandler>>",
+          "count": 1,
+          "fraction": 0.011764705882352941
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::intake::Splitter>::split",
+          "count": 1,
+          "fraction": 0.011764705882352941
+        },
+        {
+          "symbol": "glass-i9-selected!memchr::arch::x86_64::memchr::memrchr_raw::find_avx2",
+          "count": 1,
+          "fraction": 0.011764705882352941
+        },
+        {
+          "symbol": "glass-i9-selected!<std::sync::mpmc::Sender<alloc::vec::Vec<u8>>>::send",
+          "count": 1,
+          "fraction": 0.011764705882352941
+        },
+        {
+          "symbol": "glass-i9-selected!<alacritty_terminal::selection::Selection>::range_simple",
+          "count": 1,
+          "fraction": 0.011764705882352941
+        }
+      ]
+    },
+    "pty-parse/truecolor": {
+      "samples": 810,
+      "symbols": [
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Engine>::apply",
+          "count": 423,
+          "fraction": 0.5222222222222223
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::intake::Splitter>::split",
+          "count": 119,
+          "fraction": 0.1469135802469136
+        },
+        {
+          "symbol": "glass-i9-selected!memchr::arch::x86_64::memchr::memchr_raw::find_avx2",
+          "count": 68,
+          "fraction": 0.08395061728395062
+        },
+        {
+          "symbol": "libc.so.6![no containing symbol]",
+          "count": 37,
+          "fraction": 0.04567901234567901
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::session::Session>::start::{closure#10}",
+          "count": 35,
+          "fraction": 0.043209876543209874
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::terminal_attribute",
+          "count": 33,
+          "fraction": 0.040740740740740744
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Engine>::process",
+          "count": 29,
+          "fraction": 0.03580246913580247
+        },
+        {
+          "symbol": "glass-i9-selected!<memchr::arch::x86_64::avx2::packedpair::Finder>::find_impl",
+          "count": 17,
+          "fraction": 0.020987654320987655
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Mirror>::stretch",
+          "count": 11,
+          "fraction": 0.013580246913580247
+        },
+        {
+          "symbol": "glass-i9-selected!memchr::arch::x86_64::memchr::memrchr_raw::find_avx2",
+          "count": 10,
+          "fraction": 0.012345679012345678
+        },
+        {
+          "symbol": "libc.so.6!syscall@@GLIBC_2.2.5",
+          "count": 6,
+          "fraction": 0.007407407407407408
+        },
+        {
+          "symbol": "glass-i9-selected!<alacritty_terminal::grid::storage::Storage<alacritty_terminal::term::cell::Cell> as core::ops::index::IndexMut<alacritty_terminal::index::Line>>::index_mut",
+          "count": 5,
+          "fraction": 0.006172839506172839
+        },
+        {
+          "symbol": "[unmapped]",
+          "count": 2,
+          "fraction": 0.0024691358024691358
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::intake::Splitter>::step",
+          "count": 2,
+          "fraction": 0.0024691358024691358
+        },
+        {
+          "symbol": "glass-i9-selected!mi_free",
+          "count": 2,
+          "fraction": 0.0024691358024691358
+        },
+        {
+          "symbol": "glass-i9-selected!mi_realloc_aligned",
+          "count": 2,
+          "fraction": 0.0024691358024691358
+        },
+        {
+          "symbol": "glass-i9-selected!core::str::converts::from_utf8",
+          "count": 1,
+          "fraction": 0.0012345679012345679
+        },
+        {
+          "symbol": "glass-i9-selected!_mi_page_map_unregister",
+          "count": 1,
+          "fraction": 0.0012345679012345679
+        },
+        {
+          "symbol": "glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener>>::scroll_up_relative",
+          "count": 1,
+          "fraction": 0.0012345679012345679
+        },
+        {
+          "symbol": "glass-i9-selected!_mi_malloc_generic",
+          "count": 1,
+          "fraction": 0.0012345679012345679
+        },
+        {
+          "symbol": "glass-i9-selected!mi_theap_malloc_aligned",
+          "count": 1,
+          "fraction": 0.0012345679012345679
+        },
+        {
+          "symbol": "glass-i9-selected!mi_bin",
+          "count": 1,
+          "fraction": 0.0012345679012345679
+        },
+        {
+          "symbol": "glass-i9-selected!_mi_page_malloc_zero",
+          "count": 1,
+          "fraction": 0.0012345679012345679
+        },
+        {
+          "symbol": "glass-i9-selected!<alloc::raw_vec::RawVec<glass_window::UserEvent>>::grow_one",
+          "count": 1,
+          "fraction": 0.0012345679012345679
+        },
+        {
+          "symbol": "glass-i9-selected!<alacritty_terminal::selection::Selection>::to_range::<glass::engine::Listener>",
+          "count": 1,
+          "fraction": 0.0012345679012345679
+        }
+      ]
+    },
+    "pty-parse/tui_frames": {
+      "samples": 678,
+      "symbols": [
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Engine>::apply",
+          "count": 248,
+          "fraction": 0.36578171091445427
+        },
+        {
+          "symbol": "glass-i9-selected!memchr::arch::x86_64::memchr::memchr_raw::find_avx2",
+          "count": 91,
+          "fraction": 0.13421828908554573
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::intake::Splitter>::split",
+          "count": 79,
+          "fraction": 0.11651917404129794
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::terminal_attribute",
+          "count": 56,
+          "fraction": 0.08259587020648967
+        },
+        {
+          "symbol": "libc.so.6![no containing symbol]",
+          "count": 54,
+          "fraction": 0.07964601769911504
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Engine>::process",
+          "count": 40,
+          "fraction": 0.058997050147492625
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::session::Session>::start::{closure#10}",
+          "count": 35,
+          "fraction": 0.051622418879056046
+        },
+        {
+          "symbol": "glass-i9-selected!glass::engine::snap_term",
+          "count": 24,
+          "fraction": 0.035398230088495575
+        },
+        {
+          "symbol": "glass-i9-selected!<alacritty_terminal::grid::storage::Storage<alacritty_terminal::term::cell::Cell> as core::ops::index::IndexMut<alacritty_terminal::index::Line>>::index_mut",
+          "count": 11,
+          "fraction": 0.016224188790560472
+        },
+        {
+          "symbol": "glass-i9-selected!memchr::arch::x86_64::memchr::memrchr_raw::find_avx2",
+          "count": 8,
+          "fraction": 0.011799410029498525
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Mirror>::stretch",
+          "count": 6,
+          "fraction": 0.008849557522123894
+        },
+        {
+          "symbol": "glass-i9-selected!<memchr::arch::x86_64::avx2::packedpair::Finder>::find_impl",
+          "count": 6,
+          "fraction": 0.008849557522123894
+        },
+        {
+          "symbol": "[unmapped]",
+          "count": 3,
+          "fraction": 0.004424778761061947
+        },
+        {
+          "symbol": "glass-i9-selected!mi_find_page",
+          "count": 2,
+          "fraction": 0.0029498525073746312
+        },
+        {
+          "symbol": "glass-i9-selected!<vte::Parser<1024>>::advance_until_terminated::<vte::ansi::Performer<glass::engine::Watch, vte::ansi::StdSyncHandler>>",
+          "count": 1,
+          "fraction": 0.0014749262536873156
+        },
+        {
+          "symbol": "glass-i9-selected!_mi_theap_realloc_zero",
+          "count": 1,
+          "fraction": 0.0014749262536873156
+        },
+        {
+          "symbol": "glass-i9-selected!mi_realloc_aligned",
+          "count": 1,
+          "fraction": 0.0014749262536873156
+        },
+        {
+          "symbol": "libc.so.6!clock_gettime@GLIBC_2.2.5",
+          "count": 1,
+          "fraction": 0.0014749262536873156
+        },
+        {
+          "symbol": "glass-i9-selected!_mi_page_retire",
+          "count": 1,
+          "fraction": 0.0014749262536873156
+        },
+        {
+          "symbol": "glass-i9-selected!mi_option_get",
+          "count": 1,
+          "fraction": 0.0014749262536873156
+        },
+        {
+          "symbol": "glass-i9-selected!_mi_page_free",
+          "count": 1,
+          "fraction": 0.0014749262536873156
+        },
+        {
+          "symbol": "glass-i9-selected!_mi_malloc_generic",
+          "count": 1,
+          "fraction": 0.0014749262536873156
+        },
+        {
+          "symbol": "libc.so.6!syscall@@GLIBC_2.2.5",
+          "count": 1,
+          "fraction": 0.0014749262536873156
+        },
+        {
+          "symbol": "glass-i9-selected!vte::ansi::attrs_from_sgr_parameters::<glass::engine::Watch>",
+          "count": 1,
+          "fraction": 0.0014749262536873156
+        },
+        {
+          "symbol": "glass-i9-selected!mi_bbitmap_try_find_and_clear",
+          "count": 1,
+          "fraction": 0.0014749262536873156
+        },
+        {
+          "symbol": "glass-i9-selected!mi_bitmap_setN",
+          "count": 1,
+          "fraction": 0.0014749262536873156
+        },
+        {
+          "symbol": "glass-i9-selected!_mi_page_malloc_zero",
+          "count": 1,
+          "fraction": 0.0014749262536873156
+        },
+        {
+          "symbol": "glass-i9-selected!<alloc::raw_vec::RawVecInner>::finish_grow",
+          "count": 1,
+          "fraction": 0.0014749262536873156
+        },
+        {
+          "symbol": "glass-i9-selected!mi_bin",
+          "count": 1,
+          "fraction": 0.0014749262536873156
+        }
+      ]
+    },
+    "pty-parse/unicode": {
+      "samples": 547,
+      "symbols": [
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Watch>::print_utf8",
+          "count": 435,
+          "fraction": 0.7952468007312614
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Engine>::apply",
+          "count": 29,
+          "fraction": 0.05301645338208409
+        },
+        {
+          "symbol": "glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener>>::scroll_up_relative",
+          "count": 12,
+          "fraction": 0.021937842778793418
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::input",
+          "count": 9,
+          "fraction": 0.016453382084095063
+        },
+        {
+          "symbol": "glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener> as vte::ansi::Handler>::input",
+          "count": 8,
+          "fraction": 0.014625228519195612
+        },
+        {
+          "symbol": "glass-i9-selected!<alacritty_terminal::grid::Grid<alacritty_terminal::term::cell::Cell>>::scroll_up::<vte::ansi::Color>",
+          "count": 7,
+          "fraction": 0.012797074954296161
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Mirror>::stretch",
+          "count": 6,
+          "fraction": 0.010968921389396709
+        },
+        {
+          "symbol": "glass-i9-selected!<memchr::arch::x86_64::avx2::packedpair::Finder>::find_impl",
+          "count": 6,
+          "fraction": 0.010968921389396709
+        },
+        {
+          "symbol": "glass-i9-selected!<alacritty_terminal::term::cell::CellExtra>::single_mark",
+          "count": 6,
+          "fraction": 0.010968921389396709
+        },
+        {
+          "symbol": "glass-i9-selected!<alacritty_terminal::grid::row::Row<alacritty_terminal::term::cell::Cell> as core::ops::index::IndexMut<alacritty_terminal::index::Column>>::index_mut",
+          "count": 4,
+          "fraction": 0.007312614259597806
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Watch>::note_scroll_up",
+          "count": 4,
+          "fraction": 0.007312614259597806
+        },
+        {
+          "symbol": "glass-i9-selected!core::str::converts::from_utf8",
+          "count": 2,
+          "fraction": 0.003656307129798903
+        },
+        {
+          "symbol": "glass-i9-selected!memchr::arch::x86_64::memchr::memchr_raw::find_avx2",
+          "count": 2,
+          "fraction": 0.003656307129798903
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Watch>::print_wide",
+          "count": 2,
+          "fraction": 0.003656307129798903
+        },
+        {
+          "symbol": "glass-i9-selected!<std::sync::mpmc::waker::SyncWaker>::notify",
+          "count": 2,
+          "fraction": 0.003656307129798903
+        },
+        {
+          "symbol": "libc.so.6![no containing symbol]",
+          "count": 2,
+          "fraction": 0.003656307129798903
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::linefeed",
+          "count": 2,
+          "fraction": 0.003656307129798903
+        },
+        {
+          "symbol": "glass-i9-selected!memchr::arch::x86_64::memchr::memrchr_raw::find_avx2",
+          "count": 1,
+          "fraction": 0.0018281535648994515
+        },
+        {
+          "symbol": "glass-i9-selected!<alloc::raw_vec::RawVecInner>::finish_grow",
+          "count": 1,
+          "fraction": 0.0018281535648994515
+        },
+        {
+          "symbol": "glass-i9-selected!<alacritty_terminal::grid::storage::Storage<alacritty_terminal::term::cell::Cell> as core::ops::index::IndexMut<alacritty_terminal::index::Line>>::index_mut",
+          "count": 1,
+          "fraction": 0.0018281535648994515
+        },
+        {
+          "symbol": "glass-i9-selected!glass::engine::plain_c0",
+          "count": 1,
+          "fraction": 0.0018281535648994515
+        },
+        {
+          "symbol": "glass-i9-selected!<glass::engine::Engine>::collect",
+          "count": 1,
+          "fraction": 0.0018281535648994515
+        },
+        {
+          "symbol": "glass-i9-selected!glass::session::find_escape",
+          "count": 1,
+          "fraction": 0.0018281535648994515
+        },
+        {
+          "symbol": "libc.so.6!syscall@@GLIBC_2.2.5",
+          "count": 1,
+          "fraction": 0.0018281535648994515
+        },
+        {
+          "symbol": "glass-i9-selected!<std::sync::mpmc::Sender<alloc::vec::Vec<u8>>>::send",
+          "count": 1,
+          "fraction": 0.0018281535648994515
+        },
+        {
+          "symbol": "glass-i9-selected!<vte::Parser<1024>>::advance_ground::<vte::ansi::Performer<glass::engine::Watch, vte::ansi::StdSyncHandler>>",
+          "count": 1,
+          "fraction": 0.0018281535648994515
+        }
+      ]
+    },
+    "pty-read/ascii": {
+      "samples": 255,
+      "symbols": [
+        {
+          "symbol": "libc.so.6![no containing symbol]",
+          "count": 246,
+          "fraction": 0.9647058823529412
+        },
+        {
+          "symbol": "libc.so.6!syscall@@GLIBC_2.2.5",
+          "count": 4,
+          "fraction": 0.01568627450980392
+        },
+        {
+          "symbol": "libc.so.6!ioctl@@GLIBC_2.2.5",
+          "count": 3,
+          "fraction": 0.011764705882352941
+        },
+        {
+          "symbol": "glass-i9-selected!std::sys::backtrace::__rust_begin_short_backtrace::<<glass::read_ahead::ReadAhead>::spawn::{closure#0}, ()>",
+          "count": 2,
+          "fraction": 0.00784313725490196
+        }
+      ]
+    },
+    "pty-read/cursor_motion": {
+      "samples": 130,
+      "symbols": [
+        {
+          "symbol": "libc.so.6![no containing symbol]",
+          "count": 117,
+          "fraction": 0.9
+        },
+        {
+          "symbol": "libc.so.6!ioctl@@GLIBC_2.2.5",
+          "count": 4,
+          "fraction": 0.03076923076923077
+        },
+        {
+          "symbol": "libc.so.6!syscall@@GLIBC_2.2.5",
+          "count": 3,
+          "fraction": 0.023076923076923078
+        },
+        {
+          "symbol": "glass-i9-selected!std::sys::backtrace::__rust_begin_short_backtrace::<<glass::read_ahead::ReadAhead>::spawn::{closure#0}, ()>",
+          "count": 2,
+          "fraction": 0.015384615384615385
+        },
+        {
+          "symbol": "glass-i9-selected!mi_find_page",
+          "count": 1,
+          "fraction": 0.007692307692307693
+        },
+        {
+          "symbol": "libc.so.6!poll@@GLIBC_2.2.5",
+          "count": 1,
+          "fraction": 0.007692307692307693
+        },
+        {
+          "symbol": "glass-i9-selected!<std::sync::mpmc::list::Channel<alloc::vec::Vec<u8>>>::recv::{closure#1}",
+          "count": 1,
+          "fraction": 0.007692307692307693
+        },
+        {
+          "symbol": "glass-i9-selected!<std::sync::mpmc::waker::SyncWaker>::register",
+          "count": 1,
+          "fraction": 0.007692307692307693
+        }
+      ]
+    },
+    "pty-read/scroll_region": {
+      "samples": 177,
+      "symbols": [
+        {
+          "symbol": "libc.so.6![no containing symbol]",
+          "count": 171,
+          "fraction": 0.9661016949152542
+        },
+        {
+          "symbol": "libc.so.6!ioctl@@GLIBC_2.2.5",
+          "count": 4,
+          "fraction": 0.022598870056497175
+        },
+        {
+          "symbol": "glass-i9-selected!<std::sync::mpmc::waker::SyncWaker>::notify",
+          "count": 1,
+          "fraction": 0.005649717514124294
+        },
+        {
+          "symbol": "glass-i9-selected!<portable_pty::unix::PtyFd as alloc::io::read::Read>::read",
+          "count": 1,
+          "fraction": 0.005649717514124294
+        }
+      ]
+    },
+    "pty-read/truecolor": {
+      "samples": 209,
+      "symbols": [
+        {
+          "symbol": "libc.so.6![no containing symbol]",
+          "count": 197,
+          "fraction": 0.9425837320574163
+        },
+        {
+          "symbol": "libc.so.6!syscall@@GLIBC_2.2.5",
+          "count": 6,
+          "fraction": 0.028708133971291867
+        },
+        {
+          "symbol": "libc.so.6!ioctl@@GLIBC_2.2.5",
+          "count": 4,
+          "fraction": 0.019138755980861243
+        },
+        {
+          "symbol": "glass-i9-selected!std::sys::backtrace::__rust_begin_short_backtrace::<<glass::read_ahead::ReadAhead>::spawn::{closure#0}, ()>",
+          "count": 2,
+          "fraction": 0.009569377990430622
+        }
+      ]
+    },
+    "pty-read/tui_frames": {
+      "samples": 138,
+      "symbols": [
+        {
+          "symbol": "libc.so.6![no containing symbol]",
+          "count": 133,
+          "fraction": 0.9637681159420289
+        },
+        {
+          "symbol": "libc.so.6!ioctl@@GLIBC_2.2.5",
+          "count": 2,
+          "fraction": 0.014492753623188406
+        },
+        {
+          "symbol": "libc.so.6!syscall@@GLIBC_2.2.5",
+          "count": 2,
+          "fraction": 0.014492753623188406
+        },
+        {
+          "symbol": "glass-i9-selected!<std::sync::mpmc::waker::SyncWaker>::register",
+          "count": 1,
+          "fraction": 0.007246376811594203
+        }
+      ]
+    },
+    "pty-read/unicode": {
+      "samples": 122,
+      "symbols": [
+        {
+          "symbol": "libc.so.6![no containing symbol]",
+          "count": 116,
+          "fraction": 0.9508196721311475
+        },
+        {
+          "symbol": "libc.so.6!ioctl@@GLIBC_2.2.5",
+          "count": 2,
+          "fraction": 0.01639344262295082
+        },
+        {
+          "symbol": "libc.so.6!syscall@@GLIBC_2.2.5",
+          "count": 1,
+          "fraction": 0.00819672131147541
+        },
+        {
+          "symbol": "libc.so.6!read@@GLIBC_2.2.5",
+          "count": 1,
+          "fraction": 0.00819672131147541
+        },
+        {
+          "symbol": "glass-i9-selected!<std::sync::mpmc::list::Channel<alloc::vec::Vec<u8>>>::recv::{closure#1}",
+          "count": 1,
+          "fraction": 0.00819672131147541
+        },
+        {
+          "symbol": "glass-i9-selected!<std::sync::mpmc::waker::SyncWaker>::register",
+          "count": 1,
+          "fraction": 0.00819672131147541
+        }
+      ]
+    }
+  },
+  "by_run": {
+    "pty-parse-1.pcs": {
+      "ascii": {
+        "glass-i9-selected!<glass::engine::Watch>::print_run": 15,
+        "glass-i9-selected!<glass::engine::Engine>::apply": 8,
+        "glass-i9-selected!<glass::engine::Watch>::note_scroll_up": 4,
+        "glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener>>::scroll_up_relative": 4,
+        "glass-i9-selected!mi_page_free_list_extend": 3,
+        "glass-i9-selected!<glass::session::Session>::start::{closure#10}": 3,
+        "glass-i9-selected!<memchr::arch::x86_64::avx2::packedpair::Finder>::find_impl": 3,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 2,
+        "glass-i9-selected!<alacritty_terminal::grid::storage::Storage<alacritty_terminal::term::cell::Cell>>::initialize": 1,
+        "glass-i9-selected!glass::engine::plain_c0": 1,
+        "glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::linefeed": 1,
+        "glass-i9-selected!<alacritty_terminal::grid::Grid<alacritty_terminal::term::cell::Cell>>::scroll_up::<vte::ansi::Color>": 1,
+        "glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener> as vte::ansi::Handler>::linefeed": 1,
+        "glass-i9-selected!<alacritty_terminal::term::cell::Cell as alacritty_terminal::grid::GridCell>::style_eq": 1,
+        "glass-i9-selected!<glass::engine::Mirror>::stretch": 1,
+        "glass-i9-selected!<alacritty_terminal::selection::Selection>::range_simple": 1
+      },
+      "unicode": {
+        "glass-i9-selected!<glass::engine::Watch>::print_utf8": 144,
+        "glass-i9-selected!<glass::engine::Engine>::apply": 8,
+        "glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::input": 5,
+        "glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener>>::scroll_up_relative": 4,
+        "glass-i9-selected!<glass::engine::Mirror>::stretch": 3,
+        "glass-i9-selected!<memchr::arch::x86_64::avx2::packedpair::Finder>::find_impl": 2,
+        "glass-i9-selected!<alacritty_terminal::grid::row::Row<alacritty_terminal::term::cell::Cell> as core::ops::index::IndexMut<alacritty_terminal::index::Column>>::index_mut": 2,
+        "glass-i9-selected!<std::sync::mpmc::waker::SyncWaker>::notify": 2,
+        "glass-i9-selected!<alacritty_terminal::grid::Grid<alacritty_terminal::term::cell::Cell>>::scroll_up::<vte::ansi::Color>": 2,
+        "glass-i9-selected!memchr::arch::x86_64::memchr::memrchr_raw::find_avx2": 1,
+        "glass-i9-selected!core::str::converts::from_utf8": 1,
+        "glass-i9-selected!memchr::arch::x86_64::memchr::memchr_raw::find_avx2": 1,
+        "glass-i9-selected!<glass::engine::Watch>::print_wide": 1,
+        "glass-i9-selected!<alacritty_terminal::term::cell::CellExtra>::single_mark": 1,
+        "glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener> as vte::ansi::Handler>::input": 1,
+        "glass-i9-selected!<glass::engine::Watch>::note_scroll_up": 1,
+        "glass-i9-selected!<alloc::raw_vec::RawVecInner>::finish_grow": 1,
+        "glass-i9-selected!<alacritty_terminal::grid::storage::Storage<alacritty_terminal::term::cell::Cell> as core::ops::index::IndexMut<alacritty_terminal::index::Line>>::index_mut": 1
+      },
+      "truecolor": {
+        "glass-i9-selected!<glass::engine::Engine>::apply": 130,
+        "glass-i9-selected!<glass::intake::Splitter>::split": 46,
+        "glass-i9-selected!memchr::arch::x86_64::memchr::memchr_raw::find_avx2": 25,
+        "glass-i9-selected!<glass::session::Session>::start::{closure#10}": 12,
+        "libc.so.6![no containing symbol]": 12,
+        "glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::terminal_attribute": 11,
+        "glass-i9-selected!<glass::engine::Engine>::process": 10,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 5,
+        "glass-i9-selected!<memchr::arch::x86_64::avx2::packedpair::Finder>::find_impl": 5,
+        "glass-i9-selected!memchr::arch::x86_64::memchr::memrchr_raw::find_avx2": 5,
+        "glass-i9-selected!<glass::engine::Mirror>::stretch": 2,
+        "[unmapped]": 1,
+        "glass-i9-selected!<alacritty_terminal::grid::storage::Storage<alacritty_terminal::term::cell::Cell> as core::ops::index::IndexMut<alacritty_terminal::index::Line>>::index_mut": 1,
+        "glass-i9-selected!core::str::converts::from_utf8": 1,
+        "glass-i9-selected!_mi_page_map_unregister": 1
+      },
+      "cursor_motion": {
+        "glass-i9-selected!<glass::engine::Engine>::apply": 85,
+        "glass-i9-selected!<glass::intake::Splitter>::split": 24,
+        "glass-i9-selected!memchr::arch::x86_64::memchr::memchr_raw::find_avx2": 20,
+        "glass-i9-selected!<glass::engine::Watch>::print_run": 16,
+        "glass-i9-selected!<glass::engine::Engine>::process": 15,
+        "libc.so.6![no containing symbol]": 12,
+        "glass-i9-selected!<glass::session::Session>::start::{closure#10}": 9,
+        "glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::terminal_attribute": 7,
+        "glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener> as vte::ansi::Handler>::goto": 6,
+        "glass-i9-selected!memchr::arch::x86_64::memchr::memrchr_raw::find_avx2": 6,
+        "glass-i9-selected!<glass::engine::Mirror>::stretch": 3,
+        "glass-i9-selected!<memchr::arch::x86_64::avx2::packedpair::Finder>::find_impl": 2,
+        "glass-i9-selected!mi_bitmap_setN": 1,
+        "glass-i9-selected!_mi_page_free": 1,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 1,
+        "glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::input": 1,
+        "glass-i9-selected!<std::sync::mpmc::waker::SyncWaker>::notify": 1
+      },
+      "scroll_region": {
+        "glass-i9-selected!<glass::engine::Watch>::print_run": 10,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 4,
+        "glass-i9-selected!<alacritty_terminal::grid::Grid<alacritty_terminal::term::cell::Cell>>::scroll_up::<vte::ansi::Color>": 4,
+        "glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener>>::scroll_up_relative": 2,
+        "glass-i9-selected!<glass::session::Session>::start::{closure#10}": 2,
+        "glass-i9-selected!glass::engine::plain_c0": 2,
+        "glass-i9-selected!<alacritty_terminal::term::cell::Cell as alacritty_terminal::grid::GridCell>::style_eq": 2,
+        "libc.so.6![no containing symbol]": 2,
+        "glass-i9-selected!<glass::engine::Watch>::note_scroll_up": 1,
+        "glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener> as vte::ansi::Handler>::linefeed": 1,
+        "glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::linefeed": 1,
+        "glass-i9-selected!memchr::arch::x86_64::memchr::memchr_raw::find_avx2": 1,
+        "glass-i9-selected!glass::session::find_escape": 1,
+        "glass-i9-selected!<memchr::arch::x86_64::avx2::packedpair::Finder>::find_impl": 1,
+        "glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::input": 1
+      },
+      "tui_frames": {
+        "glass-i9-selected!<glass::engine::Engine>::apply": 89,
+        "glass-i9-selected!memchr::arch::x86_64::memchr::memchr_raw::find_avx2": 31,
+        "glass-i9-selected!<glass::intake::Splitter>::split": 27,
+        "glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::terminal_attribute": 24,
+        "glass-i9-selected!<glass::engine::Engine>::process": 13,
+        "libc.so.6![no containing symbol]": 11,
+        "glass-i9-selected!glass::engine::snap_term": 9,
+        "glass-i9-selected!<glass::session::Session>::start::{closure#10}": 9,
+        "glass-i9-selected!<alacritty_terminal::grid::storage::Storage<alacritty_terminal::term::cell::Cell> as core::ops::index::IndexMut<alacritty_terminal::index::Line>>::index_mut": 3,
+        "glass-i9-selected!memchr::arch::x86_64::memchr::memrchr_raw::find_avx2": 3,
+        "glass-i9-selected!<glass::engine::Mirror>::stretch": 3,
+        "glass-i9-selected!mi_find_page": 2,
+        "[unmapped]": 1,
+        "glass-i9-selected!<vte::Parser<1024>>::advance_until_terminated::<vte::ansi::Performer<glass::engine::Watch, vte::ansi::StdSyncHandler>>": 1,
+        "glass-i9-selected!_mi_theap_realloc_zero": 1,
+        "glass-i9-selected!mi_realloc_aligned": 1,
+        "libc.so.6!clock_gettime@GLIBC_2.2.5": 1
+      }
+    },
+    "pty-parse-2.pcs": {
+      "ascii": {
+        "glass-i9-selected!<glass::engine::Engine>::apply": 13,
+        "glass-i9-selected!<glass::engine::Watch>::print_run": 11,
+        "glass-i9-selected!mi_page_free_list_extend": 3,
+        "glass-i9-selected!<memchr::arch::x86_64::avx2::packedpair::Finder>::find_impl": 3,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 2,
+        "glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener>>::scroll_up_relative": 2,
+        "glass-i9-selected!<alacritty_terminal::term::cell::Cell as alacritty_terminal::grid::GridCell>::style_eq": 2,
+        "glass-i9-selected!<alacritty_terminal::grid::storage::Storage<alacritty_terminal::term::cell::Cell>>::initialize": 1,
+        "glass-i9-selected!mi_theap_malloc_zero_aligned_at_generic": 1,
+        "glass-i9-selected!<glass::engine::Mirror>::stretch": 1,
+        "glass-i9-selected!memchr::arch::x86_64::memchr::memchr_raw::find_avx2": 1,
+        "glass-i9-selected!<glass::intake::Splitter>::split": 1,
+        "glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::input": 1,
+        "libc.so.6![no containing symbol]": 1,
+        "glass-i9-selected!<glass::engine::Watch>::note_scroll_up": 1,
+        "glass-i9-selected!<alacritty_terminal::grid::Grid<alacritty_terminal::term::cell::Cell>>::scroll_up::<vte::ansi::Color>": 1,
+        "libc.so.6!clock_gettime@GLIBC_2.2.5": 1
+      },
+      "unicode": {
+        "glass-i9-selected!<glass::engine::Watch>::print_utf8": 145,
+        "glass-i9-selected!<glass::engine::Engine>::apply": 11,
+        "glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener> as vte::ansi::Handler>::input": 4,
+        "glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener>>::scroll_up_relative": 4,
+        "glass-i9-selected!<alacritty_terminal::grid::Grid<alacritty_terminal::term::cell::Cell>>::scroll_up::<vte::ansi::Color>": 4,
+        "glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::input": 3,
+        "glass-i9-selected!<glass::engine::Watch>::note_scroll_up": 2,
+        "libc.so.6![no containing symbol]": 2,
+        "glass-i9-selected!<alacritty_terminal::term::cell::CellExtra>::single_mark": 1,
+        "glass-i9-selected!memchr::arch::x86_64::memchr::memchr_raw::find_avx2": 1,
+        "glass-i9-selected!<glass::engine::Watch>::print_wide": 1,
+        "glass-i9-selected!<memchr::arch::x86_64::avx2::packedpair::Finder>::find_impl": 1,
+        "glass-i9-selected!glass::engine::plain_c0": 1,
+        "glass-i9-selected!<glass::engine::Engine>::collect": 1
+      },
+      "truecolor": {
+        "glass-i9-selected!<glass::engine::Engine>::apply": 145,
+        "glass-i9-selected!<glass::intake::Splitter>::split": 36,
+        "glass-i9-selected!memchr::arch::x86_64::memchr::memchr_raw::find_avx2": 25,
+        "glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::terminal_attribute": 13,
+        "libc.so.6![no containing symbol]": 12,
+        "glass-i9-selected!<glass::session::Session>::start::{closure#10}": 10,
+        "glass-i9-selected!<glass::engine::Engine>::process": 9,
+        "glass-i9-selected!<memchr::arch::x86_64::avx2::packedpair::Finder>::find_impl": 6,
+        "glass-i9-selected!<glass::engine::Mirror>::stretch": 5,
+        "glass-i9-selected!<alacritty_terminal::grid::storage::Storage<alacritty_terminal::term::cell::Cell> as core::ops::index::IndexMut<alacritty_terminal::index::Line>>::index_mut": 3,
+        "glass-i9-selected!memchr::arch::x86_64::memchr::memrchr_raw::find_avx2": 3,
+        "glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener>>::scroll_up_relative": 1,
+        "glass-i9-selected!_mi_malloc_generic": 1,
+        "[unmapped]": 1,
+        "glass-i9-selected!mi_theap_malloc_aligned": 1
+      },
+      "cursor_motion": {
+        "glass-i9-selected!<glass::engine::Engine>::apply": 64,
+        "glass-i9-selected!<glass::intake::Splitter>::split": 28,
+        "glass-i9-selected!<glass::engine::Engine>::process": 25,
+        "libc.so.6![no containing symbol]": 21,
+        "glass-i9-selected!<glass::session::Session>::start::{closure#10}": 19,
+        "glass-i9-selected!memchr::arch::x86_64::memchr::memchr_raw::find_avx2": 18,
+        "glass-i9-selected!<glass::engine::Watch>::print_run": 17,
+        "glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::terminal_attribute": 5,
+        "glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener> as vte::ansi::Handler>::goto": 2,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 2,
+        "glass-i9-selected!<memchr::arch::x86_64::avx2::packedpair::Finder>::find_impl": 1,
+        "glass-i9-selected!_mi_page_malloc_zero": 1,
+        "[unmapped]": 1,
+        "glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::input": 1,
+        "glass-i9-selected!mi_free": 1,
+        "glass-i9-selected!memchr::arch::x86_64::memchr::memrchr_raw::find_avx2": 1
+      },
+      "scroll_region": {
+        "glass-i9-selected!<glass::engine::Watch>::print_run": 7,
+        "libc.so.6![no containing symbol]": 5,
+        "glass-i9-selected!<glass::engine::Engine>::apply": 4,
+        "glass-i9-selected!memchr::arch::x86_64::memchr::memchr_raw::find_avx2": 2,
+        "glass-i9-selected!<memchr::arch::x86_64::avx2::packedpair::Finder>::find_impl": 1,
+        "glass-i9-selected!<glass::engine::Mirror>::stretch": 1,
+        "glass-i9-selected!<alacritty_terminal::grid::Grid<alacritty_terminal::term::cell::Cell>>::scroll_up::<vte::ansi::Color>": 1,
+        "glass-i9-selected!<vte::Parser<1024>>::advance_ground::<vte::ansi::Performer<glass::engine::Watch, vte::ansi::StdSyncHandler>>": 1,
+        "glass-i9-selected!<alacritty_terminal::term::cell::Cell as alacritty_terminal::grid::GridCell>::style_eq": 1,
+        "glass-i9-selected!<glass::intake::Splitter>::split": 1
+      },
+      "tui_frames": {
+        "glass-i9-selected!<glass::engine::Engine>::apply": 83,
+        "glass-i9-selected!<glass::intake::Splitter>::split": 28,
+        "libc.so.6![no containing symbol]": 20,
+        "glass-i9-selected!memchr::arch::x86_64::memchr::memchr_raw::find_avx2": 20,
+        "glass-i9-selected!<glass::engine::Engine>::process": 18,
+        "glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::terminal_attribute": 18,
+        "glass-i9-selected!<glass::session::Session>::start::{closure#10}": 13,
+        "glass-i9-selected!glass::engine::snap_term": 7,
+        "glass-i9-selected!<memchr::arch::x86_64::avx2::packedpair::Finder>::find_impl": 4,
+        "glass-i9-selected!<alacritty_terminal::grid::storage::Storage<alacritty_terminal::term::cell::Cell> as core::ops::index::IndexMut<alacritty_terminal::index::Line>>::index_mut": 3,
+        "glass-i9-selected!memchr::arch::x86_64::memchr::memrchr_raw::find_avx2": 3,
+        "[unmapped]": 2,
+        "glass-i9-selected!_mi_page_retire": 1,
+        "glass-i9-selected!mi_option_get": 1,
+        "glass-i9-selected!_mi_page_free": 1,
+        "glass-i9-selected!_mi_malloc_generic": 1,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 1,
+        "glass-i9-selected!vte::ansi::attrs_from_sgr_parameters::<glass::engine::Watch>": 1,
+        "glass-i9-selected!<glass::engine::Mirror>::stretch": 1
+      }
+    },
+    "pty-parse-3.pcs": {
+      "ascii": {
+        "glass-i9-selected!<glass::engine::Watch>::print_run": 10,
+        "glass-i9-selected!<memchr::arch::x86_64::avx2::packedpair::Finder>::find_impl": 7,
+        "glass-i9-selected!<glass::engine::Engine>::apply": 6,
+        "glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener>>::scroll_up_relative": 5,
+        "glass-i9-selected!mi_page_free_list_extend": 2,
+        "glass-i9-selected!glass::engine::plain_c0": 2,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 2,
+        "glass-i9-selected!<alacritty_terminal::selection::Selection>::range_simple": 2,
+        "glass-i9-selected!_mi_preloading": 1,
+        "glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener> as vte::ansi::Handler>::linefeed": 1,
+        "glass-i9-selected!<glass::engine::Watch>::note_scroll_up": 1,
+        "glass-i9-selected!memchr::arch::x86_64::memchr::memrchr_raw::find_avx2": 1,
+        "glass-i9-selected!<glass::engine::Engine>::process": 1,
+        "glass-i9-selected!<glass::engine::Mirror>::stretch": 1,
+        "glass-i9-selected!glass::session::find_escape": 1,
+        "glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::linefeed": 1,
+        "glass-i9-selected!<vte::Parser<1024>>::advance_until_terminated::<vte::ansi::Performer<glass::engine::Watch, vte::ansi::StdSyncHandler>>": 1,
+        "glass-i9-selected!memchr::arch::x86_64::memchr::memchr_raw::find_avx2": 1
+      },
+      "unicode": {
+        "glass-i9-selected!<glass::engine::Watch>::print_utf8": 146,
+        "glass-i9-selected!<glass::engine::Engine>::apply": 10,
+        "glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener>>::scroll_up_relative": 4,
+        "glass-i9-selected!<alacritty_terminal::term::cell::CellExtra>::single_mark": 4,
+        "glass-i9-selected!<glass::engine::Mirror>::stretch": 3,
+        "glass-i9-selected!<memchr::arch::x86_64::avx2::packedpair::Finder>::find_impl": 3,
+        "glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener> as vte::ansi::Handler>::input": 3,
+        "glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::linefeed": 2,
+        "glass-i9-selected!<alacritty_terminal::grid::row::Row<alacritty_terminal::term::cell::Cell> as core::ops::index::IndexMut<alacritty_terminal::index::Column>>::index_mut": 2,
+        "glass-i9-selected!<alacritty_terminal::grid::Grid<alacritty_terminal::term::cell::Cell>>::scroll_up::<vte::ansi::Color>": 1,
+        "glass-i9-selected!glass::session::find_escape": 1,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 1,
+        "glass-i9-selected!<std::sync::mpmc::Sender<alloc::vec::Vec<u8>>>::send": 1,
+        "glass-i9-selected!<vte::Parser<1024>>::advance_ground::<vte::ansi::Performer<glass::engine::Watch, vte::ansi::StdSyncHandler>>": 1,
+        "glass-i9-selected!<glass::engine::Watch>::note_scroll_up": 1,
+        "glass-i9-selected!core::str::converts::from_utf8": 1,
+        "glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::input": 1
+      },
+      "truecolor": {
+        "glass-i9-selected!<glass::engine::Engine>::apply": 148,
+        "glass-i9-selected!<glass::intake::Splitter>::split": 37,
+        "glass-i9-selected!memchr::arch::x86_64::memchr::memchr_raw::find_avx2": 18,
+        "glass-i9-selected!<glass::session::Session>::start::{closure#10}": 13,
+        "libc.so.6![no containing symbol]": 13,
+        "glass-i9-selected!<glass::engine::Engine>::process": 10,
+        "glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::terminal_attribute": 9,
+        "glass-i9-selected!<memchr::arch::x86_64::avx2::packedpair::Finder>::find_impl": 6,
+        "glass-i9-selected!<glass::engine::Mirror>::stretch": 4,
+        "glass-i9-selected!memchr::arch::x86_64::memchr::memrchr_raw::find_avx2": 2,
+        "glass-i9-selected!<glass::intake::Splitter>::step": 2,
+        "glass-i9-selected!mi_free": 2,
+        "glass-i9-selected!mi_realloc_aligned": 2,
+        "glass-i9-selected!<alacritty_terminal::grid::storage::Storage<alacritty_terminal::term::cell::Cell> as core::ops::index::IndexMut<alacritty_terminal::index::Line>>::index_mut": 1,
+        "glass-i9-selected!mi_bin": 1,
+        "glass-i9-selected!_mi_page_malloc_zero": 1,
+        "glass-i9-selected!<alloc::raw_vec::RawVec<glass_window::UserEvent>>::grow_one": 1,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 1,
+        "glass-i9-selected!<alacritty_terminal::selection::Selection>::to_range::<glass::engine::Listener>": 1
+      },
+      "cursor_motion": {
+        "glass-i9-selected!<glass::engine::Engine>::apply": 67,
+        "glass-i9-selected!memchr::arch::x86_64::memchr::memchr_raw::find_avx2": 32,
+        "glass-i9-selected!<glass::engine::Watch>::print_run": 22,
+        "glass-i9-selected!<glass::intake::Splitter>::split": 22,
+        "glass-i9-selected!<glass::engine::Engine>::process": 16,
+        "glass-i9-selected!<glass::session::Session>::start::{closure#10}": 16,
+        "libc.so.6![no containing symbol]": 14,
+        "glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::terminal_attribute": 8,
+        "glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener> as vte::ansi::Handler>::goto": 7,
+        "glass-i9-selected!memchr::arch::x86_64::memchr::memrchr_raw::find_avx2": 5,
+        "glass-i9-selected!<memchr::arch::x86_64::avx2::packedpair::Finder>::find_impl": 2,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 1
+      },
+      "scroll_region": {
+        "glass-i9-selected!<glass::engine::Watch>::print_run": 6,
+        "glass-i9-selected!<glass::engine::Engine>::apply": 4,
+        "glass-i9-selected!<alacritty_terminal::grid::Grid<alacritty_terminal::term::cell::Cell>>::scroll_up::<vte::ansi::Color>": 3,
+        "libc.so.6![no containing symbol]": 2,
+        "glass-i9-selected!<memchr::arch::x86_64::avx2::packedpair::Finder>::find_impl": 2,
+        "glass-i9-selected!memchr::arch::x86_64::memchr::memrchr_raw::find_avx2": 1,
+        "glass-i9-selected!<std::sync::mpmc::Sender<alloc::vec::Vec<u8>>>::send": 1,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 1,
+        "glass-i9-selected!glass::session::find_escape": 1,
+        "glass-i9-selected!<alacritty_terminal::term::cell::Cell as alacritty_terminal::grid::GridCell>::style_eq": 1,
+        "glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener> as vte::ansi::Handler>::linefeed": 1,
+        "glass-i9-selected!glass::engine::plain_c0": 1,
+        "glass-i9-selected!<alacritty_terminal::selection::Selection>::range_simple": 1,
+        "glass-i9-selected!<glass::engine::Mirror>::stretch": 1
+      },
+      "tui_frames": {
+        "glass-i9-selected!<glass::engine::Engine>::apply": 76,
+        "glass-i9-selected!memchr::arch::x86_64::memchr::memchr_raw::find_avx2": 40,
+        "glass-i9-selected!<glass::intake::Splitter>::split": 24,
+        "libc.so.6![no containing symbol]": 23,
+        "glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::terminal_attribute": 14,
+        "glass-i9-selected!<glass::session::Session>::start::{closure#10}": 13,
+        "glass-i9-selected!<glass::engine::Engine>::process": 9,
+        "glass-i9-selected!glass::engine::snap_term": 8,
+        "glass-i9-selected!<alacritty_terminal::grid::storage::Storage<alacritty_terminal::term::cell::Cell> as core::ops::index::IndexMut<alacritty_terminal::index::Line>>::index_mut": 5,
+        "glass-i9-selected!<memchr::arch::x86_64::avx2::packedpair::Finder>::find_impl": 2,
+        "glass-i9-selected!<glass::engine::Mirror>::stretch": 2,
+        "glass-i9-selected!memchr::arch::x86_64::memchr::memrchr_raw::find_avx2": 2,
+        "glass-i9-selected!mi_bbitmap_try_find_and_clear": 1,
+        "glass-i9-selected!mi_bitmap_setN": 1,
+        "glass-i9-selected!_mi_page_malloc_zero": 1,
+        "glass-i9-selected!<alloc::raw_vec::RawVecInner>::finish_grow": 1,
+        "glass-i9-selected!mi_bin": 1
+      }
+    },
+    "pty-read-1.pcs": {
+      "ascii": {
+        "libc.so.6![no containing symbol]": 80,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 1
+      },
+      "unicode": {
+        "libc.so.6![no containing symbol]": 38,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 1,
+        "libc.so.6!read@@GLIBC_2.2.5": 1,
+        "libc.so.6!ioctl@@GLIBC_2.2.5": 1
+      },
+      "truecolor": {
+        "libc.so.6![no containing symbol]": 56,
+        "libc.so.6!ioctl@@GLIBC_2.2.5": 2,
+        "glass-i9-selected!std::sys::backtrace::__rust_begin_short_backtrace::<<glass::read_ahead::ReadAhead>::spawn::{closure#0}, ()>": 2
+      },
+      "cursor_motion": {
+        "libc.so.6![no containing symbol]": 37,
+        "libc.so.6!ioctl@@GLIBC_2.2.5": 2,
+        "glass-i9-selected!std::sys::backtrace::__rust_begin_short_backtrace::<<glass::read_ahead::ReadAhead>::spawn::{closure#0}, ()>": 1,
+        "glass-i9-selected!mi_find_page": 1
+      },
+      "scroll_region": {
+        "libc.so.6![no containing symbol]": 52,
+        "glass-i9-selected!<std::sync::mpmc::waker::SyncWaker>::notify": 1
+      },
+      "tui_frames": {
+        "libc.so.6![no containing symbol]": 43,
+        "libc.so.6!ioctl@@GLIBC_2.2.5": 1,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 1
+      }
+    },
+    "pty-read-2.pcs": {
+      "ascii": {
+        "libc.so.6![no containing symbol]": 82,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 2,
+        "glass-i9-selected!std::sys::backtrace::__rust_begin_short_backtrace::<<glass::read_ahead::ReadAhead>::spawn::{closure#0}, ()>": 1
+      },
+      "unicode": {
+        "libc.so.6![no containing symbol]": 43,
+        "libc.so.6!ioctl@@GLIBC_2.2.5": 1,
+        "glass-i9-selected!<std::sync::mpmc::list::Channel<alloc::vec::Vec<u8>>>::recv::{closure#1}": 1
+      },
+      "truecolor": {
+        "libc.so.6![no containing symbol]": 58,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 2
+      },
+      "cursor_motion": {
+        "libc.so.6![no containing symbol]": 49,
+        "libc.so.6!poll@@GLIBC_2.2.5": 1,
+        "glass-i9-selected!std::sys::backtrace::__rust_begin_short_backtrace::<<glass::read_ahead::ReadAhead>::spawn::{closure#0}, ()>": 1
+      },
+      "scroll_region": {
+        "libc.so.6![no containing symbol]": 64,
+        "libc.so.6!ioctl@@GLIBC_2.2.5": 4
+      },
+      "tui_frames": {
+        "libc.so.6![no containing symbol]": 48,
+        "libc.so.6!ioctl@@GLIBC_2.2.5": 1
+      }
+    },
+    "pty-read-3.pcs": {
+      "ascii": {
+        "libc.so.6![no containing symbol]": 84,
+        "libc.so.6!ioctl@@GLIBC_2.2.5": 3,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 1,
+        "glass-i9-selected!std::sys::backtrace::__rust_begin_short_backtrace::<<glass::read_ahead::ReadAhead>::spawn::{closure#0}, ()>": 1
+      },
+      "unicode": {
+        "libc.so.6![no containing symbol]": 35,
+        "glass-i9-selected!<std::sync::mpmc::waker::SyncWaker>::register": 1
+      },
+      "truecolor": {
+        "libc.so.6![no containing symbol]": 83,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 4,
+        "libc.so.6!ioctl@@GLIBC_2.2.5": 2
+      },
+      "cursor_motion": {
+        "libc.so.6![no containing symbol]": 31,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 3,
+        "libc.so.6!ioctl@@GLIBC_2.2.5": 2,
+        "glass-i9-selected!<std::sync::mpmc::list::Channel<alloc::vec::Vec<u8>>>::recv::{closure#1}": 1,
+        "glass-i9-selected!<std::sync::mpmc::waker::SyncWaker>::register": 1
+      },
+      "scroll_region": {
+        "libc.so.6![no containing symbol]": 55,
+        "glass-i9-selected!<portable_pty::unix::PtyFd as alloc::io::read::Read>::read": 1
+      },
+      "tui_frames": {
+        "libc.so.6![no containing symbol]": 42,
+        "glass-i9-selected!<std::sync::mpmc::waker::SyncWaker>::register": 1,
+        "libc.so.6!syscall@@GLIBC_2.2.5": 1
+      }
+    }
+  },
+  "symbol_offsets": {
+    "pty-parse/ascii/glass-i9-selected!<alacritty_terminal::grid::Grid<alacritty_terminal::term::cell::Cell>>::scroll_up::<vte::ansi::Color>": {
+      "0x23a": 1,
+      "0x509": 1
+    },
+    "pty-parse/ascii/glass-i9-selected!<alacritty_terminal::grid::storage::Storage<alacritty_terminal::term::cell::Cell>>::initialize": {
+      "0x1c1": 1,
+      "0x1ab": 1
+    },
+    "pty-parse/ascii/glass-i9-selected!<alacritty_terminal::selection::Selection>::range_simple": {
+      "0x155": 1,
+      "0x24": 1,
+      "0x1": 1
+    },
+    "pty-parse/ascii/glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener> as vte::ansi::Handler>::linefeed": {
+      "0x13": 1,
+      "0xdc": 1
+    },
+    "pty-parse/ascii/glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener>>::scroll_up_relative": {
+      "0x398": 3,
+      "0x25c": 1,
+      "0x45a": 1,
+      "0x2d3": 1,
+      "0x228": 1,
+      "0x20": 1,
+      "0x372": 1,
+      "0x193": 1,
+      "0x14c": 1
+    },
+    "pty-parse/ascii/glass-i9-selected!<alacritty_terminal::term::cell::Cell as alacritty_terminal::grid::GridCell>::style_eq": {
+      "0x4": 2,
+      "0xf": 1
+    },
+    "pty-parse/ascii/glass-i9-selected!<glass::engine::Engine>::apply": {
+      "0x700": 2,
+      "0x6e7": 2,
+      "0x672": 2,
+      "0x6fd": 2,
+      "0x8d1": 1,
+      "0xb9a": 1,
+      "0xb82": 1,
+      "0x654": 1,
+      "0x854": 1,
+      "0x6db": 1,
+      "0x603": 1,
+      "0x5e9": 1,
+      "0x663": 1,
+      "0xcbf": 1,
+      "0x78b": 1,
+      "0x7a3": 1,
+      "0x66b": 1,
+      "0x718": 1,
+      "0x6f4": 1,
+      "0x6b8": 1,
+      "0x13b": 1,
+      "0xcba": 1,
+      "0x86e": 1
+    },
+    "pty-parse/ascii/glass-i9-selected!<glass::engine::Engine>::process": {
+      "0x443": 1
+    },
+    "pty-parse/ascii/glass-i9-selected!<glass::engine::Mirror>::stretch": {
+      "0x22": 1,
+      "0x0": 1,
+      "0x31c": 1
+    },
+    "pty-parse/ascii/glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::input": {
+      "0x46": 1
+    },
+    "pty-parse/ascii/glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::linefeed": {
+      "0xa": 1,
+      "0x30": 1
+    },
+    "pty-parse/ascii/glass-i9-selected!<glass::engine::Watch>::note_scroll_up": {
+      "0x177": 2,
+      "0x174": 1,
+      "0x15": 1,
+      "0x17d": 1,
+      "0x34": 1
+    },
+    "pty-parse/ascii/glass-i9-selected!<glass::engine::Watch>::print_run": {
+      "0x885": 9,
+      "0x88f": 5,
+      "0x87b": 4,
+      "0x8a6": 2,
+      "0x8a3": 2,
+      "0x898": 2,
+      "0x1e9": 1,
+      "0x772": 1,
+      "0x8c6": 1,
+      "0x875": 1,
+      "0x7de": 1,
+      "0x87f": 1,
+      "0x1b": 1,
+      "0x889": 1,
+      "0x89f": 1,
+      "0x893": 1,
+      "0xfc": 1,
+      "0x694": 1
+    },
+    "pty-parse/ascii/glass-i9-selected!<glass::intake::Splitter>::split": {
+      "0xb7": 1
+    },
+    "pty-parse/ascii/glass-i9-selected!<glass::session::Session>::start::{closure#10}": {
+      "0xd4b": 1,
+      "0x1c08": 1,
+      "0x3b6": 1
+    },
+    "pty-parse/ascii/glass-i9-selected!<memchr::arch::x86_64::avx2::packedpair::Finder>::find_impl": {
+      "0x1f4": 5,
+      "0x1eb": 2,
+      "0x1fe": 2,
+      "0x1da": 2,
+      "0x205": 1,
+      "0x1d4": 1
+    },
+    "pty-parse/ascii/glass-i9-selected!<vte::Parser<1024>>::advance_until_terminated::<vte::ansi::Performer<glass::engine::Watch, vte::ansi::StdSyncHandler>>": {
+      "0x0": 1
+    },
+    "pty-parse/ascii/glass-i9-selected!_mi_preloading": {
+      "0x7": 1
+    },
+    "pty-parse/ascii/glass-i9-selected!glass::engine::plain_c0": {
+      "0xec": 1,
+      "0xa1": 1,
+      "0xbc": 1
+    },
+    "pty-parse/ascii/glass-i9-selected!glass::session::find_escape": {
+      "0x25b": 1
+    },
+    "pty-parse/ascii/glass-i9-selected!memchr::arch::x86_64::memchr::memchr_raw::find_avx2": {
+      "0xe3": 1,
+      "0xdf": 1
+    },
+    "pty-parse/ascii/glass-i9-selected!memchr::arch::x86_64::memchr::memrchr_raw::find_avx2": {
+      "0x3": 1
+    },
+    "pty-parse/ascii/glass-i9-selected!mi_page_free_list_extend": {
+      "0x36": 8
+    },
+    "pty-parse/ascii/glass-i9-selected!mi_theap_malloc_zero_aligned_at_generic": {
+      "0xa": 1
+    },
+    "pty-parse/ascii/libc.so.6!clock_gettime@GLIBC_2.2.5": {
+      "0x4": 1
+    },
+    "pty-parse/ascii/libc.so.6!syscall@@GLIBC_2.2.5": {
+      "0x1d": 6
+    },
+    "pty-parse/cursor_motion/glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener> as vte::ansi::Handler>::goto": {
+      "0x197": 4,
+      "0x190": 3,
+      "0x135": 2,
+      "0x1f5": 2,
+      "0x1e": 1,
+      "0x1a4": 1,
+      "0x192": 1,
+      "0x19a": 1
+    },
+    "pty-parse/cursor_motion/glass-i9-selected!<glass::engine::Engine>::apply": {
+      "0xf3d": 39,
+      "0xf9d": 28,
+      "0xec7": 16,
+      "0x14aa": 8,
+      "0xfeb": 6,
+      "0xfb8": 5,
+      "0x13e8": 5,
+      "0xea7": 4,
+      "0xebe": 4,
+      "0xe9b": 4,
+      "0x11ce": 4,
+      "0xe94": 4,
+      "0x14ad": 3,
+      "0x11d6": 3,
+      "0xdcb": 3,
+      "0x106b": 3,
+      "0x1027": 3,
+      "0xded": 3,
+      "0xd90": 3,
+      "0xf1c": 3,
+      "0xe5b": 3,
+      "0x12f1": 3,
+      "0x501": 3,
+      "0xeb7": 3,
+      "0xeba": 3,
+      "0xf17": 3,
+      "0x118d": 2,
+      "0xda1": 2,
+      "0xed3": 2,
+      "0x1051": 2,
+      "0x4b6": 2,
+      "0x11e7": 2,
+      "0x4a6": 2,
+      "0xf4d": 2,
+      "0xe87": 2,
+      "0x1885": 2,
+      "0x117e": 2,
+      "0x1483": 2,
+      "0xf1a": 2,
+      "0xecb": 1,
+      "0xdf0": 1,
+      "0xdbc": 1,
+      "0x11b2": 1,
+      "0xd93": 1,
+      "0xdc3": 1,
+      "0x4f2": 1,
+      "0xfdb": 1,
+      "0x189f": 1,
+      "0x4bb": 1,
+      "0x18c3": 1,
+      "0xdb4": 1,
+      "0xe65": 1,
+      "0xdfa": 1,
+      "0x4ef": 1,
+      "0xec4": 1,
+      "0x211e": 1,
+      "0x1874": 1,
+      "0x18b4": 1,
+      "0x143e": 1,
+      "0x1253": 1
+    },
+    "pty-parse/cursor_motion/glass-i9-selected!<glass::engine::Engine>::process": {
+      "0x45c": 10,
+      "0x176": 9,
+      "0x149": 9,
+      "0x459": 6,
+      "0x1a0": 4,
+      "0x43b": 3,
+      "0x1a5": 3,
+      "0x144": 3,
+      "0x213": 2,
+      "0x4cc": 1,
+      "0x1ce": 1,
+      "0x3b7": 1,
+      "0x172": 1,
+      "0x179": 1,
+      "0x3de": 1,
+      "0x14e": 1
+    },
+    "pty-parse/cursor_motion/glass-i9-selected!<glass::engine::Mirror>::stretch": {
+      "0x22": 2,
+      "0x1": 1
+    },
+    "pty-parse/cursor_motion/glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::input": {
+      "0xde": 1,
+      "0x48e": 1
+    },
+    "pty-parse/cursor_motion/glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::terminal_attribute": {
+      "0x187": 14,
+      "0x24": 3,
+      "0x10a": 2,
+      "0x17": 1
+    },
+    "pty-parse/cursor_motion/glass-i9-selected!<glass::engine::Watch>::print_run": {
+      "0x7ee": 5,
+      "0x16f": 4,
+      "0x7e6": 4,
+      "0x59f": 3,
+      "0x733": 3,
+      "0x722": 3,
+      "0x130": 3,
+      "0x280": 3,
+      "0xb3b": 2,
+      "0x80d": 2,
+      "0x193": 2,
+      "0xb6": 2,
+      "0x41": 2,
+      "0x2d1": 2,
+      "0x7ea": 2,
+      "0x809": 2,
+      "0x7c0": 1,
+      "0x2b1": 1,
+      "0x246": 1,
+      "0x2d5": 1,
+      "0x764": 1,
+      "0x7d0": 1,
+      "0x186": 1,
+      "0x1f4": 1,
+      "0x727": 1,
+      "0x21a": 1,
+      "0x7f7": 1
+    },
+    "pty-parse/cursor_motion/glass-i9-selected!<glass::intake::Splitter>::split": {
+      "0x525": 7,
+      "0x3db": 5,
+      "0x3b7": 5,
+      "0x3c2": 4,
+      "0x538": 4,
+      "0x548": 4,
+      "0x3b3": 3,
+      "0x5f2": 3,
+      "0xb7": 3,
+      "0xa0": 3,
+      "0x3d8": 2,
+      "0x3fb": 2,
+      "0x5ad": 2,
+      "0x517": 2,
+      "0x58b": 2,
+      "0x601": 2,
+      "0x406": 2,
+      "0x5c4": 2,
+      "0x573": 2,
+      "0x39d": 2,
+      "0x52f": 2,
+      "0xa7": 2,
+      "0x61c": 1,
+      "0x584": 1,
+      "0x5db": 1,
+      "0x628": 1,
+      "0x398": 1,
+      "0x51d": 1,
+      "0x9b": 1,
+      "0x520": 1,
+      "0x5b2": 1
+    },
+    "pty-parse/cursor_motion/glass-i9-selected!<glass::session::Session>::start::{closure#10}": {
+      "0x3097": 7,
+      "0x362c": 7,
+      "0x30b5": 6,
+      "0x3088": 3,
+      "0x2d4e": 3,
+      "0x3622": 2,
+      "0x2d34": 2,
+      "0x2d7d": 2,
+      "0x30c1": 1,
+      "0x3091": 1,
+      "0x2b9e": 1,
+      "0x2d5a": 1,
+      "0x2d7a": 1,
+      "0x2d54": 1,
+      "0x2d2b": 1,
+      "0x2d6d": 1,
+      "0xea4": 1,
+      "0x30ee": 1,
+      "0x1665": 1,
+      "0x2d46": 1
+    },
+    "pty-parse/cursor_motion/glass-i9-selected!<memchr::arch::x86_64::avx2::packedpair::Finder>::find_impl": {
+      "0x1eb": 2,
+      "0x205": 1,
+      "0x1fe": 1,
+      "0x1e2": 1
+    },
+    "pty-parse/cursor_motion/glass-i9-selected!<std::sync::mpmc::waker::SyncWaker>::notify": {
+      "0xb9": 1
+    },
+    "pty-parse/cursor_motion/glass-i9-selected!_mi_page_free": {
+      "0x61": 1
+    },
+    "pty-parse/cursor_motion/glass-i9-selected!_mi_page_malloc_zero": {
+      "0xc": 1
+    },
+    "pty-parse/cursor_motion/glass-i9-selected!memchr::arch::x86_64::memchr::memchr_raw::find_avx2": {
+      "0x68": 22,
+      "0xf": 13,
+      "0x66": 6,
+      "0x62": 6,
+      "0x1b": 6,
+      "0x6": 4,
+      "0x158": 4,
+      "0x160": 2,
+      "0x18": 2,
+      "0x3": 2,
+      "0x15d": 1,
+      "0x0": 1,
+      "0x31": 1
+    },
+    "pty-parse/cursor_motion/glass-i9-selected!memchr::arch::x86_64::memchr::memrchr_raw::find_avx2": {
+      "0x3": 6,
+      "0x34": 2,
+      "0x3a": 2,
+      "0x3c": 1,
+      "0x3f": 1
+    },
+    "pty-parse/cursor_motion/glass-i9-selected!mi_bitmap_setN": {
+      "0x256": 1
+    },
+    "pty-parse/cursor_motion/glass-i9-selected!mi_free": {
+      "0x25": 1
+    },
+    "pty-parse/cursor_motion/libc.so.6!syscall@@GLIBC_2.2.5": {
+      "0x1d": 4
+    },
+    "pty-parse/scroll_region/glass-i9-selected!<alacritty_terminal::grid::Grid<alacritty_terminal::term::cell::Cell>>::scroll_up::<vte::ansi::Color>": {
+      "0x89": 2,
+      "0x545": 2,
+      "0x7": 1,
+      "0x4f7": 1,
+      "0xd3": 1,
+      "0x53f": 1
+    },
+    "pty-parse/scroll_region/glass-i9-selected!<alacritty_terminal::selection::Selection>::range_simple": {
+      "0x178": 1
+    },
+    "pty-parse/scroll_region/glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener> as vte::ansi::Handler>::linefeed": {
+      "0x5": 1,
+      "0xeb": 1
+    },
+    "pty-parse/scroll_region/glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener>>::scroll_up_relative": {
+      "0x1ad": 2
+    },
+    "pty-parse/scroll_region/glass-i9-selected!<alacritty_terminal::term::cell::Cell as alacritty_terminal::grid::GridCell>::style_eq": {
+      "0x4": 2,
+      "0xbe": 1,
+      "0xaf": 1
+    },
+    "pty-parse/scroll_region/glass-i9-selected!<glass::engine::Engine>::apply": {
+      "0x70a": 1,
+      "0x745": 1,
+      "0x5fd": 1,
+      "0x720": 1,
+      "0x6e7": 1,
+      "0x710": 1,
+      "0x6d0": 1,
+      "0x2520": 1
+    },
+    "pty-parse/scroll_region/glass-i9-selected!<glass::engine::Mirror>::stretch": {
+      "0x31": 1,
+      "0x14": 1
+    },
+    "pty-parse/scroll_region/glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::input": {
+      "0x8e": 1
+    },
+    "pty-parse/scroll_region/glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::linefeed": {
+      "0x0": 1
+    },
+    "pty-parse/scroll_region/glass-i9-selected!<glass::engine::Watch>::note_scroll_up": {
+      "0xf2": 1
+    },
+    "pty-parse/scroll_region/glass-i9-selected!<glass::engine::Watch>::print_run": {
+      "0x87b": 4,
+      "0x898": 4,
+      "0x29b": 1,
+      "0x67e": 1,
+      "0xb6b": 1,
+      "0x6c1": 1,
+      "0x885": 1,
+      "0x8a3": 1,
+      "0x11": 1,
+      "0x89c": 1,
+      "0x87f": 1,
+      "0x889": 1,
+      "0x8b8": 1,
+      "0x893": 1,
+      "0x149": 1,
+      "0x20d": 1,
+      "0x88f": 1
+    },
+    "pty-parse/scroll_region/glass-i9-selected!<glass::intake::Splitter>::split": {
+      "0x6e7": 1
+    },
+    "pty-parse/scroll_region/glass-i9-selected!<glass::session::Session>::start::{closure#10}": {
+      "0x4071": 1,
+      "0xcb7": 1
+    },
+    "pty-parse/scroll_region/glass-i9-selected!<memchr::arch::x86_64::avx2::packedpair::Finder>::find_impl": {
+      "0x1f4": 2,
+      "0x1fe": 1,
+      "0x1eb": 1
+    },
+    "pty-parse/scroll_region/glass-i9-selected!<std::sync::mpmc::Sender<alloc::vec::Vec<u8>>>::send": {
+      "0xab9": 1
+    },
+    "pty-parse/scroll_region/glass-i9-selected!<vte::Parser<1024>>::advance_ground::<vte::ansi::Performer<glass::engine::Watch, vte::ansi::StdSyncHandler>>": {
+      "0x5f": 1
+    },
+    "pty-parse/scroll_region/glass-i9-selected!glass::engine::plain_c0": {
+      "0x50": 1,
+      "0x21": 1,
+      "0xbc": 1
+    },
+    "pty-parse/scroll_region/glass-i9-selected!glass::session::find_escape": {
+      "0x2c3": 1,
+      "0x285": 1
+    },
+    "pty-parse/scroll_region/glass-i9-selected!memchr::arch::x86_64::memchr::memchr_raw::find_avx2": {
+      "0xe3": 2,
+      "0xb5": 1
+    },
+    "pty-parse/scroll_region/glass-i9-selected!memchr::arch::x86_64::memchr::memrchr_raw::find_avx2": {
+      "0x15": 1
+    },
+    "pty-parse/scroll_region/libc.so.6!syscall@@GLIBC_2.2.5": {
+      "0x1d": 5
+    },
+    "pty-parse/truecolor/glass-i9-selected!<alacritty_terminal::grid::storage::Storage<alacritty_terminal::term::cell::Cell> as core::ops::index::IndexMut<alacritty_terminal::index::Line>>::index_mut": {
+      "0x3": 2,
+      "0x1a": 2,
+      "0x2a": 1
+    },
+    "pty-parse/truecolor/glass-i9-selected!<alacritty_terminal::selection::Selection>::to_range::<glass::engine::Listener>": {
+      "0xfec": 1
+    },
+    "pty-parse/truecolor/glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener>>::scroll_up_relative": {
+      "0x398": 1
+    },
+    "pty-parse/truecolor/glass-i9-selected!<alloc::raw_vec::RawVec<glass_window::UserEvent>>::grow_one": {
+      "0x2": 1
+    },
+    "pty-parse/truecolor/glass-i9-selected!<glass::engine::Engine>::apply": {
+      "0xed3": 53,
+      "0xeb7": 51,
+      "0xec7": 43,
+      "0xea7": 23,
+      "0xf3d": 22,
+      "0xebe": 15,
+      "0xec4": 14,
+      "0xf9d": 14,
+      "0xeb2": 13,
+      "0xe87": 11,
+      "0xef9": 10,
+      "0xe9b": 9,
+      "0xf17": 8,
+      "0xe94": 8,
+      "0xed6": 7,
+      "0xea3": 5,
+      "0x145b": 5,
+      "0x1ba6": 5,
+      "0xe8f": 5,
+      "0xee0": 5,
+      "0xf1c": 4,
+      "0x11e0": 4,
+      "0x14e1": 4,
+      "0x18ee": 3,
+      "0x4a6": 3,
+      "0xfeb": 3,
+      "0x20a5": 3,
+      "0x1a52": 3,
+      "0x4ef": 3,
+      "0x11a4": 3,
+      "0xe5b": 3,
+      "0x1074": 3,
+      "0x4d2": 3,
+      "0x1038": 3,
+      "0x1a78": 3,
+      "0xdbc": 3,
+      "0x1a80": 2,
+      "0x1312": 2,
+      "0xf4d": 2,
+      "0x1d38": 2,
+      "0x1d6a": 2,
+      "0x1943": 2,
+      "0x14b1": 2,
+      "0xf1a": 2,
+      "0x1483": 2,
+      "0x19a1": 2,
+      "0x19f4": 2,
+      "0x1517": 2,
+      "0x1d61": 2,
+      "0x1971": 2,
+      "0x1d73": 1,
+      "0x1537": 1,
+      "0xeea": 1,
+      "0x1253": 1,
+      "0xe65": 1,
+      "0x1d48": 1,
+      "0x18b4": 1,
+      "0xf06": 1,
+      "0x19a9": 1,
+      "0xfb8": 1,
+      "0x105a": 1,
+      "0x11bf": 1,
+      "0xfdb": 1,
+      "0x188f": 1,
+      "0x2197": 1,
+      "0xded": 1,
+      "0x1509": 1,
+      "0x1304": 1
+    },
+    "pty-parse/truecolor/glass-i9-selected!<glass::engine::Engine>::process": {
+      "0x149": 12,
+      "0x45c": 7,
+      "0x176": 7,
+      "0x43b": 2,
+      "0x522": 1
+    },
+    "pty-parse/truecolor/glass-i9-selected!<glass::engine::Mirror>::stretch": {
+      "0x2e": 5,
+      "0x6": 3,
+      "0x320": 2,
+      "0x22": 1
+    },
+    "pty-parse/truecolor/glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::terminal_attribute": {
+      "0x187": 25,
+      "0x28": 3,
+      "0x7": 2,
+      "0x24": 1,
+      "0x10c": 1,
+      "0x183": 1
+    },
+    "pty-parse/truecolor/glass-i9-selected!<glass::intake::Splitter>::split": {
+      "0x525": 16,
+      "0x52f": 13,
+      "0x545": 7,
+      "0x520": 6,
+      "0x53f": 6,
+      "0x538": 6,
+      "0x3b3": 6,
+      "0x5ce": 5,
+      "0x51d": 5,
+      "0x3db": 5,
+      "0x565": 4,
+      "0xa0": 4,
+      "0x3b7": 4,
+      "0x5b2": 4,
+      "0x5ad": 4,
+      "0xa7": 3,
+      "0x3c2": 3,
+      "0x512": 2,
+      "0x9b": 2,
+      "0x5f5": 2,
+      "0x54f": 2,
+      "0x3d8": 1,
+      "0x548": 1,
+      "0x57b": 1,
+      "0x5e8": 1,
+      "0x395": 1,
+      "0x39d": 1,
+      "0x584": 1,
+      "0x612": 1,
+      "0x517": 1,
+      "0x3fb": 1
+    },
+    "pty-parse/truecolor/glass-i9-selected!<glass::intake::Splitter>::step": {
+      "0x9": 1,
+      "0x26": 1
+    },
+    "pty-parse/truecolor/glass-i9-selected!<glass::session::Session>::start::{closure#10}": {
+      "0x30b5": 6,
+      "0x30f1": 4,
+      "0x2d5a": 3,
+      "0x3622": 3,
+      "0x2d7a": 3,
+      "0x2d54": 2,
+      "0x2d63": 2,
+      "0x362c": 2,
+      "0x30f9": 2,
+      "0x2d34": 2,
+      "0x2d4e": 1,
+      "0x30c1": 1,
+      "0xcb7": 1,
+      "0x2d2b": 1,
+      "0x2d4a": 1,
+      "0x2d77": 1
+    },
+    "pty-parse/truecolor/glass-i9-selected!<memchr::arch::x86_64::avx2::packedpair::Finder>::find_impl": {
+      "0x205": 6,
+      "0x1fe": 5,
+      "0x1d4": 2,
+      "0x1e2": 1,
+      "0x57d": 1,
+      "0x1f4": 1,
+      "0x1eb": 1
+    },
+    "pty-parse/truecolor/glass-i9-selected!_mi_malloc_generic": {
+      "0x4": 1
+    },
+    "pty-parse/truecolor/glass-i9-selected!_mi_page_malloc_zero": {
+      "0xc": 1
+    },
+    "pty-parse/truecolor/glass-i9-selected!_mi_page_map_unregister": {
+      "0x1e": 1
+    },
+    "pty-parse/truecolor/glass-i9-selected!core::str::converts::from_utf8": {
+      "0x2": 1
+    },
+    "pty-parse/truecolor/glass-i9-selected!memchr::arch::x86_64::memchr::memchr_raw::find_avx2": {
+      "0x68": 26,
+      "0xf": 10,
+      "0x158": 7,
+      "0x3": 7,
+      "0x62": 7,
+      "0x6": 4,
+      "0x15d": 4,
+      "0x0": 1,
+      "0x66": 1,
+      "0x14c": 1
+    },
+    "pty-parse/truecolor/glass-i9-selected!memchr::arch::x86_64::memchr::memrchr_raw::find_avx2": {
+      "0x34": 7,
+      "0x3": 2,
+      "0x37": 1
+    },
+    "pty-parse/truecolor/glass-i9-selected!mi_bin": {
+      "0x52": 1
+    },
+    "pty-parse/truecolor/glass-i9-selected!mi_free": {
+      "0x25": 1,
+      "0x2d": 1
+    },
+    "pty-parse/truecolor/glass-i9-selected!mi_realloc_aligned": {
+      "0x115": 1,
+      "0x0": 1
+    },
+    "pty-parse/truecolor/glass-i9-selected!mi_theap_malloc_aligned": {
+      "0x2c": 1
+    },
+    "pty-parse/truecolor/libc.so.6!syscall@@GLIBC_2.2.5": {
+      "0x1d": 6
+    },
+    "pty-parse/tui_frames/glass-i9-selected!<alacritty_terminal::grid::storage::Storage<alacritty_terminal::term::cell::Cell> as core::ops::index::IndexMut<alacritty_terminal::index::Line>>::index_mut": {
+      "0x3": 7,
+      "0x1a": 4
+    },
+    "pty-parse/tui_frames/glass-i9-selected!<alloc::raw_vec::RawVecInner>::finish_grow": {
+      "0x8a": 1
+    },
+    "pty-parse/tui_frames/glass-i9-selected!<glass::engine::Engine>::apply": {
+      "0xf3d": 30,
+      "0xf9d": 23,
+      "0xee0": 11,
+      "0xea7": 11,
+      "0xec4": 9,
+      "0xe9b": 9,
+      "0xe87": 8,
+      "0x1d05": 7,
+      "0x1d2b": 7,
+      "0x105a": 6,
+      "0x1d53": 6,
+      "0xdbc": 5,
+      "0x1074": 5,
+      "0xfb8": 5,
+      "0x1253": 5,
+      "0xf4d": 5,
+      "0x18ee": 4,
+      "0x1d89": 4,
+      "0x18b4": 4,
+      "0x1943": 4,
+      "0xded": 4,
+      "0x4a6": 4,
+      "0x1038": 3,
+      "0xfeb": 3,
+      "0x13d6": 3,
+      "0xec7": 3,
+      "0x11e0": 3,
+      "0x17ff": 3,
+      "0xe5b": 3,
+      "0xe80": 3,
+      "0x1a82": 3,
+      "0x19a1": 3,
+      "0x1971": 3,
+      "0x11bf": 3,
+      "0xe94": 3,
+      "0xeba": 3,
+      "0x146d": 2,
+      "0x1a57": 2,
+      "0x1287": 2,
+      "0xed3": 2,
+      "0xf17": 2,
+      "0x11a4": 2,
+      "0xf1a": 2,
+      "0x12f9": 1,
+      "0x4d2": 1,
+      "0x20c5": 1,
+      "0x19e3": 1,
+      "0xe8f": 1,
+      "0xeb2": 1,
+      "0x14aa": 1,
+      "0xf35": 1,
+      "0xeb7": 1,
+      "0x145b": 1,
+      "0xe98": 1,
+      "0xf20": 1,
+      "0x1d09": 1,
+      "0x14ad": 1,
+      "0x4ae": 1,
+      "0x4ef": 1
+    },
+    "pty-parse/tui_frames/glass-i9-selected!<glass::engine::Engine>::process": {
+      "0x149": 19,
+      "0x176": 8,
+      "0x45c": 8,
+      "0x43b": 3,
+      "0x1a5": 1,
+      "0x3a1": 1
+    },
+    "pty-parse/tui_frames/glass-i9-selected!<glass::engine::Mirror>::stretch": {
+      "0x320": 3,
+      "0x2e": 2,
+      "0x6": 1
+    },
+    "pty-parse/tui_frames/glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::terminal_attribute": {
+      "0x33a": 47,
+      "0x7": 6,
+      "0xf3": 3
+    },
+    "pty-parse/tui_frames/glass-i9-selected!<glass::intake::Splitter>::split": {
+      "0x3b7": 6,
+      "0x3b3": 5,
+      "0x548": 5,
+      "0x39d": 4,
+      "0x439": 4,
+      "0x53f": 4,
+      "0x54f": 4,
+      "0x525": 3,
+      "0xa7": 3,
+      "0x5ce": 3,
+      "0x3db": 3,
+      "0x5ad": 3,
+      "0x57e": 2,
+      "0x3a0": 2,
+      "0x3fb": 2,
+      "0x9b": 2,
+      "0x57b": 2,
+      "0x5f9": 2,
+      "0x406": 2,
+      "0x520": 2,
+      "0x51d": 2,
+      "0xac": 1,
+      "0x517": 1,
+      "0x52f": 1,
+      "0x5a8": 1,
+      "0x538": 1,
+      "0x628": 1,
+      "0x38e": 1,
+      "0x5d8": 1,
+      "0x512": 1,
+      "0x44e": 1,
+      "0x5d2": 1,
+      "0x3f7": 1,
+      "0x5b2": 1,
+      "0x5f5": 1
+    },
+    "pty-parse/tui_frames/glass-i9-selected!<glass::session::Session>::start::{closure#10}": {
+      "0x30f1": 5,
+      "0x362c": 5,
+      "0x2d4a": 4,
+      "0x30b5": 4,
+      "0x30bd": 2,
+      "0x2d34": 2,
+      "0x3088": 2,
+      "0x2d7a": 1,
+      "0x2d63": 1,
+      "0x3622": 1,
+      "0x3644": 1,
+      "0x2d4e": 1,
+      "0x2d3d": 1,
+      "0x2d5a": 1,
+      "0x2d2b": 1,
+      "0x2d6d": 1,
+      "0x2d23": 1,
+      "0x3091": 1
+    },
+    "pty-parse/tui_frames/glass-i9-selected!<memchr::arch::x86_64::avx2::packedpair::Finder>::find_impl": {
+      "0x1f4": 2,
+      "0x1da": 1,
+      "0x593": 1,
+      "0x205": 1,
+      "0x1eb": 1
+    },
+    "pty-parse/tui_frames/glass-i9-selected!<vte::Parser<1024>>::advance_until_terminated::<vte::ansi::Performer<glass::engine::Watch, vte::ansi::StdSyncHandler>>": {
+      "0xd2": 1
+    },
+    "pty-parse/tui_frames/glass-i9-selected!_mi_malloc_generic": {
+      "0xc9": 1
+    },
+    "pty-parse/tui_frames/glass-i9-selected!_mi_page_free": {
+      "0x14": 1
+    },
+    "pty-parse/tui_frames/glass-i9-selected!_mi_page_malloc_zero": {
+      "0xc": 1
+    },
+    "pty-parse/tui_frames/glass-i9-selected!_mi_page_retire": {
+      "0x97": 1
+    },
+    "pty-parse/tui_frames/glass-i9-selected!_mi_theap_realloc_zero": {
+      "0xf4": 1
+    },
+    "pty-parse/tui_frames/glass-i9-selected!glass::engine::snap_term": {
+      "0x2ae": 19,
+      "0x293": 2,
+      "0x2aa": 1,
+      "0x2b8": 1,
+      "0x2f7": 1
+    },
+    "pty-parse/tui_frames/glass-i9-selected!memchr::arch::x86_64::memchr::memchr_raw::find_avx2": {
+      "0x68": 28,
+      "0x62": 9,
+      "0x3": 9,
+      "0x158": 9,
+      "0x18": 7,
+      "0x6": 7,
+      "0xf": 7,
+      "0x13": 6,
+      "0x66": 3,
+      "0x1b": 2,
+      "0x160": 2,
+      "0x152": 1,
+      "0x15d": 1
+    },
+    "pty-parse/tui_frames/glass-i9-selected!memchr::arch::x86_64::memchr::memrchr_raw::find_avx2": {
+      "0x4a": 4,
+      "0x34": 2,
+      "0x3": 2
+    },
+    "pty-parse/tui_frames/glass-i9-selected!mi_bbitmap_try_find_and_clear": {
+      "0x2ec": 1
+    },
+    "pty-parse/tui_frames/glass-i9-selected!mi_bin": {
+      "0x4": 1
+    },
+    "pty-parse/tui_frames/glass-i9-selected!mi_bitmap_setN": {
+      "0x35": 1
+    },
+    "pty-parse/tui_frames/glass-i9-selected!mi_find_page": {
+      "0xa1": 1,
+      "0xb2": 1
+    },
+    "pty-parse/tui_frames/glass-i9-selected!mi_option_get": {
+      "0x3d": 1
+    },
+    "pty-parse/tui_frames/glass-i9-selected!mi_realloc_aligned": {
+      "0x115": 1
+    },
+    "pty-parse/tui_frames/glass-i9-selected!vte::ansi::attrs_from_sgr_parameters::<glass::engine::Watch>": {
+      "0x47": 1
+    },
+    "pty-parse/tui_frames/libc.so.6!clock_gettime@GLIBC_2.2.5": {
+      "0x12": 1
+    },
+    "pty-parse/tui_frames/libc.so.6!syscall@@GLIBC_2.2.5": {
+      "0x1d": 1
+    },
+    "pty-parse/unicode/glass-i9-selected!<alacritty_terminal::grid::Grid<alacritty_terminal::term::cell::Cell>>::scroll_up::<vte::ansi::Color>": {
+      "0x35": 2,
+      "0x545": 2,
+      "0x245": 2,
+      "0x1": 1
+    },
+    "pty-parse/unicode/glass-i9-selected!<alacritty_terminal::grid::row::Row<alacritty_terminal::term::cell::Cell> as core::ops::index::IndexMut<alacritty_terminal::index::Column>>::index_mut": {
+      "0x22": 1,
+      "0x55": 1,
+      "0x2bf": 1,
+      "0xa": 1
+    },
+    "pty-parse/unicode/glass-i9-selected!<alacritty_terminal::grid::storage::Storage<alacritty_terminal::term::cell::Cell> as core::ops::index::IndexMut<alacritty_terminal::index::Line>>::index_mut": {
+      "0x21": 1
+    },
+    "pty-parse/unicode/glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener> as vte::ansi::Handler>::input": {
+      "0x8b": 3,
+      "0x38": 2,
+      "0x66": 2,
+      "0x226": 1
+    },
+    "pty-parse/unicode/glass-i9-selected!<alacritty_terminal::term::Term<glass::engine::Listener>>::scroll_up_relative": {
+      "0x398": 7,
+      "0x2b7": 1,
+      "0x20d": 1,
+      "0x453": 1,
+      "0x1ad": 1,
+      "0x363": 1
+    },
+    "pty-parse/unicode/glass-i9-selected!<alacritty_terminal::term::cell::CellExtra>::single_mark": {
+      "0x0": 3,
+      "0x2": 2,
+      "0x5e": 1
+    },
+    "pty-parse/unicode/glass-i9-selected!<alloc::raw_vec::RawVecInner>::finish_grow": {
+      "0x1a": 1
+    },
+    "pty-parse/unicode/glass-i9-selected!<glass::engine::Engine>::apply": {
+      "0x706": 4,
+      "0x772": 4,
+      "0x6e7": 2,
+      "0x672": 2,
+      "0x8a0": 1,
+      "0x7fb": 1,
+      "0x7a3": 1,
+      "0x6d7": 1,
+      "0x96e": 1,
+      "0x6b8": 1,
+      "0x6f4": 1,
+      "0x663": 1,
+      "0xc9e": 1,
+      "0x593": 1,
+      "0x5af": 1,
+      "0x710": 1,
+      "0xb1b": 1,
+      "0x7ec": 1,
+      "0x6e3": 1,
+      "0xbce": 1,
+      "0x654": 1
+    },
+    "pty-parse/unicode/glass-i9-selected!<glass::engine::Engine>::collect": {
+      "0x5d": 1
+    },
+    "pty-parse/unicode/glass-i9-selected!<glass::engine::Mirror>::stretch": {
+      "0x0": 2,
+      "0x314": 1,
+      "0x25": 1,
+      "0x7": 1,
+      "0x2e": 1
+    },
+    "pty-parse/unicode/glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::input": {
+      "0x46e": 2,
+      "0x1b": 1,
+      "0x1": 1,
+      "0x2c": 1,
+      "0x160": 1,
+      "0x157": 1,
+      "0x16c": 1,
+      "0x76": 1
+    },
+    "pty-parse/unicode/glass-i9-selected!<glass::engine::Watch as vte::ansi::Handler>::linefeed": {
+      "0xd": 1,
+      "0xf": 1
+    },
+    "pty-parse/unicode/glass-i9-selected!<glass::engine::Watch>::note_scroll_up": {
+      "0xf2": 1,
+      "0x1c": 1,
+      "0x177": 1,
+      "0x108": 1
+    },
+    "pty-parse/unicode/glass-i9-selected!<glass::engine::Watch>::print_utf8": {
+      "0x543": 47,
+      "0x523": 34,
+      "0x96c": 31,
+      "0x54b": 13,
+      "0x6b9": 12,
+      "0x573": 9,
+      "0x4ef": 9,
+      "0x519": 8,
+      "0x695": 8,
+      "0x945": 7,
+      "0x4e2": 7,
+      "0x701": 6,
+      "0xa43": 6,
+      "0x514": 6,
+      "0x594": 6,
+      "0x4e9": 6,
+      "0x887": 5,
+      "0x4ec": 5,
+      "0x683": 5,
+      "0x529": 5,
+      "0x8cd": 5,
+      "0x545": 5,
+      "0xaeb": 4,
+      "0x728": 4,
+      "0x6f6": 4,
+      "0x9f4": 4,
+      "0x50b": 4,
+      "0x5ba": 4,
+      "0x8bf": 4,
+      "0x960": 3,
+      "0x975": 3,
+      "0x95b": 3,
+      "0x8ad": 3,
+      "0x957": 3,
+      "0x8d5": 3,
+      "0x9fd": 3,
+      "0xa03": 3,
+      "0xa08": 3,
+      "0xa21": 3,
+      "0xa0b": 3,
+      "0x575": 3,
+      "0x4c5": 3,
+      "0x159": 3,
+      "0x94f": 3,
+      "0x96f": 3,
+      "0x6b1": 3,
+      "0x6c5": 3,
+      "0xd4": 2,
+      "0x6e3": 2,
+      "0x672": 2,
+      "0x6b6": 2,
+      "0x4e4": 2,
+      "0x708": 2,
+      "0x6e8": 2,
+      "0x9e4": 2,
+      "0x71f": 2,
+      "0x6a8": 2,
+      "0x88f": 2,
+      "0x57b": 2,
+      "0x6f4": 2,
+      "0xa13": 2,
+      "0x6c0": 2,
+      "0x501": 2,
+      "0x88b": 2,
+      "0xa1b": 2,
+      "0x564": 2,
+      "0x5ea": 2,
+      "0xaf5": 2,
+      "0x1da6": 1,
+      "0x681": 1,
+      "0x8c8": 1,
+      "0xb02": 1,
+      "0x1849": 1,
+      "0x969": 1,
+      "0x1": 1,
+      "0x1898": 1,
+      "0x5a8": 1,
+      "0xb26": 1,
+      "0x4b7": 1,
+      "0x1cf": 1,
+      "0x121": 1,
+      "0xbbf": 1,
+      "0x6a0": 1,
+      "0x61e": 1,
+      "0x508": 1,
+      "0x1d6a": 1,
+      "0x471": 1,
+      "0x4cc": 1,
+      "0xd37": 1,
+      "0xa3b": 1,
+      "0xb21": 1,
+      "0x577": 1,
+      "0x608": 1,
+      "0xa24": 1,
+      "0x4d3": 1,
+      "0x4d7": 1,
+      "0x12e": 1,
+      "0x9f8": 1,
+      "0x416": 1,
+      "0x4fe": 1,
+      "0xb39": 1,
+      "0x1984": 1,
+      "0x714": 1,
+      "0xe7": 1,
+      "0x71b": 1,
+      "0x54e": 1,
+      "0x559": 1,
+      "0x58b": 1,
+      "0x162": 1,
+      "0x18b4": 1,
+      "0x8ba": 1,
+      "0x66c": 1,
+      "0xa3f": 1,
+      "0x19a0": 1,
+      "0x197": 1,
+      "0xb51": 1,
+      "0x70b": 1,
+      "0x5f8": 1,
+      "0x4a3": 1,
+      "0x4f5": 1,
+      "0xb09": 1,
+      "0x19b9": 1,
+      "0x1968": 1,
+      "0x18ba": 1,
+      "0x6ee": 1,
+      "0x884": 1,
+      "0x51c": 1,
+      "0xa50": 1,
+      "0x5ec": 1,
+      "0x5bd": 1,
+      "0x4f9": 1,
+      "0x8b0": 1,
+      "0x640": 1,
+      "0xe55": 1
+    },
+    "pty-parse/unicode/glass-i9-selected!<glass::engine::Watch>::print_wide": {
+      "0x34": 1,
+      "0x14": 1
+    },
+    "pty-parse/unicode/glass-i9-selected!<memchr::arch::x86_64::avx2::packedpair::Finder>::find_impl": {
+      "0x1eb": 3,
+      "0x1e2": 1,
+      "0x205": 1,
+      "0x1fe": 1
+    },
+    "pty-parse/unicode/glass-i9-selected!<std::sync::mpmc::Sender<alloc::vec::Vec<u8>>>::send": {
+      "0xab9": 1
+    },
+    "pty-parse/unicode/glass-i9-selected!<std::sync::mpmc::waker::SyncWaker>::notify": {
+      "0x28": 2
+    },
+    "pty-parse/unicode/glass-i9-selected!<vte::Parser<1024>>::advance_ground::<vte::ansi::Performer<glass::engine::Watch, vte::ansi::StdSyncHandler>>": {
+      "0x240": 1
+    },
+    "pty-parse/unicode/glass-i9-selected!core::str::converts::from_utf8": {
+      "0xff": 1,
+      "0xb5": 1
+    },
+    "pty-parse/unicode/glass-i9-selected!glass::engine::plain_c0": {
+      "0xa1": 1
+    },
+    "pty-parse/unicode/glass-i9-selected!glass::session::find_escape": {
+      "0x378": 1
+    },
+    "pty-parse/unicode/glass-i9-selected!memchr::arch::x86_64::memchr::memchr_raw::find_avx2": {
+      "0xcf": 1,
+      "0xe3": 1
+    },
+    "pty-parse/unicode/glass-i9-selected!memchr::arch::x86_64::memchr::memrchr_raw::find_avx2": {
+      "0x12": 1
+    },
+    "pty-parse/unicode/libc.so.6!syscall@@GLIBC_2.2.5": {
+      "0x1d": 1
+    },
+    "pty-read/ascii/glass-i9-selected!std::sys::backtrace::__rust_begin_short_backtrace::<<glass::read_ahead::ReadAhead>::spawn::{closure#0}, ()>": {
+      "0x2e8": 1,
+      "0x30d": 1
+    },
+    "pty-read/ascii/libc.so.6!ioctl@@GLIBC_2.2.5": {
+      "0x3d": 3
+    },
+    "pty-read/ascii/libc.so.6!syscall@@GLIBC_2.2.5": {
+      "0x1d": 4
+    },
+    "pty-read/cursor_motion/glass-i9-selected!<std::sync::mpmc::list::Channel<alloc::vec::Vec<u8>>>::recv::{closure#1}": {
+      "0x252": 1
+    },
+    "pty-read/cursor_motion/glass-i9-selected!<std::sync::mpmc::waker::SyncWaker>::register": {
+      "0x1d": 1
+    },
+    "pty-read/cursor_motion/glass-i9-selected!mi_find_page": {
+      "0x69": 1
+    },
+    "pty-read/cursor_motion/glass-i9-selected!std::sys::backtrace::__rust_begin_short_backtrace::<<glass::read_ahead::ReadAhead>::spawn::{closure#0}, ()>": {
+      "0x21c": 1,
+      "0x1b31": 1
+    },
+    "pty-read/cursor_motion/libc.so.6!ioctl@@GLIBC_2.2.5": {
+      "0x3d": 4
+    },
+    "pty-read/cursor_motion/libc.so.6!poll@@GLIBC_2.2.5": {
+      "0x59": 1
+    },
+    "pty-read/cursor_motion/libc.so.6!syscall@@GLIBC_2.2.5": {
+      "0x1d": 3
+    },
+    "pty-read/scroll_region/glass-i9-selected!<portable_pty::unix::PtyFd as alloc::io::read::Read>::read": {
+      "0xd": 1
+    },
+    "pty-read/scroll_region/glass-i9-selected!<std::sync::mpmc::waker::SyncWaker>::notify": {
+      "0xc8": 1
+    },
+    "pty-read/scroll_region/libc.so.6!ioctl@@GLIBC_2.2.5": {
+      "0x3d": 4
+    },
+    "pty-read/truecolor/glass-i9-selected!std::sys::backtrace::__rust_begin_short_backtrace::<<glass::read_ahead::ReadAhead>::spawn::{closure#0}, ()>": {
+      "0xda0": 1,
+      "0x211": 1
+    },
+    "pty-read/truecolor/libc.so.6!ioctl@@GLIBC_2.2.5": {
+      "0x3d": 4
+    },
+    "pty-read/truecolor/libc.so.6!syscall@@GLIBC_2.2.5": {
+      "0x1d": 6
+    },
+    "pty-read/tui_frames/glass-i9-selected!<std::sync::mpmc::waker::SyncWaker>::register": {
+      "0xb3": 1
+    },
+    "pty-read/tui_frames/libc.so.6!ioctl@@GLIBC_2.2.5": {
+      "0x3d": 2
+    },
+    "pty-read/tui_frames/libc.so.6!syscall@@GLIBC_2.2.5": {
+      "0x1d": 2
+    },
+    "pty-read/unicode/glass-i9-selected!<std::sync::mpmc::list::Channel<alloc::vec::Vec<u8>>>::recv::{closure#1}": {
+      "0x28a": 1
+    },
+    "pty-read/unicode/glass-i9-selected!<std::sync::mpmc::waker::SyncWaker>::register": {
+      "0xd2": 1
+    },
+    "pty-read/unicode/libc.so.6!ioctl@@GLIBC_2.2.5": {
+      "0x3d": 2
+    },
+    "pty-read/unicode/libc.so.6!read@@GLIBC_2.2.5": {
+      "0x56": 1
+    },
+    "pty-read/unicode/libc.so.6!syscall@@GLIBC_2.2.5": {
+      "0x1d": 1
+    }
+  },
+  "limits": [
+    "LD_PRELOAD injection adds signals and can perturb timing; diagnostic only.",
+    "Leaf PCs, coarse thread-clock timer delivery; no call graph, system CPU stack, or causal cost estimate.",
+    "Matched payloads, three sessions per thread, correlated passes; no significance or championship claim."
+  ]
+}
