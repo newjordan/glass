@@ -1,0 +1,20 @@
+{
+  "schema": "glass.audit30-postcommit/v1",
+  "status": "reported",
+  "tested_commit": "ec61941baa65d0700b35082f27ac429dd8efbbbd",
+  "checks": [
+    {
+      "path": "bench/results/2026-11-03-campaign-audit-30/checkpoint-post-commit.json",
+      "sha256": "ffb1ae1c1745469a35cdd23f542a761b8def7a2d9b6676b8a43cf0647b38ca49",
+      "exit": 0
+    },
+    {
+      "path": "bench/results/2026-11-03-campaign-audit-30/frozen-replay-post-commit.json",
+      "sha256": "5051881fa33df656cadb74f31a0c2f5f553fa11c07c737e86fdce01225d32e35",
+      "exit": 0
+    }
+  ],
+  "same_outputs": true,
+  "runtime_promotion": false,
+  "championship_established": false
+}

@@ -1,0 +1,27 @@
+{
+  "schema": "glass.historical-evidence-replay/v1",
+  "manifests": [
+    {
+      "path": "bench/results/2026-11-03-campaign-audit-30/evidence-sha256.json",
+      "manifest_sha256": "a5878f933057cf1bf69354237f01f93e18b312ff32bcece965dc8b72629e9ebc",
+      "files": 23,
+      "live_paths": 23,
+      "historical_paths": 0,
+      "bytes": 1325004
+    },
+    {
+      "path": "bench/results/2026-11-03-campaign-audit-30/receipt-evidence-sha256.json",
+      "manifest_sha256": "20af68bb256fc642db6b15e4016df4d31ee79e931de8aa94146a9ff517c3e753",
+      "files": 3,
+      "live_paths": 3,
+      "historical_paths": 0,
+      "bytes": 1246
+    }
+  ],
+  "manifest_count": 2,
+  "file_references": 26,
+  "historical_references": 0,
+  "unique_source_versions": 26,
+  "note": "Explicit historical byte-integrity replay only; not timing, safety or championship acceptance.",
+  "index_sha256": "978dea1ee42fce13cf3e8f25aa0eb7cac308b3dc8776f53575f4ef81601ee15c"
+}
