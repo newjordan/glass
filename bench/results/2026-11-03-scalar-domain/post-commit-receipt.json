@@ -1,0 +1,13 @@
+{
+  "schema": "glass.scalar-domain-post-commit/v1",
+  "source_commit": "f7e36fdc1eafd571d31a860149afbac500be6889",
+  "checkpoint_equal": true,
+  "frozen_replay_equal": true,
+  "sha256": {
+    "bench/results/2026-11-03-scalar-domain/checkpoint-post-commit.json": "eff5d39073cd342bec7b9ae9a0e25c3d77e3a7e9fbfcf8008035d5dd2ff45205",
+    "bench/results/2026-11-03-scalar-domain/frozen-replay-post-commit.json": "5766da1c60b44f6a472b113b4666b8b40c48f3b2510e2e314456291771c2374c",
+    "bench/results/2026-11-03-scalar-domain/final-frozen-index.json": "9ad67516837e7cd5cb3755f16252ab7e94968d78572f85630b72af782b19026b"
+  },
+  "runtime_promotion": false,
+  "optional_second_review": "Timed out without a verdict; not counted as validation."
+}
