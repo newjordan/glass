@@ -130,15 +130,22 @@ pub fn scroll_rect(rect: Rect, band: &BandScroll, image: (u32, u32)) -> Fate {
     }
 
     let mut pieces = Vec::new();
+    let mut previous_to = None;
     for (from, to, delta) in slices {
         if let Some(piece) = cut_rows(&rect, from, to, delta, image) {
             if let Some(prev) = pieces.last_mut()
+                // Screen adjacency alone is not enough: a partial scroll
+                // can close a gap made by discarded source rows. Only join
+                // slices that were also contiguous in the original picture.
+                && previous_to == Some(from)
                 && adjacent(prev, &piece)
             {
                 merge(prev, &piece);
+                previous_to = Some(to);
                 continue;
             }
             pieces.push(piece);
+            previous_to = Some(to);
         }
     }
     match pieces.len() {

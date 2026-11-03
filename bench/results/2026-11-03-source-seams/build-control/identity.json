@@ -1,0 +1,45 @@
+{
+  "schema": "glass.engine-arm-build/v1",
+  "command": [
+    "cargo",
+    "test",
+    "--release",
+    "-p",
+    "glass-term",
+    "--locked",
+    "--no-run",
+    "--message-format=json"
+  ],
+  "source_sha256": {
+    "crates/alacritty-terminal/src/grid/mod.rs": "41e9d35adf5221ecf93c448bff62d159ea9862da0894a02894dfc1f8f891615e",
+    "crates/alacritty-terminal/src/grid/resize.rs": "8772a9bb04cc967cde0f4d7bdf7f44d7abdd4e39bc1430c1a6f35e2ecc46532e",
+    "crates/alacritty-terminal/src/grid/row.rs": "41a6bd77c4e71f4d0cb76b0bbfa3858e221436b30de0331548188387529654e7",
+    "crates/alacritty-terminal/src/grid/storage.rs": "c1897f63ad69538d40aedf0d57f43362461f3baa95d56ca0340830804ee3a3e3",
+    "crates/alacritty-terminal/src/term/mod.rs": "cf430da37bff5247cdbae745603595f053370089772c88492a5a9c0702924f45",
+    "crates/term/src/engine.rs": "191c89b938df823368224c59efc1375e1dffd4dc61deb19db17229496645d4db",
+    "crates/term/src/intake/mod.rs": "afbefc42c83b7a094c3727428c40f5c76b42c2dee5f38b4e4436808f376062d4",
+    "crates/term/src/intake/motion.rs": "751f99a4b8a8cdebcfa865ced99be63ac37715d6f399d842eb50b3444c89058d",
+    "crates/term/src/intake/position_tests.rs": "b08f3e933bc10624137faca18895cc0119629e1dfd0572d98bf59135d100b80b",
+    "crates/term/src/speed.rs": "486ac678d99766ddca4f35b814a1397cab4cf60c5ef4b4c6d51d00cde43d9419",
+    "crates/vte/src/ansi.rs": "ed3a17b498d5ae08c1667840ab46c177ed82e62f66d25090c95e74f65a1fc166",
+    "crates/vte/src/lib.rs": "fac2b9feef901019e1fcb3d413238d3b032001395abd8e727c26b4cafffba758"
+  },
+  "previous_mtime_ns": {
+    "crates/alacritty-terminal/src/grid/mod.rs": 1793727771252902622,
+    "crates/alacritty-terminal/src/grid/resize.rs": 1793727771252902622,
+    "crates/alacritty-terminal/src/grid/row.rs": 1793727771252902622,
+    "crates/alacritty-terminal/src/grid/storage.rs": 1793727771252902622,
+    "crates/alacritty-terminal/src/term/mod.rs": 1793727771252902622,
+    "crates/term/src/engine.rs": 1793727771252902622,
+    "crates/term/src/intake/mod.rs": 1793727771252902622,
+    "crates/term/src/intake/motion.rs": 1793727771252902622,
+    "crates/term/src/intake/position_tests.rs": 1793728576544127458,
+    "crates/term/src/speed.rs": 1793727771252902622,
+    "crates/vte/src/ansi.rs": 1793727771252902622,
+    "crates/vte/src/lib.rs": 1793727771252902622
+  },
+  "touched_mtime_ns": 1793728576572528016,
+  "executable": "/tmp/glass-i43-control",
+  "sha256": "62fe250d237c7e3777429ac01b3680cd7468d3b6b12a348507d0dad9abb17fd3",
+  "note": "Content-preserving input touch and non-fresh compiler receipts; exclusive build ownership required."
+}

@@ -1060,3 +1060,16 @@ wider runtime changes are not promoted. No performance delta, memory bound,
 arbitrary-write lifecycle or Ghostty comparison measured. Prior 1,577-reference
 frozen archive preserved. Details, independent oracle and exact build/run exits:
 `bench/results/2026-11-03-split-witness/README.md`.
+
+
+### 2026-11-03 — retain source-image seams across partial-region scrolls
+
+Fix touching screen rectangles being merged across discarded source rows. Require
+original-row continuity as well as screen adjacency before joining picture
+fragments. Real APC row-identity oracle fails 384/1,536 cases on control and
+0/1,536 on the seven-line runtime fix (both parser lanes/screens, SU/SD, full
+and cropped images). Candidate: 394 tests pass, 14 ignored; both arms pass
+12,800 differential streams. Six evidence-checker tests pass, including 20
+record corruptions and independent-oracle tampering. Selected executable stays
+unchanged. No resize-witness/coverage-mask, performance or Ghostty win claim.
+Evidence and replay: `bench/results/2026-11-03-source-seams/README.md`.

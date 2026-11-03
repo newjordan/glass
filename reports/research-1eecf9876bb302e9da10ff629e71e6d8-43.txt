@@ -1,0 +1,60 @@
+Iteration 43 — source-image seams under partial-region scrolling
+
+NEW VERIFIED LOCAL FINDING
+Partial-region scrolling can make two noncontiguous source-image fragments
+adjacent on screen. Shipping scroll_rect merged them based only on that screen
+adjacency, restoring deleted source rows and suppressing surviving source rows.
+This is a pixel-source identity defect, not the prior fragment-ID aliasing or
+research-only resize-witness issue.
+
+Example: original picture rows 0..4, SU 1 in half-open band [2,7). The expected
+source rows at screen rows 0,1,2 are 0,1,3. Control instead emits 0,1,2.
+
+PRODUCTION SOURCE CHANGE
+crates/term/src/intake/motion.rs: seven lines track the last emitted slice's
+original end and require exact original-row continuity before merging, in
+addition to existing screen adjacency. No persistent runtime state, new engine
+authority or source-coordinate epsilon. Skipped/discarded slices do not advance
+the tracked boundary. Empty paths retain existing behavior.
+
+EXECUTED EVIDENCE
+Real APC image intake + CSI SU/SD; independent row-transport oracle, not an
+expected value copied from the rectangle implementation. Both parser lanes,
+primary/alternate screen, full and explicit-crop images, four starting rows,
+four heights, two partial bands, three scroll amounts, both directions.
+Control: 384 failures / 1,536 cases, real test exit 101.
+Candidate: 0 failures / 1,536 cases, real test exit 0.
+Up/down control failures: 144/240. Each parser/screen/crop flag divides failures
+192/192. Candidate full optimized suite: 394 pass, 14 ignored. Both arms pass
+12,800 differential streams across 64 seeds.
+
+Six Python evidence tests pass. They reject 20 record corruptions, seven invalid
+configurations, seven malformed coordinate shapes, duplicate/missing records,
+false summaries/zero-test receipts, duplicate JSON keys and an unknown arm.
+Colluding expected/observed source-row changes are rejected by the independent
+Python oracle. Cargo optimized build receipts, snapshots and actual run records
+bind source hashes, non-fresh package artifacts, commands, environments, actual
+exits, log hashes and exact executable hashes. Selected release application
+binary is unchanged. A fresh read-only evidence replay matches saved results.
+
+Prior 12-manifest frozen replay matches 1,688 references / 1,669 source versions;
+earlier evidence is unchanged, with explicit historical snapshots. Final and
+post-commit checkpoint/replay receipts are saved beside the experiment.
+
+REPRODUCTION
+python3 -B bench/results/2026-11-03-source-seams/verify.py
+python3 -B bench/results/2026-11-03-source-seams/test-verify.py
+python3 -B bench/replay-evidence-index.py bench/results/2026-11-03-source-seams/final-frozen-index.json
+
+Full method, scope, exact receipts and sources:
+bench/results/2026-11-03-source-seams/README.md
+
+LIMITS / NEXT NECESSARY WORK
+Not a fractional-geometry, coverage-mask, repeated-sequence, resize-witness,
+latency, throughput, startup, GPU or memory acceptance. No new Ghostty comparison
+or world-champion result. Earlier research-only resize-witness lifetime and
+authority failures remain open. In-cell coverage-mask provenance after moved
+crops is an explicit unverified lead: apply_moved derives top cut from physical
+position rather than original source rows; a separate source-cell/mask oracle
+is necessary before calling this a bug or changing it. Narrow model review was
+advisory only. No initialized Labyrinth map or bound championship acceptance.

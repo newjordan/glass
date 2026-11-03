@@ -1,0 +1,11 @@
+test_complete (__main__.Evidence.test_complete) ... ok
+test_duplicate_json_keys_and_unknown_arm (__main__.Evidence.test_duplicate_json_keys_and_unknown_arm) ... ok
+test_duplicate_missing_summary_and_test_receipts (__main__.Evidence.test_duplicate_missing_summary_and_test_receipts) ... ok
+test_invalid_configurations (__main__.Evidence.test_invalid_configurations) ... ok
+test_malformed_coordinates (__main__.Evidence.test_malformed_coordinates) ... ok
+test_record_corruptions (__main__.Evidence.test_record_corruptions) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.506s
+
+OK
