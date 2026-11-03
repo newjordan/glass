@@ -1,0 +1,11 @@
+{
+  "schema": "glass.historical-evidence-index/v1",
+  "manifests": [
+    {
+      "path": "bench/results/2026-11-03-campaign-audit/evidence-sha256.json",
+      "sha256": "24dbe59d886181162c3265cd9ede228e2467e66f6bb64d2fce834bb3ac358871",
+      "source_root": ".",
+      "snapshots": {}
+    }
+  ]
+}

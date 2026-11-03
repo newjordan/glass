@@ -1,0 +1,22 @@
+{
+  "schema": "glass.immutable-research-evidence/v1",
+  "note": "Iteration15 audit artifacts only; final manifest/index/receipt excluded from self-hashing. Historical evidence is explicitly pinned by historical-index.json. Integrity is not championship acceptance.",
+  "sha256": {
+    "bench/replay-evidence-index.py": "a06d0b4cffa3496adb8755a952e1a8bea3157f744ad78df83c94c8093b4647e2",
+    "bench/results/2026-11-03-campaign-audit/README.md": "18234c7281c26e6b4918070324f3f2600dac03d40f885564600dad259a073945",
+    "bench/results/2026-11-03-campaign-audit/audit-initial.json": "4a9deb93f9759a5cf3eaec7a753e2aea5ac8f324eaf687e3af47315ed757a37d",
+    "bench/results/2026-11-03-campaign-audit/audit-initial.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bench/results/2026-11-03-campaign-audit/audit.json": "d8baa886508d82f1285b34f3344c8736bc682b392ac4ad7eb99750719e6c765b",
+    "bench/results/2026-11-03-campaign-audit/audit.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bench/results/2026-11-03-campaign-audit/checker-tests.log": "fe0cae08b425dc24159f084d3b97aece7eb0f755c01c5badc09940e2a77f9124",
+    "bench/results/2026-11-03-campaign-audit/historical-index.json": "b389d3eae9dce55eba8981017cf4d054e3bff914f11141025ed88fe27d14260b",
+    "bench/results/2026-11-03-campaign-audit/historical-replay.json": "325882e04033bf9794eb16a3259dc006ac910ab755939bea6320e6b5fe8dd13a",
+    "bench/results/2026-11-03-campaign-audit/replay-audit.py": "810a3411e5f93a8c3904647af178a2b2d296c8d2c3b0f34bf092bf46d7ddf442",
+    "bench/results/2026-11-03-campaign-audit/snapshots/CHANGELOG.md": "14d35112e61f109976242cd6f09bfc6755b73c2392ab08a7dd8f640d7d4177bc",
+    "bench/results/2026-11-03-campaign-audit/snapshots/bench/README.md": "49051bad5314a35c58aa441adbd70d9217f1d9358d3ef7a5e248e0ab3cc824c8",
+    "bench/results/2026-11-03-campaign-audit/snapshots/docs/PERFORMANCE.md": "a165ff1ee8382436b0aa04d6ffff48c9e5c0383fdb531a9ec294f64ecbfd60ff",
+    "bench/results/2026-11-03-campaign-audit/starting-state.json": "77efeb9ebd744c648b15930b2314f653a6b1e5ca0ec12f420cebe825a79a5fc0",
+    "bench/test_replay_evidence_index.py": "2846a22282844418e35e2da54c996c014df0f8c879f0bfce12c50db07339ba4d",
+    "reports/research-1eecf9876bb302e9da10ff629e71e6d8-15.txt": "6d58144de513e22e95862ff500cfe10543a4c55bbde9b5a5cdee975764e4d109"
+  }
+}

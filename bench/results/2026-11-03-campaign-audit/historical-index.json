@@ -1,0 +1,120 @@
+{
+  "schema": "glass.historical-evidence-index/v1",
+  "manifests": [
+    {
+      "path": "bench/results/2026-11-02-avx2-scan/evidence-sha256.json",
+      "sha256": "05ad3aa32a6f1aa2484819bed8abf68492d4e99f281316472516b948442295fb",
+      "source_root": "bench/results/2026-11-02-avx2-scan",
+      "snapshots": {}
+    },
+    {
+      "path": "bench/results/2026-11-02-bulk-lines/evidence-sha256.json",
+      "sha256": "996ae6a9663361cd4b96ee14bb82a2df37ed9d37f7b96602bbef7608073fa64a",
+      "source_root": "bench/results/2026-11-02-bulk-lines",
+      "snapshots": {}
+    },
+    {
+      "path": "bench/results/2026-11-02-consumer-coalesce/evidence-sha256.json",
+      "sha256": "184885493bdc5fbadc642c64175271a50094d5be03cf88dad2fdfaeba35dd8f9",
+      "source_root": "bench/results/2026-11-02-consumer-coalesce",
+      "snapshots": {}
+    },
+    {
+      "path": "bench/results/2026-11-02-decode-memo/evidence-sha256.json",
+      "sha256": "9827567d78a279aee56000159256a65a896e69bff2ef5c8c73d93a5ef2ea359c",
+      "source_root": "bench/results/2026-11-02-decode-memo",
+      "snapshots": {}
+    },
+    {
+      "path": "bench/results/2026-11-02-feed-outline/evidence-sha256.json",
+      "sha256": "edf4ff55184b97dce5786d77cdc99f1835c37413e4890ef4ad6a08ee09533ec4",
+      "source_root": "bench/results/2026-11-02-feed-outline",
+      "snapshots": {}
+    },
+    {
+      "path": "bench/results/2026-11-02-inline-pieces/evidence-sha256.json",
+      "sha256": "64101a48df1d6ddf0b1d3778c07173483341e7dd5db5d2571002e2344d084d1a",
+      "source_root": "bench/results/2026-11-02-inline-pieces",
+      "snapshots": {}
+    },
+    {
+      "path": "bench/results/2026-11-02-lazy-frame-cuts/evidence-sha256.json",
+      "sha256": "928b161ddd5a0fb98e5f84ce57fded46dd0d825352af43753597e0ed568c2dc7",
+      "source_root": "bench/results/2026-11-02-lazy-frame-cuts",
+      "snapshots": {}
+    },
+    {
+      "path": "bench/results/2026-11-02-pipeline-profile/evidence-sha256.json",
+      "sha256": "079a2dde97c07397a45ae0442443bb4ef205e9bb2172cdcfdbe9e3c57a98035f",
+      "source_root": ".",
+      "snapshots": {}
+    },
+    {
+      "path": "bench/results/2026-11-02-row-outline/evidence-sha256.json",
+      "sha256": "a5b0125045752eaea3be2270b16b1e67a1a55cedf674de2893d6c7f08824cf2b",
+      "source_root": ".",
+      "snapshots": {}
+    },
+    {
+      "path": "bench/results/2026-11-02-sse2-unroll/evidence-sha256.json",
+      "sha256": "3f7805ec5ce762df807fd85f03172c3b5fd9ff0a7d51ece08ea563f2c28dbe0a",
+      "source_root": "bench/results/2026-11-02-sse2-unroll",
+      "snapshots": {}
+    },
+    {
+      "path": "bench/results/2026-11-02-validated-scalar/evidence-sha256.json",
+      "sha256": "d0f6382343ebc663d9e5ceac29e7cd3784fa77f4a24243ee059b54e351c6cb79",
+      "source_root": "bench/results/2026-11-02-validated-scalar",
+      "snapshots": {}
+    },
+    {
+      "path": "bench/results/2026-11-02-word-decode/evidence-sha256.json",
+      "sha256": "1532b1cf191c0852c2fb8627ce57c1401ce71e8086d96b245e6f38be21256d4f",
+      "source_root": ".",
+      "snapshots": {
+        "CHANGELOG.md": "bench/results/2026-11-03-campaign-audit/snapshots/CHANGELOG.md",
+        "bench/README.md": "bench/results/2026-11-03-campaign-audit/snapshots/bench/README.md",
+        "docs/PERFORMANCE.md": "bench/results/2026-11-03-campaign-audit/snapshots/docs/PERFORMANCE.md"
+      }
+    },
+    {
+      "path": "bench/results/2026-11-03-boxed-rows/evidence-sha256.json",
+      "sha256": "e4b876ad19c8ae5ec093397dd66d85539b3130064c87d794fd19970d229882f8",
+      "source_root": ".",
+      "snapshots": {}
+    },
+    {
+      "path": "bench/results/2026-11-03-marks-width/evidence-sha256.json",
+      "sha256": "910ae1d2256c0c032919844b39117ae96344ae00e7620eae60698b82a52620d7",
+      "source_root": ".",
+      "snapshots": {
+        "CHANGELOG.md": "bench/results/2026-11-03-raw-read/previous-source-snapshots/CHANGELOG.md",
+        "bench/README.md": "bench/results/2026-11-03-raw-read/previous-source-snapshots/bench/README.md",
+        "docs/PERFORMANCE.md": "bench/results/2026-11-03-raw-read/previous-source-snapshots/docs/PERFORMANCE.md"
+      }
+    },
+    {
+      "path": "bench/results/2026-11-03-raw-read/evidence-sha256.json",
+      "sha256": "8139f58ba7768ce7ecbcb5565b65de43e910aba52090508c0a78bce5165a3980",
+      "source_root": ".",
+      "snapshots": {
+        "CHANGELOG.md": "bench/results/2026-11-03-read-shape/baseline/CHANGELOG.md",
+        "bench/README.md": "bench/results/2026-11-03-read-shape/baseline/bench/README.md",
+        "crates/term/src/read_ahead.rs": "bench/results/2026-11-03-read-shape/baseline/crates/term/src/read_ahead.rs",
+        "docs/PERFORMANCE.md": "bench/results/2026-11-03-read-shape/baseline/docs/PERFORMANCE.md"
+      }
+    },
+    {
+      "path": "bench/results/2026-11-03-read-shape/evidence-sha256.json",
+      "sha256": "9ac30a4471382a2dbae2e3e8ad452b0f171df902ad4a05ad3e678ed3682322e0",
+      "source_root": ".",
+      "snapshots": {}
+    },
+    {
+      "path": "bench/results/2026-11-03-row-alignment/evidence-sha256.json",
+      "sha256": "dd43eb07e4a721a585de975e86d1eafb62110ad0ed8806e1ed218b2c9a82d2af",
+      "source_root": ".",
+      "snapshots": {}
+    }
+  ]
+}

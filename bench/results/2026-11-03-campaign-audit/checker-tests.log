@@ -1,0 +1,11 @@
+test_duplicate_json_and_unknown_schema (test_replay_evidence_index.HistoricalReplayTests.test_duplicate_json_and_unknown_schema) ... ok
+test_explicit_snapshot_and_unchanged_live (test_replay_evidence_index.HistoricalReplayTests.test_explicit_snapshot_and_unchanged_live) ... ok
+test_mutations_of_manifest_and_index (test_replay_evidence_index.HistoricalReplayTests.test_mutations_of_manifest_and_index) ... ok
+test_no_fallback_to_live_or_other_snapshot (test_replay_evidence_index.HistoricalReplayTests.test_no_fallback_to_live_or_other_snapshot) ... ok
+test_relative_manifest_source_root (test_replay_evidence_index.HistoricalReplayTests.test_relative_manifest_source_root) ... ok
+test_symlink_file_and_parent_are_rejected (test_replay_evidence_index.HistoricalReplayTests.test_symlink_file_and_parent_are_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.007s
+
+OK

@@ -1,0 +1,19 @@
+{
+  "schema": "glass.historical-evidence-replay/v1",
+  "manifests": [
+    {
+      "path": "bench/results/2026-11-03-campaign-audit/evidence-sha256.json",
+      "manifest_sha256": "24dbe59d886181162c3265cd9ede228e2467e66f6bb64d2fce834bb3ac358871",
+      "files": 16,
+      "live_paths": 16,
+      "historical_paths": 0,
+      "bytes": 228483
+    }
+  ],
+  "manifest_count": 1,
+  "file_references": 16,
+  "historical_references": 0,
+  "unique_source_versions": 16,
+  "note": "Explicit historical byte-integrity replay only; not timing, safety or championship acceptance.",
+  "index_sha256": "5e73ff9e4ea0ebca95a0ed406d3d874469f7923f92ba7e810d536697a4cb4602"
+}

@@ -1,0 +1,305 @@
+Iteration 15 mandatory campaign audit: exact builds, historical closure, literal target delta
+==========================================================================================
+
+STATUS: REPORTED RESEARCH; NOT WORLD CHAMPION, ACCEPTED OPTIMIZATION, OR LOOP ACCEPTANCE.
+Starting checkpoint 67fe279. Operator goal: beat Ghostty on EVERY metric and wrap
+up with excellent research/coding. No acceptance command or official championship
+scope is bound. This audit does not weaken that goal to positive medians, engine
+wins, correctness tests, quiet DA1 latency, or process exit zero.
+
+No new terminal throughput, engine timing, deployment, submission, release build,
+or runtime optimization was launched. Existing evidence was reconciled before
+any further costly action. The protected selected executable remains:
+ d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c
+All 120 starting Rust source files have unchanged hashes in this audit. No prior
+report, manifest, result, runtime code, or unrelated untracked work was rewritten.
+
+Primary new sources (all workspace-relative):
+ bench/results/2026-11-03-campaign-audit/audit.json
+ bench/results/2026-11-03-campaign-audit/replay-audit.py
+ bench/results/2026-11-03-campaign-audit/historical-index.json
+ bench/results/2026-11-03-campaign-audit/historical-replay.json
+ bench/results/2026-11-03-campaign-audit/checker-tests.log
+ bench/replay-evidence-index.py
+ bench/test_replay_evidence_index.py
+The final audit JSON is the expanded replay. audit-initial.json is retained as a
+superseded, narrower 22-engine-dataset inventory, NOT added to the final count.
+
+1. Literal target delta: do not transfer wins between executables
+----------------------------------------------------------------
+There are three distinct SHA-256 identities, even when source is similar:
+ selected executable: d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c
+ fresh control:       c14daae87141541f747095ec77644e9189e009251716408e2630abd7a294a1ed
+ combined candidate:  6111147b21a4bc6d112cfb359bd8e3535b4c7bdd03e0803b550534e8e45c3369
+ competitor Ghostty:  ef28bf3a0f6ead69014da86ab0c9a2ef30fcf3bf297a6a27c4c18dfc80a56a62
+Combined = immutable single-mark ownership plus generated Unicode width tables.
+It is archived and UNPROMOTED. Its results do not belong to the selected build.
+
+Strongest explicit combined replication, 30 rounds, candidate / Ghostty:
+ workload         paired median    wins/losses    six-workload Holm p
+ ASCII               .9655072         10/20          .19747429
+ Unicode            1.1608776         24/6           .00429272
+ truecolor          1.3265800         29/1           .0000003465
+ cursor motion      1.1268551         26/4           .00029738
+ scroll region      1.0012726         15/15         1
+ TUI frames         1.0826819         26/4           .00029738
+Source: 2026-11-03-marks-width/replication-gate/terminal-summary.json and all
+90 raw terminal sessions, independently recomputed in the new audit. Ratios are
+medians of round-paired rates, NOT ratios of marginal workload medians. The Holm
+family is retrospective/exploratory for these six workloads and this comparator,
+not campaign-wide multiplicity control or an independent confirmatory trial.
+
+Literal numerical gap on this candidate: ASCII is 3.44928% below the Ghostty
+paired median. It needs 3.57250% more own throughput just for observed median
+parity (1/.9655072 - 1), not a proof of superiority. Scroll region is +.12726%
+but wins exactly half the pairs; superiority remains unresolved. No predeclared
+noninferiority margin exists. Nonsignificance is NOT equivalence/no regression.
+Versus its fresh control, region is .9968993 (13/30 wins), also unresolved.
+Four corrected positive leads do not meet a six-workload objective.
+
+Keep the first combined series visible: its 18-round ASCII candidate/control
+median .8519538 is adverse (6 wins), Unicode 1.1591253 is unresolved (11 wins).
+Candidate/Ghostty ASCII 1.1291401 (10/18) and region 1.1563995 (10/18) are noisy,
+not rescued by their positive medians. The same candidate's replication ASCII
+reverses to .9655072. Do not pool away the disagreement, delete host slowdowns,
+or advertise a uniformly replicated all-workload gain.
+
+Retained selected executable, LATEST same-binary observational comparison:
+2026-11-03-read-shape/tail-policy/gate, glass-alt / Ghostty, 18 rounds:
+ workload         paired median    wins/losses    six-workload Holm p
+ ASCII              1.0222688          9/9          1
+ Unicode             .9522599          7/11          .96136475
+ truecolor          1.3826896         17/1           .00086975
+ cursor motion      1.1277910         14/4           .15441895
+ scroll region      1.2573712         13/5           .38500977
+ TUI frames         1.0961650         13/5           .38500977
+This audit derives these control/competitor pairs from raw results; the original
+runner only summarized candidate/other comparisons. No new measurement occurred.
+Unicode needs 5.01334% more own throughput just to reach that observed median.
+Other positive medians do not establish corrected superiority in this series
+except truecolor. Earlier selected-binary sessions had different signs; the
+iteration-3 final gate had ASCII .8600, Unicode .9505, region .9361. Same binary
+identity permits comparison of observations, not stationary-host assumptions,
+selective pooling, or an all-metric declaration based on the nicest series.
+
+The literal broader goal is even less established: startup, steady/busy memory,
+busy input, key-to-screen/presentation latency, sustained rendering, and platform
+coverage were not proven superior to Ghostty on this exact candidate. The
+combined candidate's 16 coarse fixed-order startup launches compare only with
+control, not Ghostty, and are not alternating/cold-cache confidence evidence.
+Quiet DA1 response timing is NOT key-to-screen latency. Beating one competitor
+on six Linux workloads would not by itself establish a world title. Required
+next acceptance evidence must name metrics/platforms, exact binary, effect and
+uncertainty/promotion policy BEFORE fresh confirmatory measurement.
+
+2. Reconciliation of every active handoff claim
+-----------------------------------------------
+A. Combined candidate correctness, not retained-build performance:
+ 140 library tests and 45 reference fixtures: marks-width/library-and-ref-tests.log
+ 9 strict-provenance Miri cell tests: marks-width/miri-cell-tests.log
+ exhaustive width parity: marks-width/exhaustive-width-test.log, 1 test
+ parser parity: marks-width/parser-test.log, 1 test
+ 12,800 differential streams / 64 seeds: marks-width/seed-sweep.log
+These logs agree with report 13. They are historical candidate receipts, not
+fresh executions in iteration 15, an all-workspace pass, or universal safety.
+Current selected source has six cell tests in restored-cell-tests.log; do not
+transfer the candidate's 9 Miri/140 library counts to that source identity.
+
+B. Previous final restored-source verification:
+ raw-read/final-terminal-suite.log: 379 passed, 0 failed, 11 ignored
+ raw-read/final-library-and-ref-tests-pinned.log: 136 library, 45 reference,
+ one doctest passed. The unpinned predecessor log passed library/reference but
+ FAILED doctests with incompatible rustc/rustdoc (E0514); it is not a pass.
+ raw-read/reader-stress.log: seven reader tests x100 =700 test executions, not
+ 700 independent tests. Covers retry-interrupts, multi-credit EOF, and final
+ readable bytes with hangup, plus earlier credit/order regression cases.
+ raw-read/final-terminal-checker-tests.log: 11 tests
+ raw-read/final-engine-checker-tests.log: 5 tests
+ raw-read/final-rtt-checker-tests.log: 10 tests
+ Thus the reported 26 Python checker tests reconcile exactly to 11+5+10.
+ read-shape/reader-bin-tests.log and restored-reader-tests.log: 7 reader tests
+ passed each; not a new full workspace run. No Rust rerun is claimed here.
+
+C. Replay totals are overlapping scopes, never additive new measurements:
+ report 13: six width/static/combined terminal series = (18+30+18+24+18+30)*3
+ =414 sessions. Four engine datasets = region 11+17, width 11, static 11 pairs.
+ Two new quiet-RTT datasets total 24,000 replies; older width RTT separate.
+ raw-read/supported-historical-terminal-replays.log: 10 records, 630 sessions.
+ read-shape diagnostic plain/count/timed: balanced36 + pilot3 sessions.
+ read-shape rejected tail gate:54 sessions, hence report14's 93=36+3+54.
+ The 630, 414 and 93 counts overlap other inventories; do not sum them as
+ independent campaign replications. New audit replays 20 currently supported
+ terminal series /1,170 sessions and 26 engine datasets /300 pairs. It also
+ replays both new-schema quiet RTT datasets (48 sessions,24,000 replies), and
+ diagnostic pilot/balanced reports (39 sessions,702 profiles total). This is
+ evidence replay only, not 1,170 new measurements.
+
+D. Negative controls and verification defects:
+ raw-read/summary-mutation-demonstration.json demonstrates old canonical
+ summarize-only logic exit0 REPAIRING a deliberately altered disposable report.
+ Independent replay rejects it exit1 with mutated report unchanged. Original
+ evidence unchanged. This is a real verifier defect, not a runtime speedup.
+ read-shape/corruption-demonstration.json records five rejected disposable-copy
+ cases: changed raw, trace drop, truncation, missing byte, unenclosed tail.
+ Original bytes remain unchanged. These show rejection paths, not forgery-proof
+ provenance, timing accuracy, exhaustive syscall observation or safety proof.
+ RTT checker records exact binary/harness/raw identities, AB/BA order, finite
+ positive samples and recomputed summaries; ten tests are real synthetic checker
+ tests, not measured latency wins. Both new-schema real datasets replay now.
+
+E. Frozen counts 636 /700 /965:
+ All are historical explicit manifests, not three disjoint artifact sets.
+ They were internally closed at their checkpoints. As LIVE path assertions now,
+ marks-width has three changed docs, raw-read has three changed docs plus reader
+ source comments, read-shape has zero changed paths at audit start. These are
+ expected subsequent edits, not proof of corruption; a naive 'all hashes match'
+ claim without checkpoint/snapshot qualification is false today.
+ The earlier word-decode 63-entry manifest likewise has three changed docs.
+ New explicit historical index pins 17 original manifests and names each exact
+ snapshot substitution: 3 word-decode,3 marks-width,4 raw-read. All 3,171 file
+ references match (2,573 distinct indexed source/version pairs). These totals
+ include repeated/nested references, not 3,171 independent artifacts. The other
+ 14 manifests need no historical substitution. No missing raw source detected.
+ Three word-decode docs were recovered once from commit 1661f5a and verified
+ against original manifest hashes. Six earlier docs and reader-source version
+ already existed in raw-read/previous-source-snapshots or read-shape/baseline.
+ The verifier has NO git fallback, directory search, auto-repair or silent
+ substitution. Both manifest and source hashes must match the explicit index.
+ New six-test checker suite passes, including refusal to fall back when an
+ explicit snapshot is missing, changed bytes, duplicate JSON keys, symlink file
+ or parent, schema/manifest tampering, and relative source-root handling.
+ It is an integrity tool, not independent evidence authorship certification.
+
+F. Selected release restoration:
+ Target SHA256 matches d75cb... and the recorded starting-state hash. All 120
+ Rust source hashes match. Earlier byte-compare receipts identify the same
+ selected executable; this audit does not claim a new comparison against every
+ temporary saved binary. No release rebuilding/restoring was needed here.
+ The audit verifies before/after hashes for 3,454 explicitly audited files;
+ fingerprints identical (see audit.json). Not a filesystem-wide mutation audit.
+ The expanded engine inventory includes replication reports under historical
+ filenames, rather than silently limiting coverage to engine-pairs.json.
+
+3. Contradictions and weakened claims found by this checkpoint
+-------------------------------------------------------------
+1. Tail-policy protocol.txt promised 'fresh control'; gate binary hash records
+ d75cb..., the older SELECTED executable, not c14daa... fresh control. Its README
+ does call it protected control. Honest interpretation: candidate versus selected
+ incumbent, not matched fresh-build causal isolation. Rejection remains justified
+ under the conservative no-promotion rule; no clean causal effect of changing
+ PTY_READ alone is established. The original protocol/raw records are unchanged.
+2. read-shape/README.md's '1,439,461 captured read calls /514,143 captured poll
+ calls' are PASS-WINDOW joined counts. All dumped balanced trace records total
+ 1,440,344 reads /514,635 polls. Difference:883 reads /492 polls outside pass
+ windows. The performance/pass analysis is consistent; the lifetime-count
+ wording is too broad. The dump itself is a prefix, not complete process life.
+3. The source's 4KiB Linux ceiling was wrong. Raw counted traces reach16KiB;
+ >4096-byte reads carry70.9209% ASCII /70.0440% region bytes. This refutes the
+ universal ceiling but only characterizes observer-conditioned captures.
+4. Timed read/poll whole-call wall fractions92.7% ASCII/94.4% region are inclusive
+ wrapper+glibc+kernel spans. They do not identify pure kernel work, ioctl costs,
+ scheduling-blocked vs runnable intervals, or a reclaimable optimization budget.
+ Timed/plain ASCII .91569 with p=.387695 is not equivalence; observer overhead
+ and host spread prohibit replacing uninstrumented gates with this diagnosis.
+5. Today's terminal inventory has32 summaries:20 supported/replayed;4 nominally
+ complete v1 lack runner_sha256 (direct-commit,early-recycle first,third-credit,
+ width-hoist),7 legacy schemas (including cyclic row-alignment),1 incomplete
+ bounded-handoff. None is silently upgraded. Unsupported does not mean proved
+ false; historical arithmetic/hash receipts remain inspectable. The resumed
+ bounded-handoff series is separate and supported, not an uninterrupted repeat.
+6. A reviewer spawned for this audit timed out after240s and returned partial
+ observations only. No completed independent human/model review is claimed.
+ New findings were independently traced to files by the root audit script.
+
+4. Failed commands: resolved, excluded, or still unsupported
+------------------------------------------------------------
+Retained initial worker outcomes 12397/12398/12402/12405/12406 exit0 do not by
+ themselves prove checks. Relevant concrete final logs above establish content.
+ 12400 exit1: 'negative-control probe unexpectedly passed'. Probe5 is documented
+ inert, hence INVALID negative control. Probe100 actually fails the differential
+ test (seed1/round0 diverges). negative-control-exit.txt and failure logs agree.
+ 12401 exit1: empty outer log; report13 documents the incorrect grep ('diverged'
+ vs 'diverges') stopping the shell after probe100's expected test failure.
+ The empty outer log alone does not establish that cause; final failed-test
+ evidence supplies it. Do not count the stopped shell as a successful sweep.
+ 12403 exit127: empty outer log; report13 describes a malformed taskset invocation
+ from trailing-whitespace binary extraction. Only successful terminal-replication
+ and replay receipts count; shell exit127 was never a measured replication.
+ Additional region/library mistakes, wrong package targets and candidate errors
+ are retained under result directories and excluded from measurement claims.
+ read-shape/build.log: strict C build failed on 8-byte magic initializer/NUL
+ warning under -Werror. build-fixed.log/final-c-build.log are quiet successful
+ receipts, not 'no output therefore no build'. Later diagnostic manifests bind
+ the observer binary and sources actually used. No recompilation needed now.
+ read-shape/reader-tests.log: 'no library targets' from --lib on binary crate.
+ reader-bin-tests.log/restored-reader-tests.log are the corrected7-test receipts.
+ report14 notes malformed analyzer write and SIGPIPE snapshot attempts. Retained
+ final analyzer/host artifacts are used; neither initial failure is relabeled a
+ pass. Final independent diagnostic replay succeeds in this audit.
+ Prior staged git diff --check flagged original raw-log EOF/context whitespace.
+ These hashed raw logs are preserved. Do not claim a whitespace-clean historical
+ evidence tree, or 'commit succeeded' from an earlier failed combined shell.
+ Current HEAD67fe279 includes the recorded checkpoints. Our new text/code files
+ get a scoped whitespace check; old raw data are not edited to green a linter.
+ Audit exploration also had a missing optional tail README and a mistaken
+ JSON-lines parse of a pretty-printed log. Both are inspection errors, not test
+ or campaign failures. A real JSONDecoder replay confirmed10 records/630sessions.
+
+5. Campaign-wide measured negative results, not undiscovered leads
+-----------------------------------------------------------------
+Primary receipts remain in correspondingly named bench/results directories.
+- Producer-placement /minimal transport controls: large-domain reader with
+ small-domain producer loses strongly even without terminal parser/rendering;
+ reciprocal controls refute a universally slow small domain. Does NOT isolate
+ cache coherence, line discipline, locks, scheduler or actual core residency.
+- Eight-glyph batch Unicode .8045 (0/9); branchless-wide .9313 (0/11); checked
+ table decoder .9949 (4/9). Engine diagnostics, not through-PTY wins. Untracked
+ older work is preserved, not claimed as newly authored in this checkpoint.
+- SIMD/UTF8 variants: SSE2-unroll reaches real PTY but no six-workload win;
+ AVX2/decode memo and validated-scalar fail screening/replication. Row-successor
+ reuse Unicode .982443 (2/11); ASCII islands .889912 (0/11). Word-load decode
+ initial gain does NOT replicate (.996007,5/15). No promotion.
+- Row writer outlining .99123 Unicode (3/11); global boxed rows .947979 Unicode
+ (0/11) despite1.077415 region. Row alignment has Unicode engine +2.93%
+ replication but terminal Unicode .984656 (2/18 wins); engine != terminal.
+- Region-local indexing replication .9732 ASCII with1.0217 region: tradeoff,
+ no terminal promotion. Other validated regression tests guard semantics, not
+ proof these rejected designs cannot ever be improved.
+- Bulk CRLF/feed outlining and inline-piece/consumer-coalesce/lazy-frame-cut
+ session ablations are retained with full terminal results. Inline pieces'
+ initial ASCII median is not enough; TUI lost17/18. Reject all-metric promotion.
+- Buffer counts/small reader, handoff/channel changes, unpinning, single-poll,
+ width-hoist and direct-commit did not produce a trustworthy all-metric sweep.
+ Some schemas are currently unsupported as item3.5 specifies; don't silently
+ treat old canonical summarize-only logs as modern independent replay passes.
+- Raw libc syscall replacement candidate has no corrected control improvement:
+ ASCII1.03686,Unicode .98571,region1.01659; other medians below1. No mechanism
+ claim that glibc is free; simply no promotion under the declared release rule.
+- Spare-capacity4096->1 tail fill has ALL six control medians below1; truecolor
+ raw p=.030884 becomes Holm .185303. A corrected significant regression is NOT
+ established, but no release-worthy gain exists. Control freshness caveat above.
+- Immutable mark ownership produces a real repeatable isolated Unicode gain,
+ generated width composition produces truecolor gain, combined candidate has
+ four corrected replication leads. API/ownership costs and unresolved target
+ metrics remain. Do not erase positive research because it was not promoted.
+
+6. Closing decision and next necessary action
+----------------------------------------------
+Audit/checker work is retained, not a runtime victory. New historical replay
+repairs an ongoing reproducibility problem without rewriting previous evidence.
+The source-level read-size myth and pass-window/lifetime count distinction are
+concrete verifiable findings. Unsupported novelty and count inflation stop here.
+
+Under the unchanged every-metric objective, do NOT promote6111147..., rerun
+small capacity/syscall/parser tweaks as new discoveries, or claim any build is
+world champion. A later optimization needs scheduler-aware transport evidence
+with observer-overhead controls to distinguish producer starvation, runnable
+reader delay and kernel/TTY work. Derive a testable candidate from that evidence,
+then predeclare a fixed-endpoint all-workload uninstrumented comparison against
+fresh control AND Ghostty. Keep the exact build and cross-metric regressions.
+Independently establish startup/memory/visible-input/rendering criteria if
+'every metric' is meant literally; quiet DA1 cannot stand in for them.
+
+No further costly experiment is justified by this audit alone. No bound official
+acceptance command exists. This is the campaign's reconciled checkpoint and
+honest remaining blocker, not a declaration that the operator's target is met.
