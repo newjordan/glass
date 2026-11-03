@@ -569,3 +569,47 @@ Catchable termination restores affinity and reaps helpers; SIGKILL cannot run
 Python cleanup, so the owning caller must terminate its terminal/process group.
 This is diagnostic sensitivity evidence, not an observer-free throughput gate,
 competitor ranking, runtime promotion, or world-championship acceptance.
+
+
+### Reciprocal same-L3 reader/parser placement
+
+`linux/hot-placement.py` changes only the two own-parent hot-role masks around
+unchanged `tput.py`. `linux/run-hot-placement.sh` serializes five role-balanced
+arms (shipping auto, two sibling pairs, two reciprocal distinct-core pairs)
+and records exact source/binary/protocol/raw hashes. No sampler, per-pass hook,
+producer pin or runtime build. CPU topology and named thread identities are
+verified; masks restored independently on failure. This is an artificial
+placement experiment with boundary observations, not an ordinary terminal score.
+
+[Iteration 18](results/2026-11-03-hot-placement/README.md) retains the five-session
+pilot, a strictly rejected initial 100 sessions, two new 100-session v2 series,
+all protocol revisions, raw sidecars, observed non-target GPU-init changes,
+source snapshots, four real two-role cleanup fault cases, and 13 non-mutating
+corruption rejections plus a reportable-transition positive control. Initial
+strict rejection remains reproducible, not repaired or reclassified. No series
+pooling or default affinity promotion. Secondary ASCII placement lead merits
+controlled validation; primary significance is not uniformly replicated.
+
+Read-only (no launch/build/repair; full commands in the package README):
+
+```sh
+python3 -B bench/linux/analyze-hot-placement.py \
+  bench/results/2026-11-03-hot-placement/confirmatory \
+  --expect bench/results/2026-11-03-hot-placement/confirmatory-replay.json
+python3 -B bench/linux/analyze-hot-placement.py \
+  bench/results/2026-11-03-hot-placement/replication \
+  --expect bench/results/2026-11-03-hot-placement/replication-replay.json
+python3 -B bench/results/2026-11-03-hot-placement/replay-initial-rejection.py
+python3 -B bench/results/2026-11-03-hot-placement/check-corruption.py
+```
+
+Role/start_ticks, affinity/producer masks, topology, geometry, payload sizes,
+rounded rates, exact hashes, restoration and actual monotonic capture order are
+checked. Non-target transitions are explicit v2 observations, not silently
+excluded or treated as failures. Snapshots do not prove continuous residency,
+pass-level GPU-init overlap or unchanged masks between boundaries. Sign tests
+condition on independent fair round signs, not guaranteed by deterministic
+orders; separate six-workload secondary families do not rescue failed primary
+analyses. Run-to-run stability, controlled load and full competitor/startup/
+key-to-screen gates remain necessary. Do not rerun capture/fault harnesses into
+frozen output directories. No new Ghostty sessions or world-title claim.

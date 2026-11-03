@@ -1,0 +1,52 @@
+{
+  "schema": "glass.hot-placement-run/v1",
+  "complete": true,
+  "binary": "/work/frosty40/glass-repo/tree/target/release/glass",
+  "protocol": "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-hot-placement/protocol.json",
+  "rounds": 1,
+  "arms": [
+    "auto",
+    "s0",
+    "s1",
+    "d01",
+    "d10"
+  ],
+  "orders": [
+    [
+      "auto",
+      "s0",
+      "d10",
+      "s1",
+      "d01"
+    ]
+  ],
+  "planned_orders": [
+    [
+      "auto",
+      "s0",
+      "d10",
+      "s1",
+      "d01"
+    ]
+  ],
+  "sha256": {
+    "/work/frosty40/glass-repo/tree/target/release/glass": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+    "/work/frosty40/glass-repo/tree/bench/results/2026-11-03-hot-placement/protocol.json": "5947cd5c2a2d2c08ad022037098d7144c5e63caa1b311df283edc753f9988647",
+    "/work/frosty40/glass-repo/tree/bench/linux/hot-placement.py": "59885ca775ca5103cb96c3a5f615f31ba9a8919938bd375d929c7b4d1e0c6a7e",
+    "/work/frosty40/glass-repo/tree/bench/linux/run-hot-placement.sh": "12e0b9823ad8f318d9fada32da67d2d7f51e285e6c8addc4753a90da60fb9afd",
+    "/work/frosty40/glass-repo/tree/bench/lib.sh": "a057c54c4b9aa587101d1ee9a3a729f1b73fed1e55f5af56bc4b939e04a62f25",
+    "/work/frosty40/glass-repo/tree/bench/tput.py": "477b0131f1041bda8dd74a64bf8d164d526685bb7fc0c13500b17f897c06542a"
+  },
+  "raw_sha256": {
+    "tput-auto-1.json": "2b35d011aee8ff99689b79f8950ddc7eab29b86a154ed94b78eb3711f642abfb",
+    "tput-auto-1.placement.json": "86b8f1f8a9be54f5838d135b02a2581210e70d7949d32d9cc2536bba3defce1d",
+    "tput-d01-1.json": "007c4370d8535cb255d5c17677f5ac7644357d0d18b3df77fc65d0dbe4cd1ed3",
+    "tput-d01-1.placement.json": "89dd52c31a6561b24d0bf9f67aa013a2d865b43fcf2a14769867f00697fd8a08",
+    "tput-d10-1.json": "4324ad2605644d790f954fe05dbd82222fb8aedbd2b06ca1ebee54cf6966c493",
+    "tput-d10-1.placement.json": "85b4557aee3719d3320d97c4adc42409c2df596a0601550eb84ba83a7b7db8f7",
+    "tput-s0-1.json": "55922ade7a2d25b22df6a87e80ea1428eb60cf2f91535efdb0783f99cb0d821f",
+    "tput-s0-1.placement.json": "7ed4074107747b350bc8a089343d411d6e9880357f371bdb411b3940f59b701a",
+    "tput-s1-1.json": "dd5ce52e6f8d417b8ba0b344a93bf07879c70db6fe64eb94ee265b808dd0d651",
+    "tput-s1-1.placement.json": "f0f08e7289e128064e996fb8e6bfe5961b956c62579098a4f4202ba38a7cbcb4"
+  }
+}

@@ -1,0 +1,263 @@
+{
+  "schema": "glass.hot-placement-analysis/v1",
+  "sessions": 5,
+  "rounds": 1,
+  "manifest_sha256": "61520e3498d12a6f146161f72394db0ebbee53f157bd96fa9fb310194a4d86fd",
+  "payload_bytes": {
+    "ascii": 25165955,
+    "unicode": 16777256,
+    "truecolor": 25166263,
+    "cursor_motion": 16777661,
+    "scroll_region": 16777365,
+    "tui_frames": 20901616
+  },
+  "comparisons": {
+    "distinct_vs_sibling": {
+      "ascii": {
+        "ratios": [
+          1.0968756054798512
+        ],
+        "median_ratio": 1.0968756054798512,
+        "wins": 1,
+        "losses": 0,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_p_six_workloads": 1.0
+      },
+      "unicode": {
+        "ratios": [
+          1.1101787348310734
+        ],
+        "median_ratio": 1.1101787348310734,
+        "wins": 1,
+        "losses": 0,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_p_six_workloads": 1.0
+      },
+      "truecolor": {
+        "ratios": [
+          1.1282046151780052
+        ],
+        "median_ratio": 1.1282046151780052,
+        "wins": 1,
+        "losses": 0,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_p_six_workloads": 1.0
+      },
+      "cursor_motion": {
+        "ratios": [
+          1.1171054712497346
+        ],
+        "median_ratio": 1.1171054712497346,
+        "wins": 1,
+        "losses": 0,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_p_six_workloads": 1.0
+      },
+      "scroll_region": {
+        "ratios": [
+          1.166663561604964
+        ],
+        "median_ratio": 1.166663561604964,
+        "wins": 1,
+        "losses": 0,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_p_six_workloads": 1.0
+      },
+      "tui_frames": {
+        "ratios": [
+          1.1705749871996265
+        ],
+        "median_ratio": 1.1705749871996265,
+        "wins": 1,
+        "losses": 0,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_p_six_workloads": 1.0
+      }
+    },
+    "distinct_vs_auto": {
+      "ascii": {
+        "ratios": [
+          0.8557722733668446
+        ],
+        "median_ratio": 0.8557722733668446,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_p_six_workloads": 1.0
+      },
+      "unicode": {
+        "ratios": [
+          1.0219872509200316
+        ],
+        "median_ratio": 1.0219872509200316,
+        "wins": 1,
+        "losses": 0,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_p_six_workloads": 1.0
+      },
+      "truecolor": {
+        "ratios": [
+          1.0047161516839198
+        ],
+        "median_ratio": 1.0047161516839198,
+        "wins": 1,
+        "losses": 0,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_p_six_workloads": 1.0
+      },
+      "cursor_motion": {
+        "ratios": [
+          1.0261822354351626
+        ],
+        "median_ratio": 1.0261822354351626,
+        "wins": 1,
+        "losses": 0,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_p_six_workloads": 1.0
+      },
+      "scroll_region": {
+        "ratios": [
+          0.9143975050216554
+        ],
+        "median_ratio": 0.9143975050216554,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_p_six_workloads": 1.0
+      },
+      "tui_frames": {
+        "ratios": [
+          1.0021635590281612
+        ],
+        "median_ratio": 1.0021635590281612,
+        "wins": 1,
+        "losses": 0,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_p_six_workloads": 1.0
+      }
+    },
+    "sibling_vs_auto": {
+      "ascii": {
+        "ratios": [
+          0.7801908157055504
+        ],
+        "median_ratio": 0.7801908157055504,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_p_six_workloads": 1.0
+      },
+      "unicode": {
+        "ratios": [
+          0.9205610041481643
+        ],
+        "median_ratio": 0.9205610041481643,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_p_six_workloads": 1.0
+      },
+      "truecolor": {
+        "ratios": [
+          0.8905442666757735
+        ],
+        "median_ratio": 0.8905442666757735,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_p_six_workloads": 1.0
+      },
+      "cursor_motion": {
+        "ratios": [
+          0.9186081904040325
+        ],
+        "median_ratio": 0.9186081904040325,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_p_six_workloads": 1.0
+      },
+      "scroll_region": {
+        "ratios": [
+          0.7837713760115474
+        ],
+        "median_ratio": 0.7837713760115474,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_p_six_workloads": 1.0
+      },
+      "tui_frames": {
+        "ratios": [
+          0.8561293125061925
+        ],
+        "median_ratio": 0.8561293125061925,
+        "wins": 0,
+        "losses": 1,
+        "ties": 0,
+        "sign_p_two_sided": 1.0,
+        "holm_p_six_workloads": 1.0
+      }
+    }
+  },
+  "medians_mb_s": {
+    "auto": {
+      "ascii": 1158.6,
+      "unicode": 262.5,
+      "truecolor": 275.0,
+      "cursor_motion": 231.0,
+      "scroll_region": 1072.3,
+      "tui_frames": 274.6
+    },
+    "s0": {
+      "ascii": 897.8,
+      "unicode": 240.5,
+      "truecolor": 244.5,
+      "cursor_motion": 211.4,
+      "scroll_region": 857.1,
+      "tui_frames": 233.3
+    },
+    "s1": {
+      "ascii": 910.1,
+      "unicode": 242.8,
+      "truecolor": 245.3,
+      "cursor_motion": 213.0,
+      "scroll_region": 824.1,
+      "tui_frames": 236.9
+    },
+    "d01": {
+      "ascii": 1021.9,
+      "unicode": 272.2,
+      "truecolor": 277.6,
+      "cursor_motion": 238.0,
+      "scroll_region": 1068.1,
+      "tui_frames": 273.4
+    },
+    "d10": {
+      "ascii": 962.0,
+      "unicode": 264.4,
+      "truecolor": 275.0,
+      "cursor_motion": 236.1,
+      "scroll_region": 900.1,
+      "tui_frames": 277.0
+    }
+  },
+  "limits": "Fixed cores, shared host, producer freely scheduled (can share selected cores), background load, frequency, migrations within baseline mask, no CPU isolation; snapshots do not prove residency or continuous mask constancy. Deterministic balanced orders, not randomization. Baseline wrapped identically; boundary snapshots may affect warm state."
+}

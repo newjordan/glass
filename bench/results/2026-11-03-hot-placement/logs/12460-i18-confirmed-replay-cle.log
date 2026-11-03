@@ -1,0 +1,49 @@
+sessions 100 non-target transition sessions 15
+distinct_vs_sibling
+ascii 1.29041 14 6 0.11531829833984375 0.34595489501953125
+unicode 1.0549 14 6 0.11531829833984375 0.34595489501953125
+truecolor 1.03034 15 5 0.04138946533203125 0.2483367919921875
+cursor_motion 1.03086 13 7 0.26317596435546875 0.34595489501953125
+scroll_region 1.2156 15 5 0.04138946533203125 0.2483367919921875
+tui_frames 1.02993 15 5 0.04138946533203125 0.2483367919921875
+distinct_vs_auto
+ascii 1.32602 17 3 0.0025768280029296875 0.015460968017578125
+unicode 1.06105 14 6 0.11531829833984375 0.461273193359375
+truecolor 1.07506 17 3 0.0025768280029296875 0.015460968017578125
+cursor_motion 1.01742 14 6 0.11531829833984375 0.461273193359375
+scroll_region 1.16568 13 7 0.26317596435546875 0.461273193359375
+tui_frames 1.0603 14 6 0.11531829833984375 0.461273193359375
+sibling_vs_auto
+ascii 1.15558 13 7 0.26317596435546875 1.0
+unicode 1.00556 13 7 0.26317596435546875 1.0
+truecolor 1.07234 14 6 0.11531829833984375 0.6919097900390625
+cursor_motion 0.98634 7 13 0.26317596435546875 1.0
+scroll_region 0.97705 9 11 0.8238029479980469 1.0
+tui_frames 1.02447 12 8 0.5034446716308594 1.0
+{
+  "schema": "glass.hot-placement-cleanup/v1",
+  "cases": [
+    {
+      "case": "SIGTERM",
+      "complete": false,
+      "restored": true
+    },
+    {
+      "case": "SIGHUP",
+      "complete": false,
+      "restored": true
+    },
+    {
+      "case": "SIGINT",
+      "complete": false,
+      "restored": true
+    },
+    {
+      "case": "partial-setup",
+      "complete": false,
+      "restored": true,
+      "set_attempts": 4
+    }
+  ],
+  "note": "Real own-parent two-thread pins and mask restoration; injected waits/failure, not benchmark evidence."
+}

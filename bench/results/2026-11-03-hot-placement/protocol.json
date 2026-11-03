@@ -1,0 +1,137 @@
+{
+  "schema": "glass.hot-placement-protocol/v1",
+  "binary_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "cpus": [
+    0,
+    16,
+    1,
+    17
+  ],
+  "topology": {
+    "0": {
+      "siblings": [
+        0,
+        16
+      ],
+      "core": "0",
+      "package": "0",
+      "l3": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "l3_size": "98304K"
+    },
+    "16": {
+      "siblings": [
+        0,
+        16
+      ],
+      "core": "0",
+      "package": "0",
+      "l3": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "l3_size": "98304K"
+    },
+    "1": {
+      "siblings": [
+        1,
+        17
+      ],
+      "core": "1",
+      "package": "0",
+      "l3": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "l3_size": "98304K"
+    },
+    "17": {
+      "siblings": [
+        1,
+        17
+      ],
+      "core": "1",
+      "package": "0",
+      "l3": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "l3_size": "98304K"
+    }
+  },
+  "arms": [
+    "auto",
+    "s0",
+    "s1",
+    "d01",
+    "d10"
+  ],
+  "rounds": 20,
+  "pilot_rounds": 1,
+  "orders": "Five cyclic rotations of [auto,s0,d10,s1,d01], then their reversals; repeat twice for 20 rounds. Each arm occupies each position four times.",
+  "primary": "Per-round geometric mean(d01,d10) / geometric mean(s0,s1), six workloads, exact two-sided sign tests with Holm correction across six metrics. Role-balanced topology contrast; not pure SMT mechanism.",
+  "secondary": "Per-round geometric mean(d01,d10) / auto and geometric mean(s0,s1) / auto; each six-workload family Holm corrected. These are predeclared descriptive followups, not independent promotion evidence.",
+  "estimator": "Unchanged tput.py fastest of three DA1-boundary passes, 154x39, six unchanged payloads. Outer round is the unit; do not treat passes/roles as independent replicates.",
+  "guards": "Fail closed on binary/source hashes, topology, identity, masks, incomplete session, geometry, payload bytes, raw rates. No sampler/preload/per-pass hooks. Snapshots only before/after entire payload.",
+  "decision": "No runtime promotion from artificial pins. Any improvement vs auto requires separate uninstrumented exact-build replication and full all-metric competitor/startup/latency/correctness gates. A nonsignificant loss is not noninferiority.",
+  "limitations": "Fixed cores, shared host, producer freely scheduled (can share selected cores), background load, frequency, migrations within baseline mask, no CPU isolation; snapshots do not prove residency or continuous mask constancy. Deterministic balanced orders, not randomization. Baseline wrapped identically; boundary snapshots may affect warm state.",
+  "prior_work": "Earlier whole-die/producer-domain/helper same-logical-CPU treatments did not manipulate reader/parser same-core vs distinct-core placement within the same L3."
+}

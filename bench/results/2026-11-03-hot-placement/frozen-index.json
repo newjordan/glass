@@ -1,0 +1,11 @@
+{
+  "schema": "glass.historical-evidence-index/v1",
+  "manifests": [
+    {
+      "path": "bench/results/2026-11-03-hot-placement/evidence-sha256.json",
+      "sha256": "a29e3c1832559acdd57dc2e993f8c09790b20a35cee5631278de2cb45dd29d53",
+      "source_root": ".",
+      "snapshots": {}
+    }
+  ]
+}

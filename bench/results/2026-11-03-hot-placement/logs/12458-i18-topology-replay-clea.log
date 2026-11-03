@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/work/frosty40/glass-repo/tree/bench/linux/analyze-hot-placement.py", line 162, in <module>
+    result = analyze(a.directory)
+  File "/work/frosty40/glass-repo/tree/bench/linux/analyze-hot-placement.py", line 135, in analyze
+    need(t['allowed'] == old['allowed'], 'non-target thread mask changed')
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/frosty40/glass-repo/tree/bench/replay-terminal-pairs.py", line 24, in require
+    raise ValueError(message)
+ValueError: non-target thread mask changed

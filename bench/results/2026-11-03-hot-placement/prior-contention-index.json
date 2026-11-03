@@ -1,0 +1,15 @@
+{
+  "schema": "glass.historical-evidence-index/v1",
+  "manifests": [
+    {
+      "path": "bench/results/2026-11-03-reader-contention/evidence-sha256.json",
+      "sha256": "0fd2a4523983a7395f7f090f7a9c639e4429081de88cdc958715f2feaea2d161",
+      "source_root": ".",
+      "snapshots": {
+        "CHANGELOG.md": "bench/results/2026-11-03-hot-placement/previous-docs/CHANGELOG.md",
+        "bench/README.md": "bench/results/2026-11-03-hot-placement/previous-docs/bench/README.md",
+        "docs/PERFORMANCE.md": "bench/results/2026-11-03-hot-placement/previous-docs/docs/PERFORMANCE.md"
+      }
+    }
+  ]
+}

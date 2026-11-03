@@ -626,3 +626,33 @@ all rounds, orders, masks, identities, traces, failed pilot, source snapshots,
 read-only replays, ten non-mutating evidence-corruption challenges, and three
 catchable-signal cleanup cases. The exact selected release remains unchanged.
 The all-metric Ghostty goal is still open; no runtime candidate is promoted.
+
+
+### Same-L3 reciprocal hot-thread placement — research, not promotion
+
+The [iteration-18 package](../bench/results/2026-11-03-hot-placement/README.md)
+compares two same-L3 SMT-sibling pairs with reciprocal distinct-core pairs and
+shipping `auto` masks on the **unchanged selected executable**. It uses unchanged
+six-workload `tput.py` with no samplers or pass hooks; boundary checks/artificial
+pins mean this is not an ordinary terminal score. A five-session pilot and two
+fresh 100-session series replay. An additional initial 100-session run is
+**rejected and retained**: a strict non-target-mask invariant encountered GPU
+thread changes. V2 observes/reports those changes, was frozen before new
+collection, retains all hot-thread/producer/restore checks, and drops no sessions.
+
+First v2 primary distinct/sibling family: no six-workload Holm rejection.
+Replication: Unicode, truecolor and TUI reject within its primary family, not
+uniformly replicated primary significance. Secondary distinct/auto ASCII
+median paired ratios are **1.32602** and **1.30988**, 17/3 round wins/losses in
+each, within-secondary-family Holm p=.015461 in each. Those are shared-host
+placement leads, not pure SMT attribution, a shipping-policy validation, or new
+Ghostty wins. Deterministic balancing does not establish independent round
+signs for binomial inference; no pooled or either-series-significant guarantee.
+A post-capture witness records busy compiler load, not pass-level causation.
+
+Exact selected binary and all 120 Rust sources remain unchanged. No runtime
+promotion: next is controlled host-load/core placement with prospective
+worthwhile-benefit and regression bounds, then fresh complete competitor,
+startup, real key-to-screen and correctness gates. The all-metric goal remains
+open. Full numbers, exclusions, assumptions and read-only commands are in the
+[report](../reports/research-1eecf9876bb302e9da10ff629e71e6d8-18.txt).

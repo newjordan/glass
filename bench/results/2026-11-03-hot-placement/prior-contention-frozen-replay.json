@@ -1,0 +1,19 @@
+{
+  "schema": "glass.historical-evidence-replay/v1",
+  "manifests": [
+    {
+      "path": "bench/results/2026-11-03-reader-contention/evidence-sha256.json",
+      "manifest_sha256": "0fd2a4523983a7395f7f090f7a9c639e4429081de88cdc958715f2feaea2d161",
+      "files": 437,
+      "live_paths": 437,
+      "historical_paths": 0,
+      "bytes": 38052905
+    }
+  ],
+  "manifest_count": 1,
+  "file_references": 437,
+  "historical_references": 0,
+  "unique_source_versions": 437,
+  "note": "Explicit historical byte-integrity replay only; not timing, safety or championship acceptance.",
+  "index_sha256": "91d67b95f063f069495da4f601abceee45e304baa6853049ae55b30ead0f4327"
+}

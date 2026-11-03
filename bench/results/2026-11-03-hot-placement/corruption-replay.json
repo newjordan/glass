@@ -1,0 +1,90 @@
+{
+  "schema": "glass.hot-placement-checker-adversarial/v1",
+  "cases": [
+    {
+      "case": "hash",
+      "rejected": true,
+      "reason": "raw hash: tput-d01-1.json",
+      "unchanged_files": 201
+    },
+    {
+      "case": "complete",
+      "rejected": true,
+      "reason": "session state",
+      "unchanged_files": 201
+    },
+    {
+      "case": "hot-mask",
+      "rejected": true,
+      "reason": "role identity/mask",
+      "unchanged_files": 201
+    },
+    {
+      "case": "hot-identity",
+      "rejected": true,
+      "reason": "role identity/mask",
+      "unchanged_files": 201
+    },
+    {
+      "case": "restore",
+      "rejected": true,
+      "reason": "role identity/mask",
+      "unchanged_files": 201
+    },
+    {
+      "case": "producer",
+      "rejected": true,
+      "reason": "producer mask changed",
+      "unchanged_files": 201
+    },
+    {
+      "case": "topology",
+      "rejected": true,
+      "reason": "result/topology provenance",
+      "unchanged_files": 201
+    },
+    {
+      "case": "rate",
+      "rejected": true,
+      "reason": "rate/time mismatch",
+      "unchanged_files": 201
+    },
+    {
+      "case": "duplicate-key",
+      "rejected": true,
+      "reason": "duplicate JSON key: cols",
+      "unchanged_files": 201
+    },
+    {
+      "case": "source-set",
+      "rejected": true,
+      "reason": "source set",
+      "unchanged_files": 201
+    },
+    {
+      "case": "order",
+      "rejected": true,
+      "reason": "design/order",
+      "unchanged_files": 201
+    },
+    {
+      "case": "actual-order",
+      "rejected": true,
+      "reason": "actual capture order",
+      "unchanged_files": 201
+    },
+    {
+      "case": "overlap",
+      "rejected": true,
+      "reason": "actual capture order",
+      "unchanged_files": 201
+    },
+    {
+      "case": "non-target-transition",
+      "reported_not_rejected": true,
+      "unchanged_files": 201
+    }
+  ],
+  "canonical_unchanged": true,
+  "note": "Temporary corruption checks are not timing or authenticity evidence."
+}

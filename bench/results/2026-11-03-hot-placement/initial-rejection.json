@@ -1,0 +1,437 @@
+{
+  "schema": "glass.hot-placement-initial-rejection/v1",
+  "sessions": 100,
+  "rejected": true,
+  "reason": "Strict non-target-mask constancy rejected autonomous GPU-init transitions, not a hot-affinity failure. Preserve as diagnostic only. New explicit boundary-observation protocol and fresh run required for confirmatory analysis.",
+  "replay_sha256": "3fa24c078b0a8772fd3a331d17d4a37b8a9b33b7adcca9a511610f7b735cab4c",
+  "changes": [
+    {
+      "file": "tput-d01-13.placement.json",
+      "phase": "threads_during",
+      "before": {
+        "tid": 2171447,
+        "name": "gpu-open",
+        "start_ticks": 14840367,
+        "allowed": [
+          24
+        ]
+      },
+      "after": {
+        "tid": 2171447,
+        "name": "glass:disk$0",
+        "start_ticks": 14840367,
+        "allowed": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ]
+      }
+    },
+    {
+      "file": "tput-d01-13.placement.json",
+      "phase": "threads_after",
+      "before": {
+        "tid": 2171447,
+        "name": "gpu-open",
+        "start_ticks": 14840367,
+        "allowed": [
+          24
+        ]
+      },
+      "after": {
+        "tid": 2171447,
+        "name": "glass:disk$0",
+        "start_ticks": 14840367,
+        "allowed": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ]
+      }
+    },
+    {
+      "file": "tput-d01-17.placement.json",
+      "phase": "threads_during",
+      "before": {
+        "tid": 2183709,
+        "name": "gpu-open",
+        "start_ticks": 14849657,
+        "allowed": [
+          15
+        ]
+      },
+      "after": {
+        "tid": 2183709,
+        "name": "glass:disk$0",
+        "start_ticks": 14849657,
+        "allowed": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ]
+      }
+    },
+    {
+      "file": "tput-d01-17.placement.json",
+      "phase": "threads_after",
+      "before": {
+        "tid": 2183709,
+        "name": "gpu-open",
+        "start_ticks": 14849657,
+        "allowed": [
+          15
+        ]
+      },
+      "after": {
+        "tid": 2183709,
+        "name": "glass:disk$0",
+        "start_ticks": 14849657,
+        "allowed": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ]
+      }
+    },
+    {
+      "file": "tput-d10-12.placement.json",
+      "phase": "threads_after",
+      "before": {
+        "tid": 2167111,
+        "name": "gpu-open",
+        "start_ticks": 14837668,
+        "allowed": [
+          19
+        ]
+      },
+      "after": {
+        "tid": 2167111,
+        "name": "glass:disk$0",
+        "start_ticks": 14837668,
+        "allowed": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ]
+      }
+    },
+    {
+      "file": "tput-s1-15.placement.json",
+      "phase": "threads_during",
+      "before": {
+        "tid": 2179502,
+        "name": "gpu-open",
+        "start_ticks": 14846171,
+        "allowed": [
+          3
+        ]
+      },
+      "after": {
+        "tid": 2179502,
+        "name": "gpu-open",
+        "start_ticks": 14846171,
+        "allowed": [
+          30
+        ]
+      }
+    },
+    {
+      "file": "tput-s1-15.placement.json",
+      "phase": "threads_after",
+      "before": {
+        "tid": 2179502,
+        "name": "gpu-open",
+        "start_ticks": 14846171,
+        "allowed": [
+          3
+        ]
+      },
+      "after": {
+        "tid": 2179502,
+        "name": "glass:disk$0",
+        "start_ticks": 14846171,
+        "allowed": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ]
+      }
+    },
+    {
+      "file": "tput-s1-19.placement.json",
+      "phase": "threads_during",
+      "before": {
+        "tid": 2190568,
+        "name": "gpu-open",
+        "start_ticks": 14855758,
+        "allowed": [
+          28
+        ]
+      },
+      "after": {
+        "tid": 2190568,
+        "name": "glass:disk$0",
+        "start_ticks": 14855758,
+        "allowed": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ]
+      }
+    },
+    {
+      "file": "tput-s1-19.placement.json",
+      "phase": "threads_after",
+      "before": {
+        "tid": 2190568,
+        "name": "gpu-open",
+        "start_ticks": 14855758,
+        "allowed": [
+          28
+        ]
+      },
+      "after": {
+        "tid": 2190568,
+        "name": "glass:disk$0",
+        "start_ticks": 14855758,
+        "allowed": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ]
+      }
+    }
+  ]
+}

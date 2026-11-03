@@ -13,6 +13,18 @@ A program runs in a pseudo-terminal, and what it writes comes in through
 No dialect is the reference one; each is an adapter onto one shared
 description of what to show.
 
+### Reciprocal same-L3 hot placement (research only)
+
+- Measure reader/parser sibling versus distinct-core pins on the unchanged
+  selected executable: five-session pilot, preserved rejected 100-session
+  strict run, and two fresh 100-session series under an explicit v2 protocol.
+- Find a repeatable secondary ASCII distinct/auto placement lead under shared
+  host load, but no uniformly replicated primary-family significance and no
+  default-affinity or all-metric competitor win. Keep runtime unchanged.
+- Add read-only identity/mask/topology/order replay, 13 non-mutating corruption
+  rejections, explicit non-target-transition reporting, and four two-role
+  cleanup fault cases; preserve all 120 Rust sources and 621 prior files.
+
 ### Controlled reader contention (diagnostic only)
 
 - Capture a predeclared 12-round, six-arm own-reader contention experiment:

@@ -1,0 +1,26 @@
+{
+  "schema": "glass.hot-placement-final-verification/v1",
+  "accepted_sessions": {
+    "pilot": 5,
+    "confirmatory": 100,
+    "replication": 100
+  },
+  "accepted_total": 205,
+  "initial_strict_rejected_sessions": 100,
+  "initial_rejection_reproduced": true,
+  "corruption_rejections": 13,
+  "non_target_positive_control_reported": true,
+  "cleanup_cases": 4,
+  "existing_replay_tests": 22,
+  "rust_sources_unchanged": 120,
+  "prior_artifacts_unchanged": 621,
+  "binary_sha256": "d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c",
+  "binary_byte_comparison": true,
+  "prior_contention_artifacts": 437,
+  "prior_historical_manifests": 17,
+  "prior_historical_references": 3171,
+  "note": "Integrity/replay/lifecycle evidence; no runtime promotion, superiority across all metrics, or championship acceptance. Series not pooled.",
+  "prior_contention_historical_document_versions": 3,
+  "prior_historical_versions": 10,
+  "old_manifests_unchanged": true
+}

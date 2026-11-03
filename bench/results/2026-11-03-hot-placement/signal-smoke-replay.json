@@ -1,0 +1,27 @@
+{
+  "schema": "glass.hot-placement-cleanup/v1",
+  "cases": [
+    {
+      "case": "SIGTERM",
+      "complete": false,
+      "restored": true
+    },
+    {
+      "case": "SIGHUP",
+      "complete": false,
+      "restored": true
+    },
+    {
+      "case": "SIGINT",
+      "complete": false,
+      "restored": true
+    },
+    {
+      "case": "partial-setup",
+      "complete": false,
+      "restored": true,
+      "set_attempts": 4
+    }
+  ],
+  "note": "Real own-parent two-thread pins and mask restoration; injected waits/failure, not benchmark evidence."
+}

@@ -1,0 +1,158 @@
+Iteration 18: reciprocal same-L3 hot-thread placement on the exact selected build
+Status: reported research; not championship acceptance or runtime promotion.
+
+Question and intervention
+-------------------------
+Earlier whole-die, reader-unpinned, producer-domain, cross-L3 reader split and
+same-logical-CPU helper-contention experiments did not deliberately compare
+reader/parser SMT siblings with different physical cores inside the same L3.
+This experiment changes only own-parent pty-read/pty-parse affinity masks,
+using the unchanged selected executable:
+ d75cb26fb48120df841ff876ee110c1e45e5feb6c3996ddc90d01e681200805c.
+No Rust edit, build, sampler, preload, pass-boundary hook, or producer pin.
+bench/tput.py is unchanged: six workloads, DA1, 154x39, fastest of three.
+Boundary /proc snapshots and affinity changes still make this an artificial
+placement experiment, not an ordinary, completely unobserved terminal score.
+
+Sysfs at capture identifies physical sibling pairs (0,16) and (1,17), all
+sharing a 98304K L3 (CPUs 0-7,16-23). Each capture verifies this topology and
+the exact binary. Arms (reader,parser):
+ auto: unchanged shipping large-L3 masks
+ s0=(0,16), s1=(1,17): siblings
+ d01=(0,17), d10=(1,16): distinct physical cores, same L3.
+Both contrasts use each selected CPU equally for each role. The producer and
+all other thread masks are not modified by the wrapper. This is not a claim
+that no other thread changed its own affinity.
+
+Lifecycle and provenance
+------------------------
+Wrapper checks direct-parent executable and role identity/start_ticks, pins
+once, executes unchanged payload, checks masks and producer mask at boundaries,
+then restores both original masks independently, including partial failures.
+Capture is complete only after successful payload and restoration. Runner
+records exact source/executable/protocol and raw hashes, fresh directories,
+actual planned order, and before/after source checks. Read-only analyzer
+checks duplicate keys, shapes, rounded times/rates, identity, masks, topology,
+restoration, hashes, actual time order and non-overlapping whole payloads.
+Snapshots do not prove residency, migration counts, or unchanged masks between
+boundaries. Names/start_ticks are Linux practical identities, not provenance
+against an adversarial writer or same-tick task reuse.
+
+Important rejected-run disclosure
+---------------------------------
+Five-session pilot passed the original v1 checks. Its one-round d/auto ratios
+were ASCII .8558 and scroll .9144. It was not a significance or promotion gate.
+The first 100-session run completed capture but its STRICT v1 replay rejected
+non-target-mask constancy: 9 transitions in 5 sessions, involving gpu-open
+(usually becoming glass:disk$0). Hot masks and cleanup passed; rejection and
+all bytes, the empty failed redirected replay output, and v1 source retained.
+No inferential summary from that rejected run is promoted or pooled.
+
+Protocol-v2 was frozen before collecting a FRESH 100 sessions. It explicitly
+observes/reports rather than asserts non-target affinity constancy; it does
+not relax hot identity/masks, producer, restoration, geometry or hash checks.
+Wrapper, runner, payload, binary and arm design were unchanged. The rejection
+and pilot comparisons, not a successful rejected-run statistical summary,
+informed this amendment. v1 still rejects the first balanced capture; v2
+cannot silently reinterpret its v1 protocol. Fresh v2 observed transitions in
+15/100 sessions (51 phase records, not 51 independent transitions). A separate
+replication protocol was then frozen before another 100 sessions, observing
+transitions in 18/100. No affected sessions were dropped. All three 100-session
+captures and the separate pilot are retained. No pooling across series.
+
+Prespecified statistics
+-----------------------
+20 deterministic outer rounds per v2 series, five cyclic rotations followed
+by their reversals, repeated twice. Each arm occupies each position four
+times. Primary per-round ratio sqrt(d01*d10)/sqrt(s0*s1), then its median;
+NOT a ratio of across-round medians. Outer round is the unit, n=20 per metric;
+passes and reciprocal arms are not independent replicates. Exact two-sided
+binomial sign tests, ties removed, Holm across the six workloads separately
+for the primary family. Prespecified d/auto and s/auto six-workload families
+are DESCRIPTIVE followups, not a rescue of a failed primary analysis.
+Exact-binomial p-values condition on independent fair signs under the null;
+deterministic balancing does not establish that assumption. Temporal load
+can correlate rounds. No exact randomized-inference claim, no cross-series
+or all-18-comparisons family guarantee, no either-run-significant rule.
+
+Fresh first v2 series: median paired primary d/s ratio; W/L; Holm p
+ ASCII          1.29041   14/6   .345955
+ Unicode        1.05490   14/6   .345955
+ truecolor      1.03034   15/5   .248337
+ cursor         1.03086   13/7   .345955
+ scroll region  1.21560   15/5   .248337
+ TUI            1.02993   15/5   .248337
+NONE reject in the primary family; not superiority and not equivalence.
+Secondary d/auto: ASCII 1.32602, 17/3, p=.015461; truecolor 1.07506, 17/3,
+p=.015461. Other four do not reject (p=.461273).
+
+Separate replication: primary d/s ratio; W/L; Holm p
+ ASCII          1.15090   13/7   .263176
+ Unicode        1.03977   17/3   .012884
+ truecolor      1.05970   17/3   .012884
+ cursor         1.03621   15/5   .124168
+ scroll region  1.19554   14/6   .230637
+ TUI            1.06657   18/2   .002415
+Three primary within-series rejections here, none in the first v2 series.
+Do not report uniformly replicated primary statistical superiority.
+Secondary d/auto: ASCII 1.30988, 17/3, p=.015461; TUI 1.05391, 17/3,
+p=.015461. Unicode/cursor p=.230637; truecolor/scroll p=.165558.
+No s/auto metric rejects in either series. Non-rejection is not no harm.
+
+Concrete new lead, and limits
+-----------------------------
+Under these shared-host conditions, distinct-core pins show a repeatable
+SECONDARY ASCII d/auto contrast (~31-33%) in two separate v2 series, while
+primary topology-family results vary. This is enough to prioritize controlled
+placement research, not to ship fixed pins. The reciprocal design separates
+CPU marginal choice from sibling pairing but not pure SMT from cache,
+scheduling, simultaneous load, power/frequency or producer competition.
+Each series would need its own prospective validation/benefit-regression
+margins, not arbitrary pooling or selective significance.
+
+Absolute auto ASCII medians: 222.8 and 250.9 MB/s; Unicode 93.4 and 94.55.
+These differ markedly from earlier exact-build datasets. A post-confirmatory
+host witness during replication records loadavg 36.30/37.91/32.90 and many busy
+Lean compiler workers; ps percentages are lifetime averages, not instantaneous
+occupancy. This establishes contemporaneous shared load, not the cause or
+state of every timed pass. Do not normalize against old baselines or blame
+all disagreement on proven host noise. No unrelated task was altered.
+GPU-init thread transitions are observations; boundaries are around the whole
+payload (including setup/geometry stabilization/generation), not timed passes.
+They are not proof that GPU initialization overlapped the timed workload.
+
+Fixed cores, unrestricted producer (can share these cores), external load,
+no CPU isolation, deterministic order and boundary warm-state effects limit
+transferability. There is no new Ghostty/startup/key-to-screen/CPU-memory
+comparison. No measurement here closes the historical remaining Ghostty gaps.
+
+Validation and retained files
+------------------------------
+All 205 accepted payload captures replay: pilot 5, first v2 100, replication100.
+Original 100-session strict rejection reproduces separately. 13 corruption
+cases reject without rewriting evidence; a deliberate non-target transition
+is accepted AND reported under v2 (14th case). Three catchable signals and a
+second-pin failure restore both real hot-thread masks, complete:false in all
+four cases. Fault captures are not throughput sessions. Existing replay test
+entry point: 22 tests passed. Independent historical read-only replay: 17
+manifests/3171 file references, plus prior contention 437 frozen artifacts.
+All 120 Rust sources, 621 previously captured files and exact selected binary
+remain unchanged; binary byte-compares to /tmp/glass-i17-selected.
+
+Sources: bench/results/2026-11-03-hot-placement/{protocol*.json,pilot*,balanced/,
+ initial-rejection*,confirmatory*,replication*,corruption-replay.json,
+ signal-smoke-replay.json,post-confirmatory-host-witness.json,starting-state.json,
+ prior-*-replay.json,logs/,source-snapshots/,README.md} and
+ bench/linux/{hot-placement.py,run-hot-placement.sh,analyze-hot-placement.py}.
+Read-only commands and final artifact hashes in the package README/frozen index.
+No runtime promotion. No world-title claim. Next necessary action: a separately
+controlled same-L3 role-placement experiment with prospective benefit/regression
+bounds and host-load control, then fresh exact-build full competitor, startup,
+key-to-screen and correctness gates before any shipping affinity change.
+
+Historical closure after documentation updates: three previous document paths
+now have explicit original-byte mappings in prior-contention-index.json, with
+0f20904 source snapshots checked against the unchanged prior manifest. Final
+replay verifies all 437 references, three historical document versions. The
+17-manifest/3171-reference replay also passes after docs update. Earlier
+receipts remain retained; no prior evidence or manifest is rewritten.
