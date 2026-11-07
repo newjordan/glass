@@ -195,6 +195,14 @@ knot,orrery` plays only those, `--loop` repeats the show. Add `-- --surreal`
 to the film for its video cubes and dancing figures; the figures' models
 are not in the repository (`MINDSEYE_ASSETS` names where they are).
 
+## Hermes Agent plugin
+
+[`plugins/glass`](plugins/glass/README.md) gives [Hermes Agent](https://github.com/NousResearch/hermes-agent) (`>=0.19.0`) a session-scoped display surface in glass: cards, bar charts, images, multi-panel pages, 3D scenes, animated glTF models, camera tweens, video frames, and click/scroll events across 12 tools and `/glass`. Outside glass, every tool falls back to plain text without claiming a frame was drawn.
+
+```sh
+hermes plugins install newjordan/glass/plugins/glass
+```
+
 ## Platforms
 
 | | |
