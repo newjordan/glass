@@ -1,0 +1,24 @@
+name: glass
+version: 1.0.0
+description: "Session-scoped Glass visual terminal display plugin for Hermes: charts, images, text pages, 3D scenes, glTF models, video frames, live overlays, and showcase events with hardware-confirmed rendering and automatic fallback."
+author: newjordan
+kind: standalone
+requires_hermes: ">=0.19.0"
+provides_tools:
+  - glass_show
+  - glass_image
+  - glass_page
+  - glass_scene
+  - glass_model
+  - glass_tween
+  - glass_frame
+  - glass_layer
+  - glass_events
+  - glass_bind
+  - glass_probe
+  - glass_clear
+provides_hooks:
+  - on_session_start
+  - on_session_end
+  - on_session_finalize
+  - on_session_reset
