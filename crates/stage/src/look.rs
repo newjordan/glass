@@ -313,7 +313,7 @@ impl Dof {
         let depth = |p: &[f32; 3]| row[0] * p[0] + row[1] * p[1] + row[2] * p[2] + row[3];
         let points = if self.focus.is_empty() { reveal } else { &self.focus[..] };
         let (lo, hi) = points.iter().map(depth).filter(|d| d.is_finite()).fold((f32::INFINITY, f32::NEG_INFINITY), |(lo, hi), d| (lo.min(d), hi.max(d)));
-        (lo <= hi).then(|| (lo - self.margin, hi + self.margin))
+        (lo <= hi).then_some((lo - self.margin, hi + self.margin))
     }
 }
 
@@ -811,7 +811,7 @@ impl Look {
                     if n.len() < 3 || (n.len() - 3) % 3 != 0 {
                         return None;
                     }
-                    let focus = n[3..].chunks_exact(3).map(|p| [p[0], p[1], p[2]]).collect();
+                    let focus = n[3..].as_chunks::<3>().0.iter().map(|p| [p[0], p[1], p[2]]).collect();
                     look.dof = Some(Dof { focus, margin: n[0], spread: n[1], radius: n[2] });
                 }
                 _ => return None,

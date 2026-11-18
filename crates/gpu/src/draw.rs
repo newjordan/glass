@@ -170,7 +170,7 @@ impl Core {
             self.view_format,
             wgpu::TextureFormat::Bgra8Unorm | wgpu::TextureFormat::Bgra8UnormSrgb
         ) {
-            for p in pixels.chunks_exact_mut(4) {
+            for p in pixels.as_chunks_mut::<4>().0 {
                 p.swap(0, 2);
             }
         }
@@ -269,7 +269,7 @@ impl ReadBack {
                 }
                 self.buffer.unmap();
                 if self.bgra {
-                    for p in pixels.chunks_exact_mut(4) {
+                    for p in pixels.as_chunks_mut::<4>().0 {
                         p.swap(0, 2);
                     }
                 }

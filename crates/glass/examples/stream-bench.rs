@@ -117,7 +117,7 @@ impl Streams {
             let mut rgba = self.ring[i][n % self.ring[i].len()].clone();
             let stamp = (n as u32).to_le_bytes();
             if self.solid_stamp {
-                for px in rgba.chunks_exact_mut(4) {
+                for px in rgba.as_chunks_mut::<4>().0 {
                     px[0..3].copy_from_slice(&stamp[0..3]);
                     px[3] = 255;
                 }
