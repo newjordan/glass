@@ -492,11 +492,6 @@ impl Engine {
 
     /// Bytes through `Term`, with the scroll count and the store's events
     /// kept as they run.
-    fn apply_timed(&mut self, pass: &[u8]) {
-        let t = std::time::Instant::now();
-        self.apply(pass);
-        timers::record(timers::APPLY, t);
-    }
 
     fn apply(&mut self, pass: &[u8]) {
 
@@ -2975,10 +2970,7 @@ pub(crate) mod timers {
     pub static VTE_CALLS: AtomicU64 = AtomicU64::new(0);
     pub static C0_BYTES: AtomicU64 = AtomicU64::new(0);
     pub static VTE_BYTES: AtomicU64 = AtomicU64::new(0);
-    pub static FEED_NS: AtomicU64 = AtomicU64::new(0);
-    pub static FEED_CALLS: AtomicU64 = AtomicU64::new(0);
     pub const APPLY: usize = 0;
-    pub const FEED: usize = 1;
     pub fn init() {
         ON.store(std::env::var_os("GLASS_PARSE_TIMERS").is_some_and(|v| !v.is_empty() && v != "0"), Ordering::Relaxed);
     }
@@ -3051,12 +3043,14 @@ pub(crate) mod counters {
     pub static VTE_BYTES: AtomicU64 = AtomicU64::new(0);
     static COUNTING: AtomicBool = AtomicBool::new(false);
     /// Count where applied bytes go, from now until [`counters::stop`].
+    #[cfg_attr(not(test), allow(dead_code))]
     pub fn start() {
         LANE_RUN_BYTES.store(0, Ordering::Relaxed);
         VTE_BYTES.store(0, Ordering::Relaxed);
         COUNTING.store(true, Ordering::Relaxed);
     }
     /// Stop counting, returning what was counted.
+    #[cfg_attr(not(test), allow(dead_code))]
     pub fn stop() -> (u64, u64) {
         COUNTING.store(false, Ordering::Relaxed);
         (LANE_RUN_BYTES.swap(0, Ordering::Relaxed), VTE_BYTES.swap(0, Ordering::Relaxed))

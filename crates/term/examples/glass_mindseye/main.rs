@@ -1096,7 +1096,7 @@ fn build_frame(
     // The surreal show's own: video frames before the groups, its scene
     // and the rain after.
     let (mut pre, mut post) = (Vec::new(), Vec::new());
-    if let Some(s) = surreal.as_deref_mut() {
+    if let Some(s) = surreal {
         s.after(cv, t, hud.frames, &mut pre, &mut post);
     }
     // The numbers: glass against kitty, and this run, graphed.

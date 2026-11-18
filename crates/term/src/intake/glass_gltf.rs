@@ -482,7 +482,7 @@ impl<'a> Reader<'a> {
         if values.iter().any(|v| !v.is_finite()) {
             return Err(err("EINVAL", format!("{what} accessor {index} holds a number that is not finite")));
         }
-        Ok(values.chunks_exact(16).map(|m| std::array::from_fn(|c| [m[c * 4], m[c * 4 + 1], m[c * 4 + 2], m[c * 4 + 3]])).collect())
+        Ok(values.as_chunks::<16>().0.iter().map(|m| std::array::from_fn(|c| [m[c * 4], m[c * 4 + 1], m[c * 4 + 2], m[c * 4 + 3]])).collect())
     }
 
     /// `items`, and with `matrix` a 4x4 matrix accessor's sixteen numbers
@@ -946,7 +946,7 @@ impl<'a> Reader<'a> {
             return Err(err("EINVAL", format!("mesh {mi} primitive {pi}'s POSITION is not three numbers")));
         }
         let n = flat.len() / 3;
-        let positions: Vec<[f32; 3]> = flat.chunks_exact(3).map(|c| [c[0], c[1], c[2]]).collect();
+        let positions: Vec<[f32; 3]> = flat.as_chunks::<3>().0.iter().map(|c| [c[0], c[1], c[2]]).collect();
         let same = |what: &str, index: usize, want: &[usize]| -> Result<Vec<f32>, WireError> {
             let (w, values) = self.floats(index, MAX_MESH_VERTICES, what)?;
             if !want.contains(&w) || values.len() / w != n {
@@ -955,11 +955,11 @@ impl<'a> Reader<'a> {
             Ok(values)
         };
         let normals: Vec<[f32; 3]> = match attribute(Semantic::Normals) {
-            Some(index) => same("NORMAL", index, &[3])?.chunks_exact(3).map(|c| [c[0], c[1], c[2]]).collect(),
+            Some(index) => same("NORMAL", index, &[3])?.as_chunks::<3>().0.iter().map(|c| [c[0], c[1], c[2]]).collect(),
             None => Vec::new(),
         };
         let uvs: Vec<[f32; 2]> = match attribute(Semantic::TexCoords(uv_set)) {
-            Some(index) => same("TEXCOORD", index, &[2])?.chunks_exact(2).map(|c| [c[0], c[1]]).collect(),
+            Some(index) => same("TEXCOORD", index, &[2])?.as_chunks::<2>().0.iter().map(|c| [c[0], c[1]]).collect(),
             None => Vec::new(),
         };
         // A skinned primitive's four joints and weights a vertex: both, or
@@ -979,8 +979,8 @@ impl<'a> Reader<'a> {
                 if wv.iter().any(|v| *v < 0.0) {
                     return Err(err("EINVAL", format!("mesh {mi} primitive {pi} has a negative weight")));
                 }
-                let joints = jv.chunks_exact(4).map(|c| [c[0], c[1], c[2], c[3]].map(|v| v.min(u32::from(u16::MAX)) as u16)).collect();
-                let weights = wv.chunks_exact(4).map(|c| [c[0], c[1], c[2], c[3]]).collect();
+                let joints = jv.as_chunks::<4>().0.iter().map(|c| [c[0], c[1], c[2], c[3]].map(|v| v.min(u32::from(u16::MAX)) as u16)).collect();
+                let weights = wv.as_chunks::<4>().0.iter().map(|c| [c[0], c[1], c[2], c[3]]).collect();
                 (joints, weights)
             }
             (Some(_), None) => return Err(err("EINVAL", format!("mesh {mi} primitive {pi} has JOINTS_0 without WEIGHTS_0"))),
@@ -1179,7 +1179,7 @@ fn flat_normals(mesh: &MeshData) -> Option<MeshData> {
         joints: Vec::with_capacity(if mesh.joints.is_empty() { 0 } else { count }),
         weights: Vec::with_capacity(if mesh.weights.is_empty() { 0 } else { count }),
     };
-    for tri in mesh.indices.chunks_exact(3) {
+    for tri in mesh.indices.as_chunks::<3>().0 {
         let p = [tri[0], tri[1], tri[2]].map(|i| mesh.positions.get(i as usize).copied().unwrap_or([0.0; 3]));
         let u = [p[1][0] - p[0][0], p[1][1] - p[0][1], p[1][2] - p[0][2]];
         let v = [p[2][0] - p[0][0], p[2][1] - p[0][1], p[2][2] - p[0][2]];

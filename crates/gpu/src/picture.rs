@@ -49,8 +49,8 @@ pub fn premultiply_in_place(rgba: &mut [u8]) {
     // cleared. Anything else is premultiplied two pixels per u64 lane with
     // the exact SWAR division, bit-identical to `(c * a + 127) / 255`.
     const ALPHA_LANES: u64 = 0xFF00_0000_FF00_0000;
-    let mut chunks = rgba.chunks_exact_mut(32);
-    for block in &mut chunks {
+    let (blocks, remainder) = rgba.as_chunks_mut::<32>();
+    for block in blocks.iter_mut() {
         let w = |i: usize| u64::from_le_bytes(block[i..i + 8].try_into().expect("8 bytes"));
         let (w0, w1, w2, w3) = (w(0), w(8), w(16), w(24));
         if (w0 & w1 & w2 & w3) & ALPHA_LANES == ALPHA_LANES {
@@ -68,9 +68,9 @@ pub fn premultiply_in_place(rgba: &mut [u8]) {
         block[16..24].copy_from_slice(&premultiply_u64_swar(w2).to_le_bytes());
         block[24..32].copy_from_slice(&premultiply_u64_swar(w3).to_le_bytes());
     }
-    for px in chunks.into_remainder().chunks_exact_mut(4) {
-        let p = u32::from_le_bytes(px.try_into().expect("4 bytes"));
-        px.copy_from_slice(&premultiply_u32_swar(p).to_le_bytes());
+    for px in remainder.as_chunks_mut::<4>().0 {
+        let p = u32::from_le_bytes(*px);
+        *px = premultiply_u32_swar(p).to_le_bytes();
     }
 }
 
@@ -503,7 +503,7 @@ mod tests {
 
     /// The exact per-pixel path, as the reference the fast one must match.
     fn premultiply_pixels(rgba: &mut [u8]) {
-        for px in rgba.chunks_exact_mut(4) {
+        for px in rgba.as_chunks_mut::<4>().0 {
             let a = u16::from(px[3]);
             for c in &mut px[..3] {
                 *c = ((u16::from(*c) * a + 127) / 255) as u8;

@@ -123,7 +123,7 @@ fn paint(look: &Look<'_>, width: u32, height: u32) -> Vec<u8> {
     let plain = finish(clear);
     let mut out = vec![0u8; w * h * 4];
     let Some(image) = look.wallpaper else {
-        for pixel in out.chunks_exact_mut(4) {
+        for pixel in out.as_chunks_mut::<4>().0 {
             pixel.copy_from_slice(&plain);
         }
         return out;
@@ -146,7 +146,7 @@ fn paint(look: &Look<'_>, width: u32, height: u32) -> Vec<u8> {
     let rows = texels(h, dst[1], dst[3], src[1], src[3], image.height);
     let iw = image.width as usize;
     let fill = |(y, line): (usize, &mut [u8])| {
-        for (x, pixel) in line.chunks_exact_mut(4).enumerate() {
+        for (x, pixel) in line.as_chunks_mut::<4>().0.iter_mut().enumerate() {
             let value = match (rows[y], columns[x]) {
                 (Some(ty), Some(tx)) => {
                     let at = (ty * iw + tx) * 4;
@@ -299,10 +299,10 @@ impl Canvas<'_> {
                     let mix = |dst: u8, src: u8| (f32::from(src) * alpha + f32::from(dst) * (1.0 - k)).round().min(255.0) as u8;
                     let p = &mut self.pixels[i..i + 4];
                     (p[0], p[1], p[2], p[3]) = (mix(p[0], b), mix(p[1], g), mix(p[2], r), mix(p[3], a));
-                } else if let Some(&coverage) = glyph.data.get(at) {
-                    if coverage > 0 {
-                        self.over(px as u32, py as u32, rgb, f32::from(coverage) / 255.0 * alpha);
-                    }
+                } else if let Some(&coverage) = glyph.data.get(at)
+                    && coverage > 0
+                {
+                    self.over(px as u32, py as u32, rgb, f32::from(coverage) / 255.0 * alpha);
                 }
             }
         }
@@ -447,7 +447,7 @@ mod tests {
         let look = Look { background: [200, 100, 50], opacity: 0.5, wallpaper: None };
         let pixels = paint(&look, 3, 2);
         assert_eq!(pixels.len(), 3 * 2 * 4);
-        assert!(pixels.chunks_exact(4).all(|p| p == [25, 50, 100, 128]));
+        assert!(pixels.as_chunks::<4>().0.iter().all(|p| *p == [25, 50, 100, 128]));
     }
 
     #[test]
@@ -513,6 +513,6 @@ mod tests {
     fn many_rows_are_painted_alike_across_the_bands() {
         let look = Look { background: [1, 2, 3], opacity: 1.0, wallpaper: None };
         let pixels = paint(&look, 7, 97);
-        assert!(pixels.chunks_exact(4).all(|p| p == [3, 2, 1, 255]));
+        assert!(pixels.as_chunks::<4>().0.iter().all(|p| *p == [3, 2, 1, 255]));
     }
 }
