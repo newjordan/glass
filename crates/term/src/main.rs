@@ -698,12 +698,13 @@ impl Ui {
         // Ctrl+click opens a link even when a program asked for the mouse.
         // Forwarding it arrives as C-MouseDown1, which tmux does not bind,
         // so the link never opens. A cell with no link is still the program's.
-        if ctrl && matches!(mouse.kind, MouseEventKind::Down(MouseButton::Left)) {
-            if let Some(url) = session.link_or_url_at(row, col) {
-                open(&url);
-                self.link_press = true;
-                return true;
-            }
+        if ctrl
+            && matches!(mouse.kind, MouseEventKind::Down(MouseButton::Left))
+            && let Some(url) = session.link_or_url_at(row, col)
+        {
+            open(&url);
+            self.link_press = true;
+            return true;
         }
         // A program that asked for the mouse gets it. Shift keeps it for
         // selecting, as in other terminals.

@@ -621,7 +621,7 @@ pub(crate) fn random_painting(rng: &mut Rng, len: usize) -> Vec<u8> {
             // A cursor move.
             4 | 5 => {
                 let params: Vec<String> = (0..rng.below(4)).map(|_| number(rng)).collect();
-                let end = [b'H', b'f'][rng.below(2)];
+                let end = b"Hf"[rng.below(2)];
                 out.extend_from_slice(format!("\x1b[{}", params.join(";")).as_bytes());
                 out.push(end);
             }

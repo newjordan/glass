@@ -3999,7 +3999,7 @@ mod tests {
                                     for a in 0..=text.len() {
                                         for b in a..=text.len() {
                                             let fresh = || {
-                                                let mut e = Engine::new(4, cols, engine().info.lock().unwrap().clone());
+                                                let mut e = Engine::new(4, cols, *engine().info.lock().unwrap());
                                                 e.set_fast(fast);
                                                 if alternate { e.process(b"\x1b[?1049h"); }
                                                 e.term.goto(0, column);
@@ -4077,13 +4077,13 @@ mod tests {
                                 };
                                 for cut in 0..=text.len() {
                                     let mut expected =
-                                        Engine::new(8, cols, engine().info.lock().unwrap().clone());
+                                        Engine::new(8, cols, *engine().info.lock().unwrap());
                                     setup(&mut expected);
                                     for c in text.chars() {
                                         expected.term.input(c);
                                     }
                                     let mut actual =
-                                        Engine::new(8, cols, engine().info.lock().unwrap().clone());
+                                        Engine::new(8, cols, *engine().info.lock().unwrap());
                                     setup(&mut actual);
                                     actual.process(&text.as_bytes()[..cut]);
                                     actual.process(&text.as_bytes()[cut..]);
@@ -4582,7 +4582,8 @@ mod tests {
     #[test]
     fn scroll_authority_literal_boundaries() {
         let flood = b"a\r\nb\r\nc\r\nd\r\ne";
-        let cases: Vec<(&str, Vec<u8>, usize, u64, Vec<Event>)> = vec![
+        type Case = (&'static str, Vec<u8>, usize, u64, Vec<Event>);
+        let cases: Vec<Case> = vec![
             ("linefeed", flood.to_vec(), 1, 0, vec![]),
             ("wrap", vec![b'x'; 41], 1, 0, vec![]),
             ("erase_then_scroll", [b"\x1b[H\x1b[2K".as_slice(), flood].concat(), 1, 0, vec![]),
