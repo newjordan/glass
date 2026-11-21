@@ -3,7 +3,7 @@
 All notable changes to glass are recorded here. Versions follow
 [Semantic Versioning](https://semver.org/).
 
-## 0.2.0 - unreleased
+## 0.2.0 - 2026-11-21
 
 ### Settings
 
