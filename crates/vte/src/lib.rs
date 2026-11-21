@@ -679,7 +679,7 @@ impl<const OSC_RAW_BUF_SIZE: usize> Parser<OSC_RAW_BUF_SIZE> {
             // If the entire buffer is valid, use the first character and continue parsing.
             Ok(parsed) => {
                 let c = unsafe { parsed.chars().next().unwrap_unchecked() };
-                performer.print(c);
+                Self::ground_dispatch_char(performer, c);
 
                 self.partial_utf8_len = 0;
                 c.len_utf8() - old_bytes
@@ -695,10 +695,10 @@ impl<const OSC_RAW_BUF_SIZE: usize> Parser<OSC_RAW_BUF_SIZE> {
                         parsed.chars().next().unwrap_unchecked()
                     };
 
-                    performer.print(c);
+                    Self::ground_dispatch_char(performer, c);
 
                     self.partial_utf8_len = 0;
-                    // Only the first scalar was emitted. A valid prefix can
+                    // Only the first scalar was dispatched. A valid prefix can
                     // also contain ASCII before the next partial/invalid
                     // scalar; leave those bytes to the main dispatch loop.
                     return c.len_utf8() - old_bytes;
@@ -724,12 +724,20 @@ impl<const OSC_RAW_BUF_SIZE: usize> Parser<OSC_RAW_BUF_SIZE> {
     #[inline]
     fn ground_dispatch<P: Perform>(performer: &mut P, text: &str) {
         for c in text.chars() {
-            match c {
-                '\x00'..='\x1f' | '\u{80}'..='\u{9f}' => performer.execute(c as u8),
-                _ => performer.print(c),
-            }
+            Self::ground_dispatch_char(performer, c);
         }
     }
+
+    /// Share the callback classification with split UTF-8 completion. A C1
+    /// control must not become a printable character solely due to a read cut.
+    #[inline]
+    fn ground_dispatch_char<P: Perform>(performer: &mut P, c: char) {
+        match c {
+            '\x00'..='\x1f' | '\u{80}'..='\u{9f}' => performer.execute(c as u8),
+            _ => performer.print(c),
+        }
+    }
+
 }
 
 #[derive(PartialEq, Eq, Debug, Default, Copy, Clone)]
@@ -1425,6 +1433,93 @@ mod tests {
     /// Literal valid text and explicit control-sequence dispatch expectations.
     /// The 4-byte scratch buffer can contain a complete scalar, ASCII, and
     /// only the beginning of the following scalar at the same time.
+    /// Literal events, not two users of the same parser agreeing with each other.
+    #[test]
+    fn split_c1_dispatch_matches_literal_events() {
+        let mut cases = 0;
+        let mut failures = 0;
+        // Adjacent printables catch accidental widening of the C1 classification.
+        for code in 0x7f..=0xa0 {
+            let c = char::from_u32(code).unwrap();
+            for (tail, tail_events) in [
+                (&b""[..], vec![]),
+                (&b"ab"[..], vec![Sequence::Print('a'), Sequence::Print('b')]),
+                ("a漢z".as_bytes(), vec![Sequence::Print('a'), Sequence::Print('漢'), Sequence::Print('z')]),
+                (&b"a\xffz"[..], vec![Sequence::Print('a'), Sequence::Print('�'), Sequence::Print('z')]),
+                (&b"\x1b[2mz"[..], vec![Sequence::Csi(vec![vec![2]], vec![], false, 'm'), Sequence::Print('z')]),
+            ] {
+                let text = [format!("X{c}").as_bytes(), tail].concat();
+                let event = if (0x80..=0x9f).contains(&code) {
+                    Sequence::Execute(code as u8)
+                } else {
+                    Sequence::Print(c)
+                };
+                let mut expected = vec![Sequence::Print('X'), event];
+                expected.extend(tail_events);
+                for until in [false, true] {
+                    for a in 0..=text.len() {
+                        for b in a..=text.len() {
+                            let mut parser = Parser::new();
+                            let mut dispatcher = Dispatcher::default();
+                            for chunk in [&text[..a], &b""[..], &text[a..b], &b""[..], &text[b..]] {
+                                if until {
+                                    assert_eq!(parser.advance_until_terminated(&mut dispatcher, chunk), chunk.len());
+                                } else {
+                                    parser.advance(&mut dispatcher, chunk);
+                                }
+                            }
+                            if dispatcher.dispatched != expected {
+                                failures += 1;
+                                if failures <= 4 {
+                                    eprintln!("code={code:x} until={until} cuts={a},{b} tail={tail:?} actual={:?} expected={expected:?}", dispatcher.dispatched);
+                                }
+                            }
+                            cases += 1;
+                        }
+                    }
+                }
+            }
+        }
+        eprintln!("split-C1 literal cases={cases} failures={failures}");
+        assert_eq!(failures, 0);
+    }
+
+    #[test]
+    fn split_c1_termination_consumes_only_control() {
+        #[derive(Default)]
+        struct StopAfterEvent { events: Vec<Sequence> }
+        impl Perform for StopAfterEvent {
+            fn print(&mut self, c: char) { self.events.push(Sequence::Print(c)); }
+            fn execute(&mut self, b: u8) { self.events.push(Sequence::Execute(b)); }
+            fn terminated(&self) -> bool { !self.events.is_empty() }
+        }
+        let mut cases = 0;
+        let mut failures = 0;
+        for code in 0x80..=0x9f {
+            for (tail, expected_tail) in [
+                (&b"ab"[..], vec![Sequence::Print('a'), Sequence::Print('b')]),
+                ("a漢z".as_bytes(), vec![Sequence::Print('a'), Sequence::Print('漢'), Sequence::Print('z')]),
+                (&b"a\xffz"[..], vec![Sequence::Print('a'), Sequence::Print('�'), Sequence::Print('z')]),
+            ] {
+                let c = char::from_u32(code).unwrap();
+                let text = [format!("{c}").as_bytes(), tail].concat();
+                let mut parser = Parser::new();
+                parser.advance(&mut Dispatcher::default(), &text[..1]);
+                let mut stop = StopAfterEvent::default();
+                let consumed = parser.advance_until_terminated(&mut stop, &text[1..]);
+                let mut remaining = Dispatcher::default();
+                parser.advance(&mut remaining, &text[1 + consumed..]);
+                if consumed != 1 || stop.events != vec![Sequence::Execute(code as u8)] || remaining.dispatched != expected_tail {
+                    failures += 1;
+                }
+                cases += 1;
+            }
+        }
+        eprintln!("split-C1 termination cases={cases} failures={failures}");
+        assert_eq!(cases, 96);
+        assert_eq!(failures, 0);
+    }
+
     #[test]
     fn partial_utf8_accounts_only_for_emitted_scalar() {
         let mut cases = 0;

@@ -7,6 +7,11 @@ CHANGELOG
   buffer whose valid prefix also contains ASCII before an incomplete or invalid
   next scalar. Consume only the emitted scalar, preserving subsequent bytes for
   normal dispatch. Literal byte-cut matrix: 48/2,478 control failures to zero.
+- Fix C1 control bytes (0x80-0x9f) being printed as characters instead of
+  executed when they complete a split UTF-8 scalar in the scratch buffer.
+  Split-scalar completion now shares the ground-state classification with the
+  main dispatch loop. Literal byte-cut matrix: 2,240/10,062 control failures
+  to zero; stopped-parser boundary 96/96 to zero.
 
 ## 0.15.0
 

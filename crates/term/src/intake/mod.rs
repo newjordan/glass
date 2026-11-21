@@ -588,6 +588,56 @@ impl Splitter {
     }
 }
 
+/// Split-stage timers, the intake twin of `engine::timers`: whole-`split`
+/// calls and bytes, gated by `GLASS_SPLIT_TIMERS`, one `Instant::now`
+/// per `split()` call — per-chunk granularity, the convention the parse
+/// timers set, so the split stage stays comparable with the engine's
+/// buckets and cheap enough not to distort the stage it measures.
+pub(crate) mod split_timers {
+    use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
+    use std::time::Instant;
+
+    static ON: AtomicBool = AtomicBool::new(false);
+    static CALLS: AtomicU64 = AtomicU64::new(0);
+    static NS: AtomicU64 = AtomicU64::new(0);
+    static BYTES: AtomicU64 = AtomicU64::new(0);
+
+    pub fn init() {
+        ON.store(
+            std::env::var_os("GLASS_SPLIT_TIMERS").is_some_and(|v| !v.is_empty() && v != "0"),
+            Ordering::Relaxed,
+        );
+    }
+
+    #[inline]
+    pub fn on() -> bool {
+        ON.load(Ordering::Relaxed)
+    }
+
+    #[inline]
+    pub fn record(t: Instant, bytes: usize) {
+        if !ON.load(Ordering::Relaxed) {
+            return;
+        }
+        NS.fetch_add(t.elapsed().as_nanos() as u64, Ordering::Relaxed);
+        CALLS.fetch_add(1, Ordering::Relaxed);
+        BYTES.fetch_add(bytes as u64, Ordering::Relaxed);
+    }
+
+    pub fn report() {
+        if !ON.load(Ordering::Relaxed) {
+            return;
+        }
+        eprintln!(
+            "split-timers: split {} calls {} ms ({} bytes, avg {})",
+            CALLS.load(Ordering::Relaxed),
+            NS.load(Ordering::Relaxed) as f64 / 1e6,
+            BYTES.load(Ordering::Relaxed),
+            BYTES.load(Ordering::Relaxed) / CALLS.load(Ordering::Relaxed).max(1)
+        );
+    }
+}
+
 /// The most a lifted body may hold; past it the body is dropped and the
 /// splitter returns to text.
 pub(crate) const BODY_CAP: usize = 128 << 20;
@@ -687,6 +737,9 @@ pub(crate) const HEAD_CAP: usize = 256;
 fn whole_escape(rest: &[u8]) -> Option<usize> {
     match *rest.get(1)? {
         b'[' => {
+            if let Some(len) = csi_scan(&rest[2..]) {
+                return Some(len);
+            }
             for (j, &b) in rest.iter().enumerate().skip(2) {
                 if (0x40..=0x7e).contains(&b) {
                     return Some(j + 1);
@@ -717,12 +770,79 @@ fn whole_escape(rest: &[u8]) -> Option<usize> {
     }
 }
 
+/// The CSI arm of [`whole_escape`], many bytes at a time: the scan stops
+/// at the first final byte (`0x40..=0x7e`, body index `k` → length
+/// `k+3`), the first `ESC` (`k+2`, left for the next piece), or the head
+/// cap (`k >= HEAD_CAP` → `k+3`); every other byte — controls included —
+/// is held, exactly as the byte-at-a-time `Csi` state holds them. `None`
+/// when the read runs out first. Byte-exact with the scalar walk above.
+/// The first nine body bytes stay scalar: short CSIs (`[H`, `[2J`,
+/// `[0m`, `[?25l`, `[1;1H`, the 7–8 byte resets a TUI flood emits) end
+/// within them, where predicted compares beat the SSE dependency chain;
+/// only longer bodies — the SGR runs with `38;2;…` parameters — pay for
+/// the block scan, which then covers them in one block.
+#[inline]
+fn csi_scan(body: &[u8]) -> Option<usize> {
+    for (k, &b) in body.iter().enumerate().take(9) {
+        if (0x40..=0x7e).contains(&b) || b == 0x1b {
+            return Some(if b == 0x1b { k + 2 } else { k + 3 });
+        }
+    }
+    #[cfg(target_arch = "x86_64")]
+    {
+        use std::arch::x86_64::*;
+        let mut at = 9;
+        while at < HEAD_CAP {
+            let Some(&block) = body.get(at..).and_then(|rest| rest.first_chunk::<16>()) else {
+                break;
+            };
+            // SAFETY: the array guarantees 16 readable bytes; `loadu`
+            // needs no alignment, and every intrinsic is SSE2, which is
+            // baseline on x86-64. A byte stops the scan exactly when it
+            // is a final (the unsigned window `0x40..=0x7e`) or an ESC;
+            // nothing else does, below the cap.
+            unsafe {
+                let x = _mm_loadu_si128(block.as_ptr().cast());
+                let over = _mm_sub_epi8(x, _mm_set1_epi8(0x40));
+                let final_ = _mm_cmpeq_epi8(_mm_min_epu8(over, _mm_set1_epi8(0x3e)), over);
+                let esc = _mm_cmpeq_epi8(x, _mm_set1_epi8(0x1b));
+                let hit = _mm_movemask_epi8(_mm_or_si128(final_, esc));
+                if hit != 0 {
+                    let k = at + hit.trailing_zeros() as usize;
+                    // A block may straddle the cap: the walk cuts at the
+                    // cap byte before it can reach any stop behind it.
+                    let k = k.min(HEAD_CAP);
+                    return Some(if body[k] == 0x1b { k + 2 } else { k + 3 });
+                }
+            }
+            at += 16;
+        }
+        // No final and no ESC in the scanned prefix: the cap cuts where
+        // the walk cuts (the byte past `HEAD_CAP` held bytes), an ESC
+        // there still winning its earlier exit; a read that ran out
+        // first has no answer for this read.
+        if body.len() <= HEAD_CAP {
+            return None;
+        }
+        Some(if body[HEAD_CAP] == 0x1b {
+            HEAD_CAP + 2
+        } else {
+            HEAD_CAP + 3
+        })
+    }
+    #[cfg(not(target_arch = "x86_64"))]
+    {
+        None
+    }
+}
+
 impl Splitter {
     /// Split `input` into pieces, in order. Text pieces borrow from the
     /// input while the splitter sits in plain text; the pieces a
     /// pass-through sequence produces own their bytes, since they may
     /// join bytes from an earlier read.
     pub fn split<'a>(&mut self, input: &'a [u8], out: &mut Vec<Piece<'a>>) {
+        let t = split_timers::on().then(std::time::Instant::now);
         // Where the open text run of this read began, if one is open. It
         // closes when a sequence starts, so nothing a sequence produces
         // can come before the text in front of it. The run lives in the
@@ -745,6 +865,9 @@ impl Splitter {
         // the state, waiting for the bytes that finish it.
         if let Some(start) = run {
             out.push(Piece::Text(Cow::Borrowed(&input[start..])));
+        }
+        if let Some(t) = t {
+            split_timers::record(t, input.len());
         }
     }
 

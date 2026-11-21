@@ -499,9 +499,14 @@ impl Engine {
     }
 
     fn apply(&mut self, pass: &[u8]) {
-
-        // The sentinel is planted before the bytes run, so the very first
-        // scroll of a session already rotates it.
+        // Loaded once, before the threads exist: the parse path's
+        // per-iteration gates read thread-locals instead of the shared
+        // atomics. `timers::on` already needs one thread-local read to
+        // record, and `probes::get`/`run_whole`/`sync_timeout` only move
+        // inside `advance`/`lane`, so a stale value can only appear in a
+        // test that mutates them mid-run with feeds already in flight —
+        // none does.
+        crate::engine::gates::enter();
         if !self.term.mode().contains(TermMode::ALT_SCREEN) && self.term.selection.is_none() {
             self.plant_sentinel();
         }
@@ -548,7 +553,11 @@ impl Engine {
                 primary: scrolled,
                 fast: *fast,
             };
+            let t_feed = timers::on().then(Instant::now);
             feed(processor, &mut watch, mirror, chunk, *fast);
+            if let Some(t) = t_feed {
+                timers::record_feedw(t);
+            }
             self.preceding_char = watch.preceding;
             *alt_scrolled = watch.alt_scrolled;
             *region_top = watch.region_top;
@@ -568,7 +577,11 @@ impl Engine {
                 self.primary_snap = Some(snap);
             }
             drop(watch);
+            let t_fold = timers::on().then(Instant::now);
             self.fold_sentinel();
+            if let Some(t) = t_fold {
+                timers::record_fold(t);
+            }
         }
     }
 
@@ -2800,15 +2813,35 @@ fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, c
         while esc - from >= RUN_MIN
             && let Some((start, end, ascii)) = next_run(&chunk[..esc], from)
         {
+            let from_prev = from;
             from = end;
-            mirror.catch_up(chunk, known, start);
-            // Where in the run the parser is in ground: a run may begin
-            // with the tail of a sequence, the parameters of a CSI.
-            let ground = mirror.stretch(chunk, start, end);
-            known = end;
-            if mirror.state != Parse::Ground {
-                continue;
+            // The parser state at `start`: when the mirror is already in
+            // ground at `known` and the skipped gap [known..start) holds no
+            // ESC (it cannot: `next_run` found the run inside the same
+            // ESC-delimited stretch), `catch_up`+`stretch` are the identity
+            // — ground is the run's start and the mirror stays Ground.
+            // That is the hot path between two plain runs.
+            let ground;
+            if mirror.state == Parse::Ground && known == from_prev {
+                ground = start;
+                // `catch_up` would also refresh `high` from the skipped
+                // gap's last byte (it passes through ground unmarked);
+                // reproduce that one-byte read, keeping the flag `lane`
+                // guards a split UTF-8 character with exact.
+                if known < start {
+                    mirror.high = chunk[start - 1] >= 0x80;
+                }
+            } else {
+                mirror.catch_up(chunk, known, start);
+                // Where in the run the parser is in ground: a run may begin
+                // with the tail of a sequence, the parameters of a CSI.
+                ground = mirror.stretch(chunk, start, end);
+                if mirror.state != Parse::Ground {
+                    known = end;
+                    continue;
+                }
             }
+            known = end;
             mirror.high = chunk[end - 1] >= 0x80;
             // A byte from 0x80 up just before the run may leave a UTF-8
             // character half read: the run's first byte would end it.
@@ -2816,8 +2849,15 @@ fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, c
             if end - ground < RUN_MIN || before_high {
                 continue;
             }
+            // The gap's synchronized-update check, read once where
+            // nothing can move it: `advance` below is the only writer in
+            // this loop, so a gap that is skipped (plain controls the
+            // parser never sees) or absent reuses this read, and only a
+            // gap actually handed to the parser re-reads after it.
+            let collecting = processor.sync_timeout().sync_timeout().is_some();
+            let mut gap_advanced = false;
             if fed < ground {
-                if crate::engine::probes::get() != 104 {
+                if gates::probe() != Some(104) {
                     let gap = &chunk[fed..ground];
                     // A gap of bare controls with the parser in ground at
                     // its start and no synchronized update collecting is
@@ -2825,13 +2865,12 @@ fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, c
                     // the whole gap ("\\r\\n" a line on the floods this
                     // counts most on), and the parser's state machine
                     // would do exactly these calls and stay in ground.
-                    if !(ground_at_fed
-                        && processor.sync_timeout().sync_timeout().is_none()
-                        && plain_c0(watch, gap))
+                    if !(ground_at_fed && !collecting && plain_c0(watch, gap))
                     {
                         let t_vte = timers::on().then(Instant::now);
                         let b = ground - fed;
                         processor.advance(watch, gap);
+                        gap_advanced = true;
                         if let Some(t) = t_vte {
                             timers::record_vte(t, b);
                         }
@@ -2840,11 +2879,11 @@ fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, c
                 fed = ground;
                 ground_at_fed = true;
             }
-            if processor.sync_timeout().sync_timeout().is_some() {
+            if if gap_advanced { processor.sync_timeout().sync_timeout().is_some() } else { collecting } {
                 continue;
             }
             let run = &chunk[ground..end];
-            let probe = crate::engine::probes::get();
+            let probe = gates::probe();
             let t_run = timers::on().then(Instant::now);
             // The run applies whole: glass tracks the REP character itself
             // (set at `input`, the funnel every printed character takes),
@@ -2852,7 +2891,7 @@ fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, c
             // Run-whole: the lane applies the whole run, holding no
             // character for the parser (glass's REP tracking makes that
             // sound), so the gap between runs carries only C0.
-            let took = if probe >= 100 {
+            let took = if probe.is_some_and(|p| p >= 100) {
                 if ascii { run.len() - 1 } else { run.len() }
             } else if run_whole() {
                 let took = if ascii { watch.print_run(run) } else { watch.print_utf8(run) };
@@ -2893,7 +2932,7 @@ fn feed(processor: &mut Processor, watch: &mut Watch<'_>, mirror: &mut Mirror, c
         if counters::counting() {
             counters::VTE_BYTES.fetch_add((chunk.len() - fed) as u64, Ordering::Relaxed);
         }
-        if crate::engine::probes::get() != 104 {
+        if gates::probe() != Some(104) {
             let rest = &chunk[fed..];
             if !(ground_at_fed
                 && processor.sync_timeout().sync_timeout().is_none()
@@ -2977,6 +3016,12 @@ pub(crate) mod timers {
     pub static VTE_BYTES: AtomicU64 = AtomicU64::new(0);
     pub static FEED_NS: AtomicU64 = AtomicU64::new(0);
     pub static FEED_CALLS: AtomicU64 = AtomicU64::new(0);
+    pub static FOLD_NS: AtomicU64 = AtomicU64::new(0);
+    pub static FOLD_CALLS: AtomicU64 = AtomicU64::new(0);
+    pub static FEEDW_NS: AtomicU64 = AtomicU64::new(0);
+    pub static FEEDW_CALLS: AtomicU64 = AtomicU64::new(0);
+    pub static NRUN_NS: AtomicU64 = AtomicU64::new(0);
+    pub static NRUN_CALLS: AtomicU64 = AtomicU64::new(0);
     pub const APPLY: usize = 0;
     pub const FEED: usize = 1;
     pub fn init() {
@@ -3010,10 +3055,36 @@ pub(crate) mod timers {
             VTE_BYTES.fetch_add(bytes as u64, Ordering::Relaxed);
         }
     }
+    /// apply()'s per-chunk machinery outside feed(): the Watch rebuild,
+    /// the events take and, chiefly, fold_sentinel's selection read.
+    #[inline]
+    pub fn record_fold(t: Instant) {
+        if ON.load(Ordering::Relaxed) {
+            FOLD_NS.fetch_add(t.elapsed().as_nanos() as u64, Ordering::Relaxed);
+            FOLD_CALLS.fetch_add(1, Ordering::Relaxed);
+        }
+    }
+    /// feed() as a whole, from apply(); apply minus this is the per-chunk
+    /// Watch rebuild, events take and sentinel folds.
+    #[inline]
+    pub fn record_feedw(t: Instant) {
+        if ON.load(Ordering::Relaxed) {
+            FEEDW_NS.fetch_add(t.elapsed().as_nanos() as u64, Ordering::Relaxed);
+            FEEDW_CALLS.fetch_add(1, Ordering::Relaxed);
+        }
+    }
+    /// next_run(): the scan that finds printable spans between gaps.
+    #[inline]
+    pub fn record_nrun(t: Instant) {
+        if ON.load(Ordering::Relaxed) {
+            NRUN_NS.fetch_add(t.elapsed().as_nanos() as u64, Ordering::Relaxed);
+            NRUN_CALLS.fetch_add(1, Ordering::Relaxed);
+        }
+    }
     pub fn report() {
         if !ON.load(Ordering::Relaxed) { return; }
         eprintln!(
-            "parse-timers: apply {} calls {} ms | print_run {} calls {} ms ({} bytes, avg {}) | vte {} calls {} ms ({} bytes, avg {}) | c0 bypassed {} bytes",
+            "parse-timers: apply {} calls {} ms | print_run {} calls {} ms ({} bytes, avg {}) | vte {} calls {} ms ({} bytes, avg {}) | c0 bypassed {} bytes | fold {} calls {} ms | feed {} calls {} ms | next_run {} calls {} ms",
             APPLY_CALLS.load(Ordering::Relaxed),
             APPLY_NS.load(Ordering::Relaxed) as f64 / 1e6,
             RUN_CALLS.load(Ordering::Relaxed),
@@ -3024,8 +3095,62 @@ pub(crate) mod timers {
             VTE_NS.load(Ordering::Relaxed) as f64 / 1e6,
             VTE_BYTES.load(Ordering::Relaxed),
             VTE_BYTES.load(Ordering::Relaxed) / VTE_CALLS.load(Ordering::Relaxed).max(1),
-            C0_BYTES.load(Ordering::Relaxed)
+            C0_BYTES.load(Ordering::Relaxed),
+            FOLD_CALLS.load(Ordering::Relaxed),
+            FOLD_NS.load(Ordering::Relaxed) as f64 / 1e6,
+            FEEDW_CALLS.load(Ordering::Relaxed),
+            FEEDW_NS.load(Ordering::Relaxed) as f64 / 1e6,
+            NRUN_CALLS.load(Ordering::Relaxed),
+            NRUN_NS.load(Ordering::Relaxed) as f64 / 1e6
         );
+    }
+}
+
+pub(crate) mod gates {
+    //! The parse path's per-iteration gates, resolved once per `apply` to
+    //! thread-locals so the run/gap loop stops paying shared-atomic loads
+    //! per iteration (the 52% "feed machinery" slice of the ascii budget:
+    //! ~82 ns × 494k iterations). Every source value is frozen before the
+    //! hot threads exist (`timers::init`, `probes::init`, `run_whole`'s
+    //! OnceLock) or moves only inside `advance`/`lane` — never mid-loop.
+    use std::cell::Cell;
+
+    thread_local! {
+        /// `probes::get()`: written once at startup by `probes::init`.
+        static PROBE: Cell<u8> = const { Cell::new(0) };
+        /// `timers::on()`: written once at startup by `timers::init`.
+        static TIMERS: Cell<bool> = const { Cell::new(false) };
+        /// `run_whole()`: a OnceLock, first read after startup.
+        static RUN_WHOLE: Cell<bool> = const { Cell::new(false) };
+    }
+
+    /// Refresh this thread's cached gate values from their sources. Called
+    /// at the top of every `apply`, before any chunk feeds.
+    pub fn enter() {
+        PROBE.with(|c| c.set(super::probes::get()));
+        TIMERS.with(|c| c.set(super::timers::on()));
+        RUN_WHOLE.with(|c| c.set(super::run_whole()));
+    }
+
+    /// The cached `probes::get()`. `Some` when a deliberately-incorrect
+    /// ceiling probe is armed (off in production and in every test that
+    /// asserts behaviour).
+    #[inline(always)]
+    pub fn probe() -> Option<u8> {
+        let v = PROBE.with(Cell::get);
+        (v != 0).then_some(v)
+    }
+
+    /// The cached `timers::on()`.
+    #[inline(always)]
+    pub fn timers_on() -> bool {
+        TIMERS.with(Cell::get)
+    }
+
+    /// The cached `run_whole()`.
+    #[inline(always)]
+    pub fn run_whole() -> bool {
+        RUN_WHOLE.with(Cell::get)
     }
 }
 
@@ -3346,7 +3471,17 @@ fn note_uniform_span(
 /// in every `RUN_MIN` where no run is, so text full of escapes is passed
 /// over quickly; x86-64 classifies the run during the boundary scan.
 #[cfg(target_arch = "x86_64")]
-fn next_run(bytes: &[u8], mut from: usize) -> Option<(usize, usize, bool)> {
+fn next_run(bytes: &[u8], from: usize) -> Option<(usize, usize, bool)> {
+    let t = timers::on().then(Instant::now);
+    let out = next_run_inner(bytes, from);
+    if let Some(t0) = t {
+        timers::record_nrun(t0);
+    }
+    out
+}
+
+#[cfg(target_arch = "x86_64")]
+fn next_run_inner(bytes: &[u8], mut from: usize) -> Option<(usize, usize, bool)> {
     let printable = |b: u8| (0x20..=0x7e).contains(&b) || b >= 0x80;
     while from + RUN_MIN <= bytes.len() {
         let probe = from + RUN_MIN - 1;
@@ -3629,31 +3764,14 @@ fn utf8_at(bytes: &[u8], at: usize) -> Option<(char, usize)> {
     Some((char::from_u32(value)?, len))
 }
 
-/// `unicode_width`'s answer for `c`, through a flat cache over the
-/// whole codespace filled from the crate on first ask: the crate's
-/// multi-level lookup is several dependent loads for the planes a
-/// mixed-width flood actually writes (CJK, emoji, symbols — the 4 KiB
-/// table over U+0000..U+0FFF tried earlier never held them), where
-/// this is one. The cache is write-once per codepoint and every writer
-/// stores the same value, so relaxed atomics are enough; -1 is
-/// unasked, -2 is the crate's `None` (widths themselves run 0..=3).
+/// The pinned `unicode_width` answer for every Unicode scalar, generated at
+/// build time from that dependency. A valid `char` always indexes the table;
+/// 255 represents `None`. No runtime initialization, cache misses or writes.
 #[inline]
 fn width_of(c: char) -> Option<usize> {
-    use std::sync::atomic::{AtomicI8, Ordering};
-    static CACHE: std::sync::OnceLock<Box<[AtomicI8]>> = std::sync::OnceLock::new();
-    let cache = CACHE
-        .get_or_init(|| (0..0x110000).map(|_| AtomicI8::new(-1)).collect::<Vec<_>>().into_boxed_slice());
-    let slot = &cache[c as usize];
-    let v = slot.load(Ordering::Relaxed);
-    if v >= 0 {
-        return Some(v as usize);
-    }
-    if v == -2 {
-        return None;
-    }
-    let w = unicode_width::UnicodeWidthChar::width(c);
-    slot.store(w.map_or(-2, |w| w as i8), Ordering::Relaxed);
-    w
+    static WIDTHS: &[u8; 0x110000] = include_bytes!(concat!(env!("OUT_DIR"), "/unicode-widths.bin"));
+    let width = WIDTHS[c as usize];
+    (width != u8::MAX).then_some(width as usize)
 }
 
 fn held_back(bytes: &[u8]) -> Option<Vec<u8>> {
@@ -3769,6 +3887,65 @@ mod tests {
         let mut term = engine();
         term.process(input);
         term.take_effects().replies
+    }
+
+    /// C1 controls do not replace the preceding printable character for REP.
+    /// Expected cells are supplied directly, bypassing the shared UTF-8 parser.
+    #[test]
+    fn split_c1_rep_matches_direct_term_input() {
+        use alacritty_terminal::vte::ansi::Handler;
+        let mut cases = 0;
+        let mut failures = 0;
+        for fast in [false, true] {
+            for alternate in [false, true] {
+                for cols in [4, 9] {
+                    for column in [0, cols - 1] {
+                        for code in 0x80..=0x9f {
+                            for base in ['X', '漢', 'é'] {
+                                // Empty and ASCII tails use Ok(parsed); the last tail
+                                // forces a valid prefix followed by incomplete UTF-8.
+                                for tail in ["", "ab", "a漢"] {
+                                    let text = format!("{base}{}{tail}", char::from_u32(code).unwrap());
+                                    for a in 0..=text.len() {
+                                        for b in a..=text.len() {
+                                            let fresh = || {
+                                                let mut e = Engine::new(4, cols, engine().info.lock().unwrap().clone());
+                                                e.set_fast(fast);
+                                                if alternate { e.process(b"\x1b[?1049h"); }
+                                                e.term.goto(0, column);
+                                                e
+                                            };
+                                            let mut expected = fresh();
+                                            expected.term.input(base);
+                                            for c in tail.chars() { expected.term.input(c); }
+                                            let last = tail.chars().last().unwrap_or(base);
+                                            let mut actual = fresh();
+                                            actual.process(&text.as_bytes()[..a]);
+                                            actual.process(b"");
+                                            actual.process(&text.as_bytes()[a..b]);
+                                            actual.process(&text.as_bytes()[b..]);
+                                            let before = actual.grid_state() == expected.grid_state();
+                                            for _ in 0..2 { expected.term.input(last); }
+                                            actual.process(b"\x1b[2b");
+                                            let after = actual.grid_state() == expected.grid_state();
+                                            if !before || !after {
+                                                failures += 1;
+                                                if failures <= 4 {
+                                                    eprintln!("split-C1 fast={fast} alt={alternate} cols={cols} col={column} code={code:x} base={base:?} tail={tail:?} cuts={a},{b} before={before} after={after}");
+                                                }
+                                            }
+                                            cases += 1;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        eprintln!("split-C1 direct-Term cases={cases} failures={failures}");
+        assert_eq!(failures, 0);
     }
 
     /// A direct upstream Term::input oracle, not Watch's shared fast handler.
@@ -4300,10 +4477,9 @@ mod tests {
 
     #[test]
     fn width_cache_agrees_with_the_crate_everywhere() {
-        // The flat cache in `width_of` is only a cache: for every
-        // codepoint it must answer exactly what the crate answers,
-        // on the first ask (which fills it) and the second (which
-        // reads it back).
+        // The generated table must match the pinned dependency for every
+        // valid scalar, including control/zero-width and supplementary planes.
+        // Repeat each lookup to guard against accidental runtime mutation.
         for v in 0..0x110000u32 {
             let Some(c) = char::from_u32(v) else { continue };
             let want = unicode_width::UnicodeWidthChar::width(c);

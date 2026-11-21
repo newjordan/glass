@@ -49,6 +49,34 @@ pub struct Storage<T> {
     /// As long as `len` is bigger than `inner`, it is also possible to grow the scrollback buffer
     /// without any additional insertions.
     len: usize,
+
+    /// Changed for glass: virtual scroll zone for *region* scrolls.
+    ///
+    /// A region scroll physically rotates ~21 whole 64-byte `Row<T>`
+    /// structs per linefeed at 154x39 — the largest measured cost of
+    /// the scroll_region lane. A full-screen scroll pays none of it
+    /// (ring `zero` bump). The zone records a pending region rotation
+    /// *virtually* (start/end in logical lines, accumulated rotation
+    /// reduced mod height) and maps `Index`/`IndexMut` reads/writes
+    /// through `compute_index` until something needs real rows, at
+    /// which point `flush_zone` replays it through the unchanged
+    /// physical path.
+    ///
+    /// Layout: three `u32`s — `Storage` stays within one 64-byte cache
+    /// line and the inactive path is one 4-byte load plus a
+    /// never-taken compare. The rejected v1 experiment stored
+    /// `zone: Option<(i32, i32, usize)>` (24 bytes), grew `Storage`
+    /// across two lines, and taxed every lane 1-2%.
+    ///
+    /// Sentinel: `zone_end == 0` means inactive. A real region has
+    /// `zone_end > zone_start >= 0`. Serialized with `default` so
+    /// pre-zone files decode as inactive.
+    #[cfg_attr(feature = "serde", serde(default))]
+    zone_start: u32,
+    #[cfg_attr(feature = "serde", serde(default))]
+    zone_end: u32,
+    #[cfg_attr(feature = "serde", serde(default))]
+    zone_rot: u32,
 }
 
 impl<T: PartialEq> PartialEq for Storage<T> {
@@ -71,7 +99,15 @@ impl<T> Storage<T> {
         let mut inner = Vec::with_capacity(visible_lines);
         inner.resize_with(visible_lines, || Row::new(columns));
 
-        Storage { inner, zero: 0, visible_lines, len: visible_lines }
+        Storage {
+            inner,
+            zero: 0,
+            visible_lines,
+            len: visible_lines,
+            zone_start: 0,
+            zone_end: 0,
+            zone_rot: 0,
+        }
     }
 
     /// Increase the number of lines in the buffer.
@@ -80,6 +116,7 @@ impl<T> Storage<T> {
     where
         T: Default + crate::grid::GridCell,
     {
+        self.flush_zone();
         // Number of lines the buffer needs to grow.
         let additional_lines = next - self.visible_lines;
 
@@ -93,6 +130,7 @@ impl<T> Storage<T> {
     /// Decrease the number of lines in the buffer.
     #[inline]
     pub fn shrink_visible_lines(&mut self, next: usize) {
+        self.flush_zone();
         // Shrink the size without removing any lines.
         let shrinkage = self.visible_lines - next;
         self.shrink_lines(shrinkage);
@@ -104,6 +142,7 @@ impl<T> Storage<T> {
     /// Shrink the number of lines in the buffer.
     #[inline]
     pub fn shrink_lines(&mut self, shrinkage: usize) {
+        self.flush_zone();
         self.len -= shrinkage;
 
         // Free memory.
@@ -115,6 +154,7 @@ impl<T> Storage<T> {
     /// Truncate the invisible elements from the raw buffer.
     #[inline]
     pub fn truncate(&mut self) {
+        self.flush_zone();
         self.rezero();
 
         self.inner.truncate(self.len);
@@ -126,6 +166,7 @@ impl<T> Storage<T> {
     where
         T: Default + crate::grid::GridCell,
     {
+        self.flush_zone();
         if self.len + additional_rows > self.inner.len() {
             self.rezero();
 
@@ -150,6 +191,9 @@ impl<T> Storage<T> {
     /// instructions. This implementation achieves the swap in only 8 movups
     /// instructions.
     pub fn swap(&mut self, a: Line, b: Line) {
+        // Both indices pass through `compute_index`, so a pending zone
+        // maps them to the right physical rows: a swap through the
+        // mapping is a logical swap. No flush needed.
         // Changed for glass: Row<T> carries the lazy-recycle blank inline
         // (inner Vec + occ + blank), so the old 4-qword trick copied only
         // part of each row. mem::swap moves both rows whole, still O(1).
@@ -163,6 +207,7 @@ impl<T> Storage<T> {
     /// Rotate the grid, moving all lines up/down in history.
     #[inline]
     pub fn rotate(&mut self, count: isize) {
+        self.flush_zone();
         debug_assert!(count.unsigned_abs() <= self.inner.len());
 
         let len = self.inner.len();
@@ -176,6 +221,7 @@ impl<T> Storage<T> {
     /// [`rotate_left`]: https://doc.rust-lang.org/std/vec/struct.Vec.html#method.rotate_left
     #[inline]
     pub fn rotate_down(&mut self, count: usize) {
+        self.flush_zone();
         self.zero = (self.zero + count) % self.inner.len();
     }
 
@@ -193,6 +239,39 @@ impl<T> Storage<T> {
     /// Only the visible sub-slice turns: the caller's lines are relative to
     /// the visible top, while the ring may start anywhere in `inner`.
     pub(crate) fn rotate_region(&mut self, start: i32, end: i32, positions: usize) {
+        // Virtual zone: record the rotation, move no bytes. `flush_zone`
+        // replays the accumulated rotations through the physical path
+        // below when real rows are needed.
+        let height = (end - start) as usize;
+        if height > 0 && positions > 0 {
+            if self.zone_end as i32 != end || self.zone_start as i32 != start {
+                self.flush_zone();
+                self.zone_start = start as u32;
+                self.zone_end = end as u32;
+                self.zone_rot = 0;
+            }
+            self.zone_rot = (self.zone_rot + positions as u32) % height as u32;
+            return;
+        }
+        self.rotate_region_physical(start, end, positions);
+    }
+
+    /// Replay a pending virtual rotation through the physical path.
+    pub(crate) fn flush_zone(&mut self) {
+        if self.zone_end == 0 {
+            return;
+        }
+        let start = self.zone_start as i32;
+        let end = self.zone_end as i32;
+        let positions = self.zone_rot as usize;
+        self.zone_start = 0;
+        self.zone_end = 0;
+        self.zone_rot = 0;
+        self.rotate_region_physical(start, end, positions);
+    }
+
+    /// The rotation `rotate_region` performs when it is not virtual.
+    fn rotate_region_physical(&mut self, start: i32, end: i32, positions: usize) {
         let len = self.inner.len();
         if len == 0 || positions == 0 || end <= start {
             return;
@@ -250,6 +329,7 @@ impl<T> Storage<T> {
     /// Update the raw storage buffer.
     #[inline]
     pub fn replace_inner(&mut self, vec: Vec<Row<T>>) {
+        self.flush_zone();
         self.len = vec.len();
         self.inner = vec;
         self.zero = 0;
@@ -258,6 +338,7 @@ impl<T> Storage<T> {
     /// Remove all rows from storage.
     #[inline]
     pub fn take_all(&mut self) -> Vec<Row<T>> {
+        self.flush_zone();
         self.truncate();
 
         let mut buffer = Vec::new();
@@ -283,12 +364,67 @@ impl<T> Storage<T> {
         //
         // Requires `zeroed` to be smaller than `self.inner.len() * 2`,
         // but both `self.zero` and `requested` are always smaller than `self.inner.len()`.
-        if zeroed >= self.inner.len() { zeroed - self.inner.len() } else { zeroed }
+        let index = if zeroed >= self.inner.len() {
+            zeroed - self.inner.len()
+        } else {
+            zeroed
+        };
+
+        // Virtual scroll zone: one load from this cache line and a
+        // never-taken compare when no region rotation is pending.
+        if self.zone_end == 0 {
+            return index;
+        }
+        self.zone_slot(requested, index)
+    }
+
+    /// Ring index of a visible line, ignoring any pending zone rotation.
+    #[inline]
+    fn ring_index(&self, line: i32) -> usize {
+        let positive = (self.visible_lines as i32 - 1 - line) as usize;
+        let zeroed = self.zero + positive;
+        if zeroed >= self.inner.len() {
+            zeroed - self.inner.len()
+        } else {
+            zeroed
+        }
+    }
+
+    /// Physical slot of `requested` while a virtual region rotation is
+    /// pending.
+    ///
+    /// A physical scroll-up rotation by `rot` rows leaves the row
+    /// observed at logical `q` holding what was at logical
+    /// `start + ((q - start + rot) mod height)`. The recycled rows
+    /// (`end-rot..end`) are written back through this same mapping by
+    /// `scroll_up`'s tail, so leaving rows physically in place and
+    /// mapping access through this function is observationally
+    /// identical to performing the rotation physically.
+    #[inline]
+    fn zone_slot(&self, requested: Line, index: usize) -> usize {
+        let line = requested.0;
+        let start = self.zone_start as i32;
+        let end = self.zone_end as i32;
+        if line < start || line >= end {
+            return index;
+        }
+        let height = (end - start) as usize;
+        // Invariant: `rotate_region` keeps `zone_rot < height`, so no
+        // reduction (and no division) is needed here — this runs for
+        // every in-region row access.
+        let rot = self.zone_rot as usize;
+        if rot == 0 {
+            return index;
+        }
+        let src = (line - start) as usize + rot;
+        let src = if src >= height { src - height } else { src };
+        self.ring_index(start + src as i32)
     }
 
     /// Rotate the ringbuffer to reset `self.zero` back to index `0`.
     #[inline]
     fn rezero(&mut self) {
+        self.flush_zone();
         if self.zero == 0 {
             return;
         }
@@ -323,6 +459,92 @@ mod tests {
     use crate::grid::storage::{MAX_CACHE_SIZE, Storage};
     use crate::index::{Column, Line};
     use crate::term::cell::Flags;
+
+    /// Virtual zone vs physical rotation oracle: the same scenario on
+    /// two storages, one virtual, one flushed after every rotation;
+    /// observable rows must match while active, full physical bytes
+    /// must match after flush.
+    #[test]
+    fn virtual_zone_matches_physical_rotation() {
+        use crate::term::cell::Cell;
+        use vte::ansi::Color;
+
+        let visible = 6;
+        let total = 9;
+        for zero in 0..total {
+            for start in 0..visible {
+                for end in (start + 2)..=visible {
+                    let height = end - start;
+                    for positions in 1..=2 * height {
+                        let make = || {
+                            let mut s = Storage::<Cell>::with_capacity(visible, 4);
+                            s.initialize(total - visible, 4);
+                            s.inner.truncate(total);
+                            s.zero = zero;
+                            for line in -(total as i32 - visible as i32)..visible as i32 {
+                                let row = &mut s[Line(line)];
+                                for col in 0..4 {
+                                    let cell = Cell {
+                                        c: char::from_u32(
+                                            0x100
+                                                + ((line + 3) as u32 * 4)
+                                                + col as u32,
+                                        )
+                                        .unwrap(),
+                                        bg: Color::Indexed((line + 3) as u8),
+                                        ..Cell::default()
+                                    };
+                                    row.write_cell(col, cell);
+                                }
+                            }
+                            s
+                        };
+                        let mut virt = make();
+                        let mut phys = make();
+
+                        // One scroll: virtual accumulate vs immediate flush.
+                        virt.rotate_region(start as i32, end as i32, positions);
+                        phys.rotate_region(start as i32, end as i32, positions);
+                        phys.flush_zone();
+
+                        for line in -(total as i32 - visible as i32)..visible as i32 {
+                            assert_eq!(
+                                virt[Line(line)], phys[Line(line)],
+                                "observe mismatch zero={zero} s={start} e={end} p={positions} line={line}"
+                            );
+                        }
+
+                        // Interleaved write through the mapping, then a
+                        // second scroll on top (composition).
+                        let write_line = Line(
+                            start as i32 + (positions as i32 % height as i32),
+                        );
+                        virt[write_line].write_cell(0, Cell { c: 'W', ..Cell::default() });
+                        phys[write_line].write_cell(0, Cell { c: 'W', ..Cell::default() });
+                        virt.rotate_region(start as i32, end as i32, positions);
+                        phys.rotate_region(start as i32, end as i32, positions);
+                        phys.flush_zone();
+
+                        for line in -(total as i32 - visible as i32)..visible as i32 {
+                            assert_eq!(
+                                virt[Line(line)], phys[Line(line)],
+                                "compose mismatch zero={zero} s={start} e={end} p={positions} line={line}"
+                            );
+                        }
+
+                        // After flush the physical buffers must be
+                        // identical too — same bytes, not just same view.
+                        virt.flush_zone();
+                        assert_eq!(
+                            virt.inner, phys.inner,
+                            "physical mismatch zero={zero} s={start} e={end} p={positions}"
+                        );
+                        assert_eq!(virt.zero, phys.zero);
+                    }
+                }
+            }
+        }
+    }
 
     impl GridCell for char {
         fn is_empty(&self) -> bool {
@@ -403,6 +625,9 @@ mod tests {
     fn grow_after_zero() {
         // Setup storage area.
         let mut storage: Storage<char> = Storage {
+            zone_start: 0,
+            zone_end: 0,
+            zone_rot: 0,
             inner: vec![filled_row('0'), filled_row('1'), filled_row('-')],
             zero: 0,
             visible_lines: 3,
@@ -414,6 +639,9 @@ mod tests {
 
         // Make sure the result is correct.
         let mut expected = Storage {
+            zone_start: 0,
+            zone_end: 0,
+            zone_rot: 0,
             inner: vec![filled_row('0'), filled_row('1'), filled_row('-')],
             zero: 0,
             visible_lines: 4,
@@ -444,6 +672,9 @@ mod tests {
     fn grow_before_zero() {
         // Setup storage area.
         let mut storage: Storage<char> = Storage {
+            zone_start: 0,
+            zone_end: 0,
+            zone_rot: 0,
             inner: vec![filled_row('-'), filled_row('0'), filled_row('1')],
             zero: 1,
             visible_lines: 3,
@@ -455,6 +686,9 @@ mod tests {
 
         // Make sure the result is correct.
         let mut expected = Storage {
+            zone_start: 0,
+            zone_end: 0,
+            zone_rot: 0,
             inner: vec![filled_row('0'), filled_row('1'), filled_row('-')],
             zero: 0,
             visible_lines: 4,
@@ -482,6 +716,9 @@ mod tests {
     fn shrink_before_zero() {
         // Setup storage area.
         let mut storage: Storage<char> = Storage {
+            zone_start: 0,
+            zone_end: 0,
+            zone_rot: 0,
             inner: vec![filled_row('2'), filled_row('0'), filled_row('1')],
             zero: 1,
             visible_lines: 3,
@@ -493,6 +730,9 @@ mod tests {
 
         // Make sure the result is correct.
         let expected = Storage {
+            zone_start: 0,
+            zone_end: 0,
+            zone_rot: 0,
             inner: vec![filled_row('2'), filled_row('0'), filled_row('1')],
             zero: 1,
             visible_lines: 2,
@@ -518,6 +758,9 @@ mod tests {
     fn shrink_after_zero() {
         // Setup storage area.
         let mut storage: Storage<char> = Storage {
+            zone_start: 0,
+            zone_end: 0,
+            zone_rot: 0,
             inner: vec![filled_row('0'), filled_row('1'), filled_row('2')],
             zero: 0,
             visible_lines: 3,
@@ -529,6 +772,9 @@ mod tests {
 
         // Make sure the result is correct.
         let expected = Storage {
+            zone_start: 0,
+            zone_end: 0,
+            zone_rot: 0,
             inner: vec![filled_row('0'), filled_row('1'), filled_row('2')],
             zero: 0,
             visible_lines: 2,
@@ -560,6 +806,9 @@ mod tests {
     fn shrink_before_and_after_zero() {
         // Setup storage area.
         let mut storage: Storage<char> = Storage {
+            zone_start: 0,
+            zone_end: 0,
+            zone_rot: 0,
             inner: vec![
                 filled_row('4'),
                 filled_row('5'),
@@ -578,6 +827,9 @@ mod tests {
 
         // Make sure the result is correct.
         let expected = Storage {
+            zone_start: 0,
+            zone_end: 0,
+            zone_rot: 0,
             inner: vec![
                 filled_row('4'),
                 filled_row('5'),
@@ -612,6 +864,9 @@ mod tests {
     fn truncate_invisible_lines() {
         // Setup storage area.
         let mut storage: Storage<char> = Storage {
+            zone_start: 0,
+            zone_end: 0,
+            zone_rot: 0,
             inner: vec![
                 filled_row('4'),
                 filled_row('5'),
@@ -630,6 +885,9 @@ mod tests {
 
         // Make sure the result is correct.
         let expected = Storage {
+            zone_start: 0,
+            zone_end: 0,
+            zone_rot: 0,
             inner: vec![filled_row('0'), filled_row('1')],
             zero: 0,
             visible_lines: 1,
@@ -654,6 +912,9 @@ mod tests {
     fn truncate_invisible_lines_beginning() {
         // Setup storage area.
         let mut storage: Storage<char> = Storage {
+            zone_start: 0,
+            zone_end: 0,
+            zone_rot: 0,
             inner: vec![filled_row('1'), filled_row('2'), filled_row('0')],
             zero: 2,
             visible_lines: 1,
@@ -665,6 +926,9 @@ mod tests {
 
         // Make sure the result is correct.
         let expected = Storage {
+            zone_start: 0,
+            zone_end: 0,
+            zone_rot: 0,
             inner: vec![filled_row('0'), filled_row('1')],
             zero: 0,
             visible_lines: 1,
@@ -704,6 +968,9 @@ mod tests {
     fn shrink_then_grow() {
         // Setup storage area.
         let mut storage: Storage<char> = Storage {
+            zone_start: 0,
+            zone_end: 0,
+            zone_rot: 0,
             inner: vec![
                 filled_row('4'),
                 filled_row('5'),
@@ -722,6 +989,9 @@ mod tests {
 
         // Make sure the result after shrinking is correct.
         let shrinking_expected = Storage {
+            zone_start: 0,
+            zone_end: 0,
+            zone_rot: 0,
             inner: vec![
                 filled_row('4'),
                 filled_row('5'),
@@ -743,6 +1013,9 @@ mod tests {
 
         // Make sure the previously freed elements are reused.
         let growing_expected = Storage {
+            zone_start: 0,
+            zone_end: 0,
+            zone_rot: 0,
             inner: vec![
                 filled_row('4'),
                 filled_row('5'),
@@ -765,6 +1038,9 @@ mod tests {
     fn initialize() {
         // Setup storage area.
         let mut storage: Storage<char> = Storage {
+            zone_start: 0,
+            zone_end: 0,
+            zone_rot: 0,
             inner: vec![
                 filled_row('4'),
                 filled_row('5'),
@@ -793,7 +1069,15 @@ mod tests {
         ];
         let expected_init_size = std::cmp::max(init_size, MAX_CACHE_SIZE);
         expected_inner.append(&mut vec![filled_row('\0'); expected_init_size]);
-        let expected_storage = Storage { inner: expected_inner, zero: 0, visible_lines: 0, len: 9 };
+        let expected_storage = Storage {
+            inner: expected_inner,
+            zero: 0,
+            visible_lines: 0,
+            len: 9,
+            zone_start: 0,
+            zone_end: 0,
+            zone_rot: 0,
+        };
 
         assert_eq!(storage.len, expected_storage.len);
         assert_eq!(storage.zero, expected_storage.zero);
@@ -803,6 +1087,9 @@ mod tests {
     #[test]
     fn rotate_wrap_zero() {
         let mut storage: Storage<char> = Storage {
+            zone_start: 0,
+            zone_end: 0,
+            zone_rot: 0,
             inner: vec![filled_row('-'), filled_row('-'), filled_row('-')],
             zero: 2,
             visible_lines: 0,
@@ -825,6 +1112,9 @@ mod tests {
             for (start, end) in [(0, 6), (1, 5), (2, 6), (0, 3)] {
                 for positions in 1..4usize {
                     let mut storage: Storage<char> = Storage {
+                        zone_start: 0,
+                        zone_end: 0,
+                        zone_rot: 0,
                         inner: (0..8)
                             .map(|i| filled_row(char::from(b'a' + i as u8)))
                             .collect(),

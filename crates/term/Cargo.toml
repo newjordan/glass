@@ -58,3 +58,6 @@ mimalloc = { version = "0.1", default-features = false, features = ["no_thp"] }
 [dev-dependencies]
 # In-test PNG encoding, so adapter tests feed real picture bytes.
 png = "0.18.1"
+
+[build-dependencies]
+unicode-width = "0.2.2"

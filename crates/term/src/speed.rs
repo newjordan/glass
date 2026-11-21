@@ -279,6 +279,13 @@ fn feed_pty(engine: &mut Engine, intake: &mut Intake, splitter: &mut Splitter, s
     }
     let used = cpu_seconds() - c;
     drop(writing.join());
+    // A read-path change that hands off short or empty buffers can
+    // "finish" a pass having consumed only part of the stream, and the
+    // pass then scores as if the whole workload ran (2026-11-03-handoff-
+    // swap: two builds "passed" at got=466424/695808 of 6291605). The
+    // stream is fully written before the loop ends, so anything short
+    // here is a defect, not a workload property. Fail the bench loudly.
+    assert_eq!(got, total, "pty pass consumed {} of {} bytes", got, total);
     if env("GLASS_BENCH_READS", 0) == 1 {
         eprintln!("  {got} bytes in {:.1} us of reader CPU per 4 KiB", used * 1e6 / (got as f64 / 4096.0));
     }
@@ -420,6 +427,7 @@ fn speed() {
         // The test binary never runs main, so the env-gated parse timers
         // and ceiling probes arm here when the bench asks for them.
         crate::engine::timers::init();
+        crate::intake::split_timers::init();
         crate::engine::probes::init();
         alacritty_terminal::grid::probes_init();
         alacritty_terminal::grid::fill_census::init();
@@ -480,8 +488,10 @@ fn speed() {
             stream.len()
         );
         // The parse-path timers, when the bench asked for them, so the
-        // test's own exit (no main Drop) still reports.
+        // test's own exit (no main Drop) still reports. The split-stage
+        // twin reports beside them for the same reason.
         crate::engine::timers::report();
+        crate::intake::split_timers::report();
         // The lazy-fill census (post-rounds, unlike the in-loop placement
         // that once read pre-feed zeros).
         alacritty_terminal::grid::fill_census::report();

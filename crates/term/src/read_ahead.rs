@@ -19,8 +19,31 @@ use std::sync::mpsc::{self, Receiver, Sender};
 #[cfg(test)]
 use std::sync::mpsc::TryRecvError;
 
-/// The most one hand-off holds.
-const CHUNK: usize = 16 * 1024;
+/// The most one hand-off holds. 32 KiB: the one hand-off dimension never
+/// swept was varied through `GLASS_BENCH_CHUNK` (KiB, clamped 4..=1024,
+/// production never sets it) and 32 beat the old 16 on the reader
+/// thread's CPU in all six workloads (`results/2026-11-04-handoff-size`:
+/// scroll_region +6.1% 10/0, truecolor +1.4% 9/0, ascii +1.8%), and the
+/// 18-round terminal gate against the 16 KiB control lost none of the six
+/// lanes (truecolor 14/18, cursor_motion 15/18, tui 13/18 significant)
+/// while widening the Ghostty lead (ascii 1.0194 → 1.0579).
+const CHUNK: usize = 32 * 1024;
+
+fn chunk() -> usize {
+    static ONCE: std::sync::OnceLock<usize> = std::sync::OnceLock::new();
+    *ONCE.get_or_init(|| {
+        std::env::var("GLASS_BENCH_CHUNK")
+            .ok()
+            .and_then(|v| v.parse::<usize>().ok())
+            .map(|k| k.clamp(4, 1024) * 1024)
+            .unwrap_or(CHUNK)
+    })
+}
+
+/// The selected hand-off size, for census classification.
+pub(crate) fn handoff_size() -> usize {
+    chunk()
+}
 /// Hand-offs in flight: how far reading may run ahead of parsing.
 const AHEAD: usize = 2;
 /// Minimum spare capacity for another opportunistic read. This is a
@@ -89,8 +112,9 @@ impl ReadAhead {
         let (empty, empty_rx) = mpsc::channel::<Vec<u8>>();
         // Each hand-off is filled once and keeps its length, so a reused
         // one is read into as it is, not cleared again.
+        let chunk = chunk();
         for _ in 0..AHEAD {
-            let _ = empty.send(vec![0; CHUNK]);
+            let _ = empty.send(vec![0; chunk]);
         }
         std::thread::Builder::new().name("pty-read".into()).spawn(move || {
             crate::affinity::place_hot_thread();
@@ -107,7 +131,7 @@ impl ReadAhead {
                         Err(_) => ended = true,
                     }
                     sysreads += 1;
-                    if ended || CHUNK - filled < PTY_READ {
+                    if ended || chunk - filled < PTY_READ {
                         break;
                     }
                     if !waiting(fd.as_ref()) {

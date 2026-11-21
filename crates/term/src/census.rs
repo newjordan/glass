@@ -82,7 +82,7 @@ pub fn handoff_shape(filled: usize, sysreads: u32, ended: bool) {
     HANDOFFS.fetch_add(1, Relaxed);
     HANDOFF_BYTES.fetch_add(filled as u64, Relaxed);
     HANDOFF_READS.fetch_add(sysreads as u64, Relaxed);
-    if filled >= CHUNK_FULL {
+    if filled >= chunk_full() {
         HANDOFF_FULL.fetch_add(1, Relaxed);
     } else if !ended {
         HANDOFF_EMPTY_BREAKS.fetch_add(1, Relaxed);
@@ -90,7 +90,10 @@ pub fn handoff_shape(filled: usize, sysreads: u32, ended: bool) {
 }
 
 /// A hand-off counts as full at this many bytes.
-pub const CHUNK_FULL: usize = 16 * 1024 - 4096;
+pub fn chunk_full() -> usize {
+    static ONCE: std::sync::OnceLock<usize> = std::sync::OnceLock::new();
+    *ONCE.get_or_init(|| crate::read_ahead::handoff_size().saturating_sub(4096))
+}
 
 /// Record one wait, from `began` to now, under `name`.
 pub fn record(name: &str, began: Instant) {
