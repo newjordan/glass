@@ -558,11 +558,14 @@ pub struct Splitter {
     /// How many passthroughs are already open. One level is taken in;
     /// a nested wrap is refused and passes through as text.
     passthrough_depth: u8,
+    /// The store held nothing the text could move, cover or drop when the
+    /// last read was pumped: see [`Splitter::set_quiet`].
+    quiet: bool,
 }
 
 impl Default for Splitter {
     fn default() -> Self {
-        Self { state: State::Text, body_cap: BODY_CAP, passthrough_depth: 0 }
+        Self { state: State::Text, body_cap: BODY_CAP, passthrough_depth: 0, quiet: false }
     }
 }
 
@@ -571,7 +574,7 @@ impl Splitter {
     /// tests; production takes [`Default`].
     #[cfg(test)]
     pub(crate) fn with_body_cap(cap: usize) -> Self {
-        Self { state: State::Text, body_cap: cap, passthrough_depth: 0 }
+        Self { state: State::Text, body_cap: cap, passthrough_depth: 0, quiet: false }
     }
 
     /// `split` one byte at a time, with no bulk path: the reference the
@@ -841,8 +844,23 @@ impl Splitter {
     /// input while the splitter sits in plain text; the pieces a
     /// pass-through sequence produces own their bytes, since they may
     /// join bytes from an earlier read.
+    /// Whether the store was quiet ([`Intake::quiet`]) after the last
+    /// pump. While it is, the pump feeds a run of text pieces to the engine
+    /// as one, so a CSI or plain escape that completes in the read stays in
+    /// the text run around it instead of becoming a piece of its own: the
+    /// bytes and their order are the same, only the cut is not. The pieces
+    /// the pump cuts a feed at still stand alone: `ESC [ ?` (a screen
+    /// switch may hide in it) and RIS. Once a read yields a picture, the
+    /// rest of that read is cut as before, the store no longer being quiet.
+    /// Only the pump adds pictures, so the store cannot stop being quiet
+    /// between that pump and this read's.
+    pub fn set_quiet(&mut self, quiet: bool) {
+        self.quiet = quiet;
+    }
+
     pub fn split<'a>(&mut self, input: &'a [u8], out: &mut Vec<Piece<'a>>) {
         let t = split_timers::on().then(std::time::Instant::now);
+        let mut merge = self.quiet && self.passthrough_depth == 0;
         // Where the open text run of this read began, if one is open. It
         // closes when a sequence starts, so nothing a sequence produces
         // can come before the text in front of it. The run lives in the
@@ -853,11 +871,15 @@ impl Splitter {
         while i < input.len() {
             // Most bytes are taken in bulk: the result is the one the
             // byte-at-a-time step gives, only sooner.
-            if let Some(next) = self.bulk(i, input, &mut run, out) {
+            if let Some(next) = self.bulk(i, input, &mut run, out, merge) {
                 i = next;
                 continue;
             }
+            let before = out.len();
             self.step(input[i], i, input, &mut run, out);
+            if merge && out[before..].iter().any(|piece| matches!(piece, Piece::Media(_))) {
+                merge = false;
+            }
             i += 1;
         }
         // End of the read. A text run never becomes anything else, so it
@@ -878,7 +900,14 @@ impl Splitter {
     /// next special byte, a lifted body up to its next special byte.
     /// Returns where to go on from, or `None` to step one byte.
     #[inline]
-    fn bulk<'a>(&mut self, i: usize, input: &'a [u8], run: &mut Option<usize>, out: &mut Vec<Piece<'a>>) -> Option<usize> {
+    fn bulk<'a>(
+        &mut self,
+        i: usize,
+        input: &'a [u8],
+        run: &mut Option<usize>,
+        out: &mut Vec<Piece<'a>>,
+        merge: bool,
+    ) -> Option<usize> {
         let rest = &input[i..];
         // The bytes that end or abort a string body: ESC, BEL, CAN, SUB.
         // A DCS body (and a tmux one) is not ended by BEL.
@@ -893,6 +922,11 @@ impl Splitter {
                     return Some(i + k);
                 }
                 let len = whole_escape(rest)?;
+                // A quiet store: the escape joins the run (`set_quiet`).
+                if merge && rest[1] != b'c' && !rest.starts_with(b"\x1b[?") {
+                    run.get_or_insert(i);
+                    return Some(i + len);
+                }
                 if let Some(start) = run.take() {
                     out.push(Piece::Text(Cow::Borrowed(&input[start..i])));
                 }

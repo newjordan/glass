@@ -757,6 +757,9 @@ impl Session {
             let parse = std::thread::Builder::new().name("pty-parse".into()).spawn(move || {
                 crate::affinity::place_hot_thread();
                 let mut buf = vec![0u8; 64 * 1024];
+                // Whether the store was quiet after the last pump, for the
+                // splitter (`Splitter::set_quiet`). Nothing is pumped yet.
+                let mut quiet = false;
                 'reads: loop {
                     let n = match reader.read(&mut buf) {
                         Ok(0) | Err(_) => break,
@@ -779,7 +782,11 @@ impl Session {
                         // write back what the program is owed.
                         let pumped = {
                             let mut pieces = Vec::new();
-                            lock(&splitter).split(piece, &mut pieces);
+                            {
+                                let mut splitter = lock(&splitter);
+                                splitter.set_quiet(quiet);
+                                splitter.split(piece, &mut pieces);
+                            }
                             let _wait = glass_window::keytrace::Wait::for_lock("engine");
                             let began = crate::census::on().then(std::time::Instant::now);
                             let mut engine = lock(&engine);
@@ -788,6 +795,7 @@ impl Session {
                             }
                             let mut intake = lock(&intake);
                             let pumped = pump(&mut engine, &mut intake, &pieces);
+                            quiet = intake.quiet();
                             // Copy what a key needs out while the lock is
                             // ours: a key typed during the next read does
                             // not wait for that read to finish.
@@ -1554,6 +1562,66 @@ mod pump_tests {
         let mut pieces = Vec::new();
         splitter.split(stream, &mut pieces);
         pump(engine, intake, &pieces)
+    }
+
+    /// A quiet store lets the splitter keep plain escapes inside the text
+    /// run (`Splitter::set_quiet`). That changes only where pieces are cut,
+    /// so the engine, the store and what goes back to the program end up
+    /// exactly as with every escape cut out on its own: random streams
+    /// dense with escapes, screen switches, resets and pictures, cut into
+    /// random reads, through both.
+    #[test]
+    fn a_quiet_store_merging_escapes_changes_nothing_but_the_cuts() {
+        let mut rng = crate::speed::Rng::new(97);
+        let (mut cut_total, mut merged_total) = (0, 0);
+        for round in 0..300 {
+            let len = 200 + rng.below(3000);
+            let stream = crate::speed::random_stream(&mut rng, len);
+            let mut cuts = Vec::new();
+            let mut at = 0;
+            while at < stream.len() {
+                let span = if rng.below(3) == 0 { 8 } else { 600 };
+                let n = 1 + rng.below(span);
+                cuts.push(at..(at + n).min(stream.len()));
+                at += n;
+            }
+            let run = |merging: bool| {
+                let (mut engine, mut intake, mut splitter) = (
+                    Engine::new(12, 30, HostInfo { colors: [[0xd0; 3], [0, 0, 0], [0xff; 3]], cell_px: (10, 20) }),
+                    Intake::new(glass_window::LAYER_PICTURES),
+                    intake::Splitter::default(),
+                );
+                let (mut replies, mut titles, mut bells, mut clips, mut pieces_seen) = (Vec::new(), Vec::new(), 0, Vec::new(), 0);
+                for cut in &cuts {
+                    if merging {
+                        splitter.set_quiet(intake.quiet());
+                    }
+                    let mut pieces = Vec::new();
+                    splitter.split(&stream[cut.clone()], &mut pieces);
+                    pieces_seen += pieces.len();
+                    let pumped = pump(&mut engine, &mut intake, &pieces);
+                    replies.extend_from_slice(&pumped.replies);
+                    titles.push(pumped.title);
+                    bells += pumped.bell as usize;
+                    clips.push(pumped.clipboard.map(|c| format!("{c:?}")));
+                }
+                let shown = intake.describe(intake::View { top: engine.top_line(), rows: 12, alternate: engine.alternate_screen() });
+                let placed: Vec<String> = shown.placements.iter().map(|p| format!("{} {} {} {} {} {} {}", p.id, p.row, p.column, p.width, p.height, p.z, p.gpu)).collect();
+                (
+                    (engine.grid_state(), engine.scrolled_off_top(), engine.alt_scrolled(), engine.alternate_screen(), engine.cursor()),
+                    (replies, titles, bells, clips, placed),
+                    pieces_seen,
+                )
+            };
+            let (cut_state, cut_out, cut_pieces) = run(false);
+            let (merged_state, merged_out, merged_pieces) = run(true);
+            assert_eq!(merged_state, cut_state, "round {round}: the engine differs");
+            assert_eq!(merged_out, cut_out, "round {round}: what the program or store got differs");
+            assert!(merged_pieces <= cut_pieces, "round {round}: merging made more pieces");
+            (cut_total, merged_total) = (cut_total + cut_pieces, merged_total + merged_pieces);
+        }
+        // The streams must have exercised the merge, or this proves nothing.
+        assert!(merged_total * 10 < cut_total * 9, "merged {merged_total} of {cut_total} pieces");
     }
 
     /// A tiny APC-graphics picture: direct RGBA, one pixel, transmit and

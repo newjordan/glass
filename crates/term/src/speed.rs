@@ -180,6 +180,8 @@ pub(crate) fn feed(engine: &mut Engine, intake: &mut Intake, splitter: &mut Spli
     let mut pieces = Vec::new();
     for chunk in stream.chunks(read.max(1)) {
         pieces.clear();
+        // As the reader thread does: the store's quiet after the last pump.
+        splitter.set_quiet(intake.quiet());
         splitter.split(chunk, &mut pieces);
         if stage == 1 {
             continue;
