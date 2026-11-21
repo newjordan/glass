@@ -3212,27 +3212,32 @@ fn simple(rest: &[u8]) -> Option<(usize, Simple)> {
     }
     let mut params = [0u16; LANE_PARAMS];
     let mut count = 0;
-    let mut value = 0u16;
-    for (at, &b) in rest.iter().enumerate().skip(2) {
-        match b {
-            b'0'..=b'9' => value = value.saturating_mul(10).saturating_add(u16::from(b - b'0')),
-            b';' if count + 1 < LANE_PARAMS => {
-                params[count] = value;
-                count += 1;
-                value = 0;
+    // A parameter saturates at 65535 as vte's does: at most 655359 here
+    // before the clamp, so u32 holds it.
+    let mut value = 0u32;
+    let mut at = 2;
+    while let Some(&b) = rest.get(at) {
+        let digit = b.wrapping_sub(b'0');
+        if digit < 10 {
+            value = (value * 10 + u32::from(digit)).min(u32::from(u16::MAX));
+        } else if b == b';' {
+            if count + 1 >= LANE_PARAMS {
+                return None;
             }
-            b'm' | b'H' | b'f' => {
-                params[count] = value;
-                return Some((at + 1, Simple { params, count: count + 1, goto: b != b'm', rep: false }));
-            }
-            b'b' => {
+            params[count] = value as u16;
+            count += 1;
+            value = 0;
+        } else {
+            params[count] = value as u16;
+            return match b {
+                b'm' | b'H' | b'f' => Some((at + 1, Simple { params, count: count + 1, goto: b != b'm', rep: false })),
                 // REP: repeat the preceding character this many times
                 // (a missing or zero parameter is one, as vte reads it).
-                params[count] = value;
-                return Some((at + 1, Simple { params, count: count + 1, goto: false, rep: true }));
-            }
-            _ => return None,
+                b'b' => Some((at + 1, Simple { params, count: count + 1, goto: false, rep: true })),
+                _ => None,
+            };
         }
+        at += 1;
     }
     None
 }
@@ -3458,7 +3463,7 @@ fn sgr_color(params: &[u16], at: &mut usize) -> Option<AnsiColor> {
 /// inside is wide, and inlined into the per-glyph loop it measurably
 /// slows every glyph (unicode -24% with it inline, 2026-11-02).
 #[cold]
-#[inline(never)]
+#[inline]
 fn note_uniform_span(
     row: &mut alacritty_terminal::grid::Row<alacritty_terminal::term::cell::Cell>,
     from: usize,
@@ -3520,7 +3525,7 @@ fn next_run_inner(bytes: &[u8], mut from: usize) -> Option<(usize, usize, bool)>
 
 /// Exact per-byte control and high-bit masks. SSE2 is baseline on x86-64.
 #[cfg(target_arch = "x86_64")]
-#[inline(always)]
+#[inline]
 fn text_masks(bytes: &[u8; 16]) -> (u32, u32) {
     use std::arch::x86_64::*;
     // SAFETY: the array guarantees 16 readable bytes; loadu has no
@@ -3733,7 +3738,7 @@ impl Mirror {
 /// there are a whole, well-formed one (RFC 3629: no overlong form, no
 /// surrogate, nothing past U+10FFFF). `None` for anything else, which
 /// the parser takes as it always has.
-#[inline(always)]
+#[inline]
 fn utf8_at(bytes: &[u8], at: usize) -> Option<(char, usize)> {
     let lead = *bytes.get(at)?;
     if lead < 0x80 {
