@@ -1085,7 +1085,7 @@ impl<T: Send + 'static> Glass<T> {
 /// Save captured RGBA (premultiplied) as a PNG (straight alpha).
 fn write_png(path: &std::path::Path, width: u32, height: u32, mut pixels: Vec<u8>) {
     // PNG wants straight alpha.
-    for p in pixels.chunks_exact_mut(4) {
+    for p in pixels.as_chunks_mut::<4>().0 {
         let a = u16::from(p[3]);
         if a > 0 && a < 255 {
             for c in &mut p[..3] {

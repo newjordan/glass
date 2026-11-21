@@ -1031,7 +1031,7 @@ pub fn bake(set: &Set, key: u64, ids: u64) -> Lit {
                 kept.push(node);
                 continue;
             };
-            let mut material = node.material.clone();
+            let mut material = node.material;
             let tint = material.tint;
             material.tint = [1.0; 4];
             let at = match groups.iter().position(|(m, _)| *m == material) {
@@ -1914,7 +1914,7 @@ sphere rock   at 600 0 120 size 30 20 30 turn -30.5 id boulder
         };
         assert!(sets.fill(&mut world));
         // The ground's mesh first, then the baked meshes for the blocks.
-        assert!(world.meshes.len() >= 1);
+        assert!(!world.meshes.is_empty());
         assert_eq!(world.meshes[0].0, ground_mesh_id(42));
         assert_eq!(world.floor[0].mesh, Some(MeshRef::Uploaded(ground_mesh_id(42))));
         // The blocks are baked into uploaded meshes.

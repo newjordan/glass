@@ -179,7 +179,7 @@ impl Fonts {
             Content::Mask => image.data,
             Content::Color => premultiply(image.data),
             // Subpixel masks are not requested; keep their green channel.
-            Content::SubpixelMask => image.data.chunks_exact(4).map(|p| p[1]).collect(),
+            Content::SubpixelMask => image.data.as_chunks::<4>().0.iter().map(|p| p[1]).collect(),
         };
         let (width, height, data) =
             normalize(data, image.placement.width, image.placement.height, colored)
@@ -435,7 +435,7 @@ fn composite(base: Picture, over: Picture, advance: i32) -> Picture {
 }
 
 fn premultiply(mut rgba: Vec<u8>) -> Vec<u8> {
-    for p in rgba.chunks_exact_mut(4) {
+    for p in rgba.as_chunks_mut::<4>().0 {
         let a = u16::from(p[3]);
         for c in &mut p[..3] {
             *c = (u16::from(*c) * a / 255) as u8;
@@ -720,7 +720,7 @@ pub fn render_page(
             [12u8, 16, 22, 255]
         };
         let row = &mut rgba[(y * width * 4) as usize..((y + 1) * width * 4) as usize];
-        for px in row.chunks_exact_mut(4) {
+        for px in row.as_chunks_mut::<4>().0 {
             px.copy_from_slice(&bg);
         }
         if width >= 2 {

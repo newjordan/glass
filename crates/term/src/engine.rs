@@ -487,6 +487,8 @@ impl Engine {
         self.note_sync();
     }
 
+    /// Bytes through `Term`, with the scroll count and the store's events
+    /// kept as they run.
     fn apply(&mut self, pass: &[u8]) {
         // Loaded once, before the threads exist: the parse path's
         // per-iteration gates read thread-locals instead of the shared

@@ -62,7 +62,7 @@ pub fn of_picture(rgba: &[u8], (width, height): (u32, u32), grain: f32) -> Vec<u
     // floor round its feet, a ring; `look::UNLIT_ALPHA`, never lit) unless
     // the body runs on above and below them (a tabard in a team's colour,
     // an eye).
-    let body: Vec<bool> = rgba.chunks_exact(4).map(|p| p[3] >= SOLID && p[3] != crate::look::UNLIT_ALPHA).collect();
+    let body: Vec<bool> = rgba.as_chunks::<4>().0.iter().map(|p| p[3] >= SOLID && p[3] != crate::look::UNLIT_ALPHA).collect();
     let mut span = vec![(usize::MAX, 0usize); w];
     for (i, _) in body.iter().enumerate().filter(|(_, b)| **b) {
         let (x, y) = (i % w, i / w);
@@ -94,7 +94,7 @@ pub fn of_picture(rgba: &[u8], (width, height): (u32, u32), grain: f32) -> Vec<u
     // Its brightness, softened over a pixel, a little over the dome: the
     // softening takes a pixel's speckle out and keeps its shapes.
     let mut light: Vec<f32> = rgba
-        .chunks_exact(4)
+        .as_chunks::<4>().0.iter()
         .zip(&solid)
         .map(|(p, &s)| if s { (0.2126 * f32::from(p[0]) + 0.7152 * f32::from(p[1]) + 0.0722 * f32::from(p[2])) / 255.0 } else { 0.0 })
         .collect();
@@ -172,7 +172,7 @@ pub fn mirrored(normals: &[u8], (width, height): (u32, u32)) -> Vec<u8> {
 /// shortened its normals), one turned into the picture made flat.
 pub fn tidied(normals: &mut [u8]) {
     let v = |b: u8| f32::from(b) / 255.0 * 2.0 - 1.0;
-    for p in normals.chunks_exact_mut(4) {
+    for p in normals.as_chunks_mut::<4>().0 {
         let n = [v(p[0]), v(p[1]), v(p[2]).max(0.0)];
         // Hardly any length: no direction to keep.
         let tidy = if n[0] * n[0] + n[1] * n[1] + n[2] * n[2] < 0.01 { FLAT } else { encode(n) };
@@ -302,7 +302,7 @@ mod tests {
         let side = 16;
         let map = of_picture(&disc(side, 5.0), (side, side), 1.0);
         assert_eq!(&map[..4], &FLAT);
-        assert!(map.chunks_exact(4).all(|p| p[3] == 255));
+        assert!(map.as_chunks::<4>().0.iter().all(|p| p[3] == 255));
         assert!(of_picture(&[0; 12], (2, 2), 1.0).is_empty(), "the wrong size makes none");
     }
 

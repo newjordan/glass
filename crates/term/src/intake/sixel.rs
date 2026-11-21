@@ -279,7 +279,7 @@ impl Decode {
             // The background (register 0) fills what nothing painted.
             let bg = self.registers[0];
             let fill = [(bg >> 16) as u8, (bg >> 8) as u8, bg as u8, 255];
-            for px in self.rgba[..size].chunks_exact_mut(4) {
+            for px in self.rgba[..size].as_chunks_mut::<4>().0 {
                 if px[3] == 0 {
                     px.copy_from_slice(&fill);
                 }
@@ -493,7 +493,7 @@ mod tests {
         let picture = &pictures[0];
         assert_eq!((picture.width, picture.height), (320, 160));
         assert_eq!(picture.rgba.len(), 320 * 160 * 4);
-        for px in picture.rgba.chunks_exact(4) {
+        for px in picture.rgba.as_chunks::<4>().0.iter() {
             assert_eq!(px[3], 255, "every pixel is opaque");
         }
     }

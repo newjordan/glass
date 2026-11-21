@@ -2,7 +2,10 @@
 name = "vte"
 version = "0.15.0"
 edition = "2021"
-rust-version = "1.62.1"
+# The fork lives only in this workspace, which already requires 1.95;
+# declaring upstream's old minimum here held the whole lockfile back to
+# Rust 1.62-compatible versions.
+rust-version.workspace = true
 description = "Parser for implementing terminal emulators (vendored: REP preceding-char kept fresh by the host)"
 license = "Apache-2.0 OR MIT"
 publish = false

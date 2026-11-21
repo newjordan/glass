@@ -1,4 +1,3 @@
 /target
-bench/__pycache__/
+__pycache__/
 bench/linux/cpu-sample.so
-bench/results/**/__pycache__/

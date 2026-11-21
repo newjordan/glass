@@ -1278,7 +1278,7 @@ impl Core {
         if polled.is_ok() && matches!(rx.recv_timeout(std::time::Duration::from_secs(1)), Ok(Ok(()))) {
             if let Ok(mapped) = slice.get_mapped_range() {
                 for row in mapped.chunks(row_bytes as usize).take(height as usize) {
-                    out.extend(row[..(width * 4) as usize].chunks_exact(4).map(|b| f32::from_le_bytes([b[0], b[1], b[2], b[3]])));
+                    out.extend(row[..(width * 4) as usize].as_chunks::<4>().0.iter().map(|b| f32::from_le_bytes([b[0], b[1], b[2], b[3]])));
                 }
             }
             readback.unmap();

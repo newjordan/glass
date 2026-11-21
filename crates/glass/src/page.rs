@@ -251,7 +251,7 @@ mod tests {
         // Paper where nothing was written (last pixel), ink somewhere.
         assert_eq!(&rgba[rgba.len() - 4..], [16, 14, 12, 255]);
         let ink = rgba
-            .chunks_exact(4)
+            .as_chunks::<4>().0.iter()
             .filter(|px| px[0] > 100 && px[3] == 255)
             .count();
         assert!(ink > 100, "glyphs left ink (got {ink} bright pixels)");
