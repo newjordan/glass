@@ -36,6 +36,11 @@ term_cmd() {
     glass) echo "${GLASS:-glass} --class $class -e $*" ;;
     # A second glass binary, to compare two builds in one run.
     glass-alt) echo "${GLASS_ALT:?GLASS_ALT names a second glass binary} --class $class -e $*" ;;
+    # More builds in one run: glass-NAME runs the binary GLASS_BIN_NAME names.
+    glass-*)
+      local var="GLASS_BIN_${name#glass-}"
+      echo "${!var:?$var names the binary for $name} --class $class -e $*"
+      ;;
     kitty) echo "${KITTY:-kitty} --class $class $*" ;;
     # foot with its own default of a render thread per CPU: Omarchy's
     # foot.ini sets workers=0, which renders on one thread.
@@ -146,3 +151,85 @@ rule_off() {
   hyprctl eval 'if _G.glass_bench_ws then _G.glass_bench_ws:set_enabled(false); _G.glass_bench_ws = nil end' >/dev/null
   hyprctl eval 'if _G.glass_bench_wr then _G.glass_bench_wr:set_enabled(false); _G.glass_bench_wr = nil end' >/dev/null
 }
+
+# OFFSCREEN=special: the terminals open on a special workspace that is never
+# shown (special:glassbench), floating at RES, without focus, as Omarchy
+# keeps minimized windows. No output is made or removed, so nothing on the
+# real monitors moves. While a run waits, it checks the focused window is
+# never one of its own; if one ever takes focus, the run closes its windows
+# and stops. The windows are never shown, so they get no frame callbacks:
+# compare terminals with one another here, not with visible-output numbers.
+if [ "${OFFSCREEN:-}" = special ]; then
+  SPECIAL=special:glassbench
+
+  headless_up() {
+    WS=$SPECIAL
+    # Ghostty (GTK) never finishes a run on a window that is never shown:
+    # its first round waited out the whole 900 s with no result, 11-21.
+    case " ${TERMS:-} " in
+      *" ghostty "*)
+        echo "OFFSCREEN=special: ghostty stalls on a hidden window; leave it out of TERMS" >&2
+        WS=
+        exit 1
+        ;;
+    esac
+    if [ -n "$(run_windows)" ]; then
+      echo "$SPECIAL already holds windows; stopping" >&2
+      WS=
+      exit 1
+    fi
+  }
+
+  launch() {
+    [ -n "$WS" ] || { echo "launch before headless_up" >&2; exit 1; }
+    local w=${RES%x*} h=${RES#*x}
+    hyprctl eval "_G.glass_bench_wr = hl.window_rule({ name = \"glassbench\", match = { class = \"^$1$\" }, workspace = \"$SPECIAL silent\", float = true, size = \"$w $h\", no_initial_focus = true, suppress_event = \"activate activatefocus fullscreen maximize\" })" >/dev/null
+    shift
+    local cmd=$*
+    hyprctl eval "hl.dispatch(hl.dsp.exec_cmd([[$cmd]]))" >/dev/null
+  }
+
+  run_windows() {
+    hyprctl clients -j | WS=$SPECIAL python3 -c '
+import json, os, sys
+for c in json.load(sys.stdin):
+    if c["workspace"]["name"] == os.environ["WS"]:
+        print(c["pid"], c["class"], c["address"])'
+  }
+
+  # Stop everything if a window of the run has the focus.
+  focus_guard() {
+    local class
+    class=$(hyprctl activewindow -j 2>/dev/null | python3 -c 'import json,sys
+try: print(json.load(sys.stdin).get("class",""))
+except Exception: print("")')
+    case $class in
+      bench.*)
+        echo "a bench window ($class) took the focus; closing the run" >&2
+        run_windows | while read -r pid _ _; do kill "$pid" 2>/dev/null; done
+        hyprctl eval 'if _G.glass_bench_wr then _G.glass_bench_wr:set_enabled(false); _G.glass_bench_wr = nil end' >/dev/null
+        exit 3
+        ;;
+    esac
+  }
+
+  wait_gone() {
+    local i
+    for i in $(seq 120); do
+      focus_guard
+      [ -z "$(run_windows)" ] && return 0
+      sleep 0.5
+    done
+    return 1
+  }
+
+  headless_down() {
+    [ -n "$WS" ] || return 0
+    if ! wait_gone; then
+      run_windows | while read -r pid _ _; do kill "$pid" 2>/dev/null; done
+      wait_gone || echo "windows are still open on $SPECIAL" >&2
+    fi
+    hyprctl eval 'if _G.glass_bench_wr then _G.glass_bench_wr:set_enabled(false); _G.glass_bench_wr = nil end' >/dev/null
+    WS=
+  }
+fi

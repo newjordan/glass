@@ -22,7 +22,7 @@ for round in ${ROUNDS:-1}; do
     out=$OUT/tput-$t-$round.json
     rm -f "$out"
     launch "bench.$t" $(term_cmd "$t" "bench.$t" python3 -I "$B/tput.py" "$out") || exit 1
-    for i in $(seq 900); do [ -s "$out" ] && break; sleep 1; done
+    for i in $(seq 900); do [ -s "$out" ] && break; [ "${OFFSCREEN:-}" = special ] && focus_guard; sleep 1; done
     # The next terminal gets the whole output only once this one has gone.
     wait_gone || echo "$t round $round: the window did not close" >&2
     sleep 1
