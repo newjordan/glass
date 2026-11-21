@@ -76,7 +76,9 @@ pub static HANDOFF_EMPTY_BREAKS: AtomicUsize = AtomicUsize::new(0);
 pub static HANDOFF_FULL: AtomicUsize = AtomicUsize::new(0);
 
 /// One hand-off's shape: how full it was, how many reads filled it, and
-/// whether it broke on an empty pty rather than a full buffer.
+/// whether it broke on an empty pty rather than a full buffer. Only Linux's
+/// read-ahead hands off this way; elsewhere the pty is read by `gather`.
+#[cfg(any(target_os = "linux", test))]
 pub fn handoff_shape(filled: usize, sysreads: u32, ended: bool) {
     use std::sync::atomic::Ordering::Relaxed;
     HANDOFFS.fetch_add(1, Relaxed);
@@ -90,6 +92,7 @@ pub fn handoff_shape(filled: usize, sysreads: u32, ended: bool) {
 }
 
 /// A hand-off counts as full at this many bytes.
+#[cfg(any(target_os = "linux", test))]
 pub fn chunk_full() -> usize {
     static ONCE: std::sync::OnceLock<usize> = std::sync::OnceLock::new();
     *ONCE.get_or_init(|| crate::read_ahead::handoff_size().saturating_sub(4096))

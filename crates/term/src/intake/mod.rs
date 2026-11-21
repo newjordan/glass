@@ -586,7 +586,8 @@ fn merge_stops(rest: &[u8]) -> bool {
 /// sequence that ends at or before the next `ESC`, so which escapes stop
 /// the run depends only on the two bytes after each `ESC`, except for the
 /// last `ESC`, which alone may be unfinished. Those two bytes are looked
-/// at for many `ESC`s at once.
+/// at for many `ESC`s at once. Without SSE2 the walk does all of it.
+#[cfg_attr(not(target_arch = "x86_64"), allow(unused_mut, unused_variables))]
 fn merged_text_end(rest: &[u8]) -> usize {
     let Some(last) = memchr::memrchr(0x1b, rest) else {
         return rest.len();

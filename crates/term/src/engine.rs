@@ -3062,6 +3062,7 @@ pub(crate) mod timers {
         }
     }
     /// next_run(): the scan that finds printable spans between gaps.
+    #[cfg(target_arch = "x86_64")]
     #[inline]
     pub fn record_nrun(t: Instant) {
         if ON.load(Ordering::Relaxed) {
