@@ -440,13 +440,10 @@ impl Engine {
         let mut i = 0;
         while i < bytes.len() {
             // Everything glass answers or holds back begins `ESC [` and one
-            // of these, so a colour or a cursor move (`ESC [ 3`, `ESC [ 2`)
-            // is passed over on its third byte.
-            if bytes[i] != 0x1b
-                || (bytes.get(i + 1) == Some(&b'[')
-                    && bytes.get(i + 2).is_some_and(|b| !matches!(b, b'1' | b'c' | b'0' | b'?' | b'>')))
-            {
-                i = memchr::memchr(0x1b, &bytes[i + 1..]).map_or(bytes.len(), |p| i + 1 + p);
+            // of a few bytes (`passes`), so a colour or a cursor move is
+            // passed over, many escapes at a time.
+            if bytes[i] != 0x1b || passes(&bytes[i..]) {
+                i = next_stop(bytes, i + 1);
                 continue;
             }
             // A synchronized update opening ahead of the bytes we answer
@@ -3780,6 +3777,80 @@ fn width_of(c: char) -> Option<usize> {
     (width != u8::MAX).then_some(width as usize)
 }
 
+/// Whether the escape at the start of `bytes` (an `ESC`) is one
+/// [`Engine::process`] has nothing to do with: `ESC [` then a byte that no
+/// sequence glass answers, tracks or holds back begins with. Of those
+/// beginning `ESC [ 1`, only XTWINOPS 16 (`16t`) is glass's; a cursor
+/// move to row 1 or 10..19 passes. Anything else, at the end of `bytes`
+/// included, is looked at.
+#[inline]
+fn passes(bytes: &[u8]) -> bool {
+    bytes.get(1) == Some(&b'[')
+        && match bytes.get(2) {
+            Some(b'c' | b'0' | b'?' | b'>') | None => false,
+            Some(b'1') => !(bytes.get(3) == Some(&b'6') && bytes.get(4) == Some(&b't')),
+            Some(_) => true,
+        }
+}
+
+/// The first `ESC` from `from` on that does not [`passes`], or the end.
+/// Sixteen bytes at a time where all five bytes the test reads are in
+/// `bytes`; the rest one `ESC` at a time.
+fn next_stop(bytes: &[u8], from: usize) -> usize {
+    let mut at = from;
+    #[cfg(target_arch = "x86_64")]
+    {
+        use std::arch::x86_64::*;
+        while at + 20 <= bytes.len() {
+            // SAFETY: loads of 16 bytes at `at` to `at + 4`, all within
+            // `bytes` by the loop condition; `loadu` needs no alignment,
+            // and every intrinsic is SSE2, baseline on x86-64.
+            let hit = unsafe {
+                let p = bytes.as_ptr().add(at);
+                let b0 = _mm_loadu_si128(p.cast());
+                let esc = _mm_cmpeq_epi8(b0, _mm_set1_epi8(0x1b));
+                if _mm_movemask_epi8(esc) == 0 {
+                    -1
+                } else {
+                    let is = |v: __m128i, b: u8| _mm_cmpeq_epi8(v, _mm_set1_epi8(b as i8));
+                    let b1 = _mm_loadu_si128(p.add(1).cast());
+                    let b2 = _mm_loadu_si128(p.add(2).cast());
+                    let b3 = _mm_loadu_si128(p.add(3).cast());
+                    let b4 = _mm_loadu_si128(p.add(4).cast());
+                    let looked = _mm_or_si128(
+                        _mm_or_si128(is(b2, b'c'), is(b2, b'0')),
+                        _mm_or_si128(is(b2, b'?'), is(b2, b'>')),
+                    );
+                    let cell_size = _mm_and_si128(is(b2, b'1'), _mm_and_si128(is(b3, b'6'), is(b4, b't')));
+                    let csi = is(b1, b'[');
+                    let pass = _mm_andnot_si128(_mm_or_si128(looked, cell_size), csi);
+                    _mm_movemask_epi8(_mm_andnot_si128(pass, esc))
+                }
+            };
+            if hit == -1 {
+                // No ESC in the block: plain text, which memchr crosses
+                // faster than this loop does.
+                match memchr::memchr(0x1b, &bytes[at + 16..]) {
+                    Some(k) => at += 16 + k,
+                    None => return bytes.len(),
+                }
+                continue;
+            }
+            if hit != 0 {
+                return at + hit.trailing_zeros() as usize;
+            }
+            at += 16;
+        }
+    }
+    while let Some(k) = bytes.get(at..).and_then(|rest| memchr::memchr(0x1b, rest)).map(|k| at + k) {
+        if !passes(&bytes[k..]) {
+            return k;
+        }
+        at = k + 1;
+    }
+    bytes.len()
+}
+
 fn held_back(bytes: &[u8]) -> Option<Vec<u8>> {
     // Only an escape that starts here and could still grow into one of
     // glass's own answers is held back; plain text before it flows on.
@@ -3887,6 +3958,40 @@ mod tests {
             80,
             HostInfo { colors: [[0xd0, 0xd0, 0xd0], [0, 0, 0], [0xff, 0xff, 0xff]], cell_px: (10, 20) },
         )
+    }
+
+    /// `next_stop` finds what walking the `ESC`s one at a time with
+    /// `passes` finds, from every start of random streams, those ending
+    /// inside an escape included.
+    #[test]
+    fn process_stops_where_walking_the_escapes_stops() {
+        let walking = |bytes: &[u8], from: usize| {
+            (from..bytes.len()).find(|&k| bytes[k] == 0x1b && !passes(&bytes[k..])).unwrap_or(bytes.len())
+        };
+        let mut rng = crate::speed::Rng::new(71);
+        for _ in 0..400 {
+            let len = 1 + rng.below(300);
+            let mut stream = crate::speed::random_stream(&mut rng, len);
+            let tails: [&[u8]; 7] = [b"\x1b", b"\x1b[", b"\x1b[1", b"\x1b[16", b"\x1b[16t", b"\x1b[>", b"\x1b[12;4H"];
+            if rng.below(2) == 0 {
+                stream.extend_from_slice(tails[rng.below(tails.len())]);
+            }
+            for from in 0..=stream.len() {
+                assert_eq!(next_stop(&stream, from), walking(&stream, from), "from {from} of {:?}", String::from_utf8_lossy(&stream));
+            }
+        }
+    }
+
+    /// The cursor moves `passes` lets through are ones the loop body would
+    /// have done nothing with: XTWINOPS 16 is still answered, and a cursor
+    /// move to row 16 is not taken for it.
+    #[test]
+    fn rows_from_one_pass_and_cell_size_is_still_answered() {
+        assert!(passes(b"\x1b[1;1H") && passes(b"\x1b[16;4H") && passes(b"\x1b[1"));
+        assert!(!passes(b"\x1b[16t") && !passes(b"\x1b[c") && !passes(b"\x1b[") && !passes(b"\x1b"));
+        assert_eq!(answers(b"ab\x1b[16;4Hcd\x1b[16t"), answers(b"\x1b[16t"), "16t answered once, the move ignored");
+        assert!(!answers(b"\x1b[16t").is_empty());
+        assert!(answers(b"\x1b[16;4H\x1b[1;1H").is_empty());
     }
 
     fn answers(input: &[u8]) -> Vec<u8> {

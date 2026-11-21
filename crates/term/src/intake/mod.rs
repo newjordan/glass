@@ -606,7 +606,7 @@ fn merged_text_end(rest: &[u8]) -> usize {
                 let b0 = _mm_loadu_si128(p.cast());
                 let esc = _mm_cmpeq_epi8(b0, _mm_set1_epi8(0x1b));
                 if _mm_movemask_epi8(esc) == 0 {
-                    0
+                    -1
                 } else {
                     let b1 = _mm_loadu_si128(p.add(1).cast());
                     let b2 = _mm_loadu_si128(p.add(2).cast());
@@ -619,6 +619,12 @@ fn merged_text_end(rest: &[u8]) -> usize {
                     _mm_movemask_epi8(_mm_and_si128(esc, _mm_or_si128(lone, private)))
                 }
             };
+            if hit == -1 {
+                // No ESC in the block: memchr crosses plain text faster.
+                // There is one ahead, the last.
+                at += 16 + memchr::memchr(0x1b, &rest[at + 16..]).unwrap_or(0);
+                continue;
+            }
             if hit != 0 {
                 return at + hit.trailing_zeros() as usize;
             }
