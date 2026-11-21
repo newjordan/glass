@@ -29,8 +29,8 @@ pkgbase = glass-term-bin
 	options = !strip
 	options = !debug
 	source_x86_64 = https://github.com/newjordan/glass/releases/download/v0.2.0/glass-0.2.0-linux-x86_64.tar.gz
-	sha256sums_x86_64 = SKIP
+	sha256sums_x86_64 = 33a612157bf5ea6e8df4c88bc18becd830434a717c0f3e2b9927464db8e98d54
 	source_aarch64 = https://github.com/newjordan/glass/releases/download/v0.2.0/glass-0.2.0-linux-aarch64.tar.gz
-	sha256sums_aarch64 = SKIP
+	sha256sums_aarch64 = 37d68b58c59428ec25bbd5890c1211365951461c2288d66b442a88cb1098736c
 
 pkgname = glass-term-bin

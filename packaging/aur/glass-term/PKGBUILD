@@ -35,9 +35,11 @@ optdepends=(
 )
 # glass-git (a web browser) also installs /usr/bin/glass.
 conflicts=('glass-term-bin' 'glass-git')
+# makepkg's LTO flags would build mimalloc's C as GCC bitcode, which the
+# Rust linker cannot read.
+options=('!lto')
 source=("glass-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
-# updpkgsums fills this in once the tag is pushed (packaging/README.md).
-sha256sums=('SKIP')
+sha256sums=('0b147a3969f08c6aee64711ddb4cf4eab9da2bcd38991e1b558a2ed59714b109')
 
 _host() {
   rustc -vV | sed -n 's/^host: //p'

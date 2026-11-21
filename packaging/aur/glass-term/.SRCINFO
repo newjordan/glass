@@ -27,7 +27,8 @@ pkgbase = glass-term
 	optdepends = xdg-terminal-exec: make glass the default terminal
 	conflicts = glass-term-bin
 	conflicts = glass-git
+	options = !lto
 	source = glass-0.2.0.tar.gz::https://github.com/newjordan/glass/archive/refs/tags/v0.2.0.tar.gz
-	sha256sums = SKIP
+	sha256sums = 0b147a3969f08c6aee64711ddb4cf4eab9da2bcd38991e1b558a2ed59714b109
 
 pkgname = glass-term
