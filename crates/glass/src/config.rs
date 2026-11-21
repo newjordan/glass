@@ -23,7 +23,7 @@ pub enum BrailleStyle {
     Pixels,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Palette {
     pub foreground: Rgb,
     pub background: Rgb,
@@ -61,6 +61,26 @@ impl Default for Palette {
     }
 }
 
+impl Palette {
+    /// Colour `i` of the 256: the palette's 16, then xterm's fixed table
+    /// (the 6×6×6 cube and the grey ramp). What the renderer draws an
+    /// indexed colour with, and what a terminal answers OSC 4 with.
+    pub fn indexed(&self, i: u8) -> Rgb {
+        match i {
+            0..=15 => self.ansi[usize::from(i)],
+            16..=231 => {
+                let n = i - 16;
+                let level = |v: u8| if v == 0 { 0 } else { 55 + v * 40 };
+                [level(n / 36), level((n / 6) % 6), level(n % 6)]
+            }
+            _ => {
+                let v = 8 + (i - 232) * 10;
+                [v, v, v]
+            }
+        }
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct Options {
     pub title: String,
@@ -90,6 +110,9 @@ pub struct Options {
     /// Whether the first frame with text plays the assembly transition
     /// (`transition.rs`). `GLASS_TRANSITION=0` turns it off.
     pub transition: bool,
+    /// The settings file read at launch, if there is one: a reload
+    /// (SIGUSR1, [`Options::reloaded`]) reads the same file again.
+    pub config_file: Option<PathBuf>,
 }
 
 impl Default for Options {
@@ -111,6 +134,7 @@ impl Default for Options {
             background_tint: 0.0,
             background_linear: false,
             transition: true,
+            config_file: None,
         }
     }
 }
@@ -134,9 +158,54 @@ impl Options {
         };
         if let Some(path) = path {
             read_or_create(&mut options, &path);
+            options.config_file = Some(path);
         }
         options.apply_env();
         options
+    }
+
+    /// The settings read again, for a reload: the file read at launch (and
+    /// the files it includes, as they are now), then the `GLASS_*`
+    /// variables, which still override it. Nothing is written, even if the
+    /// file has gone; its settings are then the defaults.
+    ///
+    /// What the window was opened with stays: its title and app id (a
+    /// Wayland window keeps its app id for life, and both come from the
+    /// command line), its first size in cells, which only the opening
+    /// used, and whether the opening transition plays.
+    ///
+    /// Settings an app made itself, read from no file, have nothing to be
+    /// read again from, and stay as they are.
+    pub fn reloaded(&self) -> Self {
+        let Some(path) = &self.config_file else {
+            return self.clone();
+        };
+        let mut options = Self { config_file: Some(path.clone()), ..Self::default() };
+        apply_conf(&mut options, path);
+        options.apply_env();
+        options.title.clone_from(&self.title);
+        options.app_id.clone_from(&self.app_id);
+        options.columns = self.columns;
+        options.rows = self.rows;
+        options.transition = self.transition;
+        options
+    }
+
+    /// What differs between these settings and `new`, as the window
+    /// applies a reload.
+    pub(crate) fn changes(&self, new: &Self) -> Changes {
+        Changes {
+            palette: self.palette != new.palette,
+            opacity: self.background_opacity != new.background_opacity,
+            padding: self.padding != new.padding,
+            font_family: self.font_family != new.font_family,
+            font_size: self.font_size != new.font_size,
+            // The image is read again whenever there is one: the file
+            // may have changed under the same name (a theme's link).
+            wallpaper: new.background_image.is_some() || self.wallpaper() != new.wallpaper(),
+            braille: self.braille != new.braille,
+            text_gamma: self.text_gamma != new.text_gamma,
+        }
     }
 
     /// The settings as a `glass.conf`.
@@ -246,6 +315,40 @@ impl Options {
         if var("GLASS_TRANSITION").is_some_and(|v| v == "0") {
             self.transition = false;
         }
+    }
+}
+
+/// What a reload changed, so the window redoes only that: a new font
+/// family is a fontconfig lookup and new glyphs, the image a decode.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub(crate) struct Changes {
+    pub palette: bool,
+    pub opacity: bool,
+    pub padding: bool,
+    pub font_family: bool,
+    pub font_size: bool,
+    pub wallpaper: bool,
+    pub braille: bool,
+    pub text_gamma: bool,
+}
+
+impl Changes {
+    /// The settings that changed, by their `glass.conf` names, for the
+    /// line a reload prints on stderr.
+    pub fn names(&self) -> Vec<&'static str> {
+        [
+            (self.palette, "colours"),
+            (self.opacity, "background_opacity"),
+            (self.padding, "window_padding_width"),
+            (self.font_family, "font_family"),
+            (self.font_size, "font_size"),
+            (self.wallpaper, "background_image"),
+            (self.braille, "braille"),
+            (self.text_gamma, "text_gamma"),
+        ]
+        .into_iter()
+        .filter_map(|(changed, name)| changed.then_some(name))
+        .collect()
     }
 }
 
@@ -801,6 +904,79 @@ mod tests {
         read_or_create(&mut Options::default(), &fresh);
         assert!(std::fs::read_to_string(&fresh).unwrap().starts_with("# glass: "));
         let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn a_reload_reads_the_file_again_and_keeps_the_window() {
+        let dir = scratch("reload");
+        let path = dir.join("glass.conf");
+        let theme = dir.join("theme.conf");
+        std::fs::write(&path, "include theme.conf\nfont_size 14\n").unwrap();
+        std::fs::write(&theme, "background #101010\ncolor4 #2040ff\n").unwrap();
+        let mut launched = Options {
+            title: "build".into(),
+            app_id: "dev".into(),
+            columns: 90,
+            rows: 30,
+            transition: false,
+            config_file: Some(path.clone()),
+            ..Default::default()
+        };
+        apply_conf(&mut launched, &path);
+        assert_eq!(launched.changes(&launched.reloaded()), Changes::default(), "nothing changed, nothing to redo");
+        // The theme switches, and the font grows.
+        std::fs::write(&theme, "background #202020\ncolor4 #4060ff\n").unwrap();
+        std::fs::write(&path, "include theme.conf\nfont_size 16\n").unwrap();
+        let reloaded = launched.reloaded();
+        assert_eq!(reloaded.palette.background, [0x20; 3]);
+        assert_eq!(reloaded.palette.ansi[4], [0x40, 0x60, 0xff]);
+        assert_eq!(reloaded.font_size, 16.0);
+        assert_eq!(launched.changes(&reloaded).names(), ["colours", "font_size"]);
+        // The window's own settings are what it opened with.
+        assert_eq!((reloaded.title.as_str(), reloaded.app_id.as_str()), ("build", "dev"));
+        assert_eq!((reloaded.columns, reloaded.rows, reloaded.transition), (90, 30, false));
+        assert_eq!(reloaded.config_file.as_deref(), Some(path.as_path()));
+        // With the file gone the settings are the defaults, and no file is
+        // written in its place.
+        std::fs::remove_file(&path).unwrap();
+        let bare = reloaded.reloaded();
+        assert_eq!(bare.palette, Palette::default());
+        assert_eq!(bare.font_size, Options::default().font_size);
+        assert!(!path.exists());
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn a_reload_names_what_changed() {
+        let old = Options::default();
+        let new = Options {
+            font_family: "Berkeley Mono".into(),
+            padding: 4.0,
+            background_opacity: 0.9,
+            background_image: Some(PathBuf::from("/tmp/wall.png")),
+            braille: BrailleStyle::Pixels,
+            text_gamma: 1.2,
+            ..Default::default()
+        };
+        assert_eq!(
+            old.changes(&new).names(),
+            ["background_opacity", "window_padding_width", "font_family", "background_image", "braille", "text_gamma"]
+        );
+        // An image is read again on every reload: its file may have
+        // changed under the same name.
+        assert!(new.changes(&new).wallpaper);
+        assert!(!old.changes(&old).wallpaper);
+    }
+
+    #[test]
+    fn settings_from_no_file_stay_as_they_are_on_a_reload() {
+        // An app that made its own settings (a library user) keeps them:
+        // there is no file to read them again from.
+        let mut options = Options { font_size: 21.0, ..Default::default() };
+        options.palette.background = [1, 2, 3];
+        let reloaded = options.reloaded();
+        assert_eq!(reloaded.palette, options.palette);
+        assert_eq!(reloaded.font_size, 21.0);
     }
 
     #[test]

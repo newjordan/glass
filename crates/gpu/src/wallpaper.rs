@@ -120,6 +120,11 @@ impl Core {
         ));
     }
 
+    /// Take the background image down (a settings reload without one).
+    pub fn clear_wallpaper(&mut self) {
+        self.wallpaper = None;
+    }
+
     /// The background image on show, if there is one.
     pub fn wallpaper(&self) -> Option<&Wallpaper> {
         self.wallpaper.as_ref().map(|w| &w.image)

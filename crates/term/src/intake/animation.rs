@@ -1163,6 +1163,7 @@ fn window_loop_advances_an_icat_animation() {
         HostInfo {
             colors: [[0xd0; 3], [0, 0, 0], [0xff; 3]],
             cell_px: (8, 16),
+            ..Default::default()
         },
     );
     let mut intake = Intake::new(glass_window::LAYER_PICTURES);
@@ -1208,6 +1209,7 @@ fn window_loop_advances_an_icat_animation() {
         HostInfo {
             colors: [[0xd0; 3], [0, 0, 0], [0xff; 3]],
             cell_px: (8, 16),
+            ..Default::default()
         },
     );
     let mut early_split = Splitter::default();
@@ -1246,6 +1248,7 @@ fn window_loop_advances_an_icat_animation() {
         HostInfo {
             colors: [[0xd0; 3], [0, 0, 0], [0xff; 3]],
             cell_px: (8, 16),
+            ..Default::default()
         },
     );
     let mut slow_split = Splitter::default();
@@ -1344,6 +1347,7 @@ fn icat_animation_controls_are_silent_on_success() {
         HostInfo {
             colors: [[0xd0; 3], [0, 0, 0], [0xff; 3]],
             cell_px: (8, 16),
+            ..Default::default()
         },
     );
     let mut intake = Intake::new(glass_window::LAYER_PICTURES);

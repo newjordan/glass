@@ -699,10 +699,7 @@ impl Session {
         drop(pair.slave);
         let master = pair.master;
 
-        let info = HostInfo {
-            colors: [palette.foreground, palette.background, palette.cursor],
-            cell_px: (grid.cell_width, grid.cell_height),
-        };
+        let info = HostInfo::new(palette, (grid.cell_width, grid.cell_height));
         let engine = Arc::new(Mutex::new(Engine::new(usize::from(rows), usize::from(cols), info)));
         let writer: Arc<Mutex<Box<dyn Write + Send>>> =
             Arc::new(Mutex::new(master.take_writer().map_err(|e| format!("pty writer: {e}"))?));
@@ -905,6 +902,12 @@ impl Session {
         guard
     }
 
+    /// What the engine answers the program's queries with, for a settings
+    /// reload to change from the window's thread.
+    pub fn host_info(&self) -> Arc<Mutex<HostInfo>> {
+        self.engine().host_info()
+    }
+
     /// A handle for typing into the program from another thread.
     pub fn typist(&self) -> Typist {
         Typist { key_view: Arc::clone(&self.key_view), writer: Arc::clone(&self.writer) }
@@ -927,7 +930,13 @@ impl Session {
         let (rows, cols) = (rows.max(1), cols.max(1));
         let _ = self.master.resize(pty_size(rows, cols, grid));
         let mut engine = self.engine();
-        engine.resize(usize::from(rows), usize::from(cols));
+        // Cells that changed only in size (a reloaded font, a zoom) leave
+        // the screen as it is. `Term` ignores a resize to its own size, and
+        // the engine's copy of the scroll region must not be reset under a
+        // program that set one.
+        if engine.size() != (usize::from(rows), usize::from(cols).max(2)) {
+            engine.resize(usize::from(rows), usize::from(cols));
+        }
         engine.set_cell_px((grid.cell_width, grid.cell_height));
         let reflow = engine.take_reflow();
         let scrolled = engine.scrolled_off_top() as u64;
@@ -1292,6 +1301,53 @@ mod tests {
         assert_eq!(answer, b"\x1b[?62;4;22c", "the program's DA1 went unanswered before the window");
     }
 
+    /// What a settings reload does to a running session: the palette set
+    /// through `host_info` (as the window's reload watcher sets it) is what
+    /// the program's next colour query is answered with, and cells that
+    /// changed only in size (a new font that fits the same count) change
+    /// the pixel size without resizing the screen.
+    #[test]
+    fn a_reload_reaches_the_programs_queries() {
+        let dir = std::env::temp_dir().join(format!("glass-reload-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let out = dir.join("answer");
+        // Raw; wait for a byte, then ask OSC 11 and keep the answer. The
+        // byte is sent until the answer comes, since going raw drops what
+        // came before.
+        let script = "import os, select, sys, tty\n\
+                      tty.setraw(0)\n\
+                      select.select([0], [], [], 5)\n\
+                      os.read(0, 1)\n\
+                      os.write(1, b'\\x1b]11;?\\x1b\\\\')\n\
+                      got = b''\n\
+                      while not got.endswith(b'\\x1b\\\\') and select.select([0], [], [], 3)[0]:\n\
+                      \x20   got += os.read(0, 64)\n\
+                      open(sys.argv[1], 'wb').write(got[got.find(b'\\x1b'):])\n";
+        let command: Vec<String> =
+            ["python3", "-c", script, out.to_str().unwrap()].iter().map(|s| s.to_string()).collect();
+        let grid = glass_window::GridSize { cols: 80, rows: 24, width_px: 640, height_px: 384, cell_width: 8, cell_height: 16 };
+        let mut session = Session::start(&command, None, grid, &glass_window::Palette::default()).unwrap();
+        let reloaded = glass_window::Palette { background: [0x1a, 0x1b, 0x26], ..glass_window::Palette::default() };
+        session.host_info().lock().unwrap().set_palette(&reloaded);
+        session.resize(24, 80, glass_window::GridSize { cell_width: 9, cell_height: 18, width_px: 720, height_px: 432, ..grid });
+        assert_eq!(session.engine().size(), (24, 80));
+        assert_eq!(session.engine().cell_px(), (9, 18));
+        let mut answer = Vec::new();
+        for _ in 0..100 {
+            session.write(b"g");
+            if let Ok(got) = std::fs::read(&out)
+                && !got.is_empty()
+            {
+                answer = got;
+                break;
+            }
+            std::thread::sleep(Duration::from_millis(50));
+        }
+        drop(session);
+        let _ = std::fs::remove_dir_all(&dir);
+        assert_eq!(String::from_utf8_lossy(&answer), "\x1b]11;rgb:1a1a/1b1b/2626\x1b\\");
+    }
+
     #[test]
     fn foreign_variables_are_scrubbed() {
         // The list is what the reader thread removes; keep it honest.
@@ -1306,6 +1362,7 @@ mod tests {
             HostInfo {
                 colors: [[0xd0, 0xd0, 0xd0], [0, 0, 0], [0xff, 0xff, 0xff]],
                 cell_px: (10, 20),
+                ..Default::default()
             },
         )
     }
@@ -1544,7 +1601,7 @@ mod pump_tests {
         Engine::new(
             6,
             10,
-            HostInfo { colors: [[0xd0; 3], [0, 0, 0], [0xff; 3]], cell_px: (10, 20) },
+            HostInfo { colors: [[0xd0; 3], [0, 0, 0], [0xff; 3]], cell_px: (10, 20), ..Default::default() },
         )
     }
 
@@ -1587,7 +1644,7 @@ mod pump_tests {
             }
             let run = |merging: bool| {
                 let (mut engine, mut intake, mut splitter) = (
-                    Engine::new(12, 30, HostInfo { colors: [[0xd0; 3], [0, 0, 0], [0xff; 3]], cell_px: (10, 20) }),
+                    Engine::new(12, 30, HostInfo { colors: [[0xd0; 3], [0, 0, 0], [0xff; 3]], cell_px: (10, 20), ..Default::default() }),
                     Intake::new(glass_window::LAYER_PICTURES),
                     intake::Splitter::default(),
                 );
@@ -1635,7 +1692,7 @@ mod pump_tests {
     #[test]
     fn a_session_never_resized_places_a_sixel_in_real_cells() {
         let grid = glass_window::GridSize { cols: 40, rows: 30, width_px: 400, height_px: 600, cell_width: 10, cell_height: 20 };
-        let mut engine = Engine::new(30, 40, HostInfo { colors: [[0xd0; 3], [0, 0, 0], [0xff; 3]], cell_px: (10, 20) });
+        let mut engine = Engine::new(30, 40, HostInfo { colors: [[0xd0; 3], [0, 0, 0], [0xff; 3]], cell_px: (10, 20), ..Default::default() });
         let mut intake = starting_intake(grid, 30);
         let mut splitter = intake::Splitter::default();
         let mut sixel = b"before\r\n\x1bPq\"1;1;8;240#0;2;100;0;0#0".to_vec();
@@ -2309,7 +2366,7 @@ mod pump_tests {
 
         let mut tiny = crate::intake::Intake::with_budget(1, 4);
         tiny.set_cell((8, 16));
-        let mut engine = crate::engine::Engine::new(6, 20, HostInfo { colors: [[0; 3]; 3], cell_px: (8, 16) });
+        let mut engine = crate::engine::Engine::new(6, 20, HostInfo { colors: [[0; 3]; 3], cell_px: (8, 16), ..Default::default() });
         let mut splitter = crate::intake::Splitter::default();
         pump_bytes(
             &mut engine,

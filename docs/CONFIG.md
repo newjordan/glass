@@ -22,7 +22,15 @@ nothing else to configure: no other file is read.
   and reads it there from then on. (If the copy fails, it reads the old
   file where it is.) The old file is left in place. This does not happen
   when `GLASS_CONFIG` names a file.
-- **Reload.** The file is read at launch; open a new window to see a change.
+- **Reload.** `pkill -USR1 -x glass` makes every open glass window read
+  the file (and what it includes) again and show it: colours, opacity,
+  padding, font and size, the background image and its layout, tint and
+  scaling, `braille` and `text_gamma`. A font or padding change re-lays the
+  grid and resizes the pty, as a window resize does, and programs that ask
+  for the colours (OSC 4, 10, 11, 12) get the new ones. A new `font_size`
+  replaces a zoom; an unchanged one keeps it. The window's title, app id
+  and first size stay as it opened, and the `GLASS_*` variables still
+  override the file. Each window says `GLASS: reloaded …` on stderr.
 
 ## The format
 

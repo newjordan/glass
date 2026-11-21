@@ -257,6 +257,11 @@ impl Core {
         }
     }
 
+    /// The text coverage curve from the next frame on (a settings reload).
+    pub fn set_text_gamma(&mut self, text_gamma: f32) {
+        self.text_gamma = text_gamma;
+    }
+
     /// Start a frame: pictures drawn in it are the ones eviction spares.
     pub fn begin_frame(&mut self) {
         self.frame_number += 1;

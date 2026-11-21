@@ -6,7 +6,7 @@ use crate::intake::{Area, Intake, Splitter, View};
 use crate::session::pump;
 
 fn engine(rows: usize, cols: usize) -> Engine {
-    Engine::new(rows, cols, HostInfo { colors: [[0xd0; 3], [0, 0, 0], [0xff; 3]], cell_px: (10, 20) })
+    Engine::new(rows, cols, HostInfo { colors: [[0xd0; 3], [0, 0, 0], [0xff; 3]], cell_px: (10, 20), ..Default::default() })
 }
 
 fn feed(engine: &mut Engine, intake: &mut Intake, bytes: &[u8]) {
@@ -166,7 +166,7 @@ fn a_band_scroll_crops_through_the_source_rectangle() {
 fn an_erase_rectangle_covers_only_its_cells() {
     let mut intake = Intake::new(4);
     intake.set_cell((1, 1));
-    let mut engine = Engine::new(6, 6, HostInfo { colors: [[0; 3], [0, 0, 0], [0xff; 3]], cell_px: (1, 1) });
+    let mut engine = Engine::new(6, 6, HostInfo { colors: [[0; 3], [0, 0, 0], [0xff; 3]], cell_px: (1, 1), ..Default::default() });
     feed(&mut engine, &mut intake, b"\x1bPq#0;2;100;0;0#0~~\x1b\\");
     // EL from column 2 on the first row covers the right of that row.
     feed(&mut engine, &mut intake, b"\x1b[1;2H\x1b[K");
@@ -465,7 +465,7 @@ fn replay_fixture(name: &str, read: usize) -> Option<(Engine, Intake)> {
     let mut engine = Engine::new(
         39,
         154,
-        HostInfo { colors: [[0xd0; 3], [0, 0, 0], [0xff; 3]], cell_px: (12, 25) },
+        HostInfo { colors: [[0xd0; 3], [0, 0, 0], [0xff; 3]], cell_px: (12, 25), ..Default::default() },
     );
     engine.set_cell_px((12, 25));
     let mut intake = Intake::new(64);

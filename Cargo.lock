@@ -728,6 +728,7 @@ dependencies = [
  "png",
  "pollster",
  "ratatui-core",
+ "signal-hook 0.4.6",
  "swash",
  "unicode-width",
  "wayland-backend",

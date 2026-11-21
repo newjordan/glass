@@ -16,7 +16,7 @@ use bytemuck::Zeroable;
 use ratatui_core::style::{Color, Modifier};
 use winit::window::Window;
 
-use crate::config::{BrailleStyle, Options, Palette, Rgb};
+use crate::config::{BrailleStyle, Changes, Options, Palette, Rgb};
 use crate::font::{BOLD, CellMetrics, Fonts, ITALIC, Picture};
 use crate::layer::Layer;
 use crate::{GridSize, Snapshot, graphics, sprites, transition};
@@ -619,6 +619,43 @@ impl Renderer {
             (self.font_points + steps).clamp(4.0, 96.0)
         };
         self.apply_font_size();
+    }
+
+    /// Show reloaded settings (SIGUSR1) from the next frame on. The
+    /// colours and opacity are read at each frame. Padding and the font
+    /// change the grid, which the window then hands the app as it does on
+    /// a resize. A new family is looked up and its glyphs drawn afresh; if
+    /// it cannot be found, the one in use stays. A new configured size
+    /// replaces a zoom; an unchanged one keeps it. The background image is
+    /// decoded here, on the window's thread, which a reload can afford.
+    pub fn reload(&mut self, options: &Options, changes: Changes) {
+        self.palette = options.palette.clone();
+        self.opacity = options.background_opacity;
+        self.padding = options.padding;
+        self.braille = options.braille;
+        if changes.text_gamma {
+            self.core.set_text_gamma(options.text_gamma);
+        }
+        if changes.font_size {
+            self.base_points = options.font_size;
+            self.font_points = options.font_size;
+        }
+        if changes.font_family {
+            let size = points_to_px(self.font_points, self.scale);
+            match Fonts::load(&options.font_family, size, points_to_px(1.0, self.scale)) {
+                Ok(fonts) => self.fonts = fonts,
+                Err(error) => eprintln!("GLASS: {error}; keeping the font in use"),
+            }
+        }
+        if changes.font_family || changes.font_size || changes.braille {
+            self.apply_font_size();
+        }
+        if changes.wallpaper {
+            match options.wallpaper().and_then(|settings| crate::wallpaper::load(&settings)) {
+                Some(image) => self.core.set_wallpaper(image),
+                None => self.core.clear_wallpaper(),
+            }
+        }
     }
 
     fn apply_font_size(&mut self) {
@@ -1472,25 +1509,10 @@ pub(crate) fn cell_rgb(palette: &Palette, color: Color, fallback: Rgb) -> Rgb {
         Color::LightCyan => ansi[14],
         Color::White => ansi[15],
         Color::Rgb(r, g, b) => [r, g, b],
-        Color::Indexed(i) => indexed(i, ansi),
+        Color::Indexed(i) => palette.indexed(i),
     }
 }
 
-/// The xterm 256-colour table above the 16 palette colours.
-fn indexed(i: u8, ansi: &[Rgb; 16]) -> Rgb {
-    match i {
-        0..=15 => ansi[usize::from(i)],
-        16..=231 => {
-            let n = i - 16;
-            let level = |v: u8| if v == 0 { 0 } else { 55 + v * 40 };
-            [level(n / 36), level((n / 6) % 6), level(n % 6)]
-        }
-        _ => {
-            let v = 8 + (i - 232) * 10;
-            [v, v, v]
-        }
-    }
-}
 
 /// Seconds on the window's own clock, for what it animates itself: the core
 /// is handed this wherever it needs the time.
@@ -1650,12 +1672,13 @@ mod tests {
 
     #[test]
     fn xterm_cube_and_greys() {
-        let ansi = Palette::default().ansi;
-        assert_eq!(indexed(16, &ansi), [0, 0, 0]);
-        assert_eq!(indexed(196, &ansi), [255, 0, 0]);
-        assert_eq!(indexed(231, &ansi), [255, 255, 255]);
-        assert_eq!(indexed(232, &ansi), [8, 8, 8]);
-        assert_eq!(indexed(255, &ansi), [238, 238, 238]);
+        let palette = Palette::default();
+        assert_eq!(palette.indexed(3), palette.ansi[3]);
+        assert_eq!(palette.indexed(16), [0, 0, 0]);
+        assert_eq!(palette.indexed(196), [255, 0, 0]);
+        assert_eq!(palette.indexed(231), [255, 255, 255]);
+        assert_eq!(palette.indexed(232), [8, 8, 8]);
+        assert_eq!(palette.indexed(255), [238, 238, 238]);
     }
 
     #[test]

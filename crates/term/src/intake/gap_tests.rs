@@ -10,7 +10,7 @@ use crate::engine::{Engine, HostInfo};
 use crate::session::pump;
 
 fn engine() -> Engine {
-    Engine::new(10, 16, HostInfo { colors: [[0xd0; 3], [0, 0, 0], [0xff; 3]], cell_px: (10, 20) })
+    Engine::new(10, 16, HostInfo { colors: [[0xd0; 3], [0, 0, 0], [0xff; 3]], cell_px: (10, 20), ..Default::default() })
 }
 
 struct Rig {

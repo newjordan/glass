@@ -228,7 +228,7 @@ mod tests {
     use crate::engine::HostInfo;
 
     fn engine(input: &[u8]) -> Engine {
-        let mut engine = Engine::new(4, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1) });
+        let mut engine = Engine::new(4, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1), ..Default::default() });
         engine.process(input);
         engine
     }

@@ -641,8 +641,16 @@ fn room_for_fallback(loaded: usize) -> bool {
     loaded < MAX_FALLBACK_FACES
 }
 
-/// Font files stay loaded for the life of the process.
+/// Font files stay loaded for the life of the process, each file once: a
+/// settings reload that loads a family again (switching to another and
+/// back) finds its files here instead of keeping another copy.
 fn open(path: &Path, index: u32) -> Option<FontRef<'static>> {
+    static LOADED: std::sync::LazyLock<std::sync::Mutex<HashMap<PathBuf, &'static [u8]>>> =
+        std::sync::LazyLock::new(Default::default);
+    let loaded = |files: &HashMap<PathBuf, &'static [u8]>| files.get(path).copied();
+    if let Some(data) = loaded(&LOADED.lock().unwrap_or_else(|e| e.into_inner())) {
+        return FontRef::from_index(data, index as usize);
+    }
     if std::fs::metadata(path).ok()?.len() > MAX_FONT_BYTES {
         return None;
     }
@@ -650,7 +658,16 @@ fn open(path: &Path, index: u32) -> Option<FontRef<'static>> {
     // Validate before leaking: a non-font file (or a bad index into a
     // collection) must not stay in memory for the life of the process.
     FontRef::from_index(&data, index as usize)?;
-    let data: &'static [u8] = Box::leak(data.into_boxed_slice());
+    let mut files = LOADED.lock().unwrap_or_else(|e| e.into_inner());
+    // The four styles load at once, and two may have read the same file.
+    let data = match loaded(&files) {
+        Some(data) => data,
+        None => {
+            let data: &'static [u8] = Box::leak(data.into_boxed_slice());
+            files.insert(path.to_path_buf(), data);
+            data
+        }
+    };
     FontRef::from_index(data, index as usize)
 }
 

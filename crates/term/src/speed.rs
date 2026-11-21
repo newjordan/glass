@@ -165,7 +165,7 @@ pub(crate) fn workloads(scale: f64, rows: usize, cols: usize) -> Vec<(&'static s
 }
 
 pub(crate) fn engine(rows: usize, cols: usize) -> Engine {
-    Engine::new(rows, cols, HostInfo { colors: [[0xd0; 3], [0, 0, 0], [0xff; 3]], cell_px: (10, 20) })
+    Engine::new(rows, cols, HostInfo { colors: [[0xd0; 3], [0, 0, 0], [0xff; 3]], cell_px: (10, 20), ..Default::default() })
 }
 
 /// The reader thread's path for one stream, cut into reads of `read`

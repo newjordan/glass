@@ -29,6 +29,12 @@ unicode-width = "0.2"
 # Screenshots taken from inside the window.
 png = "0.18"
 
+[target.'cfg(unix)'.dependencies]
+# SIGUSR1 reloads the settings in every window (src/window.rs). Its handler
+# only writes to a pipe; a thread reads it and wakes the event loop. The
+# version the terminal fork already locks.
+signal-hook = "0.4.3"
+
 [target.'cfg(all(unix, not(target_os = "macos")))'.dependencies]
 # The window's first frames, drawn on the CPU into shared memory while the
 # GPU opens (src/early.rs), on a connection of our own to winit's display:

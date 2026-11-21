@@ -181,6 +181,41 @@ pub(crate) struct Shared {
     /// One display frame of the monitor the window is on, in nanoseconds;
     /// 0 until the window knows (`Host::frame_interval`).
     pub frame_nanos: std::sync::atomic::AtomicU64,
+    /// Who hears of a reload (`Host::on_reload`), and the settings the
+    /// last one read.
+    pub reloads: Mutex<Reloads>,
+}
+
+/// A function the app gave [`Host::on_reload`].
+type ReloadWatch = Box<dyn Fn(&Options) + Send>;
+
+/// The app's watchers of reloads, and the settings the latest reload read.
+/// One lock holds both, so a watcher added while a reload is applied
+/// either hears of it or is given its settings when added; it never misses
+/// it.
+#[derive(Default)]
+pub(crate) struct Reloads {
+    latest: Option<Options>,
+    watchers: Vec<ReloadWatch>,
+}
+
+impl Reloads {
+    /// Add `watch`, handing it the latest reload's settings at once if
+    /// there was one: the app may start after it.
+    fn watch(&mut self, watch: ReloadWatch) {
+        if let Some(options) = &self.latest {
+            watch(options);
+        }
+        self.watchers.push(watch);
+    }
+
+    /// A reload read `options`: every watcher hears.
+    pub(crate) fn publish(&mut self, options: &Options) {
+        for watch in &self.watchers {
+            watch(options);
+        }
+        self.latest = Some(options.clone());
+    }
 }
 
 pub(crate) enum UserEvent {
@@ -200,6 +235,8 @@ pub(crate) enum UserEvent {
     Record(Option<std::time::Instant>),
     /// The GPU is open: the window's renderer can be made.
     GpuReady,
+    /// SIGUSR1: read the settings again and show them (`window.rs`).
+    Reload,
     /// Close as if the window's close button was pressed.
     Close,
     /// The app has returned; end the event loop.
@@ -378,11 +415,42 @@ impl Host {
     pub fn capture(&self, path: impl Into<std::path::PathBuf>) {
         self.send(UserEvent::Capture(path.into()));
     }
+
+    /// Have `watch` called with the new settings each time they are
+    /// reloaded (SIGUSR1), once the window has applied them, and at once
+    /// if a reload came before this call. The window redraws with the new
+    /// colours and font itself; this is for what the app keeps of them,
+    /// such as the colours a terminal answers queries with. It runs on
+    /// the window's thread, so it should only hand the settings over.
+    pub fn on_reload(&self, watch: impl Fn(&Options) + Send + 'static) {
+        self.shared.reloads.lock_recover().watch(Box::new(watch));
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_reload_reaches_watchers_added_before_and_after_it() {
+        let heard = Arc::new(Mutex::new(Vec::new()));
+        let mut reloads = Reloads::default();
+        let early = Arc::clone(&heard);
+        reloads.watch(Box::new(move |o: &Options| early.lock_recover().push(("early", o.palette.background))));
+        assert!(heard.lock_recover().is_empty(), "no reload yet, nothing to hear");
+        let mut options = Options::default();
+        options.palette.background = [1, 2, 3];
+        reloads.publish(&options);
+        // An app that starts after the reload is handed its settings.
+        let late = Arc::clone(&heard);
+        reloads.watch(Box::new(move |o: &Options| late.lock_recover().push(("late", o.palette.background))));
+        options.palette.background = [4, 5, 6];
+        reloads.publish(&options);
+        assert_eq!(
+            *heard.lock_recover(),
+            [("early", [1, 2, 3]), ("late", [1, 2, 3]), ("early", [4, 5, 6]), ("late", [4, 5, 6])]
+        );
+    }
 
     #[test]
     fn a_poisoned_lock_recovers_its_data() {

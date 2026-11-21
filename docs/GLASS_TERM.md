@@ -552,7 +552,9 @@ picture) is kept in `$XDG_CONFIG_HOME/glass/glass.conf`
 line; the first launch writes the defaults there to edit
 (`crates/glass/src/config.rs`). `GLASS_CONFIG` names another file. A
 `glass.conf` an earlier build kept in `~/.angelX/` is copied to the new
-place once, with a line on stderr saying so.
+place once, with a line on stderr saying so. An `include <path>` line reads another
+file there (a theme); SIGUSR1 reads the settings again in a running window
+and shows them (`Glass::reload` in `crates/glass/src/window.rs`).
 
 Environment variables override the file and drive the window's tools:
 `GLASS_FONT`, `GLASS_FONT_SIZE`, `GLASS_OPACITY`, `GLASS_PADDING`,

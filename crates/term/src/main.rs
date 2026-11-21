@@ -241,6 +241,15 @@ fn run(
             return 1;
         }
     };
+    // A settings reload (SIGUSR1) gives the engine the new palette, so
+    // the program's colour queries (OSC 4, 10, 11 and 12) are answered in
+    // the colours now drawn; the window redraws with them itself.
+    {
+        let info = session.host_info();
+        host.on_reload(move |options| {
+            info.lock().unwrap_or_else(|e| e.into_inner()).set_palette(&options.palette);
+        });
+    }
     let Ok(mut reader) = host.input_reader() else {
         return 1;
     };

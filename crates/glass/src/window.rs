@@ -119,6 +119,11 @@ where
     F: FnOnce(Host) -> T + Send + 'static,
     E: FnOnce(crate::GridSize),
 {
+    // First of all, so a reload sent to a window still opening (Omarchy
+    // signals every glass at once) is held for it, not taken as SIGUSR1's
+    // default, which ends the process.
+    #[cfg(unix)]
+    let reload_signals = reload_signals();
     // The GPU, the fonts and the background image get going while the
     // window system is reached and the window opens. Where winit loads the
     // window system's libraries with `dlopen` (Wayland, X11), the GPU
@@ -138,6 +143,10 @@ where
         .build()
         .map_err(|e| format!("no window system: {e}"))?;
     crate::startup::mark("event loop");
+    #[cfg(unix)]
+    if let Some(signals) = reload_signals {
+        listen_for_reloads(signals, event_loop.create_proxy());
+    }
     preparing.open_gpu();
     let (keys, events) = mpsc::channel();
     let host = Host {
@@ -185,6 +194,7 @@ where
         early_due: None,
         early_bare: false,
         early_drawn: None,
+        reload_pending: false,
     };
     event_loop
         .run_app(&mut glass)
@@ -272,6 +282,45 @@ struct Glass<T> {
     /// When the early frame was last drawn, so a program's frames before
     /// the GPU opens are drawn at most every [`EARLY_REPAINT`].
     early_drawn: Option<Instant>,
+    /// A reload came before the renderer was made: it is applied once the
+    /// renderer is (`finish_open`).
+    reload_pending: bool,
+}
+
+/// SIGUSR1, the reload signal, held from now on. `None` (with a line on
+/// stderr) if it cannot be: the signal then ends the process, as it would
+/// any program that does not expect it.
+#[cfg(unix)]
+fn reload_signals() -> Option<signal_hook::iterator::Signals> {
+    signal_hook::iterator::Signals::new([signal_hook::consts::SIGUSR1])
+        .map_err(|error| eprintln!("GLASS: SIGUSR1 will not reload the settings: {error}"))
+        .ok()
+}
+
+/// Wake the event loop with a reload for each SIGUSR1. The signal's own
+/// handler (signal-hook's) only writes a byte to a pipe; this thread reads
+/// the pipe, so nothing but that write runs inside the handler. Signals
+/// that come close together may arrive as one, which is one reload.
+#[cfg(unix)]
+fn listen_for_reloads(mut signals: signal_hook::iterator::Signals, proxy: winit::event_loop::EventLoopProxy<UserEvent>) {
+    let spawned = std::thread::Builder::new().name("reload".into()).spawn(move || {
+        for _ in signals.forever() {
+            if proxy.send_event(UserEvent::Reload).is_err() {
+                // The event loop has ended: the window is closing.
+                break;
+            }
+        }
+    });
+    if let Err(error) = spawned {
+        eprintln!("GLASS: SIGUSR1 will not reload the settings: {error}");
+    }
+}
+
+/// Whether the app hears of a new grid: its cells changed in number, or in
+/// size (a font or zoom change that left the count alone still changes
+/// the pty's pixel size and the size pictures are measured in).
+fn grid_news(old: &crate::GridSize, new: &crate::GridSize) -> bool {
+    (old.cols, old.rows, old.cell_width, old.cell_height) != (new.cols, new.rows, new.cell_width, new.cell_height)
 }
 
 /// How long the app waits, after the early frame maps the window, for
@@ -552,7 +601,7 @@ impl<T: Send + 'static> Glass<T> {
         let size = window.inner_size();
         let grid = preparing.grid_for(&self.options, window.scale_factor() as f32, size.width, size.height)?;
         let old = std::mem::replace(&mut *self.host.shared.grid.lock_recover(), grid);
-        if self.app.is_none() && (old.cols, old.rows) != (grid.cols, grid.rows) {
+        if self.app.is_none() && grid_news(&old, &grid) {
             self.send(Event::Resize(grid.cols, grid.rows));
         }
         Ok(())
@@ -601,6 +650,9 @@ impl<T: Send + 'static> Glass<T> {
             self.draw(true);
             crate::startup::mark("first frame");
             self.start_app()?;
+        }
+        if std::mem::take(&mut self.reload_pending) {
+            self.reload();
         }
         self.environment_extras();
         Ok(())
@@ -785,16 +837,57 @@ impl<T: Send + 'static> Glass<T> {
         }
     }
 
-    /// Fit the grid to the window; tell the app when the cell count changed.
+    /// Fit the grid to the window; tell the app when the cells changed in
+    /// number or size.
     fn regrid(&mut self) {
         let Some(renderer) = &self.renderer else {
             return;
         };
         let grid = renderer.grid_size();
         let old = std::mem::replace(&mut *self.host.shared.grid.lock_recover(), grid);
-        if (old.cols, old.rows) != (grid.cols, grid.rows) {
+        if grid_news(&old, &grid) {
             self.send(Event::Resize(grid.cols, grid.rows));
         }
+    }
+
+    /// SIGUSR1: read the settings again and show them. Everything
+    /// `glass.conf` sets changes live: the colours, `background_opacity`,
+    /// `window_padding_width`, `font_family`, `font_size`, the background
+    /// image and its layout, tint and scaling, `braille` and `text_gamma`.
+    /// A font or padding change re-lays the grid and the app hears of it
+    /// as of a resize (a terminal resizes its pty). The app's watchers
+    /// (`Host::on_reload`) get the new settings, so a terminal answers
+    /// colour queries with the new palette.
+    ///
+    /// What stays as the window opened: its title and app id (from the
+    /// command line; Wayland fixes the app id for the window's life), its
+    /// first size in cells, and the `GLASS_*` variables, which still
+    /// override the file as they did at launch.
+    ///
+    /// Before the GPU is open the early frame shows the settings read at
+    /// launch, and the reload waits for the renderer.
+    fn reload(&mut self) {
+        if self.options.config_file.is_none() {
+            eprintln!("GLASS: no settings file to reload");
+            return;
+        }
+        let Some(renderer) = self.renderer.as_mut() else {
+            self.reload_pending = true;
+            return;
+        };
+        let options = self.options.reloaded();
+        let changes = self.options.changes(&options);
+        renderer.reload(&options, changes);
+        self.options = options;
+        let changed = changes.names();
+        eprintln!(
+            "GLASS: reloaded {}: {}",
+            self.options.config_file.as_ref().map_or_else(String::new, |path| path.display().to_string()),
+            if changed.is_empty() { "nothing changed".into() } else { changed.join(", ") }
+        );
+        self.host.shared.reloads.lock_recover().publish(&self.options);
+        self.regrid();
+        self.draw(true);
     }
 
     fn close(&mut self, event_loop: &ActiveEventLoop) {
@@ -1250,6 +1343,7 @@ impl<T: Send + 'static> ApplicationHandler<UserEvent> for Glass<T> {
                     recorder.finish();
                 }
             }
+            UserEvent::Reload => self.reload(),
             UserEvent::GpuReady => {
                 if self.renderer.is_none()
                     && self.window.is_some()
@@ -1503,6 +1597,19 @@ mod tests {
         assert_eq!(cadence(None).0, cadence(Some(60_000)).0);
         assert_eq!(cadence(Some(0)).0, cadence(Some(60_000)).0);
         assert_eq!(cadence(Some(9_999_999)).0, cadence(Some(60_000)).0);
+    }
+
+    #[test]
+    fn the_app_hears_of_cells_that_change_in_number_or_size() {
+        let grid = crate::GridSize { cols: 80, rows: 24, width_px: 800, height_px: 480, cell_width: 10, cell_height: 20 };
+        // A resize within the same cells is no news.
+        assert!(!grid_news(&grid, &crate::GridSize { width_px: 805, height_px: 489, ..grid }));
+        assert!(grid_news(&grid, &crate::GridSize { cols: 81, ..grid }));
+        assert!(grid_news(&grid, &crate::GridSize { rows: 23, ..grid }));
+        // A reloaded font of another size that happens to fit the same
+        // count still changes the pty's pixel size.
+        assert!(grid_news(&grid, &crate::GridSize { cell_width: 9, ..grid }));
+        assert!(grid_news(&grid, &crate::GridSize { cell_height: 19, ..grid }));
     }
 
     #[test]

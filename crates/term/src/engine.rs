@@ -221,13 +221,45 @@ pub fn color_id(color: Color) -> Option<u32> {
 pub type Coord = (u16, u16);
 
 /// What the window knows that the program's queries are answered with:
-/// the palette's foreground, background and cursor, and the size of one
-/// cell in pixels. Shared so a resize can change them under the engine.
-#[derive(Clone, Copy)]
+/// the palette's foreground, background, cursor and 16 colours, and the
+/// size of one cell in pixels. Shared so a resize or a settings reload can
+/// change them under the engine.
+#[derive(Clone, Copy, Default)]
 pub struct HostInfo {
     /// Foreground, background, cursor.
     pub colors: [[u8; 3]; 3],
     pub cell_px: (u32, u32),
+    /// The 16 ANSI colours; the 240 above them are xterm's fixed table.
+    pub ansi: [[u8; 3]; 16],
+}
+
+impl HostInfo {
+    pub fn new(palette: &glass_window::Palette, cell_px: (u32, u32)) -> Self {
+        let mut info = Self { cell_px, ..Self::default() };
+        info.set_palette(palette);
+        info
+    }
+
+    /// The window's palette, at launch or after a reload.
+    pub fn set_palette(&mut self, palette: &glass_window::Palette) {
+        self.colors = [palette.foreground, palette.background, palette.cursor];
+        self.ansi = palette.ansi;
+    }
+
+    /// The palette's colour a query names by `Term`'s index: 0 to 255 for
+    /// OSC 4, then the foreground, background and cursor (OSC 10, 11 and
+    /// 12). Glass draws cells in the palette's colours whatever a program
+    /// set with OSC 4, 10 or 11, so these are the true answers.
+    fn color(&self, index: usize) -> Option<[u8; 3]> {
+        match index {
+            0..=255 => {
+                let palette = glass_window::Palette { ansi: self.ansi, ..glass_window::Palette::default() };
+                Some(palette.indexed(u8::try_from(index).ok()?))
+            }
+            256..=258 => Some(self.colors[index - 256]),
+            _ => None,
+        }
+    }
 }
 
 /// The queries and requests `Term` reports through its event listener.
@@ -831,14 +863,23 @@ impl Engine {
                 Ok(Query::Bell) => effects.bell = true,
                 Ok(Query::Clipboard(text)) => effects.clipboard = Some(text),
                 Ok(Query::ColorRequest(index)) => {
+                    // OSC 4 names its colour by number; 10, 11 and 12 come
+                    // as `Term`'s indices past the 256.
                     let which = match index {
-                        256 => 10,
-                        257 => 11,
-                        258 => 12,
+                        0..=255 => format!("4;{index}"),
+                        256..=258 => (index - 246).to_string(),
                         _ => continue,
                     };
-                    let [r, g, b] = self.info.lock().unwrap_or_else(|e| e.into_inner()).colors
-                        [(which - 10) as usize];
+                    // A cursor colour the program set (OSC 12) is drawn, so
+                    // it is the answer while it stands.
+                    let set = (index == NamedColor::Cursor as usize)
+                        .then(|| self.term.colors()[index])
+                        .flatten()
+                        .map(|c| [c.r, c.g, c.b]);
+                    let palette = || self.info.lock().unwrap_or_else(|e| e.into_inner()).color(index);
+                    let Some([r, g, b]) = set.or_else(palette) else {
+                        continue;
+                    };
                     effects.replies.extend_from_slice(
                         format!(
                             "\x1b]{which};rgb:{r:02x}{r:02x}/{g:02x}{g:02x}/{b:02x}{b:02x}\x1b\\"
@@ -938,6 +979,12 @@ impl Engine {
 
     fn snap_grid(&self) -> crate::intake::motion::GridSnap {
         snap_term(&self.term, self.scrolled_off_top as u64)
+    }
+
+    /// What the window knows, shared: a settings reload sets the palette
+    /// here from the window's thread, without the engine's lock.
+    pub fn host_info(&self) -> Arc<Mutex<HostInfo>> {
+        Arc::clone(&self.info)
     }
 
     /// What the window knows, when it changes (a resize, a palette move).
@@ -3936,7 +3983,7 @@ mod tests {
         Engine::new(
             24,
             80,
-            HostInfo { colors: [[0xd0, 0xd0, 0xd0], [0, 0, 0], [0xff, 0xff, 0xff]], cell_px: (10, 20) },
+            HostInfo { colors: [[0xd0, 0xd0, 0xd0], [0, 0, 0], [0xff, 0xff, 0xff]], cell_px: (10, 20), ..Default::default() },
         )
     }
 
@@ -4232,6 +4279,37 @@ mod tests {
         assert_eq!(answers(b"\x1b[?2026$p"), b"\x1b[?2026;2$y");
         assert_eq!(answers(b"\x1b[?2026h\x1b[?2026$p"), b"\x1b[?2026;1$y");
         assert_eq!(answers(b"\x1b[?9999$p"), b"\x1b[?9999;0$y");
+    }
+
+    /// A settings reload sets the palette in the shared `HostInfo` from
+    /// the window's thread; the next queries are answered in it. OSC 4
+    /// answers the 16 from the palette and the rest from xterm's table.
+    #[test]
+    fn colour_queries_follow_a_reloaded_palette() {
+        let mut term = Engine::new(4, 10, HostInfo::new(&glass_window::Palette::default(), (10, 20)));
+        let ask = |term: &mut Engine, query: &[u8]| {
+            term.process(query);
+            String::from_utf8(term.take_effects().replies).unwrap()
+        };
+        assert_eq!(ask(&mut term, b"\x1b]11;?\x1b\\"), "\x1b]11;rgb:0000/0000/0000\x1b\\");
+        assert_eq!(ask(&mut term, b"\x1b]4;1;?\x07"), "\x1b]4;1;rgb:cdcd/3131/3131\x1b\\");
+        let mut palette = glass_window::Palette {
+            foreground: [0xc0, 0xca, 0xf5],
+            background: [0x1a, 0x1b, 0x26],
+            cursor: [0xff, 0x00, 0x80],
+            ..Default::default()
+        };
+        palette.ansi[1] = [0xf7, 0x76, 0x8e];
+        term.host_info().lock().unwrap().set_palette(&palette);
+        assert_eq!(ask(&mut term, b"\x1b]10;?\x1b\\"), "\x1b]10;rgb:c0c0/caca/f5f5\x1b\\");
+        assert_eq!(ask(&mut term, b"\x1b]11;?\x1b\\"), "\x1b]11;rgb:1a1a/1b1b/2626\x1b\\");
+        assert_eq!(ask(&mut term, b"\x1b]12;?\x1b\\"), "\x1b]12;rgb:ffff/0000/8080\x1b\\");
+        assert_eq!(ask(&mut term, b"\x1b]4;1;?\x07"), "\x1b]4;1;rgb:f7f7/7676/8e8e\x1b\\");
+        assert_eq!(ask(&mut term, b"\x1b]4;196;?\x07"), "\x1b]4;196;rgb:ffff/0000/0000\x1b\\");
+        // A cursor colour the program set is the one drawn, and answered,
+        // until it resets it (OSC 112).
+        assert_eq!(ask(&mut term, b"\x1b]12;#00ff00\x1b\\\x1b]12;?\x1b\\"), "\x1b]12;rgb:0000/ffff/0000\x1b\\");
+        assert_eq!(ask(&mut term, b"\x1b]112\x1b\\\x1b]12;?\x1b\\"), "\x1b]12;rgb:ffff/0000/8080\x1b\\");
     }
 
     /// Boundary scans and run classification agree with a byte-at-a-time
@@ -4609,7 +4687,7 @@ mod tests {
         for fast in [false, true] {
             for (label, stream, primary, alt, events) in &cases {
                 for cut in 0..=stream.len() {
-                    let mut e = Engine::new(4, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1) });
+                    let mut e = Engine::new(4, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1), ..Default::default() });
                     e.set_fast(fast);
                     e.set_motion(None);
                     e.process(&stream[..cut]);
@@ -4634,7 +4712,7 @@ mod tests {
             for motion in [None, Some(u64::MAX)] {
                 for rows in [4, 6, 12] {
                     for height in 1..rows {
-                        let mut e = Engine::new(rows, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1) });
+                        let mut e = Engine::new(rows, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1), ..Default::default() });
                         e.set_fast(fast); e.set_motion(motion);
                         for _ in 1..rows { e.process(b"x\r\n"); }
                         e.process(b"z");
@@ -4660,7 +4738,7 @@ mod tests {
     /// observer selection was removed on the switch and misses that movement.
     #[test]
     fn inactive_primary_height_shrink_coordinate_defect_is_reproducible() {
-        let mut e = Engine::new(4, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1) });
+        let mut e = Engine::new(4, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1), ..Default::default() });
         e.term.grid_mut().update_history(32);
         e.process(&b"x\r\n".repeat(24));
         assert_eq!(e.scrolled_off_top(), 21);
@@ -4678,7 +4756,7 @@ mod tests {
     #[test]
     fn lines_scrolled_off_top_count_exactly() {
         // Full-screen scrolling: each line that leaves the top counts.
-        let mut term = Engine::new(4, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1) });
+        let mut term = Engine::new(4, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1), ..Default::default() });
         assert_eq!(term.scrolled_off_top(), 0);
         term.process(b"one\r\ntwo\r\nthree\r\nfour\r\nfive");
         assert_eq!(term.scrolled_off_top(), 1);
@@ -4692,7 +4770,7 @@ mod tests {
 
     #[test]
     fn lines_scrolled_off_top_survive_a_cleared_history() {
-        let mut term = Engine::new(4, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1) });
+        let mut term = Engine::new(4, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1), ..Default::default() });
         term.process(b"one\r\ntwo\r\nthree\r\nfour\r\nfive");
         assert_eq!(term.scrolled_off_top(), 1);
         // `CSI 3 J` empties the history; the count of lines that left the
@@ -4711,7 +4789,7 @@ mod tests {
         // it. The lines that scroll off after the erase, in the same
         // feed, must still count: the sentinel is replanted before the
         // first of them scrolls, not at the next pacing fold.
-        let mut term = Engine::new(4, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1) });
+        let mut term = Engine::new(4, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1), ..Default::default() });
         // As the reader's pump leaves it while the store holds nothing:
         // no scroll on this screen can move a picture.
         term.set_motion(None);
@@ -4721,7 +4799,7 @@ mod tests {
 
     #[test]
     fn lines_scrolled_inside_a_region_do_not_count() {
-        let mut term = Engine::new(6, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1) });
+        let mut term = Engine::new(6, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1), ..Default::default() });
         // A region from the second line down: its scrolls never reach
         // history, so they are not counted.
         term.process(b"\x1b[2;6r\x1b[5S");
@@ -4734,7 +4812,7 @@ mod tests {
     #[test]
     fn lines_scrolled_off_top_count_through_a_full_history() {
         // Scroll far past the history limit: the count keeps growing.
-        let mut term = Engine::new(4, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1) });
+        let mut term = Engine::new(4, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1), ..Default::default() });
         let lines = "0123456789\r\n".repeat(4_000);
         term.process(lines.as_bytes());
         assert_eq!(term.scrolled_off_top(), 3_997);
@@ -4745,7 +4823,7 @@ mod tests {
 
     #[test]
     fn the_alternate_screen_scrolls_are_not_counted() {
-        let mut term = Engine::new(4, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1) });
+        let mut term = Engine::new(4, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1), ..Default::default() });
         term.process(b"one\r\ntwo\r\nthree\r\nfour\r\nfive");
         assert_eq!(term.scrolled_off_top(), 1);
         term.process(b"\x1b[?1049h");
@@ -4762,7 +4840,7 @@ mod tests {
 
     #[test]
     fn wide_characters_copy_once() {
-        let mut term = Engine::new(3, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1) });
+        let mut term = Engine::new(3, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1), ..Default::default() });
         term.process("你好🎉🎊".as_bytes());
         let cells = term.cells();
         let chars: String = cells[..8].iter().map(|c| c.c).collect();
@@ -4878,7 +4956,7 @@ mod tests {
 
     #[test]
     fn cursor_and_scrollback_move_together() {
-        let mut term = Engine::new(4, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1) });
+        let mut term = Engine::new(4, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1), ..Default::default() });
         term.process(b"one\r\ntwo\r\nthree\r\nfour\r\nfive");
         assert_eq!(term.scrolled_off_top(), 1);
         assert!(term.scroll_display(1));
