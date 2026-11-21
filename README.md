@@ -173,8 +173,10 @@ glass --class dev --title build --working-directory ~/src --hold -e make
 
 The first launch writes `~/.config/glass/glass.conf` with every setting at
 its default: the font, its size, the palette, padding, opacity, and a
-background image with its tint. Every key, the `GLASS_*` environment
-variables and the keyboard shortcuts are in [docs/CONFIG.md](docs/CONFIG.md).
+background image with its tint. A line `include <path>` reads another
+file, such as a theme, at that point; lines after it override it. Every
+key, the `GLASS_*` environment variables and the keyboard shortcuts are in
+[docs/CONFIG.md](docs/CONFIG.md).
 
 The flags follow `xdg-terminal-exec`, so glass can be your desktop's
 default terminal: put `glass.desktop` first in `~/.config/xdg-terminals.list`.

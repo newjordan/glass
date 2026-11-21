@@ -1,8 +1,8 @@
 # Configuration
 
-glass reads one settings file, `glass.conf`, then the `GLASS_*` environment
-variables, which override it. There is nothing else to configure: no
-other file is read.
+glass reads one settings file, `glass.conf` (and any files it includes),
+then the `GLASS_*` environment variables, which override it. There is
+nothing else to configure: no other file is read.
 
 ## Where the file is
 
@@ -14,7 +14,8 @@ other file is read.
 
 - **First launch.** If the file does not exist, glass writes it with every
   setting at its default, ready to edit. Delete it to start again from the
-  defaults.
+  defaults. A file that is there (or a link to one not made yet) is only
+  ever read, never rewritten.
 - **Moving from an earlier build.** Builds before 0.1.0 kept the file in
   `~/.angelX/glass.conf`. If the new file does not exist and the old one
   does, glass copies the old one to the new path once, says so on stderr,
@@ -40,7 +41,14 @@ background_tint 0.6
   spaces.
 - An unknown key is ignored. A value glass cannot read leaves that setting
   at its default; a number out of range is clamped into it.
-- Only the first 1 MiB of the file is read.
+- Only the first 1 MiB of the file is read, the files it includes counted
+  in.
+- `include <path>` applies another file's settings at that line, so lines
+  after it override it, as in kitty: `include ~/.config/omarchy/current/theme/glass.conf`.
+  `~/` is your home; a relative path is relative to the directory of the
+  file the line is in. A file that is missing or unreadable is skipped
+  without a word. Includes nest up to 8 deep, and a file that includes
+  itself, directly or round a loop, is read once.
 
 ## Settings
 

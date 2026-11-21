@@ -4,8 +4,9 @@
 //! (`~/.config/glass/glass.conf` when that is unset; `GLASS_CONFIG` names
 //! another file), one `key value` a line. The first launch writes the
 //! defaults there to edit, or copies over the file earlier builds kept in
-//! `~/.angelX/glass.conf`; nothing else is ever read. `GLASS_*` variables
-//! override the file.
+//! `~/.angelX/glass.conf`; nothing else is read but the files it names in
+//! `include` lines. `GLASS_*` variables override the file. Glass never
+//! writes over a file that is there, so `include` lines stay as written.
 
 use std::ffi::OsString;
 use std::path::{Path, PathBuf};
@@ -131,14 +132,8 @@ impl Options {
                 }
             }),
         };
-        match path {
-            Some(path) if path.is_file() => apply_conf(&mut options, &path),
-            Some(path) => {
-                if let Err(error) = options.save(&path) {
-                    eprintln!("GLASS: could not write {}: {error}", path.display());
-                }
-            }
-            None => {}
+        if let Some(path) = path {
+            read_or_create(&mut options, &path);
         }
         options.apply_env();
         options
@@ -295,34 +290,99 @@ fn migrate(path: &Path, earlier: &Path) -> Option<PathBuf> {
     }
 }
 
+/// Read the settings at `path` into `options`, or, when there is nothing
+/// there at all, write the defaults for the first launch. A file that is
+/// there is only ever read, so its `include` lines and comments stay as
+/// written; a link to a file not made yet (a dotfiles checkout, a theme
+/// switcher's) is left alone too, rather than replaced by a file.
+fn read_or_create(options: &mut Options, path: &Path) {
+    if path.is_file() {
+        apply_conf(options, path);
+    } else if std::fs::symlink_metadata(path).is_err()
+        && let Err(error) = options.save(path)
+    {
+        eprintln!("GLASS: could not write {}: {error}", path.display());
+    }
+}
+
 fn expand_home(path: &str) -> PathBuf {
+    expand_home_in(path, std::env::var_os("HOME"))
+}
+
+/// `~/` at the start of `path` as `home`.
+fn expand_home_in(path: &str, home: Option<OsString>) -> PathBuf {
     match path.strip_prefix("~/") {
-        Some(rest) => std::env::var_os("HOME")
+        Some(rest) => home
             .map(|home| PathBuf::from(home).join(rest))
             .unwrap_or_else(|| PathBuf::from(path)),
         None => PathBuf::from(path),
     }
 }
 
-/// A config is a few kilobytes; anything past this is not read.
+/// A path a config file names (an `include`, a background image): `~/` is
+/// `home`, and a relative path is relative to that file's directory.
+fn named_in(file: &Path, value: &str, home: Option<OsString>) -> PathBuf {
+    let path = expand_home_in(value, home);
+    match file.parent() {
+        Some(dir) if path.is_relative() => dir.join(path),
+        _ => path,
+    }
+}
+
+/// A config is a few kilobytes; anything past this is not read. The files
+/// it includes count toward it too.
 const MAX_CONFIG_BYTES: u64 = 1 << 20;
 
+/// How deep `include` lines may nest. A theme includes nothing, so this is
+/// far more than anyone needs; it bounds a chain the cycle check cannot
+/// see through (links that resolve differently on each read).
+const MAX_INCLUDE_DEPTH: usize = 8;
+
+/// The files being read, outermost first, and the bytes left to read.
+struct Reading {
+    open: Vec<PathBuf>,
+    budget: u64,
+}
+
+/// Apply `glass.conf` at `path` to `options`, line by line, with any files
+/// it includes applied where their `include` lines are.
 fn apply_conf(options: &mut Options, path: &Path) {
+    let mut reading = Reading { open: Vec::new(), budget: MAX_CONFIG_BYTES };
+    apply_conf_file(options, path, &mut reading);
+}
+
+/// One file of the config. A file that is missing or unreadable is
+/// skipped without a word: Omarchy's default config includes the current
+/// theme's `glass.conf`, which need not exist yet.
+fn apply_conf_file(options: &mut Options, path: &Path, reading: &mut Reading) {
     use std::io::Read as _;
+    if reading.open.len() > MAX_INCLUDE_DEPTH {
+        return;
+    }
+    // A file that includes itself, directly or round a loop, is read once:
+    // the include that would read it again is skipped.
+    let Ok(canonical) = std::fs::canonicalize(path) else {
+        return;
+    };
+    if reading.open.contains(&canonical) {
+        return;
+    }
     let Ok(file) = std::fs::File::open(path) else {
         return;
     };
     let mut bytes = Vec::new();
     if file
-        .take(MAX_CONFIG_BYTES)
+        .take(reading.budget)
         .read_to_end(&mut bytes)
         .is_err()
     {
         return;
     }
+    reading.budget -= bytes.len() as u64;
     let Ok(text) = String::from_utf8(bytes) else {
         return;
     };
+    reading.open.push(canonical);
     for line in text.lines() {
         let line = line.trim();
         if line.is_empty() || line.starts_with('#') {
@@ -332,6 +392,15 @@ fn apply_conf(options: &mut Options, path: &Path) {
             .split_once(char::is_whitespace)
             .map_or((line, ""), |(k, v)| (k, v.trim()));
         match key {
+            // The other file's settings apply here, so lines after this
+            // one override them, as in kitty. `~/` is the home directory;
+            // a relative path is relative to this file's directory.
+            "include" => {
+                if !value.is_empty() {
+                    let included = named_in(path, value, std::env::var_os("HOME"));
+                    apply_conf_file(options, &included, reading);
+                }
+            }
             "font_family" => {
                 if !value.is_empty() {
                     options.font_family = value.to_string();
@@ -354,14 +423,9 @@ fn apply_conf(options: &mut Options, path: &Path) {
                 }
             }
             "background_image" => {
-                // A relative path is relative to the config file.
-                options.background_image = (value != "none" && !value.is_empty()).then(|| {
-                    let image = expand_home(value);
-                    match path.parent() {
-                        Some(dir) if image.is_relative() => dir.join(image),
-                        _ => image,
-                    }
-                });
+                // A relative path is relative to the file it is named in.
+                options.background_image = (value != "none" && !value.is_empty())
+                    .then(|| named_in(path, value, std::env::var_os("HOME")));
             }
             "background_image_layout" => {
                 if let Some(layout) = crate::wallpaper::Layout::parse(value) {
@@ -400,6 +464,7 @@ fn apply_conf(options: &mut Options, path: &Path) {
             }
         }
     }
+    reading.open.pop();
 }
 
 fn set_color(slot: &mut Rgb, value: &str) {
@@ -593,6 +658,148 @@ mod tests {
         let text = std::fs::read_to_string(&path).unwrap();
         assert!(text.starts_with("# glass: "), "{text}");
         assert!(!text.to_lowercase().contains("angel"), "{text}");
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    /// `glass.conf` and the files it includes, written under a fresh
+    /// directory; the settings read from `glass.conf` there.
+    fn options_from_files(name: &str, files: &[(&str, &str)]) -> Options {
+        let dir = scratch(name);
+        for (file, text) in files {
+            let path = dir.join(file);
+            std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+            std::fs::write(path, text).unwrap();
+        }
+        let mut options = Options::default();
+        apply_conf(&mut options, &dir.join("glass.conf"));
+        let _ = std::fs::remove_dir_all(&dir);
+        options
+    }
+
+    #[test]
+    fn an_include_applies_where_it_stands() {
+        // The theme overrides what came before its line, and the lines
+        // after it override the theme, as in kitty.
+        let options = options_from_files(
+            "include-order",
+            &[
+                ("glass.conf", "font_size 10\nforeground #111111\ninclude theme.conf\nbackground #444444\n"),
+                ("theme.conf", "font_size 20\nforeground #222222\nbackground #333333\ncolor1 #555555\n"),
+            ],
+        );
+        assert_eq!(options.font_size, 20.0, "the theme's line came later");
+        assert_eq!(options.palette.foreground, [0x22; 3], "the theme's line came later");
+        assert_eq!(options.palette.background, [0x44; 3], "the line after the include wins");
+        assert_eq!(options.palette.ansi[1], [0x55; 3]);
+    }
+
+    #[test]
+    fn an_include_is_relative_to_the_file_it_is_in() {
+        // `themes/now.conf` from glass.conf, then `more.conf` from there:
+        // each relative to the directory of the file that names it.
+        let options = options_from_files(
+            "include-relative",
+            &[
+                ("glass.conf", "include themes/now.conf\n"),
+                ("themes/now.conf", "font_size 17\ninclude more.conf\n"),
+                ("themes/more.conf", "background_opacity 0.5\nbackground_image wall.png\n"),
+                // Not this one: it is next to glass.conf, not to now.conf.
+                ("more.conf", "background_opacity 0.25\n"),
+            ],
+        );
+        assert_eq!(options.font_size, 17.0);
+        assert_eq!(options.background_opacity, 0.5);
+        let image = options.background_image.expect("the image is set");
+        assert!(image.ends_with("themes/wall.png"), "{}", image.display());
+    }
+
+    #[test]
+    fn an_include_expands_the_home_directory() {
+        let home = Some(OsString::from("/home/u"));
+        let conf = Path::new("/etc/glass/glass.conf");
+        assert_eq!(
+            named_in(conf, "~/.config/omarchy/current/theme/glass.conf", home.clone()),
+            PathBuf::from("/home/u/.config/omarchy/current/theme/glass.conf")
+        );
+        assert_eq!(named_in(conf, "/abs/theme.conf", home.clone()), PathBuf::from("/abs/theme.conf"));
+        assert_eq!(named_in(conf, "theme.conf", home.clone()), PathBuf::from("/etc/glass/theme.conf"));
+        // `~user/` is not the home directory: it is a relative name.
+        assert_eq!(named_in(conf, "~u/theme.conf", home), PathBuf::from("/etc/glass/~u/theme.conf"));
+        // Without a home, `~/` stays as written.
+        assert_eq!(named_in(conf, "~/t.conf", None), PathBuf::from("/etc/glass/~/t.conf"));
+    }
+
+    #[test]
+    fn a_missing_include_is_skipped_quietly() {
+        // Omarchy's config includes the current theme's file before any
+        // theme has been set: the rest of the file still applies.
+        let options = options_from_files(
+            "include-missing",
+            &[("glass.conf", "font_size 11\ninclude nowhere/theme.conf\ninclude\nforeground #123456\n")],
+        );
+        assert_eq!(options.font_size, 11.0);
+        assert_eq!(options.palette.foreground, [0x12, 0x34, 0x56]);
+        // A directory is no settings file either.
+        let options = options_from_files(
+            "include-dir",
+            &[("glass.conf", "include themes\nfont_size 12\n"), ("themes/x.conf", "font_size 30\n")],
+        );
+        assert_eq!(options.font_size, 12.0);
+    }
+
+    #[test]
+    fn an_include_cycle_reads_each_file_once() {
+        // glass.conf → a → b → glass.conf: the include that would read a
+        // file already being read is skipped, so the lines apply once,
+        // in reading order.
+        let options = options_from_files(
+            "include-cycle",
+            &[
+                ("glass.conf", "font_size 10\ninclude a.conf\ntext_gamma 1.5\n"),
+                ("a.conf", "font_size 11\ninclude b.conf\nbackground #aaaaaa\n"),
+                ("b.conf", "foreground #bbbbbb\ninclude glass.conf\ninclude b.conf\nfont_size 12\n"),
+            ],
+        );
+        assert_eq!(options.font_size, 12.0);
+        assert_eq!(options.palette.foreground, [0xbb; 3]);
+        assert_eq!(options.palette.background, [0xaa; 3]);
+        assert_eq!(options.text_gamma, 1.5);
+    }
+
+    #[test]
+    fn includes_nest_eight_deep() {
+        // A chain of twelve: glass.conf and the eight files below it
+        // apply, the rest do not.
+        let names: Vec<String> = (0..12).map(|i| if i == 0 { "glass.conf".into() } else { format!("f{i}.conf") }).collect();
+        let texts: Vec<String> = (0..12).map(|i| format!("font_size {}\ninclude f{}.conf\n", i + 1, i + 1)).collect();
+        let files: Vec<(&str, &str)> = names.iter().map(String::as_str).zip(texts.iter().map(String::as_str)).collect();
+        let options = options_from_files("include-deep", &files);
+        assert_eq!(options.font_size, 1.0 + MAX_INCLUDE_DEPTH as f32);
+    }
+
+    #[test]
+    fn a_file_that_is_there_is_read_never_written() {
+        let dir = scratch("never-written");
+        let path = dir.join("glass.conf");
+        let text = "# mine\ninclude ~/.config/omarchy/current/theme/glass.conf\nfont_size 14\n";
+        std::fs::write(&path, text).unwrap();
+        let mut options = Options::default();
+        read_or_create(&mut options, &path);
+        assert_eq!(options.font_size, 14.0);
+        assert_eq!(std::fs::read_to_string(&path).unwrap(), text, "the include line stays as written");
+        // A link to a file not made yet is left a link.
+        #[cfg(unix)]
+        {
+            let link = dir.join("linked.conf");
+            std::os::unix::fs::symlink(dir.join("not-yet.conf"), &link).unwrap();
+            read_or_create(&mut Options::default(), &link);
+            assert!(std::fs::symlink_metadata(&link).unwrap().file_type().is_symlink());
+            assert!(!dir.join("not-yet.conf").exists());
+        }
+        // Nothing there: the defaults are written, once.
+        let fresh = dir.join("fresh/glass.conf");
+        read_or_create(&mut Options::default(), &fresh);
+        assert!(std::fs::read_to_string(&fresh).unwrap().starts_with("# glass: "));
         let _ = std::fs::remove_dir_all(&dir);
     }
 
