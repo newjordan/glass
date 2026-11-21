@@ -1,6 +1,6 @@
 [package]
 name = "glass-term"
-version = "0.1.0"
+version = "0.2.0"
 description = "glass, a GPU terminal: any program in glass's own window, a shell by default"
 edition.workspace = true
 rust-version.workspace = true

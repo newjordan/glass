@@ -1,6 +1,6 @@
 pkgbase = glass-term
 	pkgdesc = A GPU terminal that takes in pictures, layers, particles and 3D scenes
-	pkgver = 0.1.0
+	pkgver = 0.2.0
 	pkgrel = 1
 	url = https://github.com/newjordan/glass
 	arch = x86_64
@@ -27,7 +27,7 @@ pkgbase = glass-term
 	optdepends = xdg-terminal-exec: make glass the default terminal
 	conflicts = glass-term-bin
 	conflicts = glass-git
-	source = glass-0.1.0.tar.gz::https://github.com/newjordan/glass/archive/refs/tags/v0.1.0.tar.gz
+	source = glass-0.2.0.tar.gz::https://github.com/newjordan/glass/archive/refs/tags/v0.2.0.tar.gz
 	sha256sums = SKIP
 
 pkgname = glass-term

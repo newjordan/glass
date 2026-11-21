@@ -1,6 +1,6 @@
 [package]
 name = "glass-stage"
-version = "0.1.0"
+version = "0.2.0"
 description = "glass's scene descriptions: layers, and a 3D scene of nodes, meshes and materials, as the window (crates/glass) draws them"
 edition.workspace = true
 rust-version.workspace = true

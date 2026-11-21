@@ -6,7 +6,7 @@
 # loaded at run time.
 
 pkgname=glass-term-bin
-pkgver=0.1.0
+pkgver=0.2.0
 pkgrel=1
 pkgdesc='A GPU terminal that takes in pictures, layers, particles and 3D scenes (release binary)'
 arch=('x86_64' 'aarch64')

@@ -681,7 +681,7 @@ dependencies = [
 
 [[package]]
 name = "glass-gpu"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "bytemuck",
  "glass-stage",
@@ -690,14 +690,14 @@ dependencies = [
 
 [[package]]
 name = "glass-stage"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "serde",
 ]
 
 [[package]]
 name = "glass-term"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "crossterm",
  "cursor-icon",
@@ -719,7 +719,7 @@ dependencies = [
 
 [[package]]
 name = "glass-window"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "bytemuck",
  "crossterm",

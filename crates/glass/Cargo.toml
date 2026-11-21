@@ -1,6 +1,6 @@
 [package]
 name = "glass-window"
-version = "0.1.0"
+version = "0.2.0"
 description = "glass's window: a GPU compositor where a terminal's text is one layer, with pictures, layers and 3D scenes above and below it"
 edition.workspace = true
 rust-version.workspace = true

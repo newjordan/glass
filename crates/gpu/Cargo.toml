@@ -1,6 +1,6 @@
 [package]
 name = "glass-gpu"
-version = "0.1.0"
+version = "0.2.0"
 description = "glass's renderer core: one instanced-quad pipeline, a mesh pipeline with depth for 3D scenes, pictures, stages and the layer compiler on a wgpu device the host makes"
 edition.workspace = true
 rust-version.workspace = true

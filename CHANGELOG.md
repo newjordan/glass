@@ -3,6 +3,62 @@
 All notable changes to glass are recorded here. Versions follow
 [Semantic Versioning](https://semver.org/).
 
+## 0.2.0 - unreleased
+
+### Settings
+
+- `include <path>` in glass.conf reads another file at that line, as
+  kitty does: lines after it override it, `~/` and paths relative to the
+  including file work, and a missing file is skipped. This is how a
+  desktop's theme file (Omarchy's, for one) is brought in.
+- SIGUSR1 rereads the settings in every glass window: colours, opacity,
+  padding, font family and size, the background image and tint, braille
+  and text gamma. A font or padding change resizes the terminal as a
+  window resize does. Each reload prints what changed on stderr.
+- `selection_foreground` and `selection_background` colour the selection.
+  With neither set it is drawn reversed, as before.
+- OSC 4 colour queries are answered, and OSC 10, 11 and 12 answers follow
+  a reload.
+
+### Speed
+
+- Cursor motion, colour changes and full-screen programs parse in bigger
+  steps: complete plain escapes stay in the text run, a quiet stream is
+  scanned sixteen bytes at a time, and SGR colours and cursor moves take
+  shorter paths.
+- Hot threads go on the performance cores of hybrid processors.
+
+Measured against foot 1.28 on one machine (Ryzen 9 9950X3D, RTX 3090,
+Hyprland), both in 1920×1080 windows on a hidden workspace, interleaved
+rounds:
+
+| | glass / foot |
+| --- | --- |
+| Plain text, Unicode, scrolling | 2.6–3.4× |
+| Truecolor | 1.32× |
+| Full-screen TUI | 1.08× |
+| Cursor motion | 0.96× |
+| Window on screen | 19.5 ms / 28.0 ms |
+| Program running | 24.5 ms / 22.0 ms |
+
+glass waits for the compositor's size before it starts the program, so
+the program never starts at the wrong width; foot starts it first.
+
+### Startup and memory
+
+- While the GPU opens, a program's output is drawn on the CPU at most 30
+  times a second, so a program that floods at launch costs less CPU.
+- An idle window holds less memory: the wallpaper's pixels are dropped
+  once they are on the GPU, and what opening the window allocated is
+  handed back after two seconds.
+
+### Fixes
+
+- Ctrl+click opens a link even when a program, such as tmux, owns the
+  mouse.
+- The Hermes display plugin lives in `plugins/glass`.
+- The lockfile is no longer pinned for the vte crate's MSRV.
+
 ## 0.1.0 - 2026-11-03
 
 ### Open intake
