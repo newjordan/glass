@@ -30,6 +30,13 @@ pub struct Palette {
     pub cursor: Rgb,
     pub cursor_text: Rgb,
     pub ansi: [Rgb; 16],
+    /// The selection's text and background (kitty's `selection_foreground`
+    /// and `selection_background`). With neither, a selection shows its
+    /// cells reversed. With a background, selected cells take it, and the
+    /// foreground if there is one, else their own text colour. With a
+    /// foreground alone, the reversed cells' text takes it.
+    pub selection_foreground: Option<Rgb>,
+    pub selection_background: Option<Rgb>,
 }
 
 impl Default for Palette {
@@ -57,6 +64,8 @@ impl Default for Palette {
                 [0x29, 0xb8, 0xdb],
                 [0xff, 0xff, 0xff],
             ],
+            selection_foreground: None,
+            selection_background: None,
         }
     }
 }
@@ -230,6 +239,13 @@ impl Options {
         line("cursor_text_color", hex(self.palette.cursor_text));
         for (i, color) in self.palette.ansi.iter().enumerate() {
             line(&format!("color{i}"), hex(*color));
+        }
+        // Unset, they are left out, so a theme included above them sets them.
+        if let Some(color) = self.palette.selection_foreground {
+            line("selection_foreground", hex(color));
+        }
+        if let Some(color) = self.palette.selection_background {
+            line("selection_background", hex(color));
         }
         match &self.background_image {
             Some(path) => line("background_image", path.display().to_string()),
@@ -556,6 +572,8 @@ fn apply_conf_file(options: &mut Options, path: &Path, reading: &mut Reading) {
             "background" => set_color(&mut options.palette.background, value),
             "cursor" => set_color(&mut options.palette.cursor, value),
             "cursor_text_color" => set_color(&mut options.palette.cursor_text, value),
+            "selection_foreground" => set_optional_color(&mut options.palette.selection_foreground, value),
+            "selection_background" => set_optional_color(&mut options.palette.selection_background, value),
             _ => {
                 if let Some(index) = key
                     .strip_prefix("color")
@@ -573,6 +591,15 @@ fn apply_conf_file(options: &mut Options, path: &Path, reading: &mut Reading) {
 fn set_color(slot: &mut Rgb, value: &str) {
     if let Some(color) = parse_hex(value) {
         *slot = color;
+    }
+}
+
+/// A colour that may be unset: `none` unsets it, as in kitty.
+fn set_optional_color(slot: &mut Option<Rgb>, value: &str) {
+    if value == "none" {
+        *slot = None;
+    } else if let Some(color) = parse_hex(value) {
+        *slot = Some(color);
     }
 }
 
@@ -643,6 +670,22 @@ mod tests {
         assert_eq!(back.background_layout, crate::wallpaper::Layout::Centered);
         assert_eq!(back.background_tint, 0.5);
         assert_eq!(back.braille, BrailleStyle::Pixels);
+    }
+
+    #[test]
+    fn selection_colours_are_unset_set_or_unset_again() {
+        let palette = |text: &str| options_from(text).palette;
+        let unset = palette("foreground #ffffff\n");
+        assert_eq!((unset.selection_foreground, unset.selection_background), (None, None));
+        let set = palette("selection_foreground #1a1b26\nselection_background #7aa2f7\n");
+        assert_eq!(set.selection_foreground, Some([0x1a, 0x1b, 0x26]));
+        assert_eq!(set.selection_background, Some([0x7a, 0xa2, 0xf7]));
+        let again = palette("selection_foreground #1a1b26\nselection_foreground none\nselection_background blue\n");
+        assert_eq!((again.selection_foreground, again.selection_background), (None, None));
+        // Saved, a set colour reads back; an unset one is not written.
+        let options = Options { palette: set, ..Default::default() };
+        assert!(options.to_conf().contains("selection_background #7aa2f7\n"));
+        assert!(!Options::default().to_conf().contains("selection_"));
     }
 
     #[test]

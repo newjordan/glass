@@ -108,6 +108,10 @@ pub enum Msg {
     Typed,
     /// The program wrote something; the screen has changed.
     Output,
+    /// The settings were reloaded (SIGUSR1). The window redraws its own
+    /// colours; the selection's are the view's, so the screen is drawn
+    /// again.
+    Reloaded,
     /// The window closed.
     Closed,
 }

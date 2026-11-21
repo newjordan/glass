@@ -71,6 +71,8 @@ background_tint 0.6
 | `cursor` | colour | `#ffffff` | Cursor colour. |
 | `cursor_text_color` | colour | `#000000` | Colour of the character under a block cursor. |
 | `color0` … `color15` | colour | see below | The 16 ANSI colours. |
+| `selection_foreground` | colour, or `none` | `none` | Text colour of selected cells. Alone, the selection shows reversed with this text colour. |
+| `selection_background` | colour, or `none` | `none` | Background of selected cells, which keep their own text colour unless `selection_foreground` is set. With neither set, the selection shows reversed. |
 | `background_image` | path, or `none` | `none` | A PNG drawn under everything, at most 8192 pixels a side. `~/` is your home; a relative path is relative to the directory `glass.conf` is in. |
 | `background_image_layout` | `tiled`, `mirror-tiled`, `scaled`, `clamped`, `centered`, `cscaled` | `tiled` | How the image fills the window: repeated, repeated with every other copy mirrored, stretched to the window, drawn once from the top left with its edge pixels stretched past it, drawn once in the middle at its own size, or scaled to cover the window keeping its shape and cropped. |
 | `background_tint` | 0–1 | `0` | How far the image is faded toward the background colour, so text stays readable: `0` shows the image as it is, `1` hides it. |

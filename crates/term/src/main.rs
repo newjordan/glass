@@ -245,9 +245,10 @@ fn run(
     // the program's colour queries (OSC 4, 10, 11 and 12) are answered in
     // the colours now drawn; the window redraws with them itself.
     {
-        let info = session.host_info();
+        let (info, wake) = (session.host_info(), tx.clone());
         host.on_reload(move |options| {
             info.lock().unwrap_or_else(|e| e.into_inner()).set_palette(&options.palette);
+            let _ = wake.send(Msg::Reloaded);
         });
     }
     let Ok(mut reader) = host.input_reader() else {
@@ -382,6 +383,7 @@ fn run(
                     blink.activity(at);
                 }
                 Msg::Closed => return exited.unwrap_or(0),
+                Msg::Reloaded => dirty = true,
                 Msg::Typed => {
                     blink.activity(clock.elapsed());
                     interactive = true;

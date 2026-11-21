@@ -231,6 +231,9 @@ pub struct HostInfo {
     pub cell_px: (u32, u32),
     /// The 16 ANSI colours; the 240 above them are xterm's fixed table.
     pub ansi: [[u8; 3]; 16],
+    /// The selection's text and background colours, if set
+    /// (`view::paint` colours selected cells with them).
+    pub selection: [Option<[u8; 3]>; 2],
 }
 
 impl HostInfo {
@@ -244,6 +247,7 @@ impl HostInfo {
     pub fn set_palette(&mut self, palette: &glass_window::Palette) {
         self.colors = [palette.foreground, palette.background, palette.cursor];
         self.ansi = palette.ansi;
+        self.selection = [palette.selection_foreground, palette.selection_background];
     }
 
     /// The palette's colour a query names by `Term`'s index: 0 to 255 for
@@ -995,6 +999,12 @@ impl Engine {
 
     pub fn cell_px(&self) -> (u32, u32) {
         self.info.lock().unwrap_or_else(|e| e.into_inner()).cell_px
+    }
+
+    /// The selection's text and background colours, if the settings set
+    /// them.
+    pub fn selection_colors(&self) -> [Option<[u8; 3]>; 2] {
+        self.info.lock().unwrap_or_else(|e| e.into_inner()).selection
     }
 
 
@@ -4300,7 +4310,10 @@ mod tests {
             ..Default::default()
         };
         palette.ansi[1] = [0xf7, 0x76, 0x8e];
+        palette.selection_background = Some([0x7a, 0xa2, 0xf7]);
+        assert_eq!(term.selection_colors(), [None, None]);
         term.host_info().lock().unwrap().set_palette(&palette);
+        assert_eq!(term.selection_colors(), [None, Some([0x7a, 0xa2, 0xf7])], "the view colours the selection with it");
         assert_eq!(ask(&mut term, b"\x1b]10;?\x1b\\"), "\x1b]10;rgb:c0c0/caca/f5f5\x1b\\");
         assert_eq!(ask(&mut term, b"\x1b]11;?\x1b\\"), "\x1b]11;rgb:1a1a/1b1b/2626\x1b\\");
         assert_eq!(ask(&mut term, b"\x1b]12;?\x1b\\"), "\x1b]12;rgb:ffff/0000/8080\x1b\\");

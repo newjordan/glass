@@ -1,5 +1,6 @@
-//! The engine's cells as glass cells, with the selection shown reversed,
-//! and the selected text and words read back off them.
+//! The engine's cells as glass cells, with the selection shown reversed or
+//! in the selection colours the settings give, and the selected text and
+//! words read back off them.
 
 use ratatui_core::buffer::Buffer;
 use ratatui_core::layout::{Position, Rect};
@@ -72,6 +73,7 @@ pub fn paint(
     hover: Option<&Selection>,
 ) {
     let (rows, cols) = engine.size();
+    let selection_colors = engine.selection_colors();
     let cells = engine.cells();
     for row in 0..area.height.min(u16::try_from(rows).unwrap_or(u16::MAX)) {
         for col in 0..area.width.min(u16::try_from(cols).unwrap_or(u16::MAX)) {
@@ -104,7 +106,8 @@ pub fn paint(
             modifier.set(Modifier::UNDERLINED, source.flags.intersects(F::ALL_UNDERLINES));
             modifier.set(Modifier::CROSSED_OUT, source.flags.contains(F::STRIKEOUT));
             let selected = selection.is_some_and(|s| s.contains(row, col));
-            modifier.set(Modifier::REVERSED, source.flags.contains(F::INVERSE) != selected);
+            let reversed = select(cell, source.flags.contains(F::INVERSE), selected, selection_colors);
+            modifier.set(Modifier::REVERSED, reversed);
             if hover.is_some_and(|h| h.contains(row, col)) && !selected {
                 modifier.insert(Modifier::UNDERLINED);
             }
@@ -117,6 +120,28 @@ pub fn paint(
             }
         }
     }
+}
+
+/// Colour a cell for the selection, its own colours already set; returns
+/// whether it is drawn reversed. With no selection colours a selected cell
+/// reverses, as it always has. `selection_background` gives it that
+/// background and keeps its own text colour, unless `selection_foreground`
+/// gives that too; `selection_foreground` alone colours the text of the
+/// reversed cell. The renderer swaps a reversed cell's colours, so each
+/// colour goes in the slot that ends up showing it.
+fn select(cell: &mut ratatui_core::buffer::Cell, inverse: bool, selected: bool, [text, back]: [Option<[u8; 3]>; 2]) -> bool {
+    let reversed = inverse != (selected && back.is_none());
+    if selected {
+        let rgb = |[r, g, b]: [u8; 3]| Color::Rgb(r, g, b);
+        let (shown_text, shown_back) = if reversed { (&mut cell.bg, &mut cell.fg) } else { (&mut cell.fg, &mut cell.bg) };
+        if let Some(color) = back {
+            *shown_back = rgb(color);
+        }
+        if let Some(color) = text {
+            *shown_text = rgb(color);
+        }
+    }
+    reversed
 }
 
 /// Where the cursor shows, if it does: not while the program hides it, and
@@ -304,6 +329,34 @@ mod tests {
         assert!(a.modifier.contains(Modifier::BOLD));
         // Reversed by the program and selected: shown plain.
         assert!(!buf[(1, 0)].modifier.contains(Modifier::REVERSED));
+    }
+
+    #[test]
+    fn selection_colours_colour_the_selected_cells() {
+        // `A` plain, `B` reversed by the program, `C` not selected.
+        let painted = |selection_colors: [Option<[u8; 3]>; 2]| {
+            let mut parser = engine(b"A\x1b[7mB\x1b[0mC");
+            parser.host_info().lock().unwrap().selection = selection_colors;
+            let area = Rect::new(0, 0, 10, 4);
+            let mut buf = Buffer::empty(area);
+            paint(&mut buf, area, &mut parser, Some(&Selection { anchor: (0, 0), head: (0, 1) }), None);
+            [0, 1, 2].map(|x| {
+                let cell = &buf[(x, 0)];
+                (cell.fg, cell.bg, cell.modifier.contains(Modifier::REVERSED))
+            })
+        };
+        let (fg, bg) = (Some([0x1a, 0x1b, 0x26]), Some([0x7a, 0xa2, 0xf7]));
+        let (rgb_fg, rgb_bg) = (Color::Rgb(0x1a, 0x1b, 0x26), Color::Rgb(0x7a, 0xa2, 0xf7));
+        let plain_c = (Color::Reset, Color::Reset, false);
+        // None set: reversed, as before.
+        assert_eq!(painted([None, None]), [(Color::Reset, Color::Reset, true), (Color::Reset, Color::Reset, false), plain_c]);
+        // Both: the text and background shown are the selection's, the
+        // program's reversed cell included (its slots swap).
+        assert_eq!(painted([fg, bg]), [(rgb_fg, rgb_bg, false), (rgb_bg, rgb_fg, true), plain_c]);
+        // A background alone: the cells keep their own text colour.
+        assert_eq!(painted([None, bg]), [(Color::Reset, rgb_bg, false), (rgb_bg, Color::Reset, true), plain_c]);
+        // A foreground alone: reversed, with that text colour.
+        assert_eq!(painted([fg, None]), [(Color::Reset, rgb_fg, true), (rgb_fg, Color::Reset, false), plain_c]);
     }
 
     #[test]
