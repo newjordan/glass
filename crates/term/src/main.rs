@@ -460,6 +460,9 @@ struct Ui {
     last_click: Option<(Instant, u16, u16, u8)>,
     /// What a Ctrl+hover last underlined: the word the link covers.
     hover_link: Option<Selection>,
+    /// A Ctrl+click opened a link, so the drag and the release stay here.
+    /// The program would otherwise see a mouse-up that had no mouse-down.
+    link_press: bool,
 }
 
 /// What one of the window's own shortcuts asks for.
@@ -637,15 +640,47 @@ impl Ui {
 
     fn mouse(&mut self, mouse: crossterm::event::MouseEvent, session: &mut Session) -> bool {
         let (mode, encoding) = session.mouse_protocol();
-        // A program that asked for the mouse gets it; Shift keeps it for
+        // The press opened a link. Hold the rest of that gesture: a drag
+        // or the release must not reach a program that owns the mouse.
+        if self.link_press {
+            match mouse.kind {
+                MouseEventKind::Drag(MouseButton::Left) => return false,
+                MouseEventKind::Up(MouseButton::Left) => {
+                    self.link_press = false;
+                    return false;
+                }
+                _ => self.link_press = false,
+            }
+        }
+        let (row, col) = (mouse.row, mouse.column);
+        let ctrl = mouse.modifiers.contains(KeyModifiers::CONTROL);
+        // Ctrl+click opens a link even when a program asked for the mouse.
+        // Forwarding it arrives as C-MouseDown1, which tmux does not bind,
+        // so the link never opens. A cell with no link is still the program's.
+        if ctrl && matches!(mouse.kind, MouseEventKind::Down(MouseButton::Left)) {
+            if let Some(url) = session.link_or_url_at(row, col) {
+                open(&url);
+                self.link_press = true;
+                return true;
+            }
+        }
+        // A program that asked for the mouse gets it. Shift keeps it for
         // selecting, as in other terminals.
-        if mode != MouseProtocolMode::None && !mouse.modifiers.contains(KeyModifiers::SHIFT) {
+        let reports = mode != MouseProtocolMode::None && !mouse.modifiers.contains(KeyModifiers::SHIFT);
+        if reports {
+            // Ctrl+hover still underlines, and the move still goes to the
+            // program: only the click that opens a link is kept.
+            let hover_changed = if ctrl && matches!(mouse.kind, MouseEventKind::Moved) {
+                let link = session.link_or_url_at(row, col).map(|_| session.word_at(row, col));
+                self.hover(link.as_ref())
+            } else {
+                false
+            };
             if let Some(bytes) = keys::mouse(&mouse, mode, encoding) {
                 session.write(&bytes);
             }
-            return false;
+            return hover_changed;
         }
-        let (row, col) = (mouse.row, mouse.column);
         match mouse.kind {
             MouseEventKind::ScrollUp | MouseEventKind::ScrollDown => {
                 let up = mouse.kind == MouseEventKind::ScrollUp;
@@ -659,15 +694,8 @@ impl Ui {
                     self.scroll(session, if up { 3 } else { -3 })
                 }
             }
-            MouseEventKind::Down(MouseButton::Left)
-                if mouse.modifiers.contains(KeyModifiers::CONTROL) =>
-            {
-                // Ctrl+click opens a link (OSC 8 or a plain URL) where it
-                // landed; a plain click still selects.
-                let url = session.link_or_url_at(row, col);
-                if let Some(url) = url {
-                    open(&url);
-                }
+            MouseEventKind::Down(MouseButton::Left) if ctrl => {
+                // No link on this cell: do not start a selection either.
                 true
             }
             MouseEventKind::Moved => {
