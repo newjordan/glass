@@ -679,6 +679,8 @@ pub(crate) mod split_timers {
     static NS: AtomicU64 = AtomicU64::new(0);
     static BYTES: AtomicU64 = AtomicU64::new(0);
 
+    /// Only the speed bench turns these on.
+    #[cfg(test)]
     pub fn init() {
         ON.store(
             std::env::var_os("GLASS_SPLIT_TIMERS").is_some_and(|v| !v.is_empty() && v != "0"),
@@ -701,6 +703,7 @@ pub(crate) mod split_timers {
         BYTES.fetch_add(bytes as u64, Ordering::Relaxed);
     }
 
+    #[cfg(test)]
     pub fn report() {
         if !ON.load(Ordering::Relaxed) {
             return;

@@ -487,14 +487,6 @@ impl Engine {
         self.note_sync();
     }
 
-    /// Bytes through `Term`, with the scroll count and the store's events
-    /// kept as they run.
-    fn apply_timed(&mut self, pass: &[u8]) {
-        let t = std::time::Instant::now();
-        self.apply(pass);
-        timers::record(timers::APPLY, t);
-    }
-
     fn apply(&mut self, pass: &[u8]) {
         // Loaded once, before the threads exist: the parse path's
         // per-iteration gates read thread-locals instead of the shared
@@ -3011,8 +3003,6 @@ pub(crate) mod timers {
     pub static VTE_CALLS: AtomicU64 = AtomicU64::new(0);
     pub static C0_BYTES: AtomicU64 = AtomicU64::new(0);
     pub static VTE_BYTES: AtomicU64 = AtomicU64::new(0);
-    pub static FEED_NS: AtomicU64 = AtomicU64::new(0);
-    pub static FEED_CALLS: AtomicU64 = AtomicU64::new(0);
     pub static FOLD_NS: AtomicU64 = AtomicU64::new(0);
     pub static FOLD_CALLS: AtomicU64 = AtomicU64::new(0);
     pub static FEEDW_NS: AtomicU64 = AtomicU64::new(0);
@@ -3020,7 +3010,6 @@ pub(crate) mod timers {
     pub static NRUN_NS: AtomicU64 = AtomicU64::new(0);
     pub static NRUN_CALLS: AtomicU64 = AtomicU64::new(0);
     pub const APPLY: usize = 0;
-    pub const FEED: usize = 1;
     pub fn init() {
         ON.store(std::env::var_os("GLASS_PARSE_TIMERS").is_some_and(|v| !v.is_empty() && v != "0"), Ordering::Relaxed);
     }
@@ -3107,26 +3096,19 @@ pub(crate) mod gates {
     //! The parse path's per-iteration gates, resolved once per `apply` to
     //! thread-locals so the run/gap loop stops paying shared-atomic loads
     //! per iteration (the 52% "feed machinery" slice of the ascii budget:
-    //! ~82 ns × 494k iterations). Every source value is frozen before the
-    //! hot threads exist (`timers::init`, `probes::init`, `run_whole`'s
-    //! OnceLock) or moves only inside `advance`/`lane` — never mid-loop.
+    //! ~82 ns × 494k iterations). The one value cached here, the probe, is
+    //! frozen before the hot threads exist (`probes::init`).
     use std::cell::Cell;
 
     thread_local! {
         /// `probes::get()`: written once at startup by `probes::init`.
         static PROBE: Cell<u8> = const { Cell::new(0) };
-        /// `timers::on()`: written once at startup by `timers::init`.
-        static TIMERS: Cell<bool> = const { Cell::new(false) };
-        /// `run_whole()`: a OnceLock, first read after startup.
-        static RUN_WHOLE: Cell<bool> = const { Cell::new(false) };
     }
 
     /// Refresh this thread's cached gate values from their sources. Called
     /// at the top of every `apply`, before any chunk feeds.
     pub fn enter() {
         PROBE.with(|c| c.set(super::probes::get()));
-        TIMERS.with(|c| c.set(super::timers::on()));
-        RUN_WHOLE.with(|c| c.set(super::run_whole()));
     }
 
     /// The cached `probes::get()`. `Some` when a deliberately-incorrect
@@ -3136,18 +3118,6 @@ pub(crate) mod gates {
     pub fn probe() -> Option<u8> {
         let v = PROBE.with(Cell::get);
         (v != 0).then_some(v)
-    }
-
-    /// The cached `timers::on()`.
-    #[inline(always)]
-    pub fn timers_on() -> bool {
-        TIMERS.with(Cell::get)
-    }
-
-    /// The cached `run_whole()`.
-    #[inline(always)]
-    pub fn run_whole() -> bool {
-        RUN_WHOLE.with(Cell::get)
     }
 }
 
@@ -3173,12 +3143,14 @@ pub(crate) mod counters {
     pub static VTE_BYTES: AtomicU64 = AtomicU64::new(0);
     static COUNTING: AtomicBool = AtomicBool::new(false);
     /// Count where applied bytes go, from now until [`counters::stop`].
+    #[cfg(test)]
     pub fn start() {
         LANE_RUN_BYTES.store(0, Ordering::Relaxed);
         VTE_BYTES.store(0, Ordering::Relaxed);
         COUNTING.store(true, Ordering::Relaxed);
     }
     /// Stop counting, returning what was counted.
+    #[cfg(test)]
     pub fn stop() -> (u64, u64) {
         COUNTING.store(false, Ordering::Relaxed);
         (LANE_RUN_BYTES.swap(0, Ordering::Relaxed), VTE_BYTES.swap(0, Ordering::Relaxed))
