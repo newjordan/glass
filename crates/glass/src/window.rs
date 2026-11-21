@@ -184,6 +184,7 @@ where
         app_due: None,
         early_due: None,
         early_bare: false,
+        early_drawn: None,
     };
     event_loop
         .run_app(&mut glass)
@@ -262,11 +263,15 @@ struct Glass<T> {
     app_due: Option<Instant>,
     /// With the app just started on the compositor's size: when the
     /// early frame is drawn at that size if the app has drawn nothing by
-    /// then.
+    /// then. Also when a program frame held back by [`EARLY_REPAINT`] is
+    /// drawn.
     early_due: Option<Instant>,
     /// The early frame on show was drawn without the background image,
     /// which was still being decoded.
     early_bare: bool,
+    /// When the early frame was last drawn, so a program's frames before
+    /// the GPU opens are drawn at most every [`EARLY_REPAINT`].
+    early_drawn: Option<Instant>,
 }
 
 /// How long the app waits, after the early frame maps the window, for
@@ -280,6 +285,13 @@ const SETTLE: Duration = Duration::from_millis(50);
 /// once without and again with it: a full-screen window is millions of
 /// pixels, some 10 ms to draw at 4K.
 const EARLY_WAIT: Duration = Duration::from_millis(8);
+
+/// The least time between two early frames drawn for a program's frames
+/// while the GPU opens. Each is the whole window on the CPU, across every
+/// core; drawing one per program frame cost a program that writes at once
+/// some 0.8 CPU-seconds in the 200 ms the GPU took to open. A frame that
+/// comes sooner is drawn when this has passed, with the newest output.
+const EARLY_REPAINT: Duration = Duration::from_millis(33);
 
 /// `GLASS_STATS=1`: every two seconds, one stderr line with the frames
 /// presented, their render times and the pictures uploaded.
@@ -503,6 +515,7 @@ impl<T: Send + 'static> Glass<T> {
             }
         });
         // The new buffer is committed before the old one goes.
+        self.early_drawn = Some(Instant::now());
         if let Some(frame) = crate::early::show(window, &look, text) {
             self.early = Some(frame);
             let size = window.inner_size();
@@ -1171,7 +1184,17 @@ impl<T: Send + 'static> ApplicationHandler<UserEvent> for Glass<T> {
                     fresh
                 };
                 if fresh {
-                    self.show_early(true);
+                    let next = self.early_drawn.map(|drawn| drawn + EARLY_REPAINT);
+                    match next {
+                        // Too soon after the last: drawn when the wait is
+                        // over, with whatever is newest then.
+                        Some(next) if Instant::now() < next => {
+                            if self.early_due.is_none_or(|due| due > next) {
+                                self.early_due = Some(next);
+                            }
+                        }
+                        _ => self.show_early(true),
+                    }
                 }
             }
             UserEvent::Frame => self.draw(false),
