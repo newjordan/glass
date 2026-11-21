@@ -100,7 +100,8 @@ fn quad(layout: Layout, image: (f32, f32), window: (f32, f32)) -> ([f32; 4], [f3
     }
 }
 
-/// The background image on the GPU.
+/// The background image on the GPU, with its size, layout and tint; its
+/// pixels are in the texture only.
 pub(crate) struct GpuWallpaper {
     _texture: wgpu::Texture,
     pub(crate) bind_group: wgpu::BindGroup,
@@ -164,6 +165,10 @@ fn upload_wallpaper(
         },
         size,
     );
+    // The pixels live in the texture now: only the size, layout and tint
+    // are read again, so the copy here (8 MB for a 1080p image) goes, in
+    // every window.
+    image.rgba = Vec::new();
     let address = image.layout.address_mode();
     let filter = if image.linear {
         wgpu::FilterMode::Linear
