@@ -9,10 +9,16 @@
 //! stacked cache), and the scheduler may put a thread on either. So the
 //! two threads of the hot read path, the pty read-ahead and the parsing,
 //! are placed on the CPUs of the largest L3 when the machine has domains
-//! of more than one size. Nothing else is placed, and nothing is done on a
-//! machine with one L3 (or several of the same size), on another system,
-//! when sysfs cannot be read, or when the CPUs glass was given include
-//! none of the chosen ones.
+//! of more than one size. A laptop often has one L3 and two kinds of core:
+//! Intel publishes the performance cores as `/sys/devices/cpu_core/cpus`
+//! and the efficiency cores as `/sys/devices/cpu_atom/cpus`. The kernel's
+//! capacity numbers can be the same for both, so the scheduler treats them
+//! as equal and a hot thread can spend its life on an efficiency core.
+//! Where the L3s do not differ and that split is present, the same two
+//! threads are placed on the performance cores instead. Nothing else is
+//! placed, and nothing is done on a machine with one kind of core and one
+//! L3 size, on another system, when sysfs cannot be read, or when the CPUs
+//! glass was given include none of the chosen ones.
 //!
 //! macOS has no affinity to set. It does put a thread on its efficiency
 //! cores unless the thread says the user is waiting on it, and it does
@@ -125,6 +131,24 @@ fn domains(root: &Path) -> Vec<Domain> {
     found
 }
 
+
+/// Performance-core CPUs when the machine also has efficiency cores.
+/// Intel hybrid parts publish these as `cpu_core/cpus` and `cpu_atom/cpus`
+/// under `/sys/devices`. A one-L3 laptop gets nothing from [`largest`], and
+/// with capacity numbers flat the scheduler treats both kinds as equal, so
+/// the hot thread can sit on an efficiency core for its whole life. Overlap,
+/// an empty side, or a missing file is not that split.
+#[cfg(target_os = "linux")]
+fn performance_cores(devices: &Path) -> Option<Vec<usize>> {
+    let read = |name: &str| std::fs::read_to_string(devices.join(name).join("cpus")).ok();
+    let core = read("cpu_core").as_deref().and_then(cpu_list)?;
+    let atom = read("cpu_atom").as_deref().and_then(cpu_list)?;
+    if core.is_empty() || atom.is_empty() || core.iter().any(|cpu| atom.contains(cpu)) {
+        return None;
+    }
+    Some(core)
+}
+
 /// Whether `GLASS_AFFINITY` leaves the placing on.
 fn wanted(setting: Option<&str>) -> bool {
     !matches!(setting.map(str::trim), Some("off" | "0" | "no" | "false"))
@@ -137,15 +161,19 @@ fn chosen() -> Option<&'static [usize]> {
     CHOSEN
         .get_or_init(|| {
             wanted(std::env::var("GLASS_AFFINITY").ok().as_deref())
-                .then(|| largest(&domains(Path::new("/sys/devices/system/cpu"))))
+                .then(|| {
+                    largest(&domains(Path::new("/sys/devices/system/cpu")))
+                        .or_else(|| performance_cores(Path::new("/sys/devices")))
+                })
                 .flatten()
         })
         .as_deref()
 }
 
-/// Place the calling thread on the largest L3's CPUs, among those it may
-/// run on already, or on macOS mark it user-interactive. Does nothing
-/// where the module says it does nothing.
+/// Place the calling thread on the largest L3's CPUs, or on a hybrid
+/// part's performance cores, among those it may run on already. On macOS,
+/// mark it user-interactive. Does nothing where the module says it does
+/// nothing.
 pub fn place_hot_thread() {
     #[cfg(target_os = "macos")]
     if wanted(std::env::var("GLASS_AFFINITY").ok().as_deref()) {
@@ -265,5 +293,26 @@ mod tests {
         let stray = tree("stray", "0-1", &[(0, "64M", "5"), (1, "16M", "1")], 3);
         assert_eq!(domains(&stray), Vec::new());
         let _ = std::fs::remove_dir_all(&root);
+
     }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn hybrid_cores_are_the_performance_set() {
+        let root = std::env::temp_dir().join(format!("glass-affinity-hybrid-{}", std::process::id()));
+        let write = |name: &str, list: &str| {
+            let dir = root.join(name);
+            std::fs::create_dir_all(&dir).unwrap();
+            std::fs::write(dir.join("cpus"), list).unwrap();
+        };
+        write("cpu_core", "0-15\n");
+        write("cpu_atom", "16-23\n");
+        assert_eq!(performance_cores(&root), Some((0..16).collect()));
+        // The same CPUs on both sides is not a split.
+        write("cpu_atom", "0-15\n");
+        assert_eq!(performance_cores(&root), None);
+        std::fs::remove_dir_all(&root).unwrap();
+        assert_eq!(performance_cores(&root), None);
+    }
+
 }

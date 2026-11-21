@@ -417,12 +417,12 @@ fn speed() {
         let mut best = f64::MAX;
         let mut best_cpu = f64::MAX;
         let mut passes = Vec::with_capacity(if samples.is_some() { rounds } else { 0 });
-        // The harness's own hot threads are placed on the largest L3
-        // (affinity.rs); this bench runs the same path on the thread it
-        // is given, which the scheduler may put on any die — on a dual-
-        // die part with one stacked cache that is a 2x spread for the
-        // identical command. Place it as the terminal would be, so the
-        // numbers are of the engine, not of where the thread landed.
+        // The harness's own hot threads are placed as affinity.rs places
+        // them (largest L3, or the performance cores of a hybrid part).
+        // This bench runs the same path on the thread it is given, which
+        // the scheduler may put on any die or on an efficiency core. Place
+        // it as the terminal would be, so the numbers are of the engine,
+        // not of where the thread landed.
         crate::affinity::place_hot_thread();
         // The test binary never runs main, so the env-gated parse timers
         // and ceiling probes arm here when the bench asks for them.
