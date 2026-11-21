@@ -3426,8 +3426,14 @@ fn sgr(watch: &mut Watch<'_>, params: &[u16]) {
             100..=107 => Some(Attr::Background(AnsiColor::Named(BRIGHT[usize::from(param - 100)]))),
             _ => None,
         };
-        if let Some(attr) = attr {
-            watch.terminal_attribute(attr);
+        match attr {
+            // `Term::terminal_attribute`'s own arms for these two, without
+            // the call into its whole match: the colours a TUI frame or a
+            // truecolor line sets before every cell.
+            Some(Attr::Foreground(color)) => watch.term.grid_mut().cursor.template.fg = color,
+            Some(Attr::Background(color)) => watch.term.grid_mut().cursor.template.bg = color,
+            Some(attr) => watch.terminal_attribute(attr),
+            None => {}
         }
     }
 }
