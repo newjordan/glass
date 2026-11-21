@@ -569,6 +569,74 @@ impl Default for Splitter {
     }
 }
 
+/// Whether the escape at the start of `rest` (an `ESC`) is one a quiet
+/// store still cuts out on its own, or must step through: `ESC c`,
+/// `ESC [ ?`, the string introducers (`ESC _`, `ESC ]`, `ESC P`), or one
+/// this read does not finish.
+fn merge_stops(rest: &[u8]) -> bool {
+    matches!(rest.get(1), Some(b'c' | b'_' | b']' | b'P'))
+        || rest.starts_with(b"\x1b[?")
+        || whole_escape(rest).is_none()
+}
+
+/// How far a quiet store's text run reaches from the start of `rest`, in
+/// plain text: up to the first `ESC` that [`merge_stops`] at, or the whole
+/// of `rest`. Every other escape would join the run one at a time anyway,
+/// as the `State::Text` arm of `bulk` takes it: each `ESC` there begins a
+/// sequence that ends at or before the next `ESC`, so which escapes stop
+/// the run depends only on the two bytes after each `ESC`, except for the
+/// last `ESC`, which alone may be unfinished. Those two bytes are looked
+/// at for many `ESC`s at once.
+fn merged_text_end(rest: &[u8]) -> usize {
+    let Some(last) = memchr::memrchr(0x1b, rest) else {
+        return rest.len();
+    };
+    let mut at = 0;
+    #[cfg(target_arch = "x86_64")]
+    {
+        use std::arch::x86_64::*;
+        // Blocks wholly before the last `ESC`, which the walk below
+        // decides: a block holding it would pass over it unfinished.
+        while at + 16 <= last && at + 18 <= rest.len() {
+            // SAFETY: loads of 16 bytes at `at`, `at + 1` and `at + 2`, all
+            // within `rest` by the loop condition; `loadu` needs no
+            // alignment, and every intrinsic is SSE2, baseline on x86-64.
+            let hit = unsafe {
+                let p = rest.as_ptr().add(at);
+                let b0 = _mm_loadu_si128(p.cast());
+                let esc = _mm_cmpeq_epi8(b0, _mm_set1_epi8(0x1b));
+                if _mm_movemask_epi8(esc) == 0 {
+                    0
+                } else {
+                    let b1 = _mm_loadu_si128(p.add(1).cast());
+                    let b2 = _mm_loadu_si128(p.add(2).cast());
+                    let is = |v: __m128i, b: u8| _mm_cmpeq_epi8(v, _mm_set1_epi8(b as i8));
+                    let lone = _mm_or_si128(
+                        _mm_or_si128(is(b1, b'c'), is(b1, b'_')),
+                        _mm_or_si128(is(b1, b']'), is(b1, b'P')),
+                    );
+                    let private = _mm_and_si128(is(b1, b'['), is(b2, b'?'));
+                    _mm_movemask_epi8(_mm_and_si128(esc, _mm_or_si128(lone, private)))
+                }
+            };
+            if hit != 0 {
+                return at + hit.trailing_zeros() as usize;
+            }
+            at += 16;
+        }
+    }
+    // The rest one `ESC` at a time: the tail past the blocks, every `ESC`
+    // elsewhere, and the last `ESC`, which may be unfinished.
+    let mut from = at;
+    while let Some(k) = memchr::memchr(0x1b, &rest[from..]).map(|k| from + k) {
+        if merge_stops(&rest[k..]) {
+            return k;
+        }
+        from = k + 1;
+    }
+    rest.len()
+}
+
 impl Splitter {
     /// A splitter whose lifted bodies are capped at `cap` bytes, for
     /// tests; production takes [`Default`].
@@ -916,7 +984,7 @@ impl Splitter {
         let cap = self.body_cap;
         match &mut self.state {
             State::Text => {
-                let k = memchr::memchr(0x1b, rest).unwrap_or(rest.len());
+                let k = if merge { merged_text_end(rest) } else { memchr::memchr(0x1b, rest).unwrap_or(rest.len()) };
                 if k > 0 {
                     run.get_or_insert(i);
                     return Some(i + k);
@@ -3926,6 +3994,29 @@ pub(crate) mod testing {
 mod tests {
     use super::testing::{FakeEngine, Record};
     use super::*;
+
+    /// The block scan for a quiet store's text run stops exactly where
+    /// walking the `ESC`s one at a time stops, from every start of random
+    /// streams dense with escapes, unfinished ones at the end included.
+    #[test]
+    fn merged_runs_end_where_walking_the_escapes_ends() {
+        let walking = |rest: &[u8]| {
+            (0..rest.len()).find(|&k| rest[k] == 0x1b && merge_stops(&rest[k..])).unwrap_or(rest.len())
+        };
+        let mut rng = crate::speed::Rng::new(53);
+        for _ in 0..400 {
+            let len = 1 + rng.below(300);
+            let mut stream = crate::speed::random_stream(&mut rng, len);
+            // End some streams inside an escape, as a read can.
+            let tails: [&[u8]; 6] = [b"\x1b", b"\x1b[", b"\x1b[12;4", b"\x1b[?", b"\x1b(", b"\x1b_G"];
+            if rng.below(2) == 0 {
+                stream.extend_from_slice(tails[rng.below(tails.len())]);
+            }
+            for from in 0..=stream.len() {
+                assert_eq!(merged_text_end(&stream[from..]), walking(&stream[from..]), "from {from} of {:?}", String::from_utf8_lossy(&stream));
+            }
+        }
+    }
 
     fn split(input: &[u8]) -> Vec<Piece<'_>> {
         let mut splitter = Splitter::default();
