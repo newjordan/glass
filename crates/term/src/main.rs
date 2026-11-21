@@ -9,6 +9,46 @@
 #[global_allocator]
 static ALLOCATOR: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
+unsafe extern "C" {
+    /// mimalloc's own: set one of its options from now on.
+    fn mi_option_set(option: std::ffi::c_int, value: std::ffi::c_long);
+    /// mimalloc's own: an option's value now.
+    fn mi_option_get(option: std::ffi::c_int) -> std::ffi::c_long;
+    /// mimalloc's own: free what the heaps hold, those of threads that
+    /// have ended included, and purge it now (`force`).
+    fn mi_collect(force: bool);
+}
+
+/// `mi_option_purge_delay` in mimalloc v3's `mi_option_e` (the version
+/// libmimalloc-sys builds by default): how long freed pages wait before
+/// they go back to the system.
+const MI_OPTION_PURGE_DELAY: std::ffi::c_int = 15;
+
+/// Give back what starting took. Opening the window frees much on its way
+/// (the decoded background image, the CPU frames drawn while the GPU
+/// opened, the font thread's buffers), and mimalloc gives freed pages back
+/// to the system only after a delay it acts on from a later call into it.
+/// A terminal at its prompt makes none, so some 20 MB stayed resident in
+/// every idle window. While the window opens, freed pages go back at once;
+/// two seconds in, one collection takes what the threads that have ended
+/// left, and mimalloc's own delay returns: purging at once for good cost
+/// cursor-heavy output about 2%.
+fn purge_the_start() {
+    // SAFETY: mi_option_get and mi_option_set take no pointers; the option
+    // is one mimalloc reads at every purge.
+    let delay = unsafe { mi_option_get(MI_OPTION_PURGE_DELAY) };
+    unsafe { mi_option_set(MI_OPTION_PURGE_DELAY, 0) };
+    let _ = std::thread::Builder::new().name("trim".into()).spawn(move || {
+        std::thread::sleep(Duration::from_secs(2));
+        // SAFETY: as above; mi_collect takes no pointers and may be called
+        // from any thread at any time.
+        unsafe {
+            mi_collect(true);
+            mi_option_set(MI_OPTION_PURGE_DELAY, delay);
+        }
+    });
+}
+
 mod affinity;
 mod blink;
 pub mod census;
@@ -119,6 +159,7 @@ fn opens_outside(url: &str) -> bool {
 }
 
 fn main() {
+    purge_the_start();
     census::init();
     engine::probes::init();
     alacritty_terminal::grid::probes_init();
@@ -747,6 +788,25 @@ impl Ui {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// MI_OPTION_PURGE_DELAY names mimalloc's purge delay: the option at
+    /// that number holds v3's default of 1000 ms (options.c; the header's
+    /// "=10" is stale) in a process that has not set it (main is not run
+    /// here). Its neighbours' defaults differ, so a renumbered enum in a
+    /// new mimalloc shows here.
+    #[test]
+    fn the_purge_delay_option_is_the_one_set() {
+        if std::env::var_os("MIMALLOC_PURGE_DELAY").is_some() {
+            return;
+        }
+        // SAFETY: mi_option_get takes no pointers.
+        let (before, at, after) = unsafe {
+            (mi_option_get(MI_OPTION_PURGE_DELAY - 1), mi_option_get(MI_OPTION_PURGE_DELAY), mi_option_get(MI_OPTION_PURGE_DELAY + 1))
+        };
+        assert_eq!(at, 1000, "option {MI_OPTION_PURGE_DELAY} is not the purge delay");
+        assert_ne!(before, 1000);
+        assert_ne!(after, 1000);
+    }
     use crossterm::event::{KeyCode, KeyEvent, KeyEventKind, KeyEventState, KeyModifiers};
 
     fn key(code: KeyCode, modifiers: KeyModifiers, kind: KeyEventKind) -> KeyEvent {
