@@ -573,10 +573,11 @@ fn alt_scroll_in_the_same_chunk_does_not_leave_covers_on_the_old_row() {
     assert!(!pic.covered.is_empty(), "text on the picture after the scroll left it uncovered");
 }
 
-/// Characterize a shipping growth-coordinate defect, not a correctness fix.
-/// Uses Session resize mapping and an actual placement through pump.
+/// Growing the window pulls history onto the screen. The marker and the
+/// picture that sat on it move down together. Height-only resizes do not
+/// reflow; the scroll count is what moves the absolute line.
 #[test]
-fn height_growth_picture_coordinate_defect_is_reproducible() {
+fn height_growth_keeps_the_picture_on_its_marker() {
     let mut engine = engine(4, 10);
     let mut intake = Intake::new(8);
     feed(&mut engine, &mut intake, &b"x\r\n".repeat(12));
@@ -586,6 +587,7 @@ fn height_growth_picture_coordinate_defect_is_reproducible() {
     let before = intake.describe(View { top: engine.top_line(), rows: 4, alternate: false });
     assert_eq!(before.placements.len(), 1);
     assert_eq!(before.placements[0].row, 0.0);
+    let scrolled = engine.scrolled_off_top();
     engine.resize(6, 10);
     let reflow = engine.take_reflow();
     if let Some(ref r) = reflow { intake.reflow(r); }
@@ -594,12 +596,9 @@ fn height_growth_picture_coordinate_defect_is_reproducible() {
     assert_eq!(marker, 'M');
     let after = intake.describe(View { top: engine.top_line(), rows: 6, alternate: false });
     assert_eq!(after.placements.len(), 1);
-    eprintln!("growth-picture before_row={} marker_row=2 picture_row={} reflow={}", before.placements[0].row, after.placements[0].row, reflow.is_some());
-    // Correct alignment would put the picture at marker row 2. The engine
-    // neither changes its coordinate base nor emits a mapping on height growth.
-    assert!(reflow.is_none());
-    assert_eq!(after.placements[0].row, 0.0);
-    assert_ne!(after.placements[0].row, 2.0, "remove this characterization when fixing the defect");
+    assert!(reflow.is_none(), "a height change is not a column reflow");
+    assert_eq!(engine.scrolled_off_top(), scrolled - 2, "two history rows were pulled onto the screen");
+    assert_eq!(after.placements[0].row, 2.0, "the picture stays on the marker");
 }
 
 /// Independent geometry oracle: the marker's row follows only known resize
@@ -762,15 +761,14 @@ fn mixed_resize_round_trip_picture_defect_is_reproducible() {
     }
     assert_eq!(engine.grid_line(0).chars().nth(3),Some('M'));
     let shown = intake.describe(View {top:engine.top_line(),rows:4,alternate:false});
-    // Characterize broken behavior, not correctness. Replace this test when
-    // reflow preserves surviving anchors across a truncated unrelated tail.
-    assert_eq!(shown.placements.len(),0,"known defect: the marker survives but its picture is gone");
+    assert_eq!(shown.placements.len(), 1, "the marker's picture survives the round trip");
+    let place = &shown.placements[0];
+    assert!((place.row - 0.0).abs() < 0.01 && (place.column - 3.0).abs() < 0.01, "picture at ({}, {})", place.row, place.column);
 }
 
-/// Isolate the exact matcher failure from parser/grid/intake behavior.
-/// This deliberately records broken behavior, and must change with its fix.
+/// A truncated newest line must not drop anchors on the lines above it.
 #[test]
-fn truncated_tail_reflow_drops_unrelated_anchor_defect_is_reproducible() {
+fn truncated_tail_reflow_keeps_an_unchanged_anchor() {
     use crate::intake::motion::{GridSnap, RowSnap, reflow_of, scrolled_after, map_anchor};
     let short = RowSnap { wrap: false, len: 1 };
     let mut old_rows = vec![short; 9];
@@ -785,12 +783,42 @@ fn truncated_tail_reflow_drops_unrelated_anchor_defect_is_reproducible() {
     let mut new = GridSnap { cols: 10, screen: 4, history: 9, scrolled: 9, lines: new_rows };
     let broken = reflow_of(&old, &new);
     assert_eq!(scrolled_after(&broken), 9);
-    assert_eq!(map_anchor(&broken, 9, 3.0), None, "known defect: first content marker is unchanged");
+    assert_eq!(map_anchor(&broken, 9, 3.0), Some((9, 3.0)), "the first content marker is unchanged");
+    // The truncated line itself keeps columns that remain and drops the rest.
+    // Nine short logical lines, then four 10-character lines: the last starts
+    // at row 15 (9 + 3 * 2). Column 3 of that line remains; column 7 does not.
+    assert_eq!(map_anchor(&broken, 15, 3.0).map(|(_, column)| column), Some(3.0));
+    assert_eq!(map_anchor(&broken, 15, 7.0), None, "past the truncated tail");
     // A one-field sensitivity check: do not truncate the unrelated last line.
     // The very same anchor then survives; loss is not caused by its own row.
     new.lines.last_mut().unwrap().len = 10;
     let complete = reflow_of(&old, &new);
     assert_eq!(map_anchor(&complete, 9, 3.0), Some((9, 3.0)));
+}
+
+/// A surviving line that matches an older line exactly is that line. A
+/// shorter-tail rule that also accepted it as a prefix of the line above
+/// would drop the real anchor.
+#[test]
+fn exact_survivor_beats_a_shorter_prefix() {
+    use crate::intake::motion::{GridSnap, RowSnap, map_anchor, reflow_of};
+    let old = GridSnap {
+        cols: 10,
+        screen: 2,
+        history: 0,
+        scrolled: 0,
+        lines: vec![RowSnap { wrap: false, len: 10 }, RowSnap { wrap: false, len: 5 }],
+    };
+    let new = GridSnap {
+        cols: 10,
+        screen: 1,
+        history: 0,
+        scrolled: 0,
+        lines: vec![RowSnap { wrap: false, len: 5 }],
+    };
+    let reflow = reflow_of(&old, &new);
+    assert_eq!(map_anchor(&reflow, 1, 1.0), Some((1, 1.0)));
+    assert_eq!(map_anchor(&reflow, 0, 1.0), None);
 }
 
 // Production regression: physical fragment identity is internal, not a shared

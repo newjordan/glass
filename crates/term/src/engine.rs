@@ -70,6 +70,18 @@ const SCROLL_COUNT_CHUNK: usize = 8192;
 /// the top row, so it always has room to move.
 const SCROLL_COUNT_REPLANT: usize = 4_096;
 
+/// Move an absolute scroll count by a viewport delta.
+///
+/// Positive `delta` pulls history onto the screen, so the top row's
+/// absolute line decreases. Negative `delta` pushes rows into history.
+fn shift_scroll_count(count: u64, delta: i32) -> u64 {
+    if let Ok(down) = u32::try_from(delta) {
+        count.saturating_sub(u64::from(down))
+    } else {
+        count.saturating_add(u64::from(delta.unsigned_abs()))
+    }
+}
+
 /// Fold one sentinel line into the scroll count.
 ///
 /// The sentinel is planted on the top row. A scroll whose top is the
@@ -335,10 +347,10 @@ pub struct Engine {
     tail: Vec<u8>,
     /// When the synchronized update now open began, if one is open.
     sync_since: Option<Instant>,
-    /// Lines that have left the top of the screen into history. It only
-    /// grows, by the number of lines each scroll took up, so the picture
-    /// intake can anchor its frames by counting from the start of the
-    /// output.
+    /// Lines that have left the top of the screen into history. A scroll
+    /// raises it by the lines that left. A height-only growth pulls history
+    /// back onto the screen and lowers it by that many, so an absolute line
+    /// still names the same text. A width change sets it from the reflow.
     scrolled_off_top: usize,
     /// Where the sentinel was last read, in lines above the screen.
     sentinel_read: usize,
@@ -938,12 +950,22 @@ impl Engine {
         let rows = rows.max(1);
         let cols = cols.max(2);
         let old_cols = self.term.columns();
+        let old_rows = self.term.screen_lines();
         let on_alt = self.term.mode().contains(TermMode::ALT_SCREEN);
         let before = if old_cols != cols {
             if on_alt { self.primary_snap.clone() } else { Some(self.snap_grid()) }
         } else {
             None
         };
+        // Height-only. Width changes publish a reflow that already sets
+        // the scroll count from the grids before and after. The sentinel
+        // counts lines pushed into history, including a height shrink of
+        // the primary screen. It does not count a pull of history back
+        // onto the screen, and it is not planted on the inactive grid, so
+        // those shifts are applied from the same delta `Term` uses.
+        let height_only = before.is_none() && old_rows != rows;
+        let active_delta = height_only.then(|| self.term.active_viewport_delta(rows));
+        let inactive_delta = (height_only && on_alt).then(|| self.term.inactive_viewport_delta(rows));
         self.term.resize(Size { columns: cols, lines: rows });
         self.region_top = 0;
         self.region_bottom = rows as i32;
@@ -959,6 +981,19 @@ impl Engine {
             self.pending_reflow = Some(reflow);
         }
         self.fold_sentinel();
+        if height_only {
+            if on_alt {
+                if let Some(delta) = active_delta {
+                    self.alt_scrolled = shift_scroll_count(self.alt_scrolled, delta);
+                }
+                if let Some(delta) = inactive_delta {
+                    self.scrolled_off_top = shift_scroll_count(self.scrolled_off_top as u64, delta) as usize;
+                }
+            } else if let Some(delta) = active_delta.filter(|delta| *delta > 0) {
+                let down = usize::try_from(delta).unwrap_or(0);
+                self.scrolled_off_top = self.scrolled_off_top.saturating_sub(down);
+            }
+        }
         if self.term.mode().contains(TermMode::ALT_SCREEN) {
             // The primary grid reflowed out of sight. Keep the prediction,
             // including the scroll count, so the next width change maps
@@ -4746,11 +4781,12 @@ mod tests {
         assert_eq!(failures, 0);
     }
 
-    /// Characterize a confirmed defect, not a correctness oracle or a fix.
-    /// The inactive primary grid pushes two rows into history, but the
-    /// observer selection was removed on the switch and misses that movement.
+    /// Shrinking the window while the alternate screen is up still pushes
+    /// the hidden primary grid into history. The selection that counts
+    /// scrolls is not planted there, so the viewport delta has to move the
+    /// absolute line. M was on absolute line 23 and is now the top row.
     #[test]
-    fn inactive_primary_height_shrink_coordinate_defect_is_reproducible() {
+    fn inactive_primary_height_shrink_keeps_the_absolute_line() {
         let mut e = Engine::new(4, 10, HostInfo { colors: [[0; 3]; 3], cell_px: (1, 1), ..Default::default() });
         e.term.grid_mut().update_history(32);
         e.process(&b"x\r\n".repeat(24));
@@ -4759,11 +4795,7 @@ mod tests {
         e.resize(2, 10);
         e.process(b"\x1b[?1049l");
         assert_eq!(e.grid_line(0).chars().next(), Some('M'));
-        let absolute_after = e.scrolled_off_top();
-        // M was at absolute line 21+2. It is now at grid row zero, so a
-        // correct coordinate base would be 23 rather than this observed 21.
-        assert_eq!(absolute_after, 21);
-        assert_ne!(absolute_after, 23, "remove this characterization when fixing the defect");
+        assert_eq!(e.scrolled_off_top(), 23);
     }
 
     #[test]

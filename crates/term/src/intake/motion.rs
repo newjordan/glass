@@ -451,6 +451,15 @@ pub fn map_anchor(reflow: &Reflow, line: u64, column: f32) -> Option<(u64, f32)>
     if new_index >= reflow.new_rows.len() {
         return None;
     }
+    // A shrink can cut the tail of the newest logical line. Only then is a
+    // column past the characters that remain off the grid. A picture in an
+    // empty cell of a line that kept its length still has a cell.
+    let old_start = (index as usize).saturating_sub(usize::from(row_in));
+    let old_chars = logical_chars(&reflow.old_rows, old_start);
+    let new_chars = logical_chars(&reflow.new_rows, new_start);
+    if new_chars < old_chars && offset >= f64::from(new_chars) {
+        return None;
+    }
     let raw = placed.new_scrolled as i64 + new_index as i64 - reflow.new_history as i64;
     if raw < 0 {
         return None;
@@ -530,20 +539,36 @@ fn place(reflow: &Reflow) -> Placed {
 
 /// How many leading content lines the new grid no longer holds. `None`
 /// when the character runs do not line up, which is not a reflow.
+///
+/// The newest content line may be shorter than it was. A height or width
+/// shrink truncates that tail without changing the lines above it. An exact
+/// run still wins, so a shorter line is not read as a prefix of an older one.
 fn align_content(old: &[Logical], new: &[Logical], old_content: &[usize], new_content: &[usize]) -> Option<usize> {
     if new_content.len() > old_content.len() {
         return None;
     }
     let spare = old_content.len() - new_content.len();
-    for drop in 0..=spare {
-        let fits = new_content.iter().enumerate().all(|(k, &ni)| {
-            old[old_content[drop + k]].chars == new[ni].chars
-        });
-        if fits {
-            return Some(drop);
+    let fits = |drop: usize, allow_short_tail: bool| {
+        new_content.iter().enumerate().all(|(k, &ni)| {
+            let old_chars = old[old_content[drop + k]].chars;
+            let new_chars = new[ni].chars;
+            let last = k + 1 == new_content.len();
+            if last && allow_short_tail { new_chars > 0 && new_chars <= old_chars } else { old_chars == new_chars }
+        })
+    };
+    (0..=spare).find(|&drop| fits(drop, false)).or_else(|| (0..=spare).find(|&drop| fits(drop, true)))
+}
+
+/// Characters in the logical line that starts at `start`, following wraps.
+fn logical_chars(rows: &[RowSnap], start: usize) -> u32 {
+    let mut chars = 0u32;
+    for row in rows.iter().skip(start) {
+        chars = chars.saturating_add(u32::from(row.len));
+        if !row.wrap {
+            break;
         }
     }
-    None
+    chars
 }
 
 fn blank_start(index: usize, old: &[Logical], new: &[Logical], start_of: &[Option<usize>]) -> Option<usize> {

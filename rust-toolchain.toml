@@ -1,0 +1,7 @@
+# CI selects its own toolchain (`dtolnay/rust-toolchain`). This file is for
+# local builds: current stable, which is at or above the workspace
+# `rust-version` of 1.95. The MSRV job still checks 1.95.
+[toolchain]
+channel = "stable"
+components = ["rustfmt", "clippy"]
+profile = "minimal"

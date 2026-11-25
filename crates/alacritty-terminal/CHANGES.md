@@ -39,6 +39,15 @@ Upstream made these fixes on `master` after the 0.26.0 release; glass takes them
   Raw measurements and mutation/serialization tests:
   `bench/results/2026-11-02-mark-cache/`.
 
+## Viewport delta
+
+- **`term/mod.rs`:** the row shift `resize` already applied to the vi cursor
+  and the selection is `viewport_delta`. `active_viewport_delta` and
+  `inactive_viewport_delta` return it. `resize` itself is unchanged.
+  glass uses the inactive value when a height change moves the primary
+  grid while the alternate screen is up, because the scroll sentinel is
+  not planted on that grid.
+
 ## Lints
 
 Upstream's `lib.rs` denies clippy's warnings. Now that the library is a member of glass's workspace, clippy checks it, and clippy 1.99 has lints newer than upstream's code. These changes don't change behaviour.

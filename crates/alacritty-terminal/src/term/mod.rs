@@ -2,6 +2,7 @@
 // - a full keyboard mode stack drops its own oldest entry, not the title stack's (upstream's fix,
 //   alacritty/alacritty@54214706).
 // - a nested `if` is a let chain and a tab stop test uses `is_multiple_of`, as clippy 1.99 asks.
+// - `resize`'s viewport shift is `viewport_delta`, also exposed for the inactive grid.
 
 //! Exports the `Term` type which is a high-level API for the Grid.
 
@@ -34,6 +35,18 @@ use crate::vte::ansi::{
 pub mod cell;
 pub mod color;
 pub mod search;
+
+/// How many rows a height change shifts grid content.
+///
+/// Positive pulls history onto the screen. Negative pushes the top rows
+/// into history so the cursor stays inside the new viewport. The shift is
+/// capped by the history that exists. `Term::resize` moves the vi cursor
+/// and the selection by this amount.
+fn viewport_delta(old_lines: i32, new_lines: i32, cursor_line: i32, history: i32) -> i32 {
+    let delta = new_lines - old_lines;
+    let min_delta = cmp::min(0, new_lines - cursor_line - 1);
+    cmp::min(cmp::max(delta, min_delta), history)
+}
 
 /// Minimum number of columns.
 ///
@@ -665,6 +678,32 @@ impl<T> Term<T> {
         &mut self.grid
     }
 
+    /// Rows the active grid's content shifts when the screen becomes
+    /// `num_lines` tall. Positive pulls history onto the screen (content
+    /// moves down). This is the delta [`Term::resize`] applies to the
+    /// cursor and the selection.
+    pub fn active_viewport_delta(&self, num_lines: usize) -> i32 {
+        viewport_delta(
+            self.screen_lines() as i32,
+            num_lines as i32,
+            self.grid.cursor.point.line.0,
+            self.history_size() as i32,
+        )
+    }
+
+    /// The same shift for the grid that is not on screen. A height change
+    /// resizes both grids; the selection that tracks scrolling lives only
+    /// on the active one, so a caller keeping an absolute line for the
+    /// other grid has to apply this itself.
+    pub fn inactive_viewport_delta(&self, num_lines: usize) -> i32 {
+        viewport_delta(
+            self.inactive_grid.screen_lines() as i32,
+            num_lines as i32,
+            self.inactive_grid.cursor.point.line.0,
+            self.inactive_grid.history_size() as i32,
+        )
+    }
+
     /// Resize terminal to new dimensions.
     pub fn resize<S: Dimensions>(&mut self, size: S) {
         let old_cols = self.columns();
@@ -681,10 +720,7 @@ impl<T> Term<T> {
         debug!("New num_cols is {num_cols} and num_lines is {num_lines}");
 
         // Move vi mode cursor with the content.
-        let history_size = self.history_size();
-        let mut delta = num_lines as i32 - old_lines as i32;
-        let min_delta = cmp::min(0, num_lines as i32 - self.grid.cursor.point.line.0 - 1);
-        delta = cmp::min(cmp::max(delta, min_delta), history_size as i32);
+        let delta = self.active_viewport_delta(num_lines);
         self.vi_mode_cursor.point.line += delta;
 
         let is_alt = self.mode.contains(TermMode::ALT_SCREEN);

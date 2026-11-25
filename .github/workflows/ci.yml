@@ -129,6 +129,14 @@ jobs:
           test ! -e "$home/.local/bin/glass"
           test ! -e "$home/.local/glass"
 
+  plugin:
+    name: Hermes plugin tests
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - name: Unit tests
+        run: python3 -m unittest discover -s plugins/glass/tests -t plugins/glass
+
   macos:
     name: macOS build and terminal tests
     runs-on: macos-latest

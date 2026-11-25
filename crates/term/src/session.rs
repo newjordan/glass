@@ -139,6 +139,10 @@ pub struct KeyView {
 }
 
 impl KeyView {
+    /// Bits [`KeyView::pack`] writes. Two 16-bit sizes, the 8-bit flags,
+    /// and one bit for each of the five booleans.
+    const PACKED_BITS: u32 = 16 + 16 + 8 + 5;
+
     /// The view as one word, for a lock-free handover: the reader thread
     /// publishes it whole, a key reads it whole, and neither ever waits
     /// for the other. An RwLock here did wait: the reader rewrote it
@@ -147,10 +151,11 @@ impl KeyView {
     ///
     /// The word is one aligned `AtomicU64`, stored and loaded whole, so a
     /// reader never sees half of one view and half of another. It holds
-    /// 45 bits: two 16-bit sizes, the 8-bit flags, three booleans (bits 40
-    /// to 44). A field that would not fit belongs behind a lock instead;
+    /// 45 bits: two 16-bit sizes, the 8-bit flags, and five booleans (bits
+    /// 40 to 44). A field that would not fit belongs behind a lock instead;
     /// the round-trip test below takes every field to its extremes.
     fn pack(self) -> u64 {
+        const _: () = assert!(KeyView::PACKED_BITS <= 64);
         u64::from(self.size.0)
             | u64::from(self.size.1) << 16
             | u64::from(self.keyboard_flags) << 32
@@ -942,6 +947,7 @@ impl Session {
             engine.resize(usize::from(rows), usize::from(cols));
         }
         engine.set_cell_px((grid.cell_width, grid.cell_height));
+        let on_alt = engine.alternate_screen();
         let reflow = engine.take_reflow();
         let scrolled = engine.scrolled_off_top() as u64;
         let history = engine.history_size();
@@ -950,6 +956,10 @@ impl Session {
         intake.set_cell((grid.cell_width, grid.cell_height));
         if let Some(reflow) = reflow {
             intake.reflow(&reflow);
+            intake.set_scrolled_primary(scrolled, history, rows);
+        } else if !on_alt {
+            // A height-only change publishes no reflow. The scroll count
+            // still moved, and pruning uses the store's copy of it.
             intake.set_scrolled_primary(scrolled, history, rows);
         }
     }
