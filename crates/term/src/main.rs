@@ -88,7 +88,7 @@ const OUTPUT_PACE: Duration = Duration::from_millis(8);
 const OUTPUT_GATHER: Duration = Duration::from_millis(1);
 
 /// What the command line asked for.
-#[derive(Default)]
+#[derive(Default, Debug, PartialEq, Eq)]
 struct Args {
     command: Vec<String>,
     title: Option<String>,
@@ -99,9 +99,24 @@ struct Args {
 
 const USAGE: &str = "usage: glass [--title T] [--class C] [--working-directory D] [--hold] [-e|--] [command [args...]]";
 
-fn parse_args() -> Result<Args, String> {
-    let mut args = Args::default();
-    let mut it = std::env::args().skip(1);
+/// A parsed command line. `--help` is not an error: it prints usage and
+/// exits successfully.
+#[derive(Debug)]
+enum Cli {
+    Run(Args),
+    Help,
+}
+
+fn parse_args() -> Result<Cli, String> {
+    parse_arg_list(std::env::args().skip(1))
+}
+
+fn parse_arg_list<I>(args: I) -> Result<Cli, String>
+where
+    I: IntoIterator<Item = String>,
+{
+    let mut parsed = Args::default();
+    let mut it = args.into_iter();
     while let Some(arg) = it.next() {
         // `--flag=value` and `--flag value` both.
         let (flag, inline) = match arg.split_once('=') {
@@ -116,23 +131,23 @@ fn parse_args() -> Result<Args, String> {
         };
         match flag.as_str() {
             "-e" | "--" => {
-                args.command = it.by_ref().collect();
+                parsed.command = it.by_ref().collect();
                 break;
             }
-            "--title" | "-T" => args.title = Some(value("--title")?),
-            "--class" | "--app-id" => args.class = Some(value("--class")?),
-            "--working-directory" | "--dir" | "-d" => args.dir = Some(value("--working-directory")?.into()),
-            "--hold" => args.hold = true,
-            "-h" | "--help" => return Err(USAGE.to_string()),
+            "--title" | "-T" => parsed.title = Some(value("--title")?),
+            "--class" | "--app-id" => parsed.class = Some(value("--class")?),
+            "--working-directory" | "--dir" | "-d" => parsed.dir = Some(value("--working-directory")?.into()),
+            "--hold" => parsed.hold = true,
+            "-h" | "--help" => return Ok(Cli::Help),
             _ if arg.starts_with('-') => return Err(format!("unknown option {arg}\n{USAGE}")),
             // A bare command, as `glass htop` would mean it.
             _ => {
-                args.command = std::iter::once(arg).chain(it.by_ref()).collect();
+                parsed.command = std::iter::once(arg).chain(it.by_ref()).collect();
                 break;
             }
         }
     }
-    Ok(args)
+    Ok(Cli::Run(parsed))
 }
 
 /// Open a link the way the desktop opens them.
@@ -159,6 +174,17 @@ fn opens_outside(url: &str) -> bool {
 }
 
 fn main() {
+    let args = match parse_args() {
+        Ok(Cli::Help) => {
+            println!("{USAGE}");
+            return;
+        }
+        Ok(Cli::Run(args)) => args,
+        Err(message) => {
+            eprintln!("{message}");
+            std::process::exit(2);
+        }
+    };
     purge_the_start();
     census::init();
     engine::probes::init();
@@ -174,13 +200,6 @@ fn main() {
         }
     }
     let _census_dump = CensusDump;
-    let args = match parse_args() {
-        Ok(args) => args,
-        Err(message) => {
-            eprintln!("{message}");
-            std::process::exit(2);
-        }
-    };
     let mut options = glass_window::Options::from_environment();
     options.app_id = args.class.clone().unwrap_or_else(|| "glass".into());
     options.title = args.title.clone().unwrap_or_else(|| match args.command.first() {
@@ -800,6 +819,42 @@ impl Ui {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn cli(args: &[&str]) -> Result<Cli, String> {
+        parse_arg_list(args.iter().map(|s| (*s).to_string()))
+    }
+
+    #[test]
+    fn help_is_not_an_error_and_unknown_options_are() {
+        assert!(matches!(cli(&["--help"]), Ok(Cli::Help)));
+        assert!(matches!(cli(&["-h"]), Ok(Cli::Help)));
+        let err = cli(&["--nope"]).unwrap_err();
+        assert!(err.starts_with("unknown option --nope"), "{err}");
+        assert!(cli(&["--title"]).unwrap_err().contains("needs a value"));
+    }
+
+    #[test]
+    fn flags_and_the_command_are_split() {
+        match cli(&["--title=build", "--class", "dev", "-d", "/tmp", "--hold", "-e", "make", "-j"]).unwrap() {
+            Cli::Run(args) => {
+                assert_eq!(args.title.as_deref(), Some("build"));
+                assert_eq!(args.class.as_deref(), Some("dev"));
+                assert_eq!(args.dir.as_deref(), Some(std::path::Path::new("/tmp")));
+                assert!(args.hold);
+                assert_eq!(args.command, ["make", "-j"]);
+            }
+            Cli::Help => panic!("help"),
+        }
+        match cli(&["htop", "-d", "1"]).unwrap() {
+            Cli::Run(args) => assert_eq!(args.command, ["htop", "-d", "1"]),
+            Cli::Help => panic!("help"),
+        }
+        // After `--`, a flag is the program's, not glass's.
+        match cli(&["--", "--help"]).unwrap() {
+            Cli::Run(args) => assert_eq!(args.command, ["--help"]),
+            Cli::Help => panic!("help"),
+        }
+    }
 
     /// MI_OPTION_PURGE_DELAY names mimalloc's purge delay: the option at
     /// that number holds v3's default of 1000 ms (options.c; the header's

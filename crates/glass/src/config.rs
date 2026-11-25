@@ -704,9 +704,14 @@ mod tests {
     }
 
     fn options_from(text: &str) -> Options {
+        use std::sync::atomic::{AtomicU64, Ordering};
+        static N: AtomicU64 = AtomicU64::new(0);
+        // Parallel tests used to share a path when two configs had the same
+        // length, so one test could read the other's file.
         let path = std::env::temp_dir().join(format!(
-            "glass-conf-bad-{}-{}.conf",
+            "glass-conf-bad-{}-{}-{}.conf",
             std::process::id(),
+            N.fetch_add(1, Ordering::Relaxed),
             text.len()
         ));
         std::fs::write(&path, text).unwrap();

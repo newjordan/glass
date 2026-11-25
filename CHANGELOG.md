@@ -3,6 +3,18 @@
 All notable changes to glass are recorded here. Versions follow
 [Semantic Versioning](https://semver.org/).
 
+## Unreleased
+
+### Fixed
+
+- Growing the window pulls history back onto the screen, and a picture
+  stays on the text it was anchored to. Shrinking while the alternate
+  screen is up still moves the hidden primary grid's absolute lines.
+- A reflow whose newest line was cut short keeps the anchors on the lines
+  above it. An exact match still wins over reading that line as a prefix
+  of an older one.
+- `glass --help` and `glass -h` print usage on stdout and exit 0.
+
 ## 0.2.0 - 2026-11-21
 
 ### Settings
